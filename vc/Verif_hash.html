@@ -1,0 +1,767 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<link href="common/css/sf.css" rel="stylesheet" type="text/css"/>
+<title>Verif_hash: Correctness proof of hash.c</title>
+</head>
+<link href="common/jquery-ui/jquery-ui.css" rel="stylesheet">
+<script src="common/jquery-ui/external/jquery/jquery.js"></script>
+<script src="common/jquery-ui/jquery-ui.js"></script>
+<script src="common/toggleproofs.js"></script>
+<link href="common/css/vc.css" rel="stylesheet" type="text/css"/>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+<a href='https://www.cis.upenn.edu/~bcpierce/sf/current/index.html'>
+<img src='common/media/image/sf_logo_sm.png'></a>
+</br><a href='index.html'>  <span class='booktitleinheader'>Volume 5beta: Verifiable C</span><br></br>
+<ul id='menu'>
+   <a href='toc.html'><li class='section_name'>Table of Contents</li></a>
+   <a href='coqindex.html'><li class='section_name'>Index</li></a>
+   <a href='deps.html'><li class='section_name'>Roadmap</li></a>
+</ul>
+</a></div>
+
+<div id="main">
+
+<h1 class="libtitle">Verif_hash<span class="subtitle">Correctness proof of hash.c</span></h1>
+
+
+<div class="code code-tight">
+
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="library">VST.floyd.proofauto</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="library">VST.floyd.library</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span>  <span class="id" type="library">hash</span>.<br/>
+<span class="id" type="keyword">Instance</span> <a name="CompSpecs"><span class="id" type="instance">CompSpecs</span></a> : <span class="id" type="class">compspecs</span>. <span class="id" type="var">make_compspecs</span> <span class="id" type="definition">prog</span>. <span class="id" type="keyword">Defined</span>.<br/>
+<span class="id" type="keyword">Definition</span> <a name="Vprog"><span class="id" type="definition">Vprog</span></a> : <span class="id" type="definition">varspecs</span>. <span class="id" type="var">mk_varspecs</span> <span class="id" type="definition">prog</span>. <span class="id" type="keyword">Defined</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="library">VST.msl.wand_frame</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="library">VST.msl.iter_sepcon</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="library">VST.floyd.reassoc_seq</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="library">VST.floyd.field_at_wand</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <a class="idref" href="Hashfun.html#"><span class="id" type="library">Hashfun</span></a>.<br/>
+</div>
+
+<div class="doc">
+<a name="lab84"></a><h2 class="section">Function specifications</h2>
+<a name="lab85"></a><h3 class="section">Imports from the C string library</h3>
+
+</div>
+<div class="code code-space">
+
+<br/>
+<span class="id" type="keyword">Definition</span> <a name="strcmp_spec"><span class="id" type="definition">strcmp_spec</span></a> :=<br/>
+&nbsp;<span class="id" type="notation">DECLARE</span> <span class="id" type="definition">_strcmp</span><br/>
+&nbsp;&nbsp;<span class="id" type="notation">WITH</span> <span class="id" type="var">str1</span> : <span class="id" type="inductive">val</span>, <span class="id" type="var">s<sub>1</sub></span> : <a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a>, <span class="id" type="var">str2</span> : <span class="id" type="inductive">val</span>, <span class="id" type="var">s<sub>2</sub></span> : <a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a><br/>
+&nbsp;&nbsp;<span class="id" type="var">PRE</span> [ 1 <span class="id" type="var">OF</span> <span class="id" type="definition">tptr</span> <span class="id" type="definition">tschar</span>, 2 <span class="id" type="var">OF</span> <span class="id" type="definition">tptr</span> <span class="id" type="definition">tschar</span> ]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span> ()<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> 1 <a class="idref" href="Verif_hash.html#str1"><span class="id" type="variable">str1</span></a>; <span class="id" type="constructor">temp</span> 2 <a class="idref" href="Verif_hash.html#str2"><span class="id" type="variable">str2</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span> (<span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#s<sub>1</sub>"><span class="id" type="variable">s<sub>1</sub></span></a> <a class="idref" href="Verif_hash.html#str1"><span class="id" type="variable">str1</span></a>; <span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#s<sub>2</sub>"><span class="id" type="variable">s<sub>2</sub></span></a> <a class="idref" href="Verif_hash.html#str2"><span class="id" type="variable">str2</span></a>)<br/>
+&nbsp;&nbsp;<span class="id" type="var">POST</span> [ <span class="id" type="definition">tint</span> ]<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="notation">EX</span> <span class="id" type="var">i</span> : <span class="id" type="abbreviation">int</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span> (<span class="id" type="keyword">if</span> <span class="id" type="lemma">Int.eq_dec</span> <a class="idref" href="Verif_hash.html#i"><span class="id" type="variable">i</span></a> <span class="id" type="definition">Int.zero</span> <span class="id" type="keyword">then</span> <a class="idref" href="Verif_hash.html#s<sub>1</sub>"><span class="id" type="variable">s<sub>1</sub></span></a> = <a class="idref" href="Verif_hash.html#s<sub>2</sub>"><span class="id" type="variable">s<sub>2</sub></span></a> <span class="id" type="keyword">else</span> <a class="idref" href="Verif_hash.html#s<sub>1</sub>"><span class="id" type="variable">s<sub>1</sub></span></a> ≠ <a class="idref" href="Verif_hash.html#s<sub>2</sub>"><span class="id" type="variable">s<sub>2</sub></span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> <span class="id" type="definition">ret_temp</span> (<span class="id" type="constructor">Vint</span> <a class="idref" href="Verif_hash.html#i"><span class="id" type="variable">i</span></a>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span> (<span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#s<sub>1</sub>"><span class="id" type="variable">s<sub>1</sub></span></a> <a class="idref" href="Verif_hash.html#str1"><span class="id" type="variable">str1</span></a>; <span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#s<sub>2</sub>"><span class="id" type="variable">s<sub>2</sub></span></a> <a class="idref" href="Verif_hash.html#str2"><span class="id" type="variable">str2</span></a>).<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="strcpy_spec"><span class="id" type="definition">strcpy_spec</span></a> :=<br/>
+&nbsp;<span class="id" type="notation">DECLARE</span> <span class="id" type="definition">_strcpy</span><br/>
+&nbsp;&nbsp;<span class="id" type="notation">WITH</span> <span class="id" type="keyword">dest</span> : <span class="id" type="inductive">val</span>, <span class="id" type="var">n</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>, <span class="id" type="var">src</span> : <span class="id" type="inductive">val</span>, <span class="id" type="var">s</span> : <a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a><br/>
+&nbsp;&nbsp;<span class="id" type="var">PRE</span> [ 1 <span class="id" type="var">OF</span> <span class="id" type="definition">tptr</span> <span class="id" type="definition">tschar</span>, 2 <span class="id" type="var">OF</span> <span class="id" type="definition">tptr</span> <span class="id" type="definition">tschar</span> ]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <a class="idref" href="Verif_hash.html#s"><span class="id" type="variable">s</span></a> &lt; <a class="idref" href="Verif_hash.html#n"><span class="id" type="variable">n</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> 1 <span class="id" type="keyword">dest</span>; <span class="id" type="constructor">temp</span> 2 <a class="idref" href="Verif_hash.html#src"><span class="id" type="variable">src</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span> (<span class="id" type="definition">data_at_</span> <span class="id" type="definition">Tsh</span> (<span class="id" type="definition">tarray</span> <span class="id" type="definition">tschar</span> <a class="idref" href="Verif_hash.html#n"><span class="id" type="variable">n</span></a>) <span class="id" type="keyword">dest</span>; <span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#s"><span class="id" type="variable">s</span></a> <a class="idref" href="Verif_hash.html#src"><span class="id" type="variable">src</span></a>)<br/>
+&nbsp;&nbsp;<span class="id" type="var">POST</span> [ <span class="id" type="definition">tptr</span> <span class="id" type="definition">tschar</span> ]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span> ()<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> <span class="id" type="definition">ret_temp</span> <span class="id" type="keyword">dest</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span> (<span class="id" type="definition">cstringn</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#s"><span class="id" type="variable">s</span></a> <a class="idref" href="Verif_hash.html#n"><span class="id" type="variable">n</span></a> <span class="id" type="keyword">dest</span>; <span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#s"><span class="id" type="variable">s</span></a> <a class="idref" href="Verif_hash.html#src"><span class="id" type="variable">src</span></a>).<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="strlen_spec"><span class="id" type="definition">strlen_spec</span></a> :=<br/>
+&nbsp;<span class="id" type="notation">DECLARE</span> <span class="id" type="definition">_strlen</span><br/>
+&nbsp;&nbsp;<span class="id" type="notation">WITH</span> <span class="id" type="var">s</span> : <a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a>, <span class="id" type="var">str</span>: <span class="id" type="inductive">val</span><br/>
+&nbsp;&nbsp;<span class="id" type="var">PRE</span> [ 1 <span class="id" type="var">OF</span> <span class="id" type="definition">tptr</span> <span class="id" type="definition">tschar</span> ]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span> ( )<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> 1 <a class="idref" href="Verif_hash.html#str"><span class="id" type="variable">str</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span> (<span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#s"><span class="id" type="variable">s</span></a> <a class="idref" href="Verif_hash.html#str"><span class="id" type="variable">str</span></a>)<br/>
+&nbsp;&nbsp;<span class="id" type="var">POST</span> [ <span class="id" type="definition">tptr</span> <span class="id" type="definition">tschar</span> ]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span> ()<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> <span class="id" type="definition">ret_temp</span> (<span class="id" type="definition">Vptrofs</span> (<span class="id" type="definition">Ptrofs.repr</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <a class="idref" href="Verif_hash.html#s"><span class="id" type="variable">s</span></a>))))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span> (<span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#s"><span class="id" type="variable">s</span></a> <a class="idref" href="Verif_hash.html#str"><span class="id" type="variable">str</span></a>).<br/>
+</div>
+
+<div class="doc">
+<a name="lab86"></a><h3 class="section">String functions:  copy, hash</h3>
+
+</div>
+<div class="code code-space">
+
+<br/>
+<span class="id" type="keyword">Definition</span> <a name="copy_string_spec"><span class="id" type="definition">copy_string_spec</span></a> : <span class="id" type="definition">ident</span> * <span class="id" type="inductive">funspec</span> :=<br/>
+&nbsp;<span class="id" type="notation">DECLARE</span> <span class="id" type="definition">_copy_string</span><br/>
+&nbsp;<span class="id" type="notation">WITH</span> <span class="id" type="var">s</span>: <span class="id" type="inductive">val</span>, <span class="id" type="var">sigma</span> : <a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a><br/>
+&nbsp;<span class="id" type="var">PRE</span> [ <span class="id" type="definition">_s</span> <span class="id" type="var">OF</span> <span class="id" type="definition">tptr</span> <span class="id" type="definition">tschar</span> ] <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span> ( ) <span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> <span class="id" type="definition">_s</span> <a class="idref" href="Verif_hash.html#s"><span class="id" type="variable">s</span></a>) <span class="id" type="notation">SEP</span> (<span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#sigma"><span class="id" type="variable">sigma</span></a> <a class="idref" href="Verif_hash.html#s"><span class="id" type="variable">s</span></a>)<br/>
+&nbsp;<span class="id" type="var">POST</span> [ <span class="id" type="definition">tptr</span> <span class="id" type="definition">tschar</span> ] <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">EX</span> <span class="id" type="var">p</span>: <span class="id" type="inductive">val</span>, <span class="id" type="notation">PROP</span> ( ) <span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> <span class="id" type="definition">ret_temp</span> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a>) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span> (<span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#sigma"><span class="id" type="variable">sigma</span></a> <a class="idref" href="Verif_hash.html#s"><span class="id" type="variable">s</span></a>; <span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#sigma"><span class="id" type="variable">sigma</span></a> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a>).<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="hash_spec"><span class="id" type="definition">hash_spec</span></a> : <span class="id" type="definition">ident</span> * <span class="id" type="inductive">funspec</span> :=<br/>
+&nbsp;&nbsp;<span class="id" type="notation">DECLARE</span> <span class="id" type="definition">_hash</span><br/>
+&nbsp;&nbsp;<span class="id" type="notation">WITH</span> <span class="id" type="var">s</span>: <span class="id" type="inductive">val</span>, <span class="id" type="var">sh</span> : <span class="id" type="definition">share</span>, <span class="id" type="var">contents</span> : <a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a><br/>
+&nbsp;&nbsp;<span class="id" type="var">PRE</span> [ <span class="id" type="definition">_s</span> <span class="id" type="var">OF</span> (<span class="id" type="definition">tptr</span> <span class="id" type="definition">tschar</span>) ]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span>  (<span class="id" type="definition">readable_share</span> <a class="idref" href="Verif_hash.html#sh"><span class="id" type="variable">sh</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> <span class="id" type="definition">_s</span> <a class="idref" href="Verif_hash.html#s"><span class="id" type="variable">s</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span>   (<span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#contents"><span class="id" type="variable">contents</span></a> <a class="idref" href="Verif_hash.html#s"><span class="id" type="variable">s</span></a>)<br/>
+&nbsp;&nbsp;<span class="id" type="var">POST</span> [ <span class="id" type="definition">tuint</span> ]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span> ()<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">LOCAL</span>(<span class="id" type="constructor">temp</span> <span class="id" type="definition">ret_temp</span>  (<span class="id" type="constructor">Vint</span> (<span class="id" type="definition">Int.repr</span> (<a class="idref" href="Hashfun.html#hashfun"><span class="id" type="definition">hashfun</span></a> <a class="idref" href="Verif_hash.html#contents"><span class="id" type="variable">contents</span></a>))))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span> (<span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#contents"><span class="id" type="variable">contents</span></a> <a class="idref" href="Verif_hash.html#s"><span class="id" type="variable">s</span></a>).<br/>
+</div>
+
+<div class="doc">
+<a name="lab87"></a><h3 class="section">Data structures for hash table</h3>
+
+</div>
+<div class="code code-space">
+
+<br/>
+<span class="id" type="keyword">Definition</span> <a name="tcell"><span class="id" type="definition">tcell</span></a> := <span class="id" type="constructor">Tstruct</span> <span class="id" type="definition">_cell</span> <span class="id" type="definition">noattr</span>.<br/>
+<span class="id" type="keyword">Definition</span> <a name="thashtable"><span class="id" type="definition">thashtable</span></a> := <span class="id" type="constructor">Tstruct</span> <span class="id" type="definition">_hashtable</span> <span class="id" type="definition">noattr</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="list_cell"><span class="id" type="definition">list_cell</span></a> (<span class="id" type="var">key</span>: <a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a>) (<span class="id" type="var">count</span>: <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>) (<span class="id" type="var">next</span>: <span class="id" type="inductive">val</span>) (<span class="id" type="var">p</span>: <span class="id" type="inductive">val</span>): <span class="id" type="definition">mpred</span> :=<br/>
+&nbsp;<span class="id" type="notation">EX</span> <span class="id" type="var">kp</span>: <span class="id" type="inductive">val</span>, <span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#key"><span class="id" type="variable">key</span></a> <a class="idref" href="Verif_hash.html#kp"><span class="id" type="variable">kp</span></a> * <span class="id" type="definition">data_at</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#tcell"><span class="id" type="definition">tcell</span></a> (<a class="idref" href="Verif_hash.html#kp"><span class="id" type="variable">kp</span></a>,(<span class="id" type="constructor">Vint</span> (<span class="id" type="definition">Int.repr</span> <a class="idref" href="Verif_hash.html#count"><span class="id" type="variable">count</span></a>), <a class="idref" href="Verif_hash.html#next"><span class="id" type="variable">next</span></a>)) <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" type="axiom">malloc_token</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#tcell"><span class="id" type="definition">tcell</span></a> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="list_cell_local_facts"><span class="id" type="definition">list_cell_local_facts</span></a>: <br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">key</span> <span class="id" type="var">count</span> <span class="id" type="var">next</span> <span class="id" type="var">p</span>, <a class="idref" href="Verif_hash.html#list_cell"><span class="id" type="definition">list_cell</span></a> <a class="idref" href="Verif_hash.html#key"><span class="id" type="variable">key</span></a> <a class="idref" href="Verif_hash.html#count"><span class="id" type="variable">count</span></a> <a class="idref" href="Verif_hash.html#next"><span class="id" type="variable">next</span></a> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a> |-- !! <span class="id" type="definition">isptr</span> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a>.<br/>
+<span class="id" type="keyword">Proof</span>. <span class="id" type="tactic">intros</span>. <span class="id" type="tactic">unfold</span> <a class="idref" href="Verif_hash.html#list_cell"><span class="id" type="definition">list_cell</span></a>. <span class="id" type="var">Intros</span> <span class="id" type="var">kp</span>. <span class="id" type="var">entailer</span>!. <span class="id" type="keyword">Qed</span>.<br/>
+<span class="id" type="keyword">Hint</span> <span class="id" type="keyword">Resolve</span> <span class="id" type="var">list_cell_local_facts</span>: <span class="id" type="var">saturate_local</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="list_cell_valid_pointer"><span class="id" type="definition">list_cell_valid_pointer</span></a>:<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">key</span> <span class="id" type="var">count</span> <span class="id" type="var">next</span> <span class="id" type="var">p</span>, <a class="idref" href="Verif_hash.html#list_cell"><span class="id" type="definition">list_cell</span></a> <a class="idref" href="Verif_hash.html#key"><span class="id" type="variable">key</span></a> <a class="idref" href="Verif_hash.html#count"><span class="id" type="variable">count</span></a> <a class="idref" href="Verif_hash.html#next"><span class="id" type="variable">next</span></a> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a> |-- <span class="id" type="definition">valid_pointer</span> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a>.<br/>
+<span class="id" type="keyword">Proof</span>. <span class="id" type="tactic">intros</span>. <span class="id" type="tactic">unfold</span> <a class="idref" href="Verif_hash.html#list_cell"><span class="id" type="definition">list_cell</span></a>. <span class="id" type="var">Intros</span> <span class="id" type="var">kp</span>. <span class="id" type="var">entailer</span>!. <span class="id" type="keyword">Qed</span>.<br/>
+<span class="id" type="keyword">Hint</span> <span class="id" type="keyword">Resolve</span> <span class="id" type="var">list_cell_valid_pointer</span>: <span class="id" type="var">valid_pointer</span>.<br/>
+</div>
+
+<div class="doc">
+<a name="lab88"></a><h4 class="section">Exercise: 1 star (listcell_fold)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Lemma</span> <a name="listcell_fold"><span class="id" type="lemma">listcell_fold</span></a>: <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">key</span> <span class="id" type="var">kp</span> <span class="id" type="var">count</span> <span class="id" type="var">p'</span> <span class="id" type="var">p</span>,<br/>
+&nbsp;&nbsp;<span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#key"><span class="id" type="variable">key</span></a> <a class="idref" href="Verif_hash.html#kp"><span class="id" type="variable">kp</span></a> * <span class="id" type="definition">data_at</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#tcell"><span class="id" type="definition">tcell</span></a> (<a class="idref" href="Verif_hash.html#kp"><span class="id" type="variable">kp</span></a>, (<span class="id" type="constructor">Vint</span> (<span class="id" type="definition">Int.repr</span> <a class="idref" href="Verif_hash.html#count"><span class="id" type="variable">count</span></a>), <a class="idref" href="Verif_hash.html#p'"><span class="id" type="variable">p'</span></a>)) <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a> * <span class="id" type="axiom">malloc_token</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#tcell"><span class="id" type="definition">tcell</span></a> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|-- <a class="idref" href="Verif_hash.html#list_cell"><span class="id" type="definition">list_cell</span></a> <a class="idref" href="Verif_hash.html#key"><span class="id" type="variable">key</span></a> <a class="idref" href="Verif_hash.html#count"><span class="id" type="variable">count</span></a> <a class="idref" href="Verif_hash.html#p'"><span class="id" type="variable">p'</span></a> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a>.<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="code code-tight">
+
+<span class="id" type="keyword">Fixpoint</span> <a name="listrep"><span class="id" type="definition">listrep</span></a> (<span class="id" type="var">sigma</span>: <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> (<a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a> * <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>)) (<span class="id" type="var">x</span>: <span class="id" type="inductive">val</span>) : <span class="id" type="definition">mpred</span> :=<br/>
+&nbsp;<span class="id" type="keyword">match</span> <a class="idref" href="Verif_hash.html#sigma"><span class="id" type="variable">sigma</span></a> <span class="id" type="keyword">with</span><br/>
+&nbsp;| (<span class="id" type="var">s</span>,<span class="id" type="var">c</span>)::<span class="id" type="var">hs</span> ⇒ <span class="id" type="notation">EX</span> <span class="id" type="var">y</span>: <span class="id" type="inductive">val</span>, <a class="idref" href="Verif_hash.html#list_cell"><span class="id" type="definition">list_cell</span></a> <span class="id" type="var">s</span> <span class="id" type="var">c</span> <a class="idref" href="Verif_hash.html#y"><span class="id" type="variable">y</span></a> <a class="idref" href="Verif_hash.html#x"><span class="id" type="variable">x</span></a> * <a class="idref" href="Verif_hash.html#listrep"><span class="id" type="definition">listrep</span></a> <span class="id" type="var">hs</span> <a class="idref" href="Verif_hash.html#y"><span class="id" type="variable">y</span></a><br/>
+&nbsp;| <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil"><span class="id" type="constructor">nil</span></a> ⇒ <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;!! (<a class="idref" href="Verif_hash.html#x"><span class="id" type="variable">x</span></a> = <span class="id" type="definition">nullval</span>) &amp;&amp; <span class="id" type="method">emp</span><br/>
+&nbsp;<span class="id" type="keyword">end</span>.<br/>
+</div>
+
+<div class="doc">
+<a name="lab89"></a><h4 class="section">Exercise: 2 stars (listrep_hints)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Lemma</span> <a name="listrep_local_prop"><span class="id" type="lemma">listrep_local_prop</span></a>: <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">sigma</span> <span class="id" type="var">p</span>, <a class="idref" href="Verif_hash.html#listrep"><span class="id" type="definition">listrep</span></a> <a class="idref" href="Verif_hash.html#sigma"><span class="id" type="variable">sigma</span></a> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a> |--<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;!! (<span class="id" type="definition">is_pointer_or_null</span> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a>  ∧ (<a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a>=<span class="id" type="definition">nullval</span> ↔ <a class="idref" href="Verif_hash.html#sigma"><span class="id" type="variable">sigma</span></a>=<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil"><span class="id" type="constructor">nil</span></a>)).<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+<span class="id" type="keyword">Hint</span> <span class="id" type="keyword">Resolve</span> <span class="id" type="var">listrep_local_prop</span> : <span class="id" type="var">saturate_local</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Lemma</span> <a name="listrep_valid_pointer"><span class="id" type="lemma">listrep_valid_pointer</span></a>:<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">sigma</span> <span class="id" type="var">p</span>,<br/>
+&nbsp;&nbsp;&nbsp;<a class="idref" href="Verif_hash.html#listrep"><span class="id" type="definition">listrep</span></a> <a class="idref" href="Verif_hash.html#sigma"><span class="id" type="variable">sigma</span></a> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a> |-- <span class="id" type="definition">valid_pointer</span> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a>.<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+<span class="id" type="keyword">Hint</span> <span class="id" type="keyword">Resolve</span> <span class="id" type="var">listrep_valid_pointer</span> : <span class="id" type="var">valid_pointer</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="code code-tight">
+
+<span class="id" type="keyword">Lemma</span> <a name="listrep_fold"><span class="id" type="lemma">listrep_fold</span></a>: <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">key</span> <span class="id" type="var">count</span> <span class="id" type="var">p'</span> <span class="id" type="var">p</span> <span class="id" type="var">al</span>, <br/>
+&nbsp;&nbsp;<a class="idref" href="Verif_hash.html#list_cell"><span class="id" type="definition">list_cell</span></a> <a class="idref" href="Verif_hash.html#key"><span class="id" type="variable">key</span></a> <a class="idref" href="Verif_hash.html#count"><span class="id" type="variable">count</span></a> <a class="idref" href="Verif_hash.html#p'"><span class="id" type="variable">p'</span></a> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a> * <a class="idref" href="Verif_hash.html#listrep"><span class="id" type="definition">listrep</span></a> <a class="idref" href="Verif_hash.html#al"><span class="id" type="variable">al</span></a> <a class="idref" href="Verif_hash.html#p'"><span class="id" type="variable">p'</span></a> |-- <a class="idref" href="Verif_hash.html#listrep"><span class="id" type="definition">listrep</span></a> ((<a class="idref" href="Verif_hash.html#key"><span class="id" type="variable">key</span></a>,<a class="idref" href="Verif_hash.html#count"><span class="id" type="variable">count</span></a>)::<a class="idref" href="Verif_hash.html#al"><span class="id" type="variable">al</span></a>) <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a>.<br/>
+<span class="id" type="keyword">Proof</span>. <span class="id" type="tactic">intros</span>. <span class="id" type="tactic">simpl</span>. <span class="id" type="var">Exists</span> <span class="id" type="var">p'</span>. <span class="id" type="var">cancel</span>. <span class="id" type="keyword">Qed</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="listboxrep"><span class="id" type="definition">listboxrep</span></a> <span class="id" type="var">al</span> <span class="id" type="var">r</span> :=<br/>
+&nbsp;<span class="id" type="notation">EX</span> <span class="id" type="var">p</span>:<span class="id" type="inductive">val</span>, <span class="id" type="definition">data_at</span> <span class="id" type="definition">Tsh</span> (<span class="id" type="definition">tptr</span> <a class="idref" href="Verif_hash.html#tcell"><span class="id" type="definition">tcell</span></a>) <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a> <a class="idref" href="Verif_hash.html#r"><span class="id" type="variable">r</span></a> * <a class="idref" href="Verif_hash.html#listrep"><span class="id" type="definition">listrep</span></a> <a class="idref" href="Verif_hash.html#al"><span class="id" type="variable">al</span></a> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="uncurry"><span class="id" type="definition">uncurry</span></a> {<span class="id" type="var">A</span> <span class="id" type="var">B</span> <span class="id" type="var">C</span>} (<span class="id" type="var">f</span>: <a class="idref" href="Verif_hash.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="Verif_hash.html#B"><span class="id" type="variable">B</span></a> → <a class="idref" href="Verif_hash.html#C"><span class="id" type="variable">C</span></a>) (<span class="id" type="var">xy</span>: <a class="idref" href="Verif_hash.html#A"><span class="id" type="variable">A</span></a>*<a class="idref" href="Verif_hash.html#B"><span class="id" type="variable">B</span></a>) : <a class="idref" href="Verif_hash.html#C"><span class="id" type="variable">C</span></a> :=<br/>
+&nbsp;&nbsp;<a class="idref" href="Verif_hash.html#f"><span class="id" type="variable">f</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#fst"><span class="id" type="definition">fst</span></a> <a class="idref" href="Verif_hash.html#xy"><span class="id" type="variable">xy</span></a>) (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#snd"><span class="id" type="definition">snd</span></a> <a class="idref" href="Verif_hash.html#xy"><span class="id" type="variable">xy</span></a>).<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="hashtable_rep"><span class="id" type="definition">hashtable_rep</span></a> (<span class="id" type="var">contents</span>: <a class="idref" href="Hashfun.html#hashtable_contents"><span class="id" type="definition">hashtable_contents</span></a>) (<span class="id" type="var">p</span>: <span class="id" type="inductive">val</span>) : <span class="id" type="definition">mpred</span> :=<br/>
+&nbsp;&nbsp;<span class="id" type="notation">EX</span> <span class="id" type="var">bl</span>: <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> (<a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a> * <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>) * <span class="id" type="inductive">val</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;!! (<a class="idref" href="Verif_hash.html#contents"><span class="id" type="variable">contents</span></a> = <a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#map"><span class="id" type="definition">map</span></a> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#fst"><span class="id" type="definition">fst</span></a> <a class="idref" href="Verif_hash.html#bl"><span class="id" type="variable">bl</span></a>) &amp;&amp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="axiom">malloc_token</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#thashtable"><span class="id" type="definition">thashtable</span></a> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a> * <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="definition">field_at</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#thashtable"><span class="id" type="definition">thashtable</span></a> [<span class="id" type="constructor">StructField</span> <span class="id" type="definition">_buckets</span>] (<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#map"><span class="id" type="definition">map</span></a> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#snd"><span class="id" type="definition">snd</span></a> <a class="idref" href="Verif_hash.html#bl"><span class="id" type="variable">bl</span></a>) <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" type="definition">iter_sepcon</span> <a class="idref" href="Verif_hash.html#bl"><span class="id" type="variable">bl</span></a> (<a class="idref" href="Verif_hash.html#uncurry"><span class="id" type="definition">uncurry</span></a> <a class="idref" href="Verif_hash.html#listrep"><span class="id" type="definition">listrep</span></a>).<br/>
+</div>
+
+<div class="doc">
+<a name="lab90"></a><h4 class="section">Exercise: 2 stars (hashtable_rep_hints)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Lemma</span> <a name="hashtable_rep_local_facts"><span class="id" type="lemma">hashtable_rep_local_facts</span></a>: <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">contents</span> <span class="id" type="var">p</span>,<br/>
+&nbsp;<a class="idref" href="Verif_hash.html#hashtable_rep"><span class="id" type="definition">hashtable_rep</span></a> <a class="idref" href="Verif_hash.html#contents"><span class="id" type="variable">contents</span></a> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a> |-- !! (<span class="id" type="definition">isptr</span> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a> ∧ <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <a class="idref" href="Verif_hash.html#contents"><span class="id" type="variable">contents</span></a> = <a class="idref" href="Hashfun.html#N"><span class="id" type="definition">N</span></a>).<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+<span class="id" type="keyword">Hint</span> <span class="id" type="keyword">Resolve</span> <span class="id" type="var">hashtable_rep_local_facts</span> : <span class="id" type="var">saturate_local</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Lemma</span> <a name="hashtable_rep_valid_pointer"><span class="id" type="lemma">hashtable_rep_valid_pointer</span></a>: <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">contents</span> <span class="id" type="var">p</span>,<br/>
+&nbsp;<a class="idref" href="Verif_hash.html#hashtable_rep"><span class="id" type="definition">hashtable_rep</span></a> <a class="idref" href="Verif_hash.html#contents"><span class="id" type="variable">contents</span></a> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a> |-- <span class="id" type="definition">valid_pointer</span> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a>.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+<span class="id" type="keyword">Hint</span> <span class="id" type="keyword">Resolve</span> <span class="id" type="var">hashtable_rep_valid_pointer</span> : <span class="id" type="var">valid_pointer</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+<a name="lab91"></a><h3 class="section">Function specifications for hash table</h3>
+
+</div>
+<div class="code code-space">
+
+<br/>
+<span class="id" type="keyword">Definition</span> <a name="new_table_spec"><span class="id" type="definition">new_table_spec</span></a> : <span class="id" type="definition">ident</span> * <span class="id" type="inductive">funspec</span> :=<br/>
+&nbsp;<span class="id" type="notation">DECLARE</span> <span class="id" type="definition">_new_table</span><br/>
+&nbsp;<span class="id" type="notation">WITH</span> <span class="id" type="var">u</span>: <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#unit"><span class="id" type="inductive">unit</span></a><br/>
+&nbsp;<span class="id" type="var">PRE</span> [ ] <br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span>()<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="notation">LOCAL</span>()<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span>()<br/>
+&nbsp;<span class="id" type="var">POST</span> [ <span class="id" type="definition">tptr</span> <a class="idref" href="Verif_hash.html#thashtable"><span class="id" type="definition">thashtable</span></a> ] <br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="notation">EX</span> <span class="id" type="var">p</span>:<span class="id" type="inductive">val</span>, <span class="id" type="notation">PROP</span>() <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">LOCAL</span>(<span class="id" type="constructor">temp</span> <span class="id" type="definition">ret_temp</span> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a>) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span>(<a class="idref" href="Verif_hash.html#hashtable_rep"><span class="id" type="definition">hashtable_rep</span></a> <a class="idref" href="Hashfun.html#empty_table"><span class="id" type="definition">empty_table</span></a> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a>).<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="new_cell_spec"><span class="id" type="definition">new_cell_spec</span></a> : <span class="id" type="definition">ident</span> * <span class="id" type="inductive">funspec</span> :=<br/>
+&nbsp;<span class="id" type="notation">DECLARE</span> <span class="id" type="definition">_new_cell</span><br/>
+&nbsp;<span class="id" type="notation">WITH</span> <span class="id" type="var">s</span>: <span class="id" type="inductive">val</span>, <span class="id" type="var">key</span>: <a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a>, <span class="id" type="var">count</span>: <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>, <span class="id" type="var">next</span>: <span class="id" type="inductive">val</span><br/>
+&nbsp;<span class="id" type="var">PRE</span> [ <span class="id" type="definition">_key</span> <span class="id" type="var">OF</span> <span class="id" type="definition">tptr</span> <span class="id" type="definition">tschar</span>, <span class="id" type="definition">_count</span> <span class="id" type="var">OF</span> <span class="id" type="definition">tint</span>, <span class="id" type="definition">_next</span> <span class="id" type="var">OF</span> <span class="id" type="definition">tptr</span> <a class="idref" href="Verif_hash.html#tcell"><span class="id" type="definition">tcell</span></a> ] <br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span>()<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="notation">LOCAL</span>(<span class="id" type="constructor">temp</span> <span class="id" type="definition">_key</span> <a class="idref" href="Verif_hash.html#s"><span class="id" type="variable">s</span></a>; <span class="id" type="constructor">temp</span> <span class="id" type="definition">_count</span> (<span class="id" type="constructor">Vint</span> (<span class="id" type="definition">Int.repr</span> <a class="idref" href="Verif_hash.html#count"><span class="id" type="variable">count</span></a>)); <span class="id" type="constructor">temp</span> <span class="id" type="definition">_next</span> <a class="idref" href="Verif_hash.html#next"><span class="id" type="variable">next</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span>(<span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#key"><span class="id" type="variable">key</span></a> <a class="idref" href="Verif_hash.html#s"><span class="id" type="variable">s</span></a>)<br/>
+&nbsp;<span class="id" type="var">POST</span> [ <span class="id" type="definition">tptr</span> <a class="idref" href="Verif_hash.html#tcell"><span class="id" type="definition">tcell</span></a> ] <br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="notation">EX</span> <span class="id" type="var">p</span>:<span class="id" type="inductive">val</span>, <span class="id" type="notation">PROP</span>() <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">LOCAL</span>(<span class="id" type="constructor">temp</span> <span class="id" type="definition">ret_temp</span> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a>) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span>(<a class="idref" href="Verif_hash.html#list_cell"><span class="id" type="definition">list_cell</span></a> <a class="idref" href="Verif_hash.html#key"><span class="id" type="variable">key</span></a> <a class="idref" href="Verif_hash.html#count"><span class="id" type="variable">count</span></a> <a class="idref" href="Verif_hash.html#next"><span class="id" type="variable">next</span></a> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a>; <span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#key"><span class="id" type="variable">key</span></a> <a class="idref" href="Verif_hash.html#s"><span class="id" type="variable">s</span></a>).<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="get_spec"><span class="id" type="definition">get_spec</span></a> : <span class="id" type="definition">ident</span> * <span class="id" type="inductive">funspec</span> :=<br/>
+&nbsp;<span class="id" type="notation">DECLARE</span> <span class="id" type="definition">_get</span><br/>
+&nbsp;<span class="id" type="notation">WITH</span> <span class="id" type="var">p</span>: <span class="id" type="inductive">val</span>, <span class="id" type="var">contents</span>: <a class="idref" href="Hashfun.html#hashtable_contents"><span class="id" type="definition">hashtable_contents</span></a>, <span class="id" type="var">s</span>: <span class="id" type="inductive">val</span>, <span class="id" type="var">sigma</span> : <a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a><br/>
+&nbsp;<span class="id" type="var">PRE</span> [ <span class="id" type="definition">_table</span> <span class="id" type="var">OF</span> <span class="id" type="definition">tptr</span> (<span class="id" type="constructor">Tstruct</span> <span class="id" type="definition">_hashtable</span> <span class="id" type="definition">noattr</span>), <span class="id" type="definition">_s</span> <span class="id" type="var">OF</span> <span class="id" type="definition">tptr</span> <span class="id" type="definition">tschar</span> ] <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span> () <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> <span class="id" type="definition">_table</span> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a>; <span class="id" type="constructor">temp</span> <span class="id" type="definition">_s</span> <a class="idref" href="Verif_hash.html#s"><span class="id" type="variable">s</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span> (<a class="idref" href="Verif_hash.html#hashtable_rep"><span class="id" type="definition">hashtable_rep</span></a> <a class="idref" href="Verif_hash.html#contents"><span class="id" type="variable">contents</span></a> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a>; <span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#sigma"><span class="id" type="variable">sigma</span></a> <a class="idref" href="Verif_hash.html#s"><span class="id" type="variable">s</span></a>)<br/>
+&nbsp;<span class="id" type="var">POST</span> [ <span class="id" type="definition">tuint</span> ]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span> ( ) <span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> <span class="id" type="definition">ret_temp</span> (<span class="id" type="constructor">Vint</span> (<span class="id" type="definition">Int.repr</span> (<a class="idref" href="Hashfun.html#hashtable_get"><span class="id" type="definition">hashtable_get</span></a> <a class="idref" href="Verif_hash.html#sigma"><span class="id" type="variable">sigma</span></a> <a class="idref" href="Verif_hash.html#contents"><span class="id" type="variable">contents</span></a>))))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span> (<a class="idref" href="Verif_hash.html#hashtable_rep"><span class="id" type="definition">hashtable_rep</span></a> <a class="idref" href="Verif_hash.html#contents"><span class="id" type="variable">contents</span></a> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a>; <span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#sigma"><span class="id" type="variable">sigma</span></a> <a class="idref" href="Verif_hash.html#s"><span class="id" type="variable">s</span></a>).<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="incr_list_spec"><span class="id" type="definition">incr_list_spec</span></a> : <span class="id" type="definition">ident</span> * <span class="id" type="inductive">funspec</span> :=<br/>
+&nbsp;<span class="id" type="notation">DECLARE</span> <span class="id" type="definition">_incr_list</span><br/>
+&nbsp;<span class="id" type="notation">WITH</span> <span class="id" type="var">r<sub>0</sub></span>: <span class="id" type="inductive">val</span>, <span class="id" type="var">al</span>: <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> (<a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a> * <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>), <span class="id" type="var">s</span>: <span class="id" type="inductive">val</span>, <span class="id" type="var">sigma</span> : <a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a><br/>
+&nbsp;<span class="id" type="var">PRE</span> [ <span class="id" type="definition">_r<sub>0</sub></span> <span class="id" type="var">OF</span> <span class="id" type="definition">tptr</span> (<span class="id" type="definition">tptr</span> <a class="idref" href="Verif_hash.html#tcell"><span class="id" type="definition">tcell</span></a>), <span class="id" type="definition">_s</span> <span class="id" type="var">OF</span> <span class="id" type="definition">tptr</span> <span class="id" type="definition">tschar</span> ] <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span> (<a class="idref" href="Hashfun.html#list_get"><span class="id" type="definition">list_get</span></a> <a class="idref" href="Verif_hash.html#sigma"><span class="id" type="variable">sigma</span></a> <a class="idref" href="Verif_hash.html#al"><span class="id" type="variable">al</span></a> &lt; <span class="id" type="definition">Int.max_unsigned</span>) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> <span class="id" type="definition">_r<sub>0</sub></span> <a class="idref" href="Verif_hash.html#r<sub>0</sub>"><span class="id" type="variable">r<sub>0</sub></span></a>; <span class="id" type="constructor">temp</span> <span class="id" type="definition">_s</span> <a class="idref" href="Verif_hash.html#s"><span class="id" type="variable">s</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span> (<a class="idref" href="Verif_hash.html#listboxrep"><span class="id" type="definition">listboxrep</span></a> <a class="idref" href="Verif_hash.html#al"><span class="id" type="variable">al</span></a> <a class="idref" href="Verif_hash.html#r<sub>0</sub>"><span class="id" type="variable">r<sub>0</sub></span></a>; <span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#sigma"><span class="id" type="variable">sigma</span></a> <a class="idref" href="Verif_hash.html#s"><span class="id" type="variable">s</span></a>)<br/>
+&nbsp;<span class="id" type="var">POST</span> [ <span class="id" type="definition">tvoid</span> ]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span> ( ) <span class="id" type="notation">LOCAL</span> ()<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span> (<a class="idref" href="Verif_hash.html#listboxrep"><span class="id" type="definition">listboxrep</span></a> (<a class="idref" href="Hashfun.html#list_incr"><span class="id" type="definition">list_incr</span></a> <a class="idref" href="Verif_hash.html#sigma"><span class="id" type="variable">sigma</span></a> <a class="idref" href="Verif_hash.html#al"><span class="id" type="variable">al</span></a>) <a class="idref" href="Verif_hash.html#r<sub>0</sub>"><span class="id" type="variable">r<sub>0</sub></span></a>; <span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#sigma"><span class="id" type="variable">sigma</span></a> <a class="idref" href="Verif_hash.html#s"><span class="id" type="variable">s</span></a>).<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="incr_spec"><span class="id" type="definition">incr_spec</span></a> : <span class="id" type="definition">ident</span> * <span class="id" type="inductive">funspec</span> :=<br/>
+&nbsp;<span class="id" type="notation">DECLARE</span> <span class="id" type="definition">_incr</span><br/>
+&nbsp;<span class="id" type="notation">WITH</span> <span class="id" type="var">p</span>: <span class="id" type="inductive">val</span>, <span class="id" type="var">contents</span>: <a class="idref" href="Hashfun.html#hashtable_contents"><span class="id" type="definition">hashtable_contents</span></a>, <span class="id" type="var">s</span>: <span class="id" type="inductive">val</span>, <span class="id" type="var">sigma</span> : <a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a><br/>
+&nbsp;<span class="id" type="var">PRE</span> [ <span class="id" type="definition">_table</span> <span class="id" type="var">OF</span> <span class="id" type="definition">tptr</span> (<span class="id" type="constructor">Tstruct</span> <span class="id" type="definition">_hashtable</span> <span class="id" type="definition">noattr</span>), <span class="id" type="definition">_s</span> <span class="id" type="var">OF</span> <span class="id" type="definition">tptr</span> <span class="id" type="definition">tschar</span> ] <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span> (<a class="idref" href="Hashfun.html#hashtable_get"><span class="id" type="definition">hashtable_get</span></a> <a class="idref" href="Verif_hash.html#sigma"><span class="id" type="variable">sigma</span></a> <a class="idref" href="Verif_hash.html#contents"><span class="id" type="variable">contents</span></a> &lt; <span class="id" type="definition">Int.max_unsigned</span>) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> <span class="id" type="definition">_table</span> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a>; <span class="id" type="constructor">temp</span> <span class="id" type="definition">_s</span> <a class="idref" href="Verif_hash.html#s"><span class="id" type="variable">s</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span> (<a class="idref" href="Verif_hash.html#hashtable_rep"><span class="id" type="definition">hashtable_rep</span></a> <a class="idref" href="Verif_hash.html#contents"><span class="id" type="variable">contents</span></a> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a>; <span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#sigma"><span class="id" type="variable">sigma</span></a> <a class="idref" href="Verif_hash.html#s"><span class="id" type="variable">s</span></a>)<br/>
+&nbsp;<span class="id" type="var">POST</span> [ <span class="id" type="definition">tvoid</span> ]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span> ( ) <span class="id" type="notation">LOCAL</span> ()<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span> (<a class="idref" href="Verif_hash.html#hashtable_rep"><span class="id" type="definition">hashtable_rep</span></a> (<a class="idref" href="Hashfun.html#hashtable_incr"><span class="id" type="definition">hashtable_incr</span></a> <a class="idref" href="Verif_hash.html#sigma"><span class="id" type="variable">sigma</span></a>  <a class="idref" href="Verif_hash.html#contents"><span class="id" type="variable">contents</span></a>) <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a>; <span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#sigma"><span class="id" type="variable">sigma</span></a> <a class="idref" href="Verif_hash.html#s"><span class="id" type="variable">s</span></a>).<br/>
+</div>
+
+<div class="doc">
+ Putting all the funspecs together 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Definition</span> <a name="Gprog"><span class="id" type="definition">Gprog</span></a> : <span class="id" type="definition">funspecs</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">ltac</span>:(<span class="id" type="var">with_library</span> <span class="id" type="definition">prog</span> [<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Verif_hash.html#strcmp_spec"><span class="id" type="definition">strcmp_spec</span></a>; <a class="idref" href="Verif_hash.html#strcpy_spec"><span class="id" type="definition">strcpy_spec</span></a>; <a class="idref" href="Verif_hash.html#strlen_spec"><span class="id" type="definition">strlen_spec</span></a>; <a class="idref" href="Verif_hash.html#hash_spec"><span class="id" type="definition">hash_spec</span></a>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Verif_hash.html#new_cell_spec"><span class="id" type="definition">new_cell_spec</span></a>; <a class="idref" href="Verif_hash.html#copy_string_spec"><span class="id" type="definition">copy_string_spec</span></a>; <a class="idref" href="Verif_hash.html#get_spec"><span class="id" type="definition">get_spec</span></a>; <a class="idref" href="Verif_hash.html#incr_spec"><span class="id" type="definition">incr_spec</span></a>; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Verif_hash.html#incr_list_spec"><span class="id" type="definition">incr_list_spec</span></a><br/>
+&nbsp;]).<br/>
+</div>
+
+<div class="doc">
+<a name="lab92"></a><h2 class="section">Proofs of the function bodies</h2>
+
+<div class="paragraph"> </div>
+
+ This lemma demonstrates how to handle "strings", that is,
+   null-terminated arrays of characters. 
+</div>
+<div class="code code-tight">
+<span class="id" type="keyword">Lemma</span> <a name="demonstrate_cstring1"><span class="id" type="lemma">demonstrate_cstring1</span></a>: <br/>
+&nbsp;<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">i</span> <span class="id" type="var">contents</span>,<br/>
+&nbsp;&nbsp;&nbsp;¬ <a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#In"><span class="id" type="definition">In</span></a> <span class="id" type="definition">Byte.zero</span> <a class="idref" href="Verif_hash.html#contents"><span class="id" type="variable">contents</span></a> →<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="definition">Znth</span> <a class="idref" href="Verif_hash.html#i"><span class="id" type="variable">i</span></a> (<a class="idref" href="Verif_hash.html#contents"><span class="id" type="variable">contents</span></a> ++ [<span class="id" type="definition">Byte.zero</span>]) ≠ <span class="id" type="definition">Byte.zero</span>  →<br/>
+&nbsp;&nbsp;&nbsp;0 ≤ <a class="idref" href="Verif_hash.html#i"><span class="id" type="variable">i</span></a> ≤ <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <a class="idref" href="Verif_hash.html#contents"><span class="id" type="variable">contents</span></a> →<br/>
+&nbsp;&nbsp;&nbsp;0 ≤ <a class="idref" href="Verif_hash.html#i"><span class="id" type="variable">i</span></a> + 1 &lt; <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> (<a class="idref" href="Verif_hash.html#contents"><span class="id" type="variable">contents</span></a> ++ [<span class="id" type="definition">Byte.zero</span>]).<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="id" type="tactic">intros</span>.<br/>
+</div>
+
+<div class="doc">
+When processing a C null-terminated string, you will want to
+   maintain the three kinds of assumptions above the line.
+   A string is an array of characters with three parts:
+
+<div class="paragraph"> </div>
+
+<ul class="doclist">
+<li> The "contents" of the string, none of which is the '\0' character;
+
+</li>
+<li> The null termination character, equal to Byte.zero;
+
+</li>
+<li> the remaining garbage in the array, after the null.
+
+</li>
+</ul>
+  The first assumption above the line says that none of the
+  contents is the null character. 
+  Now suppose we are in a loop where variable <span class="inlinecode"><span class="id" type="var">_i</span></span> (with value <span class="inlinecode"><span class="id" type="var">i</span></span>)
+  is traversing the array.  We expect that loop to go up to but 
+  no farther than the null character, that is, one past the contents.
+  Therefore <span class="inlinecode">0</span> <span class="inlinecode">≤</span> <span class="inlinecode"><span class="id" type="var">i</span></span> <span class="inlinecode">≤</span> <span class="inlinecode"><span class="id" type="var">Zlength</span></span> <span class="inlinecode"><span class="id" type="var">contents</span></span>.
+  Furthermore, suppose we have determined (by an if-test) that
+  s<span class="inlinecode"><span class="id" type="var">i</span></span> is not zero, then we have the hypothesis H<sub>0</sub> above.
+
+<div class="paragraph"> </div>
+
+  The <span class="inlinecode"><span class="id" type="var">cstring</span></span> tactic processes all three of them to conclude
+  that <span class="inlinecode"><span class="id" type="var">i</span></span> <span class="inlinecode">&lt;</span> <span class="inlinecode"><span class="id" type="var">Zlength</span></span> <span class="inlinecode"><span class="id" type="var">contents</span></span>. 
+</div>
+<div class="code code-tight">
+<span class="id" type="tactic">assert</span> (<span class="id" type="var">H<sub>7</sub></span>: <span class="id" type="var">i</span> &lt; <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">contents</span>) <span class="id" type="tactic">by</span> <span class="id" type="var">cstring</span>.<br/>
+</div>
+
+<div class="doc">
+But actually, <span class="inlinecode"><span class="id" type="var">cstring</span></span> tactic will prove any rep_omega consequence
+   of that fact.  For example: 
+</div>
+<div class="code code-tight">
+<span class="id" type="tactic">clear</span> <span class="id" type="var">H<sub>7</sub></span>.<br/>
+<span class="id" type="var">autorewrite</span> <span class="id" type="keyword">with</span> <span class="id" type="var">sublist</span>.<br/>
+<span class="id" type="var">cstring</span>.<br/>
+<span class="id" type="keyword">Qed</span>.<br/>
+</div>
+
+<div class="doc">
+Don't apply <span class="inlinecode"><span class="id" type="var">demonstrate_cstring1</span></span> in the body_hash proof, 
+    instead, use <span class="inlinecode"><span class="id" type="var">autorewrite</span></span> <span class="inlinecode"><span class="id" type="keyword">with</span></span> <span class="inlinecode"><span class="id" type="var">sublist</span></span> and <span class="inlinecode"><span class="id" type="var">cstring</span></span> directly, 
+    where appropriate. 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Lemma</span> <a name="demonstrate_cstring2"><span class="id" type="lemma">demonstrate_cstring2</span></a>: <br/>
+&nbsp;<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">i</span> <span class="id" type="var">contents</span>,<br/>
+&nbsp;&nbsp;&nbsp;¬ <a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#In"><span class="id" type="definition">In</span></a> <span class="id" type="definition">Byte.zero</span> <a class="idref" href="Verif_hash.html#contents"><span class="id" type="variable">contents</span></a> →<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="definition">Znth</span> <a class="idref" href="Verif_hash.html#i"><span class="id" type="variable">i</span></a> (<a class="idref" href="Verif_hash.html#contents"><span class="id" type="variable">contents</span></a> ++ [<span class="id" type="definition">Byte.zero</span>]) = <span class="id" type="definition">Byte.zero</span>  →<br/>
+&nbsp;&nbsp;&nbsp;0 ≤ <a class="idref" href="Verif_hash.html#i"><span class="id" type="variable">i</span></a> ≤ <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <a class="idref" href="Verif_hash.html#contents"><span class="id" type="variable">contents</span></a> →<br/>
+&nbsp;&nbsp;&nbsp;<a class="idref" href="Verif_hash.html#i"><span class="id" type="variable">i</span></a> = <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <a class="idref" href="Verif_hash.html#contents"><span class="id" type="variable">contents</span></a>.<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="id" type="tactic">intros</span>.<br/>
+</div>
+
+<div class="doc">
+Here is another demonstration.  When your loop on the
+   string contents reaches the end, so that s<span class="inlinecode"><span class="id" type="var">i</span></span> is the zero byte,
+   you'll have the an assumption like <span class="inlinecode"><span class="id" type="var">H<sub>0</sub></span></span> above the line.
+   The <span class="inlinecode"><span class="id" type="var">cstring</span></span> tactic handles this case too, to prove 
+   <span class="inlinecode"><span class="id" type="var">i</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" type="var">Zlength</span></span> <span class="inlinecode"><span class="id" type="var">contents</span></span>.   
+</div>
+<div class="code code-tight">
+<span class="id" type="var">cstring</span>.<br/>
+<span class="id" type="keyword">Qed</span>.<br/>
+</div>
+
+<div class="doc">
+<a name="lab93"></a><h4 class="section">Exercise: 3 stars (body_hash)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Lemma</span> <a name="body_hash"><span class="id" type="lemma">body_hash</span></a>: <span class="id" type="definition">semax_body</span> <a class="idref" href="Verif_hash.html#Vprog"><span class="id" type="definition">Vprog</span></a> <a class="idref" href="Verif_hash.html#Gprog"><span class="id" type="definition">Gprog</span></a> <span class="id" type="definition">f_hash</span> <a class="idref" href="Verif_hash.html#hash_spec"><span class="id" type="definition">hash_spec</span></a>.<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="id" type="var">start_function</span>.<br/>
+<span class="id" type="tactic">unfold</span> <span class="id" type="definition">cstring</span>,<a class="idref" href="Hashfun.html#hashfun"><span class="id" type="definition">hashfun</span></a> <span class="id" type="keyword">in</span> *.<br/>
+</div>
+
+<div class="doc">
+Before doing this proof, study some of the proofs in VST/progs/verif_strlib.v.
+  In the PROP part of your loop invariant, you'll want to maintain <span class="inlinecode">0</span> <span class="inlinecode">≤</span> <span class="inlinecode"><span class="id" type="var">i</span></span> <span class="inlinecode">≤</span> <span class="inlinecode"><span class="id" type="var">Zlength</span></span> <span class="inlinecode"><span class="id" type="var">contents</span></span>.
+
+<div class="paragraph"> </div>
+
+  In the LOCAL part of your loop invariant, try to use something like
+
+<div class="paragraph"> </div>
+
+<div class="code code-tight">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">temp</span>&nbsp;<span class="id" type="var">_c</span>&nbsp;(<span class="id" type="var">Vbyte</span>&nbsp;(<span class="id" type="var">Znth</span>&nbsp;<span class="id" type="var">i</span>&nbsp;(<span class="id" type="var">contents</span>&nbsp;++&nbsp;[<span class="id" type="var">Byte.zero</span>]))
+<div class="paragraph"> </div>
+
+</div>
+  instead of 
+
+<div class="paragraph"> </div>
+
+<div class="code code-tight">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">temp</span>&nbsp;<span class="id" type="var">_c</span>&nbsp;(<span class="id" type="var">Znth</span>&nbsp;0&nbsp;(<span class="id" type="var">map</span>&nbsp;<span class="id" type="var">Vbyte</span>&nbsp;(...)))
+<div class="paragraph"> </div>
+
+</div>
+  The reason is that <span class="inlinecode"><span class="id" type="var">temp</span></span> <span class="inlinecode"><span class="id" type="var">_c</span></span> <span class="inlinecode">(<span class="id" type="var">Vint</span></span> <span class="inlinecode"><span class="id" type="var">x</span>)</span> or <span class="inlinecode"><span class="id" type="var">temp</span></span> <span class="inlinecode"><span class="id" type="var">_c</span></span> <span class="inlinecode">(<span class="id" type="var">Vbyte</span></span> <span class="inlinecode"><span class="id" type="var">y</span>)</span> is much easier
+  for Floyd to handle than <span class="inlinecode"><span class="id" type="var">temp</span></span> <span class="inlinecode"><span class="id" type="var">_c</span></span> <span class="inlinecode"><span class="id" type="var">X</span></span>
+  where X is a general formula of type <span class="inlinecode"><span class="id" type="var">val</span></span>.
+
+<div class="paragraph"> </div>
+
+  Late in the proof of the loop body, the lemma <span class="inlinecode"><span class="id" type="var">hashfun_snoc</span></span> will be useful. 
+</div>
+<div class="code code-tight">
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+<a name="lab94"></a><h4 class="section">Exercise: 3 stars (body_new_cell)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Lemma</span> <a name="body_new_cell"><span class="id" type="lemma">body_new_cell</span></a>: <span class="id" type="definition">semax_body</span> <a class="idref" href="Verif_hash.html#Vprog"><span class="id" type="definition">Vprog</span></a> <a class="idref" href="Verif_hash.html#Gprog"><span class="id" type="definition">Gprog</span></a> <span class="id" type="definition">f_new_cell</span> <a class="idref" href="Verif_hash.html#new_cell_spec"><span class="id" type="definition">new_cell_spec</span></a>.<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+<a name="lab95"></a><h2 class="section">Auxiliary lemmas about data-structure predicates</h2>
+
+<div class="paragraph"> </div>
+
+<a name="lab96"></a><h4 class="section">Exercise: 2 stars (iter_sepcon_hints)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Lemma</span> <a name="iter_sepcon_listrep_local_facts"><span class="id" type="lemma">iter_sepcon_listrep_local_facts</span></a>:<br/>
+&nbsp;<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">bl</span>, <span class="id" type="definition">iter_sepcon</span> <a class="idref" href="Verif_hash.html#bl"><span class="id" type="variable">bl</span></a> (<a class="idref" href="Verif_hash.html#uncurry"><span class="id" type="definition">uncurry</span></a> <a class="idref" href="Verif_hash.html#listrep"><span class="id" type="definition">listrep</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|-- !! <a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#Forall"><span class="id" type="inductive">Forall</span></a> <span class="id" type="definition">is_pointer_or_null</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#map"><span class="id" type="definition">map</span></a> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#snd"><span class="id" type="definition">snd</span></a> <a class="idref" href="Verif_hash.html#bl"><span class="id" type="variable">bl</span></a>).<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="comment">(*&nbsp;Hint:&nbsp;use&nbsp;<span class="inlinecode"><span class="id" type="tactic">induction</span></span>&nbsp;and&nbsp;<span class="inlinecode"><span class="id" type="var">sep_apply</span></span>.&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Hint</span> <span class="id" type="keyword">Resolve</span> <span class="id" type="var">iter_sepcon_listrep_local_facts</span> : <span class="id" type="var">saturate_local</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+<a name="lab97"></a><h4 class="section">Exercise: 2 stars (iter_sepcon_split3)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Lemma</span> <a name="iter_sepcon_split3"><span class="id" type="lemma">iter_sepcon_split3</span></a>: <br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span>}{<span class="id" type="var">d</span>: <span class="id" type="class">Inhabitant</span> <a class="idref" href="Verif_hash.html#A"><span class="id" type="variable">A</span></a>} (<span class="id" type="var">i</span>: <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>) (<span class="id" type="var">al</span>: <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="Verif_hash.html#A"><span class="id" type="variable">A</span></a>) (<span class="id" type="var">f</span>: <a class="idref" href="Verif_hash.html#A"><span class="id" type="variable">A</span></a> → <span class="id" type="definition">mpred</span>),<br/>
+&nbsp;&nbsp;&nbsp;0 ≤ <a class="idref" href="Verif_hash.html#i"><span class="id" type="variable">i</span></a> &lt; <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <a class="idref" href="Verif_hash.html#al"><span class="id" type="variable">al</span></a>   → <br/>
+&nbsp;&nbsp;<span class="id" type="definition">iter_sepcon</span> <a class="idref" href="Verif_hash.html#al"><span class="id" type="variable">al</span></a> <a class="idref" href="Verif_hash.html#f"><span class="id" type="variable">f</span></a> = <br/>
+&nbsp;&nbsp;<span class="id" type="definition">iter_sepcon</span> (<span class="id" type="definition">sublist</span> 0 <a class="idref" href="Verif_hash.html#i"><span class="id" type="variable">i</span></a> <a class="idref" href="Verif_hash.html#al"><span class="id" type="variable">al</span></a>) <a class="idref" href="Verif_hash.html#f"><span class="id" type="variable">f</span></a> * <a class="idref" href="Verif_hash.html#f"><span class="id" type="variable">f</span></a> (<span class="id" type="definition">Znth</span> <a class="idref" href="Verif_hash.html#i"><span class="id" type="variable">i</span></a> <a class="idref" href="Verif_hash.html#al"><span class="id" type="variable">al</span></a>) * <span class="id" type="definition">iter_sepcon</span> (<span class="id" type="definition">sublist</span> (<a class="idref" href="Verif_hash.html#i"><span class="id" type="variable">i</span></a>+1) (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <a class="idref" href="Verif_hash.html#al"><span class="id" type="variable">al</span></a>) <a class="idref" href="Verif_hash.html#al"><span class="id" type="variable">al</span></a>) <a class="idref" href="Verif_hash.html#f"><span class="id" type="variable">f</span></a>.<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="id" type="tactic">intros</span>.<br/>
+<span class="id" type="tactic">rewrite</span> &lt;- (<span class="id" type="lemma">sublist_same</span> 0 (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">al</span>) <span class="id" type="var">al</span>) <span class="id" type="tactic">at</span> 1 <span class="id" type="tactic">by</span> <span class="id" type="tactic">auto</span>.<br/>
+<span class="comment">(*&nbsp;Hint:&nbsp;<span class="inlinecode"><span class="id" type="tactic">rewrite</span></span> <span class="inlinecode">(<span class="id" type="var">sublist_split</span></span> <span class="inlinecode"><span class="id" type="var">LO</span></span> <span class="inlinecode"><span class="id" type="var">MID</span></span> <span class="inlinecode"><span class="id" type="var">HI</span>)</span> <span class="inlinecode"><span class="id" type="tactic">by</span></span> <span class="inlinecode"><span class="id" type="tactic">omega</span></span>,&nbsp;where&nbsp;you&nbsp;choose&nbsp;values&nbsp;for&nbsp;LO&nbsp;MID&nbsp;HI.&nbsp;<br/>
+&nbsp;&nbsp;Also&nbsp;useful:&nbsp;&nbsp;<span class="inlinecode"><span class="id" type="tactic">rewrite</span></span> <span class="inlinecode"><span class="id" type="var">sublist_len_1</span></span>&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;&nbsp;&nbsp;&nbsp;<span class="inlinecode"><span class="id" type="var">iter_sepcon_app</span></span>.<br/>
+*)</span><br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+<a name="lab98"></a><h4 class="section">Exercise: 3 stars (body_new_table)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Lemma</span> <a name="body_new_table_helper"><span class="id" type="lemma">body_new_table_helper</span></a>: <br/>
+&nbsp;<span class="comment">(*&nbsp;This&nbsp;lemma&nbsp;is&nbsp;useful&nbsp;as&nbsp;the&nbsp;very&nbsp;last&nbsp;thing&nbsp;to&nbsp;do&nbsp;in&nbsp;body_new_table&nbsp;*)</span><br/>
+&nbsp;<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">p</span>, <br/>
+&nbsp;&nbsp;<span class="id" type="definition">data_at</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#thashtable"><span class="id" type="definition">thashtable</span></a> (<span class="id" type="definition">list_repeat</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.to_nat"><span class="id" type="definition">Z.to_nat</span></a> <a class="idref" href="Hashfun.html#N"><span class="id" type="definition">N</span></a>) <span class="id" type="definition">nullval</span>) <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a><br/>
+&nbsp;&nbsp;|-- <span class="id" type="definition">field_at</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#thashtable"><span class="id" type="definition">thashtable</span></a> [<span class="id" type="constructor">StructField</span> <span class="id" type="definition">_buckets</span>]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="definition">list_repeat</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.to_nat"><span class="id" type="definition">Z.to_nat</span></a> <a class="idref" href="Hashfun.html#N"><span class="id" type="definition">N</span></a>) <span class="id" type="definition">nullval</span>) <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a> *<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="definition">iter_sepcon</span> (<span class="id" type="definition">list_repeat</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.to_nat"><span class="id" type="definition">Z.to_nat</span></a> <a class="idref" href="Hashfun.html#N"><span class="id" type="definition">N</span></a>) ([], <span class="id" type="definition">nullval</span>)) (<a class="idref" href="Verif_hash.html#uncurry"><span class="id" type="definition">uncurry</span></a> <a class="idref" href="Verif_hash.html#listrep"><span class="id" type="definition">listrep</span></a>).<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="id" type="tactic">intros</span>.<br/>
+<span class="id" type="var">unfold_data_at</span> 1%<span class="id" type="var">nat</span>.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Lemma</span> <a name="body_new_table"><span class="id" type="lemma">body_new_table</span></a>: <span class="id" type="definition">semax_body</span> <a class="idref" href="Verif_hash.html#Vprog"><span class="id" type="definition">Vprog</span></a> <a class="idref" href="Verif_hash.html#Gprog"><span class="id" type="definition">Gprog</span></a> <span class="id" type="definition">f_new_table</span> <a class="idref" href="Verif_hash.html#new_table_spec"><span class="id" type="definition">new_table_spec</span></a>.<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+</div>
+
+<div class="doc">
+The loop invariant in this function describes a partially initialized array.
+   The best way to do that is with something like,
+
+<div class="paragraph"> </div>
+
+<div class="code code-tight">
+&nbsp;&nbsp;<span class="id" type="var">data_at</span>&nbsp;<span class="id" type="var">Tsh</span>&nbsp;<span class="id" type="var">thashtable</span>&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">list_repeat</span>&nbsp;(<span class="id" type="var">Z.to_nat</span>&nbsp;<span class="id" type="var">i</span>)&nbsp;<span class="id" type="var">nullval</span>&nbsp;++&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">list_repeat</span>&nbsp;(<span class="id" type="var">Z.to_nat</span>&nbsp;(<span class="id" type="var">N</span>-<span class="id" type="var">i</span>))&nbsp;<span class="id" type="var">Vundef</span>)&nbsp;&nbsp;&nbsp;<span class="id" type="var">p</span>.
+<div class="paragraph"> </div>
+
+</div>
+  Then at some point you'll have to prove something about,
+
+<div class="paragraph"> </div>
+
+<div class="code code-tight">
+&nbsp;&nbsp;&nbsp;<span class="id" type="var">data_at</span>&nbsp;<span class="id" type="var">Tsh</span>&nbsp;<span class="id" type="var">thashtable</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">list_repeat</span>&nbsp;(<span class="id" type="var">Z.to_nat</span>&nbsp;(<span class="id" type="var">i</span>&nbsp;+&nbsp;1))&nbsp;<span class="id" type="var">nullval</span>&nbsp;++&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">list_repeat</span>&nbsp;(<span class="id" type="var">Z.to_nat</span>&nbsp;(<span class="id" type="var">N</span>&nbsp;-&nbsp;(<span class="id" type="var">i</span>&nbsp;+&nbsp;1)))&nbsp;<span class="id" type="var">Vundef</span>)&nbsp;&nbsp;&nbsp;<span class="id" type="var">p</span>
+<div class="paragraph"> </div>
+
+</div>
+  In particular, you'll have to split up <span class="inlinecode"><span class="id" type="var">list_repeat</span></span> <span class="inlinecode">(<span class="id" type="var">Z.to_nat</span></span> <span class="inlinecode">(<span class="id" type="var">i</span></span> <span class="inlinecode">+</span> <span class="inlinecode">1))</span> <span class="inlinecode"><span class="id" type="var">nullval</span></span>
+   into <span class="inlinecode"><span class="id" type="var">list_repeat</span></span> <span class="inlinecode">(<span class="id" type="var">Z.to_nat</span></span> <span class="inlinecode"><span class="id" type="var">i</span>)</span> <span class="inlinecode"><span class="id" type="var">nullval</span></span> <span class="inlinecode">++</span> <span class="inlinecode"><span class="id" type="var">list_repeat</span></span> <span class="inlinecode">(<span class="id" type="var">Z.to_nat</span></span> <span class="inlinecode">1)</span> <span class="inlinecode"><span class="id" type="var">nullval</span></span>.
+  The best way to do that is <span class="inlinecode"><span class="id" type="tactic">rewrite</span></span> <span class="inlinecode">&lt;-</span> <span class="inlinecode"><span class="id" type="var">list_repeat_app'</span>.</span>
+
+</div>
+<div class="code code-tight">
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+<a name="lab99"></a><h4 class="section">Exercise: 3 stars (body_get)</h4>
+ The <span class="inlinecode"><span class="id" type="var">get</span></span> function traverses a linked list.  We will reason about linked-list traversal
+   in separation logic using "Magic Wand as Frame" http://www.cs.princeton.edu/~appel/papers/wand-frame.pdf
+   When the loop is partway down the linked list, we can view the original list
+   up to the current position as a "linked-list data structure with a hole";
+   and the current position points to a linked-list data structure that fills the hole.
+   The "data-structure-with-a-hole" we reason about with separating implication,
+    called "magic wand":   (hole -* data-structure)
+    which says, if you can conjoin this data-structure-with-a-hole 
+    with something-to-fill-the-hole, then you get the original data structure:
+     hole * (hole -* data-structure) |&mdash;   data-structure.
+    The lemma <span class="inlinecode"><span class="id" type="var">listrep_traverse</span></span> is useful in moving one linked-list cell
+    out of the hole and into the data-structure-with-a-(smaller)-hole.
+
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Lemma</span> <a name="listrep_traverse"><span class="id" type="lemma">listrep_traverse</span></a>:  <span class="comment">(*&nbsp;useful&nbsp;in&nbsp;body_get&nbsp;lemma*)</span><br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">key</span> <span class="id" type="var">count</span> <span class="id" type="var">p'</span> <span class="id" type="var">p</span>, <br/>
+&nbsp;&nbsp;<a class="idref" href="Verif_hash.html#list_cell"><span class="id" type="definition">list_cell</span></a> <a class="idref" href="Verif_hash.html#key"><span class="id" type="variable">key</span></a> <a class="idref" href="Verif_hash.html#count"><span class="id" type="variable">count</span></a> <a class="idref" href="Verif_hash.html#p'"><span class="id" type="variable">p'</span></a> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a> |-- <br/>
+&nbsp;&nbsp;<span class="id" type="notation">ALL</span> <span class="id" type="var">al</span>:<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> (<a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a> * <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>), <a class="idref" href="Verif_hash.html#listrep"><span class="id" type="definition">listrep</span></a> <a class="idref" href="Verif_hash.html#al"><span class="id" type="variable">al</span></a> <a class="idref" href="Verif_hash.html#p'"><span class="id" type="variable">p'</span></a> -* (<span class="id" type="notation">EX</span> <span class="id" type="var">y</span> : <span class="id" type="inductive">val</span>, <a class="idref" href="Verif_hash.html#list_cell"><span class="id" type="definition">list_cell</span></a> <a class="idref" href="Verif_hash.html#key"><span class="id" type="variable">key</span></a> <a class="idref" href="Verif_hash.html#count"><span class="id" type="variable">count</span></a> <a class="idref" href="Verif_hash.html#y"><span class="id" type="variable">y</span></a> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a> * <a class="idref" href="Verif_hash.html#listrep"><span class="id" type="definition">listrep</span></a> <a class="idref" href="Verif_hash.html#al"><span class="id" type="variable">al</span></a> <a class="idref" href="Verif_hash.html#y"><span class="id" type="variable">y</span></a>).<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="id" type="tactic">intros</span>.<br/>
+<span class="id" type="tactic">apply</span> <span class="id" type="method">allp_right</span>; <span class="id" type="tactic">intro</span> <span class="id" type="var">al</span>.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Lemma</span> <a name="body_get"><span class="id" type="lemma">body_get</span></a>: <span class="id" type="definition">semax_body</span> <a class="idref" href="Verif_hash.html#Vprog"><span class="id" type="definition">Vprog</span></a> <a class="idref" href="Verif_hash.html#Gprog"><span class="id" type="definition">Gprog</span></a> <span class="id" type="definition">f_get</span> <a class="idref" href="Verif_hash.html#get_spec"><span class="id" type="definition">get_spec</span></a>.<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="id" type="var">start_function</span>.<br/>
+<span class="id" type="tactic">rename</span> <span class="id" type="var">p</span> <span class="id" type="var">into</span> <span class="id" type="var">table</span>.<br/>
+<span class="id" type="var">pose</span> <span class="id" type="var">proof</span> (<a class="idref" href="Hashfun.html#hashfun_inrange"><span class="id" type="axiom">hashfun_inrange</span></a> <span class="id" type="var">sigma</span>).<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+<a name="lab100"></a><h4 class="section">Exercise: 3 stars (listboxrep_traverse)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Lemma</span> <a name="listboxrep_traverse"><span class="id" type="lemma">listboxrep_traverse</span></a>:<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">p</span> <span class="id" type="var">kp</span> <span class="id" type="var">key</span> <span class="id" type="var">count</span> <span class="id" type="var">r</span>, <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="definition">field_compatible</span> <a class="idref" href="Verif_hash.html#tcell"><span class="id" type="definition">tcell</span></a> [] <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#key"><span class="id" type="variable">key</span></a> <a class="idref" href="Verif_hash.html#kp"><span class="id" type="variable">kp</span></a> * <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="definition">field_at</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#tcell"><span class="id" type="definition">tcell</span></a> [<span class="id" type="constructor">StructField</span> <span class="id" type="definition">_key</span>] <a class="idref" href="Verif_hash.html#kp"><span class="id" type="variable">kp</span></a> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a> *<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="definition">field_at</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#tcell"><span class="id" type="definition">tcell</span></a> [<span class="id" type="constructor">StructField</span> <span class="id" type="definition">_count</span>] (<span class="id" type="constructor">Vint</span> (<span class="id" type="definition">Int.repr</span> <a class="idref" href="Verif_hash.html#count"><span class="id" type="variable">count</span></a>)) <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a> *<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="axiom">malloc_token</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#tcell"><span class="id" type="definition">tcell</span></a> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a> *<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="definition">data_at</span> <span class="id" type="definition">Tsh</span> (<span class="id" type="definition">tptr</span> <a class="idref" href="Verif_hash.html#tcell"><span class="id" type="definition">tcell</span></a>) <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a> <a class="idref" href="Verif_hash.html#r"><span class="id" type="variable">r</span></a> |-- <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">ALL</span> <span class="id" type="var">dl</span>: <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> (<a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a> * <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>), <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Verif_hash.html#listboxrep"><span class="id" type="definition">listboxrep</span></a> <a class="idref" href="Verif_hash.html#dl"><span class="id" type="variable">dl</span></a> (<span class="id" type="definition">field_address</span> <a class="idref" href="Verif_hash.html#tcell"><span class="id" type="definition">tcell</span></a> [<span class="id" type="constructor">StructField</span> <span class="id" type="definition">_next</span>] <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-* <a class="idref" href="Verif_hash.html#listboxrep"><span class="id" type="definition">listboxrep</span></a> ((<a class="idref" href="Verif_hash.html#key"><span class="id" type="variable">key</span></a>, <a class="idref" href="Verif_hash.html#count"><span class="id" type="variable">count</span></a>) :: <a class="idref" href="Verif_hash.html#dl"><span class="id" type="variable">dl</span></a>) <a class="idref" href="Verif_hash.html#r"><span class="id" type="variable">r</span></a>.<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">intros</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">apply</span> <span class="id" type="method">allp_right</span>; <span class="id" type="tactic">intro</span> <span class="id" type="var">dl</span>.<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">apply</span> → <span class="id" type="method">wand_sepcon_adjoint</span>.<br/>
+</div>
+
+<div class="doc">
+Sometime during the proof below, you will have
+       <span class="inlinecode"><span class="id" type="var">data_at</span></span> <span class="inlinecode"><span class="id" type="var">Tsh</span></span> <span class="inlinecode"><span class="id" type="var">tcell</span></span> <span class="inlinecode">...</span> <span class="inlinecode"><span class="id" type="var">p</span></span>
+     that you want to expand into 
+
+<div class="paragraph"> </div>
+
+<div class="code code-tight">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">field_at</span>&nbsp;<span class="id" type="var">Tsh</span>&nbsp;<span class="id" type="var">tcell</span>&nbsp;[<span class="id" type="var">StructField</span>&nbsp;<span class="id" type="var">_key</span>]&nbsp;... <span class="id" type="var">p</span>&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;<span class="id" type="var">field_at</span>&nbsp;<span class="id" type="var">Tsh</span>&nbsp;<span class="id" type="var">tcell</span>&nbsp;[<span class="id" type="var">StructField</span>&nbsp;<span class="id" type="var">_count</span>]&nbsp;... <span class="id" type="var">p</span>&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;<span class="id" type="var">field_at</span>&nbsp;<span class="id" type="var">Tsh</span>&nbsp;<span class="id" type="var">tcell</span>&nbsp;[<span class="id" type="var">StructField</span>&nbsp;<span class="id" type="var">_next</span>]&nbsp;... <span class="id" type="var">p</span>].
+<div class="paragraph"> </div>
+
+</div>
+   You can do this with   <span class="inlinecode"><span class="id" type="var">unfold_data_at</span></span> <span class="inlinecode"><span class="id" type="var">x</span>%<span class="id" type="var">nat</span></span> where x is the number
+   indicating <i>which</i> of the <span class="inlinecode"><span class="id" type="var">data_at</span></span> or <span class="inlinecode"><span class="id" type="var">field_at</span></span> conjucts you want to expand.
+
+</div>
+<div class="code code-tight">
+
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+<a name="lab101"></a><h4 class="section">Exercise: 2 stars (body_incr_list)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Lemma</span> <a name="body_incr_list"><span class="id" type="lemma">body_incr_list</span></a>: <span class="id" type="definition">semax_body</span> <a class="idref" href="Verif_hash.html#Vprog"><span class="id" type="definition">Vprog</span></a> <a class="idref" href="Verif_hash.html#Gprog"><span class="id" type="definition">Gprog</span></a> <span class="id" type="definition">f_incr_list</span> <a class="idref" href="Verif_hash.html#incr_list_spec"><span class="id" type="definition">incr_list_spec</span></a>.<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+</div>
+
+<div class="doc">
+This proof uses "magic wand as frame" to traverse <i>and update</i> 
+   a (linked list) data structure.   This pattern is a bit more complex than
+   the wand-as-frame pattern used in body_get, which did not update
+   the data structure.   You will still use "data-structure-with-a-hole"
+   and "what-is-in-the-hole"; but now the "data-structure-with-a-hole"
+   must be able to accept the <i>future</i> hole-filler, not the one that is
+   in the hole right now.
+
+<div class="paragraph"> </div>
+
+  The key lemmas to use are, <span class="inlinecode"><span class="id" type="var">wand_refl_cancel_right</span></span>, <span class="inlinecode"><span class="id" type="var">wand_frame_elim'</span></span>,
+   and <span class="inlinecode"><span class="id" type="var">wand_frame_ver</span></span>.   When using <span class="inlinecode"><span class="id" type="var">wand_frame_ver</span></span>, you will find
+   <span class="inlinecode"><span class="id" type="var">listboxrep_traverse</span></span> to be useful.
+
+</div>
+<div class="code code-tight">
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="code code-tight">
+
+<span class="id" type="keyword">Lemma</span> <a name="field_at_data_at'"><span class="id" type="lemma">field_at_data_at'</span></a>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">cs</span>: <span class="id" type="class">compspecs</span>} (<span class="id" type="var">sh</span> : <span class="id" type="axiom">Share.t</span>) (<span class="id" type="var">t</span> : <span class="id" type="inductive">type</span>) (<span class="id" type="var">gfs</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <span class="id" type="inductive">gfield</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">v</span> : <span class="id" type="definition">reptype</span> (<span class="id" type="definition">nested_field_type</span> <a class="idref" href="Verif_hash.html#t"><span class="id" type="variable">t</span></a> <a class="idref" href="Verif_hash.html#gfs"><span class="id" type="variable">gfs</span></a>)) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">p</span> : <span class="id" type="inductive">val</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="definition">field_at</span> <a class="idref" href="Verif_hash.html#sh"><span class="id" type="variable">sh</span></a> <a class="idref" href="Verif_hash.html#t"><span class="id" type="variable">t</span></a> <a class="idref" href="Verif_hash.html#gfs"><span class="id" type="variable">gfs</span></a> <a class="idref" href="Verif_hash.html#v"><span class="id" type="variable">v</span></a> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a> =<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;!! <span class="id" type="definition">field_compatible</span> <a class="idref" href="Verif_hash.html#t"><span class="id" type="variable">t</span></a> <a class="idref" href="Verif_hash.html#gfs"><span class="id" type="variable">gfs</span></a> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a>  &amp;&amp; <span class="id" type="definition">data_at</span> <a class="idref" href="Verif_hash.html#sh"><span class="id" type="variable">sh</span></a> (<span class="id" type="definition">nested_field_type</span> <a class="idref" href="Verif_hash.html#t"><span class="id" type="variable">t</span></a> <a class="idref" href="Verif_hash.html#gfs"><span class="id" type="variable">gfs</span></a>) <a class="idref" href="Verif_hash.html#v"><span class="id" type="variable">v</span></a> (<span class="id" type="definition">field_address</span> <a class="idref" href="Verif_hash.html#t"><span class="id" type="variable">t</span></a> <a class="idref" href="Verif_hash.html#gfs"><span class="id" type="variable">gfs</span></a> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a>).<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="id" type="tactic">intros</span>.<br/>
+<span class="id" type="tactic">apply</span> <span class="id" type="method">pred_ext</span>.<br/>
+<span class="id" type="var">entailer</span>!. <span class="id" type="tactic">rewrite</span> <span class="id" type="lemma">field_at_data_at</span>; <span class="id" type="tactic">auto</span>.<br/>
+<span class="id" type="var">entailer</span>!. <span class="id" type="tactic">rewrite</span> <span class="id" type="lemma">field_at_data_at</span>; <span class="id" type="tactic">auto</span>.<br/>
+<span class="id" type="keyword">Qed</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Lemma</span> <a name="wand_slice_array_tptr_tcell"><span class="id" type="lemma">wand_slice_array_tptr_tcell</span></a>: <span class="id" type="var">ltac</span>:(<span class="id" type="var">wand_slice_array_spec</span> (<span class="id" type="definition">tptr</span> <a class="idref" href="Verif_hash.html#tcell"><span class="id" type="definition">tcell</span></a>)).<br/>
+<span class="id" type="keyword">Proof</span>. <span class="id" type="var">prove_wand_slice_array</span>. <span class="id" type="keyword">Qed</span>.<br/>
+</div>
+
+<div class="doc">
+Examine this carefully: 
+</div>
+<div class="code code-tight">
+<span class="id" type="keyword">Check</span> <a class="idref" href="Verif_hash.html#wand_slice_array_tptr_tcell"><span class="id" type="lemma">wand_slice_array_tptr_tcell</span></a>.<br/>
+<span class="comment">(*&nbsp;&nbsp;:&nbsp;forall&nbsp;(lo&nbsp;hi&nbsp;n&nbsp;:&nbsp;Z)&nbsp;(sh&nbsp;:&nbsp;Share.t)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(al'&nbsp;:&nbsp;list&nbsp;(reptype&nbsp;(tptr&nbsp;tcell)))&nbsp;(p&nbsp;:&nbsp;val),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&lt;=&nbsp;lo&nbsp;&lt;=&nbsp;hi&nbsp;-&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hi&nbsp;&lt;=&nbsp;n&nbsp;-&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Zlength&nbsp;al'&nbsp;=&nbsp;n&nbsp;-&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data_at&nbsp;sh&nbsp;(tarray&nbsp;(tptr&nbsp;tcell)&nbsp;n)&nbsp;al'&nbsp;p&nbsp;=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data_at&nbsp;sh&nbsp;(tarray&nbsp;(tptr&nbsp;tcell)&nbsp;(hi&nbsp;-&nbsp;lo))&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(sublist&nbsp;lo&nbsp;hi&nbsp;al')<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(field_address0&nbsp;(tarray&nbsp;(tptr&nbsp;tcell)&nbsp;n)&nbsp;<span class="inlinecode"><span class="id" type="var">ArraySubsc</span></span> <span class="inlinecode"><span class="id" type="var">lo</span></span>&nbsp;p)&nbsp;*<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(!!&nbsp;field_compatible&nbsp;(tarray&nbsp;(tptr&nbsp;tcell)&nbsp;n)&nbsp;<span class="inlinecode"></span>&nbsp;p&nbsp;&amp;&amp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(ALL&nbsp;cl&nbsp;:&nbsp;list&nbsp;(reptype&nbsp;(tptr&nbsp;tcell))&nbsp;,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data_at&nbsp;sh&nbsp;(tarray&nbsp;(tptr&nbsp;tcell)&nbsp;(hi&nbsp;-&nbsp;lo))&nbsp;cl<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(field_address0&nbsp;(tarray&nbsp;(tptr&nbsp;tcell)&nbsp;n)&nbsp;<span class="inlinecode"><span class="id" type="var">ArraySubsc</span></span> <span class="inlinecode"><span class="id" type="var">lo</span></span>&nbsp;p)&nbsp;-*<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data_at&nbsp;sh&nbsp;(tarray&nbsp;(tptr&nbsp;tcell)&nbsp;n)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(sublist&nbsp;0&nbsp;lo&nbsp;al'&nbsp;++&nbsp;cl&nbsp;++&nbsp;sublist&nbsp;hi&nbsp;n&nbsp;al')&nbsp;p))&nbsp;<br/>
+*)</span><br/>
+</div>
+
+<div class="doc">
+It is a specialization of the <span class="inlinecode"><span class="id" type="var">wand_slice_array</span></span> lemma that is easier to use,
+   because (unlike the general-case lemma) it does not use John Major equality (JMeq) 
+<div class="paragraph"> </div>
+
+<a name="lab102"></a><h4 class="section">Exercise: 4 stars (body_incr)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Lemma</span> <a name="body_incr"><span class="id" type="lemma">body_incr</span></a>: <span class="id" type="definition">semax_body</span> <a class="idref" href="Verif_hash.html#Vprog"><span class="id" type="definition">Vprog</span></a> <a class="idref" href="Verif_hash.html#Gprog"><span class="id" type="definition">Gprog</span></a> <span class="id" type="definition">f_incr</span> <a class="idref" href="Verif_hash.html#incr_spec"><span class="id" type="definition">incr_spec</span></a>.<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="id" type="var">start_function</span>.<br/>
+<span class="id" type="tactic">rename</span> <span class="id" type="var">p</span> <span class="id" type="var">into</span> <span class="id" type="var">table</span>.<br/>
+<span class="id" type="tactic">rename</span> <span class="id" type="var">H</span> <span class="id" type="var">into</span> <span class="id" type="var">Hmax</span>.<br/>
+<span class="id" type="var">assert_PROP</span> (<span class="id" type="definition">isptr</span> <span class="id" type="var">table</span>) <span class="id" type="keyword">as</span> <span class="id" type="var">Htable</span> <span class="id" type="tactic">by</span> <span class="id" type="var">entailer</span>!.<br/>
+</div>
+
+<div class="doc">
+The next two lines would not be part of an ordinary Verifiable C proof, 
+   they are here only to guide you through the bigger proof. 
+</div>
+<div class="code code-tight">
+<span class="id" type="keyword">match</span> <span class="id" type="var">goal</span> <span class="id" type="keyword">with</span> |- <span class="id" type="axiom">semax</span> <span class="id" type="var">_</span> <span class="id" type="var">_</span> (<span class="id" type="constructor">Ssequence</span> (<span class="id" type="constructor">Ssequence</span> ?<span class="id" type="var">c<sub>1</sub></span> (<span class="id" type="constructor">Ssequence</span> ?<span class="id" type="var">c<sub>2</sub></span> ?<span class="id" type="var">c<sub>3</sub></span>)) ?<span class="id" type="var">c<sub>4</sub></span>) <span class="id" type="var">_</span> ⇒ <span class="id" type="tactic">apply</span> (<span class="id" type="lemma">semax_unfold_seq</span> (<span class="id" type="constructor">Ssequence</span> (<span class="id" type="constructor">Ssequence</span> <span class="id" type="var">c<sub>1</sub></span> <span class="id" type="var">c<sub>2</sub></span>) (<span class="id" type="constructor">Ssequence</span> <span class="id" type="var">c<sub>3</sub></span> <span class="id" type="var">c<sub>4</sub></span>))); [ <span class="id" type="tactic">reflexivity</span> | ] <span class="id" type="keyword">end</span>;<br/>
+<span class="id" type="var">pose</span> (<span class="id" type="var">j</span> := <span class="id" type="notation">EX</span> <span class="id" type="var">cts</span>:_, <span class="id" type="notation">PROP</span> (<span class="id" type="var">contents</span> = <a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#map"><span class="id" type="definition">map</span></a> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#fst"><span class="id" type="definition">fst</span></a> <a class="idref" href="Verif_hash.html#cts"><span class="id" type="variable">cts</span></a>; 0 ≤ <a class="idref" href="Hashfun.html#hashfun"><span class="id" type="definition">hashfun</span></a> <span class="id" type="var">sigma</span> <span class="id" type="var">mod</span> <a class="idref" href="Hashfun.html#N"><span class="id" type="definition">N</span></a> &lt; <a class="idref" href="Hashfun.html#N"><span class="id" type="definition">N</span></a>; <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <a class="idref" href="Verif_hash.html#cts"><span class="id" type="variable">cts</span></a> = <a class="idref" href="Hashfun.html#N"><span class="id" type="definition">N</span></a>) <span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> <span class="id" type="definition">_b</span> (<span class="id" type="constructor">Vint</span> (<span class="id" type="definition">Int.repr</span> (<a class="idref" href="Hashfun.html#hashfun"><span class="id" type="definition">hashfun</span></a> <span class="id" type="var">sigma</span> <span class="id" type="var">mod</span> <a class="idref" href="Hashfun.html#N"><span class="id" type="definition">N</span></a>))); <span class="id" type="constructor">temp</span> <span class="id" type="definition">_h</span> (<span class="id" type="constructor">Vint</span> (<span class="id" type="definition">Int.repr</span> (<a class="idref" href="Hashfun.html#hashfun"><span class="id" type="definition">hashfun</span></a> <span class="id" type="var">sigma</span>))); <span class="id" type="constructor">temp</span> <span class="id" type="definition">_table</span> <span class="id" type="var">table</span>; <span class="id" type="constructor">temp</span> <span class="id" type="definition">_s</span> <span class="id" type="var">s</span>) <span class="id" type="notation">SEP</span> (<span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <span class="id" type="var">sigma</span> <span class="id" type="var">s</span>; <span class="id" type="axiom">malloc_token</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#thashtable"><span class="id" type="definition">thashtable</span></a> <span class="id" type="var">table</span>; <span class="id" type="definition">data_at</span> <span class="id" type="definition">Tsh</span> (<span class="id" type="definition">tarray</span> (<span class="id" type="definition">tptr</span> <a class="idref" href="Verif_hash.html#tcell"><span class="id" type="definition">tcell</span></a>) <a class="idref" href="Hashfun.html#N"><span class="id" type="definition">N</span></a>) (<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#map"><span class="id" type="definition">map</span></a> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#snd"><span class="id" type="definition">snd</span></a> <a class="idref" href="Verif_hash.html#cts"><span class="id" type="variable">cts</span></a>) (<span class="id" type="definition">field_address</span> <a class="idref" href="Verif_hash.html#thashtable"><span class="id" type="definition">thashtable</span></a> [<span class="id" type="constructor">StructField</span> <span class="id" type="definition">_buckets</span>] <span class="id" type="var">table</span>); <span class="id" type="definition">iter_sepcon</span> <a class="idref" href="Verif_hash.html#cts"><span class="id" type="variable">cts</span></a> (<a class="idref" href="Verif_hash.html#uncurry"><span class="id" type="definition">uncurry</span></a> <a class="idref" href="Verif_hash.html#listrep"><span class="id" type="definition">listrep</span></a>))); <span class="id" type="tactic">apply</span> <span class="id" type="lemma">semax_seq'</span> <span class="id" type="keyword">with</span> <span class="id" type="var">j</span>; <span class="id" type="tactic">subst</span> <span class="id" type="var">j</span>; <span class="id" type="var">abbreviate_semax</span>.<br/>
+{<br/>
+&nbsp;<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">admit</span>.<br/>
+&nbsp;}<br/>
+<br/>
+<span class="id" type="var">Intros</span> <span class="id" type="var">cts</span>.<br/>
+<span class="id" type="tactic">subst</span> <span class="id" type="var">contents</span>.<br/>
+<span class="id" type="tactic">unfold</span> <a class="idref" href="Hashfun.html#hashtable_get"><span class="id" type="definition">hashtable_get</span></a> <span class="id" type="keyword">in</span> <span class="id" type="var">Hmax</span>.<br/>
+<span class="id" type="tactic">rewrite</span> <span class="id" type="lemma">Zlength_map</span>, <span class="id" type="var">H<sub>1</sub></span> <span class="id" type="keyword">in</span> <span class="id" type="var">Hmax</span>.<br/>
+<span class="id" type="tactic">set</span> (<span class="id" type="var">h</span> := <a class="idref" href="Hashfun.html#hashfun"><span class="id" type="definition">hashfun</span></a> <span class="id" type="var">sigma</span> <span class="id" type="var">mod</span> <a class="idref" href="Hashfun.html#N"><span class="id" type="definition">N</span></a>) <span class="id" type="keyword">in</span> *.<br/>
+<span class="id" type="var">erewrite</span> (<a class="idref" href="Verif_hash.html#wand_slice_array_tptr_tcell"><span class="id" type="lemma">wand_slice_array_tptr_tcell</span></a> <span class="id" type="var">h</span> (<span class="id" type="var">h</span>+1) <a class="idref" href="Hashfun.html#N"><span class="id" type="definition">N</span></a>)<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">by</span> <span class="id" type="var">first</span> [<span class="id" type="tactic">apply</span> <span class="id" type="lemma">JMeq_refl</span> | <span class="id" type="var">rep_omega</span> | <span class="id" type="var">list_solve</span> ].<br/>
+</div>
+
+<div class="doc">
+For the remainder of the proof, here are some useful lemmas:
+    <span class="inlinecode"><span class="id" type="var">sublist_len_1</span></span> <span class="inlinecode"><span class="id" type="var">sublist_same</span></span> <span class="inlinecode"><span class="id" type="var">sublist_map</span></span>
+    <span class="inlinecode"><span class="id" type="var">data_at_singleton_array_eq</span></span>
+    <span class="inlinecode"><span class="id" type="var">iter_sepcon_split3</span></span>  <span class="inlinecode"><span class="id" type="var">iter_sepcon_app</span></span> <span class="inlinecode"><span class="id" type="var">sublist_split</span></span>
+    <span class="inlinecode"><span class="id" type="var">field_at_data_at</span></span>
+    <span class="inlinecode"><span class="id" type="var">wand_slice_array_tptr_tcell</span></span>
+
+</div>
+<div class="code code-tight">
+
+&nbsp;<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">admit</span>.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+</div>
+
+
+
+</div>
+
+</body>
+</html>

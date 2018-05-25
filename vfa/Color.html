@@ -1,0 +1,863 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<link href="common/css/sf.css" rel="stylesheet" type="text/css"/>
+<title>Color: Graph Coloring</title>
+</head>
+<link href="common/jquery-ui/jquery-ui.css" rel="stylesheet">
+<script src="common/jquery-ui/external/jquery/jquery.js"></script>
+<script src="common/jquery-ui/jquery-ui.js"></script>
+<script src="common/toggleproofs.js"></script>
+<link href="common/css/vfa.css" rel="stylesheet" type="text/css"/>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+<a href='https://www.cis.upenn.edu/~bcpierce/sf/current/index.html'>
+<img src='common/media/image/sf_logo_sm.png'></a>
+</br><a href='index.html'>  <span class='booktitleinheader'>Volume 3: Verified Functional Algorithms</span><br></br>
+<ul id='menu'>
+   <a href='toc.html'><li class='section_name'>Table of Contents</li></a>
+   <a href='coqindex.html'><li class='section_name'>Index</li></a>
+   <a href='deps.html'><li class='section_name'>Roadmap</li></a>
+</ul>
+</a></div>
+
+<div id="main">
+
+<h1 class="libtitle">Color<span class="subtitle">Graph Coloring</span></h1>
+
+
+<div class="doc">
+
+<div class="paragraph"> </div>
+
+ Required reading: 
+  <a class=citation href=  http://www.cs.princeton.edu/~appel/Color.pdf >
+  Kempe's graph-coloring algorithm </a>, by Andrew W. Appel, 2016.
+
+<div class="paragraph"> </div>
+
+  Suggested reading:
+  <a class=citation href=  http://www.cs.princeton.edu/~appel/papers/regalloc.pdf >
+  Formal Verification of Coalescing Graph-Coloring Register Allocation  </a>,
+  by Sandrine Blazy, Benoit Robillard, and Andrew W. Appel. 
+  ESOP 2010: 19th European Symposium on Programming, pp. 145-164, March 2010. 
+
+<div class="paragraph"> </div>
+
+   <i>Coloring</i> an undirected graph means, assigning a color to each node,
+  so that any two nodes directly connected by an edge have different colors.
+  The <i>chromatic number</i> of a graph is the minimum number of colors
+  needed to color the graph.  Graph coloring is NP-complete, so there is no
+  polynomial-time algorithm; but we need to do it anyway, for applications
+  such as register allocation in compilers.  So therefore we often use 
+  incomplete algorithms:  ones that work only on certain classes of graphs,
+  or ones that color <i>most</i> but not all of the nodes.  Those algorithms are
+  often good enough for important applications.
+
+<div class="paragraph"> </div>
+
+  In this chapter we will study Kempe's algorithm for K-coloring a graph.
+  It was invented by Alfred Kempe in 1879, for use in his attempt to prove
+  the four-color theorem (that every planar graph is 4-colorable).  His 4-color
+  proof had a bug; but his algorithm continues to be useful:  a (major) variation of
+  it was used in the successful 1976 proof of the 4-color theorem, and in 1979 
+  Kempe's algorithm was adapted by Gregory Chaitin for application to register 
+  allocation. It is the Kempe-Chaitin algorithm that we'll prove here.
+
+<div class="paragraph"> </div>
+
+  We implement a program to K-color an undirected graph, perhaps leaving
+  some nodes uncolored.  In a register-allocation problem, the graph nodes
+  correspond to variables in a program, the colors correspond to registers,
+  and the graph edges are interference constraints:  two nodes connected
+  by an edge cannot be assigned the same color.  Nodes left uncolored are
+  "spilled," that is, a register allocator would implement such nodes in 
+  memory locations instead of in registers.  We desire to have as few
+  uncolored nodes as possible, but this desire is not formally specified.
+
+<div class="paragraph"> </div>
+
+  In this exercise we show a simple and unsophisticated algorithm; the program
+  described by Blazy et al. (cited above) is more sophisticated in several ways,
+  such as the use of "register coalescing" to get better results and the use of 
+  worklists to make it run faster.  
+
+<div class="paragraph"> </div>
+
+  Our algorithm does, at least, make use of efficient data structures for
+  representing undirected graphs, adjacency sets, and so on. 
+<div class="paragraph"> </div>
+
+<a name="lab193"></a><h1 class="section">Preliminaries: Representing Graphs</h1>
+
+<div class="paragraph"> </div>
+
+ In the <a href="Trie.html"><span class="inlineref">Trie</span></a> chapter we saw how to represent efficient maps (lookup tables)
+    where the keys are <span class="inlinecode"><span class="id" type="var">positive</span></span> numbers in Coq.  Those tries are implemented
+    in the Coq standard library as <span class="inlinecode"><span class="id" type="var">FMaps</span></span>, functional maps, and we will use them
+   directly from the standard library.   <span class="inlinecode"><span class="id" type="var">FMaps</span></span> represent <i>partial functions</i>, that is,
+   mapping keys to <span class="inlinecode"><span class="id" type="var">option</span>(<span class="id" type="var">t</span>)</span> for whatever <span class="inlinecode"><span class="id" type="var">t</span></span>.
+
+<div class="paragraph"> </div>
+
+   We will also use <span class="inlinecode"><span class="id" type="var">FSets</span></span>, efficient sets of keys; you can <i>think</i> of those as FMaps from 
+   keys to <span class="inlinecode"><span class="id" type="var">unit</span></span>, where <span class="inlinecode"><span class="id" type="var">None</span></span> means absent and <span class="inlinecode"><span class="id" type="var">Some</span></span> <span class="inlinecode"><span class="id" type="var">tt</span></span> means present; but their
+   implementation is a bit more efficient. 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#"><span class="id" type="library">List</span></a>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/library/Coq.FSets.FSets.html#"><span class="id" type="library">FSets</span></a>. <span class="comment">(*&nbsp;Efficient&nbsp;functional&nbsp;sets&nbsp;*)</span><br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/library/Coq.FSets.FMaps.html#"><span class="id" type="library">FMaps</span></a>. <span class="comment">(*&nbsp;Efficient&nbsp;functional&nbsp;maps&nbsp;*)</span><br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <a class="idref" href="Perm.html#"><span class="id" type="library">Perm</span></a>. <span class="comment">(*&nbsp;to&nbsp;use&nbsp;&lt;?&nbsp;notation&nbsp;and&nbsp;<span class="inlinecode"><span class="id" type="var">bdestruct</span></span>&nbsp;tactic&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+The nodes in our graph will be named by positive numbers.
+  <span class="inlinecode"><span class="id" type="var">FSets</span></span> and <span class="inlinecode"><span class="id" type="var">FMaps</span></span> are interfaces for sets and maps over an element type.
+  One instance is when the element type is <span class="inlinecode"><span class="id" type="var">positive</span></span>, with a particular
+  comparison operator corresponding to easy lookup in tries.  The 
+  Coq module for this element type (with its total order) is <span class="inlinecode"><span class="id" type="var">PositiveOrderedTypeBits</span></span>.
+  We'll use <span class="inlinecode"><span class="id" type="var">E</span></span> as an abbreviation for this module name.  
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Module</span> <a name="E"><span class="id" type="module">E</span></a> := <a class="idref" href="http://coq.inria.fr/library/Coq.Structures.OrderedTypeEx.html#PositiveOrderedTypeBits"><span class="id" type="module">PositiveOrderedTypeBits</span></a>.<br/>
+<span class="id" type="keyword">Print</span> <span class="id" type="keyword">Module</span> <span class="id" type="var">E</span>.<br/>
+<span class="id" type="keyword">Print</span> <a class="idref" href="Color.html#t"><span class="id" type="definition">E.t</span></a>.<br/>
+</div>
+
+<div class="doc">
+The <span class="inlinecode"><span class="id" type="keyword">Module</span></span> <span class="inlinecode"><span class="id" type="keyword">Type</span></span> <span class="inlinecode"><span class="id" type="var">FSetInterface.S</span></span> gives the API of "functional sets."
+   One instance of this, <span class="inlinecode"><span class="id" type="var">PositiveSet</span></span>, has keys = positive numbers.  We
+   abbreviate this as <span class="inlinecode"><span class="id" type="keyword">Module</span></span> <span class="inlinecode"><span class="id" type="var">S</span></span>. 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Module</span> <a name="S"><span class="id" type="module">S</span></a> &lt;: <a class="idref" href="http://coq.inria.fr/library/Coq.FSets.FSetInterface.html#S"><span class="id" type="module">FSetInterface.S</span></a> := <a class="idref" href="http://coq.inria.fr/library/Coq.FSets.FSetPositive.html#PositiveSet"><span class="id" type="module">PositiveSet</span></a>.<br/>
+<span class="id" type="keyword">Print</span> <span class="id" type="keyword">Module</span> <span class="id" type="var">S</span>.<br/>
+<span class="id" type="keyword">Print</span> <a class="idref" href="Color.html#elt"><span class="id" type="definition">S.elt</span></a>.<br/>
+</div>
+
+<div class="doc">
+And similarly for functional maps over positives 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Module</span> <a name="M"><span class="id" type="module">M</span></a> &lt;: <a class="idref" href="http://coq.inria.fr/library/Coq.FSets.FMapInterface.html#S"><span class="id" type="module">FMapInterface.S</span></a> := <a class="idref" href="http://coq.inria.fr/library/Coq.FSets.FMapPositive.html#PositiveMap"><span class="id" type="module">PositiveMap</span></a>.<br/>
+<span class="id" type="keyword">Print</span> <span class="id" type="keyword">Module</span> <span class="id" type="var">M</span>.<br/>
+<span class="id" type="keyword">Print</span> <span class="id" type="var">M.E</span>.<br/>
+</div>
+
+<div class="doc">
+<a name="lab194"></a><h1 class="section">Lemmas About Sets and Maps</h1>
+
+<div class="paragraph"> </div>
+
+ In order to reason about a graph coloring algorithm, we need to 
+   prove lemmas such as, "if you remove an element (one domain-&gt;range binding)
+   from a finite map, then the result is a new finite map whose domain
+   has fewer elements."  (Duh!)  But to prove this, we need to build up
+   some definitions and lemmas.  We start by importing some modules
+   that have some already-proved properties of FMaps. 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Module</span> <a name="WF"><span class="id" type="module">WF</span></a> := <a class="idref" href="http://coq.inria.fr/library/Coq.FSets.FMapFacts.html#WFacts_fun"><span class="id" type="module">WFacts_fun</span></a> <a class="idref" href="Color.html#E"><span class="id" type="module">E</span></a> <a class="idref" href="Color.html#M"><span class="id" type="module">M</span></a>. <span class="comment">(*&nbsp;Library&nbsp;of&nbsp;useful&nbsp;lemmas&nbsp;about&nbsp;maps&nbsp;*)</span><br/>
+<span class="id" type="keyword">Module</span> <a name="WP"><span class="id" type="module">WP</span></a> := <a class="idref" href="http://coq.inria.fr/library/Coq.FSets.FMapFacts.html#WProperties_fun"><span class="id" type="module">WProperties_fun</span></a> <a class="idref" href="Color.html#E"><span class="id" type="module">E</span></a> <a class="idref" href="Color.html#M"><span class="id" type="module">M</span></a>. <span class="comment">(*&nbsp;More&nbsp;useful&nbsp;stuff&nbsp;about&nbsp;maps&nbsp;*)</span><br/>
+<span class="id" type="keyword">Print</span> <span class="id" type="keyword">Module</span> <span class="id" type="var">WF</span>.<br/>
+<span class="id" type="keyword">Print</span> <span class="id" type="keyword">Module</span> <span class="id" type="var">WP</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Check</span> <a class="idref" href="Color.html#lt"><span class="id" type="definition">E.lt</span></a>. <span class="comment">(*&nbsp;&nbsp;&nbsp;:&nbsp;positive&nbsp;-&gt;&nbsp;positive&nbsp;-&gt;&nbsp;Prop&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" type="var">E.lt</span></span> is a comparison predicate on <span class="inlinecode"><span class="id" type="var">positive</span></span> numbers.  It 
+   is <i>not</i> the usual less-than operator; it is a different ordering
+   that is more compatible with the order that a Positive Trie arranges
+   its keys.  In the application of certain lemmas about maps and sets,
+   we will need the facts that <span class="inlinecode"><span class="id" type="var">E.lt</span></span> is a <span class="inlinecode"><span class="id" type="var">StrictOrder</span></span> (irreflexive and
+   transitive) and respects a congruence over equality (is <span class="inlinecode"><span class="id" type="var">Proper</span></span>
+   for <span class="inlinecode"><span class="id" type="var">eq</span></span> <span class="inlinecode">==&gt;</span> <span class="inlinecode"><span class="id" type="var">eq</span></span> <span class="inlinecode">==&gt;</span> <span class="inlinecode"><span class="id" type="var">iff</span></span>).   As shown here, we just have to dig up
+   these facts from a submodule of a submodule of a submodule of <span class="inlinecode"><span class="id" type="var">M</span></span>. 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Lemma</span> <a name="lt_strict"><span class="id" type="lemma">lt_strict</span></a>: <a class="idref" href="http://coq.inria.fr/library/Coq.Classes.RelationClasses.html#StrictOrder"><span class="id" type="class">StrictOrder</span></a> <a class="idref" href="Color.html#lt"><span class="id" type="definition">E.lt</span></a>.<br/>
+<span class="id" type="keyword">Proof</span>. <span class="id" type="tactic">exact</span> <a class="idref" href="Color.html#lt_strorder"><span class="id" type="definition">M.ME.MO.IsTO.lt_strorder</span></a>. <span class="id" type="keyword">Qed</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Lemma</span> <a name="lt_proper"><span class="id" type="lemma">lt_proper</span></a>: <a class="idref" href="http://coq.inria.fr/library/Coq.Classes.Morphisms.html#Proper"><span class="id" type="class">Proper</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Logic.html#eq"><span class="id" type="inductive">eq</span></a> ==&gt; <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Logic.html#eq"><span class="id" type="inductive">eq</span></a> ==&gt; <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Logic.html#iff"><span class="id" type="definition">iff</span></a>) <a class="idref" href="Color.html#lt"><span class="id" type="definition">E.lt</span></a>.<br/>
+<span class="id" type="keyword">Proof</span>. <span class="id" type="tactic">exact</span> <a class="idref" href="Color.html#lt_compat"><span class="id" type="definition">M.ME.MO.IsTO.lt_compat</span></a>. <span class="id" type="keyword">Qed</span>.<br/>
+</div>
+
+<div class="doc">
+The domain of a map is the set of elements that map to Some(_).  To calculate
+   the domain, we can use <span class="inlinecode"><span class="id" type="var">M.fold</span></span>, an operation that comes with the <span class="inlinecode"><span class="id" type="var">FMaps</span></span> 
+   abstract data type.  It takes a map <span class="inlinecode"><span class="id" type="var">m</span></span>, function <span class="inlinecode"><span class="id" type="var">f</span></span> and base value <span class="inlinecode"><span class="id" type="var">b</span></span>, and calculates 
+   <span class="inlinecode"><span class="id" type="var">f</span></span> <span class="inlinecode"><span class="id" type="var">x<sub>1</sub></span></span> <span class="inlinecode"><span class="id" type="var">y<sub>1</sub></span></span> <span class="inlinecode">(<span class="id" type="var">f</span></span> <span class="inlinecode"><span class="id" type="var">x<sub>2</sub></span></span> <span class="inlinecode"><span class="id" type="var">y<sub>2</sub></span></span> <span class="inlinecode">(<span class="id" type="var">f</span></span> <span class="inlinecode"><span class="id" type="var">x<sub>3</sub></span></span> <span class="inlinecode"><span class="id" type="var">y<sub>3</sub></span></span> <span class="inlinecode">(...</span> <span class="inlinecode">(<span class="id" type="var">f</span></span> <span class="inlinecode"><span class="id" type="var">xn</span></span> <span class="inlinecode"><span class="id" type="var">yn</span></span> <span class="inlinecode"><span class="id" type="var">b</span>)...)))</span>, where <span class="inlinecode">(<span class="id" type="var">xi</span>,<span class="id" type="var">yi</span>)</span> are the individual elements
+   of <span class="inlinecode"><span class="id" type="var">m</span></span>.  That is, <span class="inlinecode"><span class="id" type="var">M.find</span></span> <span class="inlinecode"><span class="id" type="var">xi</span></span> <span class="inlinecode"><span class="id" type="var">m</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" type="var">Some</span></span> <span class="inlinecode"><span class="id" type="var">yi</span></span>, for each <span class="inlinecode"><span class="id" type="var">i</span></span>.
+
+<div class="paragraph"> </div>
+
+   So, to compute the domain, we just use an <span class="inlinecode"><span class="id" type="var">f</span></span> function that adds <span class="inlinecode"><span class="id" type="var">xi</span></span> to a set;
+   mapping this over all the nodes will add all the keys in <span class="inlinecode"><span class="id" type="var">m</span></span> to the set <span class="inlinecode"><span class="id" type="var">S.empty</span></span>.  
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Definition</span> <a name="Mdomain"><span class="id" type="definition">Mdomain</span></a> {<span class="id" type="var">A</span>} (<span class="id" type="var">m</span>: <a class="idref" href="Color.html#t"><span class="id" type="definition">M.t</span></a> <a class="idref" href="Color.html#A"><span class="id" type="variable">A</span></a>) : <a class="idref" href="Color.html#t"><span class="id" type="definition">S.t</span></a> := <br/>
+&nbsp;&nbsp;&nbsp;<a class="idref" href="Color.html#fold"><span class="id" type="definition">M.fold</span></a> (<span class="id" type="keyword">fun</span> <span class="id" type="var">n</span> <span class="id" type="var">_</span> <span class="id" type="var">s</span> ⇒ <a class="idref" href="Color.html#add"><span class="id" type="definition">S.add</span></a> <a class="idref" href="Color.html#n"><span class="id" type="variable">n</span></a> <a class="idref" href="Color.html#s"><span class="id" type="variable">s</span></a>) <a class="idref" href="Color.html#m"><span class="id" type="variable">m</span></a> <a class="idref" href="Color.html#empty"><span class="id" type="definition">S.empty</span></a>.<br/>
+</div>
+
+<div class="doc">
+Example:  Make a map from <i>node</i> (represented as <span class="inlinecode"><span class="id" type="var">positive</span></span>) to 
+      <i>set of node</i> (represented as <span class="inlinecode"><span class="id" type="var">S.t</span></span>), in which nodes <span class="inlinecode">3,9,2</span> each map 
+      to the empty set, and no other nodes map to anything. 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Definition</span> <a name="example_map"><span class="id" type="definition">example_map</span></a> : <a class="idref" href="Color.html#t"><span class="id" type="definition">M.t</span></a> <a class="idref" href="Color.html#t"><span class="id" type="definition">S.t</span></a> :=<br/>
+(<a class="idref" href="Color.html#add"><span class="id" type="definition">M.add</span></a> 3%<span class="id" type="var">positive</span> <a class="idref" href="Color.html#empty"><span class="id" type="definition">S.empty</span></a> <br/>
+&nbsp;&nbsp;(<a class="idref" href="Color.html#add"><span class="id" type="definition">M.add</span></a> 9%<span class="id" type="var">positive</span> <a class="idref" href="Color.html#empty"><span class="id" type="definition">S.empty</span></a> <br/>
+&nbsp;&nbsp;&nbsp;(<a class="idref" href="Color.html#add"><span class="id" type="definition">M.add</span></a> 2%<span class="id" type="var">positive</span> <a class="idref" href="Color.html#empty"><span class="id" type="definition">S.empty</span></a> (<a class="idref" href="Color.html#empty"><span class="id" type="definition">M.empty</span></a> <a class="idref" href="Color.html#t"><span class="id" type="definition">S.t</span></a>   )))).<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Example</span> <a name="domain_example_map"><span class="id" type="definition">domain_example_map</span></a>: <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Color.html#elements"><span class="id" type="definition">S.elements</span></a> (<a class="idref" href="Color.html#Mdomain"><span class="id" type="definition">Mdomain</span></a> <a class="idref" href="Color.html#example_map"><span class="id" type="definition">example_map</span></a>) = [2;9;3]%<span class="id" type="var">positive</span>.<br/>
+<span class="id" type="keyword">Proof</span>. <span class="id" type="tactic">compute</span>. <span class="id" type="tactic">reflexivity</span>. <span class="id" type="keyword">Qed</span>.<br/>
+</div>
+
+<div class="doc">
+<a name="lab195"></a><h2 class="section">equivlistA</h2>
+
+</div>
+<div class="code code-space">
+
+<br/>
+<span class="id" type="keyword">Print</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Lists.SetoidList.html#equivlistA"><span class="id" type="definition">equivlistA</span></a>. <span class="comment">(*&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;fun&nbsp;{A&nbsp;:&nbsp;Type}&nbsp;(eqA&nbsp;:&nbsp;A&nbsp;-&gt;&nbsp;A&nbsp;-&gt;&nbsp;Prop)&nbsp;(l&nbsp;l'&nbsp;:&nbsp;list&nbsp;A)&nbsp;=&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;forall&nbsp;x&nbsp;:&nbsp;A,&nbsp;InA&nbsp;eqA&nbsp;x&nbsp;l&nbsp;&lt;-&gt;&nbsp;InA&nbsp;eqA&nbsp;x&nbsp;l'<br/>
+&nbsp;&nbsp;&nbsp;:&nbsp;forall&nbsp;{A:Type},&nbsp;(A-&gt;A-&gt;Prop)&nbsp;-&gt;&nbsp;list&nbsp;A&nbsp;-&gt;&nbsp;list&nbsp;A&nbsp;-&gt;&nbsp;Prop&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+Suppose two lists <span class="inlinecode"><span class="id" type="var">al</span>,<span class="id" type="var">bl</span></span> both contain the same elements, not necessarily in the same
+     order.  That is, <span class="inlinecode"><span style='font-size:120%;'>&forall;</span></span><span class="inlinecode"><span class="id" type="var">x</span>:<span class="id" type="var">A</span>,</span> <span class="inlinecode"><span class="id" type="var">In</span></span> <span class="inlinecode"><span class="id" type="var">x</span></span> <span class="inlinecode"><span class="id" type="var">al</span></span> <span class="inlinecode">↔</span> <span class="inlinecode"><span class="id" type="var">In</span></span> <span class="inlinecode"><span class="id" type="var">x</span></span> <span class="inlinecode"><span class="id" type="var">bl</span></span>.  In fact from this definition you can
+     see that <span class="inlinecode"><span class="id" type="var">al</span></span> or <span class="inlinecode"><span class="id" type="var">bl</span></span> might even have different numbers of repetitions of certain
+     elements.  Then we say the lists are "equivalent."
+
+<div class="paragraph"> </div>
+
+     We can generalize this.  Suppose instead of <span class="inlinecode"><span class="id" type="var">In</span></span> <span class="inlinecode"><span class="id" type="var">x</span></span> <span class="inlinecode"><span class="id" type="var">al</span></span>, which says that the value <span class="inlinecode"><span class="id" type="var">x</span></span>
+     is in the list <span class="inlinecode"><span class="id" type="var">al</span></span>, we use a different equivalence relation on that <span class="inlinecode"><span class="id" type="var">A</span></span>.  That is,
+     <span class="inlinecode"><span class="id" type="var">InA</span></span> <span class="inlinecode"><span class="id" type="var">eqA</span></span> <span class="inlinecode"><span class="id" type="var">x</span></span> <span class="inlinecode"><span class="id" type="var">al</span></span> says that some element of <span class="inlinecode"><span class="id" type="var">al</span></span> is <i>equivalent</i> to <span class="inlinecode"><span class="id" type="var">x</span></span>, using the
+     equivalence relation <span class="inlinecode"><span class="id" type="var">eqA</span></span>.  For example: 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Definition</span> <a name="same_mod_10"><span class="id" type="definition">same_mod_10</span></a> (<span class="id" type="var">i</span> <span class="id" type="var">j</span>: <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>) := <a class="idref" href="Color.html#i"><span class="id" type="variable">i</span></a> <span class="id" type="var">mod</span> 10 = <a class="idref" href="Color.html#j"><span class="id" type="variable">j</span></a> <span class="id" type="var">mod</span> 10.<br/>
+<span class="id" type="keyword">Example</span> <a name="InA_example"><span class="id" type="definition">InA_example</span></a>:  <a class="idref" href="http://coq.inria.fr/library/Coq.Lists.SetoidList.html#InA"><span class="id" type="inductive">InA</span></a> <a class="idref" href="Color.html#same_mod_10"><span class="id" type="definition">same_mod_10</span></a> 27 [3;17;2].<br/>
+<span class="id" type="keyword">Proof</span>. <span class="id" type="var">right</span>. <span class="id" type="var">left</span>. <span class="id" type="tactic">compute</span>. <span class="id" type="tactic">reflexivity</span>. <span class="id" type="keyword">Qed</span>.<br/>
+</div>
+
+<div class="doc">
+The predicate <span class="inlinecode"><span class="id" type="var">equivlistA</span></span> <span class="inlinecode"><span class="id" type="var">eqA</span></span> <span class="inlinecode"><span class="id" type="var">al</span></span> <span class="inlinecode"><span class="id" type="var">bl</span></span> says that lists <span class="inlinecode"><span class="id" type="var">al</span></span> and <span class="inlinecode"><span class="id" type="var">bl</span></span> have equivalent
+    sets of elements, using the equivalence relation <span class="inlinecode"><span class="id" type="var">eqA</span></span>.  For example: 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Example</span> <a name="equivlistA_example"><span class="id" type="definition">equivlistA_example</span></a>: <a class="idref" href="http://coq.inria.fr/library/Coq.Lists.SetoidList.html#equivlistA"><span class="id" type="definition">equivlistA</span></a> <a class="idref" href="Color.html#same_mod_10"><span class="id" type="definition">same_mod_10</span></a> [3; 17] [7; 3; 27].<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="id" type="tactic">split</span>; <span class="id" type="tactic">intro</span>.<br/>
+<span class="id" type="var">inv</span> <span class="id" type="var">H</span>. <span class="id" type="var">right</span>; <span class="id" type="var">left</span>. <span class="id" type="tactic">auto</span>.<br/>
+<span class="id" type="var">inv</span> <span class="id" type="var">H<sub>1</sub></span>. <span class="id" type="var">left</span>. <span class="id" type="tactic">apply</span> <span class="id" type="var">H<sub>0</sub></span>.<br/>
+<span class="id" type="var">inv</span> <span class="id" type="var">H<sub>0</sub></span>.<br/>
+<span class="id" type="var">inv</span> <span class="id" type="var">H</span>. <span class="id" type="var">right</span>; <span class="id" type="var">left</span>. <span class="id" type="tactic">apply</span> <span class="id" type="var">H<sub>1</sub></span>.<br/>
+<span class="id" type="var">inv</span> <span class="id" type="var">H<sub>1</sub></span>. <span class="id" type="var">left</span>. <span class="id" type="tactic">apply</span> <span class="id" type="var">H<sub>0</sub></span>.<br/>
+<span class="id" type="var">inv</span> <span class="id" type="var">H<sub>0</sub></span>. <span class="id" type="var">right</span>. <span class="id" type="var">left</span>. <span class="id" type="tactic">apply</span> <span class="id" type="var">H<sub>1</sub></span>.<br/>
+<span class="id" type="var">inv</span> <span class="id" type="var">H<sub>1</sub></span>.<br/>
+<span class="id" type="keyword">Qed</span>.<br/>
+</div>
+
+<div class="doc">
+<a name="lab196"></a><h2 class="section">SortA_equivlistA_eqlistA</h2>
+ Suppose two lists <span class="inlinecode"><span class="id" type="var">al</span>,<span class="id" type="var">bl</span></span> are "equivalent:" they contain the same set of elements
+    (modulo an equivalence relation <span class="inlinecode"><span class="id" type="var">eqA</span></span> on elements, perhaps in different orders, 
+    and perhaps with different numbers of repetitions).  That is, suppose
+    <span class="inlinecode"><span class="id" type="var">equivlistA</span></span> <span class="inlinecode"><span class="id" type="var">eqA</span></span> <span class="inlinecode"><span class="id" type="var">al</span></span> <span class="inlinecode"><span class="id" type="var">bl</span></span>.
+
+<div class="paragraph"> </div>
+
+    And suppose list <span class="inlinecode"><span class="id" type="var">al</span></span> is sorted, in some strict total order (respecting the same equivalence
+    relation <span class="inlinecode"><span class="id" type="var">eqA</span></span>).  And suppose list <span class="inlinecode"><span class="id" type="var">bl</span></span> is sorted.  Then the lists must be <i>equal</i>
+    (modulo <span class="inlinecode"><span class="id" type="var">eqA</span></span>).   
+
+<div class="paragraph"> </div>
+
+    Just to make this easier to think about, suppose <span class="inlinecode"><span class="id" type="var">eqA</span></span> is just ordinary equality.
+    Then if <span class="inlinecode"><span class="id" type="var">al</span></span> and <span class="inlinecode"><span class="id" type="var">bl</span></span> contain the same set of elements (perhaps reordered),
+    and each list is sorted (by <i>less-than</i>, not by <i>less-or-equal</i>), then they must be equal.  Obviously.
+
+<div class="paragraph"> </div>
+
+    That's what the theorem <span class="inlinecode"><span class="id" type="var">SortA_equivlistA_eqlistA</span></span> says, in the Coq library: 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Check</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Lists.SetoidList.html#SortA_equivlistA_eqlistA"><span class="id" type="lemma">SortA_equivlistA_eqlistA</span></a>. <span class="comment">(*<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;forall&nbsp;(A&nbsp;:&nbsp;Type)&nbsp;(eqA&nbsp;:&nbsp;A&nbsp;-&gt;&nbsp;A&nbsp;-&gt;&nbsp;Prop),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Equivalence&nbsp;eqA&nbsp;-&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;forall&nbsp;ltA&nbsp;:&nbsp;A&nbsp;-&gt;&nbsp;A&nbsp;-&gt;&nbsp;Prop,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;StrictOrder&nbsp;ltA&nbsp;-&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Proper&nbsp;(eqA&nbsp;==&gt;&nbsp;eqA&nbsp;==&gt;&nbsp;iff)&nbsp;ltA&nbsp;-&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;forall&nbsp;l&nbsp;l'&nbsp;:&nbsp;list&nbsp;A,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sorted&nbsp;ltA&nbsp;l&nbsp;-&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sorted&nbsp;ltA&nbsp;l'&nbsp;-&gt;&nbsp;equivlistA&nbsp;eqA&nbsp;l&nbsp;l'&nbsp;-&gt;&nbsp;eqlistA&nbsp;eqA&nbsp;l&nbsp;l'&nbsp;&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+That is, suppose <span class="inlinecode"><span class="id" type="var">eqA</span></span> is an equivalence relation on type <span class="inlinecode"><span class="id" type="var">A</span></span>, that is,
+     <span class="inlinecode"><span class="id" type="var">eqA</span></span> is reflexive, symmetric, and transitive.  And suppose <span class="inlinecode"><span class="id" type="var">ltA</span></span> is a strict order,
+     that is, irreflexive and transitive.   And suppose <span class="inlinecode"><span class="id" type="var">ltA</span></span> respects the equivalence
+     relation, that is, if <span class="inlinecode"><span class="id" type="var">eqA</span></span> <span class="inlinecode"><span class="id" type="var">x</span></span> <span class="inlinecode"><span class="id" type="var">x'</span></span> and <span class="inlinecode"><span class="id" type="var">eqA</span></span> <span class="inlinecode"><span class="id" type="var">y</span></span> <span class="inlinecode"><span class="id" type="var">y'</span></span>, then <span class="inlinecode"><span class="id" type="var">ltA</span></span> <span class="inlinecode"><span class="id" type="var">x</span></span> <span class="inlinecode"><span class="id" type="var">y</span></span> <span class="inlinecode">↔</span> <span class="inlinecode"><span class="id" type="var">ltA</span></span> <span class="inlinecode"><span class="id" type="var">x'</span></span> <span class="inlinecode"><span class="id" type="var">y'</span></span>.
+     THEN, if <span class="inlinecode"><span class="id" type="var">l</span></span> is sorted (using the comparison <span class="inlinecode"><span class="id" type="var">ltA</span></span>), and l' is sorted,
+     and <span class="inlinecode"><span class="id" type="var">l</span>,<span class="id" type="var">l'</span></span> contain equivalent sets of elements, then <span class="inlinecode"><span class="id" type="var">l</span>,<span class="id" type="var">l'</span></span> must be equal lists,
+     modulo the equivalence relation.
+
+<div class="paragraph"> </div>
+
+    To make this easier to think about, let's use ordinary equality for eqA. 
+    We will be making sets and maps over the "node" type, <span class="inlinecode"><span class="id" type="var">E.t</span></span>, but that's just
+    type <span class="inlinecode"><span class="id" type="var">positive</span></span>.  Therefore, the equivalence <span class="inlinecode"><span class="id" type="var">E.eq</span>:</span> <span class="inlinecode"><span class="id" type="var">E.t</span></span> <span class="inlinecode">→</span> <span class="inlinecode"><span class="id" type="var">E.t</span></span> <span class="inlinecode">→</span> <span class="inlinecode"><span class="id" type="keyword">Prop</span></span> is just
+    the same as <span class="inlinecode"><span class="id" type="var">eq</span></span>. 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Goal</span> <a class="idref" href="Color.html#t"><span class="id" type="definition">E.t</span></a> = <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#positive"><span class="id" type="inductive">positive</span></a>. <span class="id" type="keyword">Proof</span>. <span class="id" type="tactic">reflexivity</span>. <span class="id" type="keyword">Qed</span>.<br/>
+<span class="id" type="keyword">Goal</span> <a class="idref" href="Color.html#eq"><span class="id" type="definition">E.eq</span></a> = @<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Logic.html#eq"><span class="id" type="inductive">eq</span></a> <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#positive"><span class="id" type="inductive">positive</span></a>. <span class="id" type="keyword">Proof</span>. <span class="id" type="tactic">reflexivity</span>. <span class="id" type="keyword">Qed</span>.<br/>
+</div>
+
+<div class="doc">
+And therefore, <span class="inlinecode"><span class="id" type="var">eqlistA</span></span> <span class="inlinecode"><span class="id" type="var">E.eq</span></span> <span class="inlinecode"><span class="id" type="var">al</span></span> <span class="inlinecode"><span class="id" type="var">bl</span></span> means the same as <span class="inlinecode"><span class="id" type="var">al</span>=<span class="id" type="var">bl</span></span>. 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Lemma</span> <a name="eqlistA_Eeq_eq"><span class="id" type="lemma">eqlistA_Eeq_eq</span></a>: <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">al</span> <span class="id" type="var">bl</span>, <a class="idref" href="http://coq.inria.fr/library/Coq.Lists.SetoidList.html#eqlistA"><span class="id" type="inductive">eqlistA</span></a> <a class="idref" href="Color.html#eq"><span class="id" type="definition">E.eq</span></a> <a class="idref" href="Color.html#al"><span class="id" type="variable">al</span></a> <a class="idref" href="Color.html#bl"><span class="id" type="variable">bl</span></a> ↔ <a class="idref" href="Color.html#al"><span class="id" type="variable">al</span></a>=<a class="idref" href="Color.html#bl"><span class="id" type="variable">bl</span></a>.<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="id" type="tactic">split</span>; <span class="id" type="tactic">intro</span>.<br/>
+* <span class="id" type="tactic">induction</span> <span class="id" type="var">H</span>. <span class="id" type="tactic">reflexivity</span>. <span class="id" type="tactic">unfold</span> <a class="idref" href="Color.html#eq"><span class="id" type="definition">E.eq</span></a> <span class="id" type="keyword">in</span> <span class="id" type="var">H</span>. <span class="id" type="tactic">subst</span>. <span class="id" type="tactic">reflexivity</span>.<br/>
+* <span class="id" type="tactic">subst</span>. <span class="id" type="tactic">induction</span> <span class="id" type="var">bl</span>. <span class="id" type="var">constructor</span>. <span class="id" type="var">constructor</span>.<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">unfold</span> <a class="idref" href="Color.html#eq"><span class="id" type="definition">E.eq</span></a>. <span class="id" type="tactic">reflexivity</span>. <span class="id" type="tactic">assumption</span>.<br/>
+<span class="id" type="keyword">Qed</span>.<br/>
+</div>
+
+<div class="doc">
+So now, the theorem:  if <span class="inlinecode"><span class="id" type="var">al</span></span> and <span class="inlinecode"><span class="id" type="var">bl</span></span> are sorted, and contain "the same" elements,
+   then they are equal: 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Lemma</span> <a name="SortE_equivlistE_eqlistE"><span class="id" type="lemma">SortE_equivlistE_eqlistE</span></a>:<br/>
+&nbsp;<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">al</span> <span class="id" type="var">bl</span>, <a class="idref" href="http://coq.inria.fr/library/Coq.Sorting.Sorted.html#Sorted"><span class="id" type="inductive">Sorted</span></a> <a class="idref" href="Color.html#lt"><span class="id" type="definition">E.lt</span></a> <a class="idref" href="Color.html#al"><span class="id" type="variable">al</span></a> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/library/Coq.Sorting.Sorted.html#Sorted"><span class="id" type="inductive">Sorted</span></a> <a class="idref" href="Color.html#lt"><span class="id" type="definition">E.lt</span></a> <a class="idref" href="Color.html#bl"><span class="id" type="variable">bl</span></a> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.SetoidList.html#equivlistA"><span class="id" type="definition">equivlistA</span></a> <a class="idref" href="Color.html#eq"><span class="id" type="definition">E.eq</span></a> <a class="idref" href="Color.html#al"><span class="id" type="variable">al</span></a> <a class="idref" href="Color.html#bl"><span class="id" type="variable">bl</span></a> → <a class="idref" href="http://coq.inria.fr/library/Coq.Lists.SetoidList.html#eqlistA"><span class="id" type="inductive">eqlistA</span></a> <a class="idref" href="Color.html#eq"><span class="id" type="definition">E.eq</span></a> <a class="idref" href="Color.html#al"><span class="id" type="variable">al</span></a> <a class="idref" href="Color.html#bl"><span class="id" type="variable">bl</span></a>.<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Lists.SetoidList.html#SortA_equivlistA_eqlistA"><span class="id" type="lemma">SortA_equivlistA_eqlistA</span></a>; <span class="id" type="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">apply</span> <a class="idref" href="Color.html#lt_strict"><span class="id" type="lemma">lt_strict</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">apply</span> <a class="idref" href="Color.html#lt_proper"><span class="id" type="lemma">lt_proper</span></a>.<br/>
+<span class="id" type="keyword">Qed</span>.<br/>
+</div>
+
+<div class="doc">
+If list <span class="inlinecode"><span class="id" type="var">l</span></span> is sorted, and you apply <span class="inlinecode"><span class="id" type="var">List.filter</span></span> to remove the elements on which
+     <span class="inlinecode"><span class="id" type="var">f</span></span> is <span class="inlinecode"><span class="id" type="var">false</span></span>, then the result is still sorted.  Obviously.  
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Lemma</span> <a name="filter_sortE"><span class="id" type="lemma">filter_sortE</span></a>: <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">f</span> <span class="id" type="var">l</span>, <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/library/Coq.Sorting.Sorted.html#Sorted"><span class="id" type="inductive">Sorted</span></a> <a class="idref" href="Color.html#lt"><span class="id" type="definition">E.lt</span></a> <a class="idref" href="Color.html#l"><span class="id" type="variable">l</span></a> → <a class="idref" href="http://coq.inria.fr/library/Coq.Sorting.Sorted.html#Sorted"><span class="id" type="inductive">Sorted</span></a> <a class="idref" href="Color.html#lt"><span class="id" type="definition">E.lt</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#filter"><span class="id" type="definition">List.filter</span></a> <a class="idref" href="Color.html#f"><span class="id" type="variable">f</span></a> <a class="idref" href="Color.html#l"><span class="id" type="variable">l</span></a>).<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Lists.SetoidList.html#filter_sort"><span class="id" type="lemma">filter_sort</span></a> <span class="id" type="keyword">with</span> <a class="idref" href="Color.html#eq"><span class="id" type="definition">E.eq</span></a>; <span class="id" type="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">apply</span> <a class="idref" href="Color.html#lt_strict"><span class="id" type="lemma">lt_strict</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">apply</span> <a class="idref" href="Color.html#lt_proper"><span class="id" type="lemma">lt_proper</span></a>.<br/>
+<span class="id" type="keyword">Qed</span>.<br/>
+</div>
+
+<div class="doc">
+<a name="lab197"></a><h2 class="section">S.remove and S.elements</h2>
+ The <span class="inlinecode"><span class="id" type="var">FSets</span></span> interface (and therefore our <span class="inlinecode"><span class="id" type="keyword">Module</span></span> <span class="inlinecode"><span class="id" type="var">S</span></span>) provides these two functions: 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Check</span> <a class="idref" href="Color.html#remove"><span class="id" type="definition">S.remove</span></a>. <span class="comment">(*&nbsp;:&nbsp;S.elt&nbsp;-&gt;&nbsp;S.t&nbsp;-&gt;&nbsp;S.t&nbsp;*)</span><br/>
+<span class="id" type="keyword">Check</span> <a class="idref" href="Color.html#elements"><span class="id" type="definition">S.elements</span></a>. <span class="comment">(*&nbsp;:&nbsp;S.t&nbsp;-&gt;&nbsp;list&nbsp;S.elt&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+In module <span class="inlinecode"><span class="id" type="var">S</span></span>, of course, <span class="inlinecode"><span class="id" type="var">S.elt</span>=<span class="id" type="var">positive</span></span>, as these are sets of positive numbers.
+
+<div class="paragraph"> </div>
+
+    Now, this relationship between <span class="inlinecode"><span class="id" type="var">S.remove</span></span> and <span class="inlinecode"><span class="id" type="var">S.elements</span></span> will soon be useful: 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Lemma</span> <a name="Sremove_elements"><span class="id" type="lemma">Sremove_elements</span></a>:  <span style='font-size:120%;'>&forall;</span> (<span class="id" type="var">i</span>: <a class="idref" href="Color.html#t"><span class="id" type="definition">E.t</span></a>) (<span class="id" type="var">s</span>: <a class="idref" href="Color.html#t"><span class="id" type="definition">S.t</span></a>), <br/>
+&nbsp;&nbsp;<a class="idref" href="Color.html#In"><span class="id" type="definition">S.In</span></a> <a class="idref" href="Color.html#i"><span class="id" type="variable">i</span></a> <a class="idref" href="Color.html#s"><span class="id" type="variable">s</span></a> → <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Color.html#elements"><span class="id" type="definition">S.elements</span></a> (<a class="idref" href="Color.html#remove"><span class="id" type="definition">S.remove</span></a> <a class="idref" href="Color.html#i"><span class="id" type="variable">i</span></a> <a class="idref" href="Color.html#s"><span class="id" type="variable">s</span></a>) = <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#filter"><span class="id" type="definition">List.filter</span></a> (<span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> ⇒ <span class="id" type="keyword">if</span> <a class="idref" href="Color.html#eq_dec"><span class="id" type="lemma">E.eq_dec</span></a> <a class="idref" href="Color.html#x"><span class="id" type="variable">x</span></a> <a class="idref" href="Color.html#i"><span class="id" type="variable">i</span></a> <span class="id" type="keyword">then</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#false"><span class="id" type="constructor">false</span></a> <span class="id" type="keyword">else</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#true"><span class="id" type="constructor">true</span></a>) (<a class="idref" href="Color.html#elements"><span class="id" type="definition">S.elements</span></a> <a class="idref" href="Color.html#s"><span class="id" type="variable">s</span></a>).<br/>
+<span class="id" type="keyword">Abort</span>. <span class="comment">(*&nbsp;Before&nbsp;we&nbsp;prove&nbsp;that,&nbsp;there&nbsp;is&nbsp;some&nbsp;preliminary&nbsp;work&nbsp;to&nbsp;do.&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+That is, if <span class="inlinecode"><span class="id" type="var">i</span></span> is in the set <span class="inlinecode"><span class="id" type="var">s</span></span>, then the elements of <span class="inlinecode"><span class="id" type="var">S.remove</span></span> <span class="inlinecode"><span class="id" type="var">i</span></span> <span class="inlinecode"><span class="id" type="var">s</span></span> is the
+    list that you get by filtering <span class="inlinecode"><span class="id" type="var">i</span></span> out of <span class="inlinecode"><span class="id" type="var">S.elements</span></span> <span class="inlinecode"><span class="id" type="var">s</span></span>.  Go ahead and prove it! 
+<div class="paragraph"> </div>
+
+<a name="lab198"></a><h4 class="section">Exercise: 3 stars (Sremove_elements)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Lemma</span> <a name="Proper_eq_eq"><span class="id" type="lemma">Proper_eq_eq</span></a>:<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">f</span>, <a class="idref" href="http://coq.inria.fr/library/Coq.Classes.Morphisms.html#Proper"><span class="id" type="class">Proper</span></a> (<a class="idref" href="Color.html#eq"><span class="id" type="definition">E.eq</span></a> ==&gt; @<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Logic.html#eq"><span class="id" type="inductive">eq</span></a> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#bool"><span class="id" type="inductive">bool</span></a>) <a class="idref" href="Color.html#f"><span class="id" type="variable">f</span></a>.<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="id" type="tactic">unfold</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Classes.Morphisms.html#Proper"><span class="id" type="class">Proper</span></a>. <span class="id" type="tactic">unfold</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Classes.Morphisms.html#respectful"><span class="id" type="definition">respectful</span></a>.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Lemma</span> <a name="Sremove_elements"><span class="id" type="lemma">Sremove_elements</span></a>:  <span style='font-size:120%;'>&forall;</span> (<span class="id" type="var">i</span>: <a class="idref" href="Color.html#t"><span class="id" type="definition">E.t</span></a>) (<span class="id" type="var">s</span>: <a class="idref" href="Color.html#t"><span class="id" type="definition">S.t</span></a>), <br/>
+&nbsp;&nbsp;<a class="idref" href="Color.html#In"><span class="id" type="definition">S.In</span></a> <a class="idref" href="Color.html#i"><span class="id" type="variable">i</span></a> <a class="idref" href="Color.html#s"><span class="id" type="variable">s</span></a> → <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Color.html#elements"><span class="id" type="definition">S.elements</span></a> (<a class="idref" href="Color.html#remove"><span class="id" type="definition">S.remove</span></a> <a class="idref" href="Color.html#i"><span class="id" type="variable">i</span></a> <a class="idref" href="Color.html#s"><span class="id" type="variable">s</span></a>) = <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#filter"><span class="id" type="definition">List.filter</span></a> (<span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> ⇒ <span class="id" type="keyword">if</span> <a class="idref" href="Color.html#eq_dec"><span class="id" type="lemma">E.eq_dec</span></a> <a class="idref" href="Color.html#x"><span class="id" type="variable">x</span></a> <a class="idref" href="Color.html#i"><span class="id" type="variable">i</span></a> <span class="id" type="keyword">then</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#false"><span class="id" type="constructor">false</span></a> <span class="id" type="keyword">else</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#true"><span class="id" type="constructor">true</span></a>) (<a class="idref" href="Color.html#elements"><span class="id" type="definition">S.elements</span></a> <a class="idref" href="Color.html#s"><span class="id" type="variable">s</span></a>).<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="id" type="tactic">intros</span>.<br/>
+<span class="id" type="tactic">apply</span> <a class="idref" href="Color.html#eqlistA_Eeq_eq"><span class="id" type="lemma">eqlistA_Eeq_eq</span></a>.<br/>
+<span class="id" type="tactic">apply</span> <a class="idref" href="Color.html#SortE_equivlistE_eqlistE"><span class="id" type="lemma">SortE_equivlistE_eqlistE</span></a>.<br/>
+* <span class="comment">(*&nbsp;To&nbsp;prove&nbsp;this&nbsp;one,&nbsp;<span class="inlinecode"><span class="id" type="var">SearchAbout</span></span> <span class="inlinecode"><span class="id" type="var">S.elements</span></span>&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">admit</span>.<br/>
+* <span class="comment">(*&nbsp;Use&nbsp;<span class="inlinecode"><span class="id" type="var">filter_sortE</span></span>&nbsp;to&nbsp;prove&nbsp;this&nbsp;one&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">admit</span>.<br/>
+*<br/>
+<span class="id" type="tactic">intro</span> <span class="id" type="var">j</span>.<br/>
+<span class="id" type="tactic">rewrite</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Lists.SetoidList.html#filter_InA"><span class="id" type="lemma">filter_InA</span></a>; [ | <span class="id" type="tactic">apply</span> <a class="idref" href="Color.html#Proper_eq_eq"><span class="id" type="axiom">Proper_eq_eq</span></a>].<br/>
+<span class="id" type="tactic">destruct</span> (<a class="idref" href="Color.html#eq_dec"><span class="id" type="lemma">E.eq_dec</span></a> <span class="id" type="var">j</span> <span class="id" type="var">i</span>).<br/>
+<span class="comment">(*&nbsp;To&nbsp;prove&nbsp;this&nbsp;one,&nbsp;you'll&nbsp;need&nbsp;&nbsp;S.remove_1,&nbsp;S.remove_2,&nbsp;S.remove_3,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;S.elements_1,&nbsp;S.elements_2.&nbsp;*)</span><br/>
+&nbsp;+ <span class="comment">(*&nbsp;j=i&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">admit</span>.<br/>
+&nbsp;+ <span class="comment">(*&nbsp;j&nbsp;&lt;&gt;&nbsp;i&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">admit</span>.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+<a name="lab199"></a><h2 class="section">Lists of (key,value) Pairs</h2>
+
+<div class="paragraph"> </div>
+
+ The elements of a finite map from positives to type A 
+     (that is, the <span class="inlinecode"><span class="id" type="var">M.elements</span></span> of a <span class="inlinecode"><span class="id" type="var">M.t</span></span> <span class="inlinecode"><span class="id" type="var">A</span></span>) is a list of pairs <span class="inlinecode">(<span class="id" type="var">positive</span>*<span class="id" type="var">A</span>)</span>. 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Check</span> <a class="idref" href="Color.html#elements"><span class="id" type="definition">M.elements</span></a>. <span class="comment">(*&nbsp;&nbsp;:&nbsp;forall&nbsp;A&nbsp;:&nbsp;Type,&nbsp;M.t&nbsp;A&nbsp;-&gt;&nbsp;list&nbsp;(positive&nbsp;*&nbsp;A)&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+Let's start with a little lemma about lists of pairs:  Suppose <span class="inlinecode"><span class="id" type="var">l</span>:</span> <span class="inlinecode"><span class="id" type="var">list</span></span> <span class="inlinecode">(<span class="id" type="var">positive</span>*<span class="id" type="var">A</span>)</span>.  
+     Then <span class="inlinecode"><span class="id" type="var">j</span></span> is in <span class="inlinecode"><span class="id" type="var">map</span></span> <span class="inlinecode"><span class="id" type="var">fst</span></span> <span class="inlinecode"><span class="id" type="var">l</span></span>   iff   there is some e such that (j,e) is in l. 
+<div class="paragraph"> </div>
+
+<a name="lab200"></a><h4 class="section">Exercise: 2 stars (InA_map_fst_key)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Lemma</span> <a name="InA_map_fst_key"><span class="id" type="lemma">InA_map_fst_key</span></a>:<br/>
+&nbsp;<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">A</span> <span class="id" type="var">j</span> <span class="id" type="var">l</span>, <br/>
+&nbsp;<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.SetoidList.html#InA"><span class="id" type="inductive">InA</span></a> <a class="idref" href="Color.html#eq"><span class="id" type="definition">E.eq</span></a> <a class="idref" href="Color.html#j"><span class="id" type="variable">j</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#map"><span class="id" type="definition">map</span></a> (@<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#fst"><span class="id" type="definition">fst</span></a> <a class="idref" href="Color.html#t"><span class="id" type="definition">M.E.t</span></a> <a class="idref" href="Color.html#A"><span class="id" type="variable">A</span></a>) <a class="idref" href="Color.html#l"><span class="id" type="variable">l</span></a>) ↔ <span style='font-size:120%;'>&exist;</span> <span class="id" type="var">e</span>, <a class="idref" href="http://coq.inria.fr/library/Coq.Lists.SetoidList.html#InA"><span class="id" type="inductive">InA</span></a> (@<a class="idref" href="Color.html#eq_key_elt"><span class="id" type="definition">M.eq_key_elt</span></a> <a class="idref" href="Color.html#A"><span class="id" type="variable">A</span></a>) (<a class="idref" href="Color.html#j"><span class="id" type="variable">j</span></a>,<a class="idref" href="Color.html#e"><span class="id" type="variable">e</span></a>) <a class="idref" href="Color.html#l"><span class="id" type="variable">l</span></a>.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+<a name="lab201"></a><h4 class="section">Exercise: 3 stars (Sorted_lt_key)</h4>
+ The function <span class="inlinecode"><span class="id" type="var">M.lt_key</span></span> compares two elements of an <span class="inlinecode"><span class="id" type="var">M.elements</span></span> list,
+    that is, two pairs of type <span class="inlinecode"><span class="id" type="var">positive</span>*<span class="id" type="var">A</span></span>, by just comparing their first elements
+    using <span class="inlinecode"><span class="id" type="var">E.lt</span></span>.  Therefore, an elements list (of type <span class="inlinecode"><span class="id" type="var">list</span>(<span class="id" type="var">positive</span>*<span class="id" type="var">A</span>)</span> is <span class="inlinecode"><span class="id" type="var">Sorted</span></span>
+    by <span class="inlinecode"><span class="id" type="var">M.lt_key</span></span> iff its list-of-first-elements is <span class="inlinecode"><span class="id" type="var">Sorted</span></span> by <span class="inlinecode"><span class="id" type="var">E.lt</span></span>. 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Lemma</span> <a name="Sorted_lt_key"><span class="id" type="lemma">Sorted_lt_key</span></a>:<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">A</span> (<span class="id" type="var">al</span>: <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#positive"><span class="id" type="inductive">positive</span></a>*<a class="idref" href="Color.html#A"><span class="id" type="variable">A</span></a>)), <br/>
+&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/library/Coq.Sorting.Sorted.html#Sorted"><span class="id" type="inductive">Sorted</span></a> (@<a class="idref" href="Color.html#lt_key"><span class="id" type="definition">M.lt_key</span></a> <a class="idref" href="Color.html#A"><span class="id" type="variable">A</span></a>) <a class="idref" href="Color.html#al"><span class="id" type="variable">al</span></a> ↔  <a class="idref" href="http://coq.inria.fr/library/Coq.Sorting.Sorted.html#Sorted"><span class="id" type="inductive">Sorted</span></a> <a class="idref" href="Color.html#lt"><span class="id" type="definition">E.lt</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#map"><span class="id" type="definition">map</span></a> (@<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#fst"><span class="id" type="definition">fst</span></a> <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#positive"><span class="id" type="inductive">positive</span></a> <a class="idref" href="Color.html#A"><span class="id" type="variable">A</span></a>) <a class="idref" href="Color.html#al"><span class="id" type="variable">al</span></a>).<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+<a name="lab202"></a><h2 class="section">Cardinality</h2>
+
+<div class="paragraph"> </div>
+
+ The <i>cardinality</i> of a set is the number of distinct elements.
+  The cardinality of a finite map is, essentially, the cardinality of 
+   its domain set. 
+<div class="paragraph"> </div>
+
+<a name="lab203"></a><h4 class="section">Exercise: 4 stars (cardinal_map)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Lemma</span> <a name="cardinal_map"><span class="id" type="lemma">cardinal_map</span></a>:  <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">A</span> <span class="id" type="var">B</span> (<span class="id" type="var">f</span>: <a class="idref" href="Color.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="Color.html#B"><span class="id" type="variable">B</span></a>) <span class="id" type="var">g</span>, <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Color.html#cardinal"><span class="id" type="definition">M.cardinal</span></a> (<a class="idref" href="Color.html#map"><span class="id" type="definition">M.map</span></a> <a class="idref" href="Color.html#f"><span class="id" type="variable">f</span></a> <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a>) = <a class="idref" href="Color.html#cardinal"><span class="id" type="definition">M.cardinal</span></a> <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a>.<br/>
+</div>
+
+<div class="doc">
+Hint:  To prove this theorem, I used these lemmas.  
+     You might find a different way. 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Check</span> <a class="idref" href="Color.html#cardinal_1"><span class="id" type="lemma">M.cardinal_1</span></a>.<br/>
+<span class="id" type="keyword">Check</span> <a class="idref" href="Color.html#elements_1"><span class="id" type="lemma">M.elements_1</span></a>.<br/>
+<span class="id" type="keyword">Check</span> <a class="idref" href="Color.html#elements_2"><span class="id" type="lemma">M.elements_2</span></a>.<br/>
+<span class="id" type="keyword">Check</span> <a class="idref" href="Color.html#elements_3"><span class="id" type="lemma">M.elements_3</span></a>.<br/>
+<span class="id" type="keyword">Check</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#map_length"><span class="id" type="lemma">map_length</span></a>.<br/>
+<span class="id" type="keyword">Check</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Lists.SetoidList.html#eqlistA_length"><span class="id" type="lemma">eqlistA_length</span></a>.<br/>
+<span class="id" type="keyword">Check</span> <a class="idref" href="Color.html#SortE_equivlistE_eqlistE"><span class="id" type="lemma">SortE_equivlistE_eqlistE</span></a>.<br/>
+<span class="id" type="keyword">Check</span> <a class="idref" href="Color.html#InA_map_fst_key"><span class="id" type="axiom">InA_map_fst_key</span></a>.<br/>
+<span class="id" type="keyword">Check</span> <a class="idref" href="Color.html#map_mapsto_iff"><span class="id" type="lemma">WF.map_mapsto_iff</span></a>.<br/>
+<span class="id" type="keyword">Check</span> <a class="idref" href="Color.html#Sorted_lt_key"><span class="id" type="axiom">Sorted_lt_key</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+<a name="lab204"></a><h4 class="section">Exercise: 4 stars (Sremove_cardinal_less)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Lemma</span> <a name="Sremove_cardinal_less"><span class="id" type="lemma">Sremove_cardinal_less</span></a>: <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">i</span> <span class="id" type="var">s</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Color.html#In"><span class="id" type="definition">S.In</span></a> <a class="idref" href="Color.html#i"><span class="id" type="variable">i</span></a> <a class="idref" href="Color.html#s"><span class="id" type="variable">s</span></a> →    <a class="idref" href="Color.html#cardinal"><span class="id" type="definition">S.cardinal</span></a> (<a class="idref" href="Color.html#remove"><span class="id" type="definition">S.remove</span></a> <a class="idref" href="Color.html#i"><span class="id" type="variable">i</span></a> <a class="idref" href="Color.html#s"><span class="id" type="variable">s</span></a>) &lt; <a class="idref" href="Color.html#cardinal"><span class="id" type="definition">S.cardinal</span></a> <a class="idref" href="Color.html#s"><span class="id" type="variable">s</span></a>.<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="id" type="tactic">intros</span>.<br/>
+<span class="id" type="tactic">repeat</span> <span class="id" type="tactic">rewrite</span> <a class="idref" href="Color.html#cardinal_1"><span class="id" type="lemma">S.cardinal_1</span></a>.<br/>
+<span class="id" type="tactic">generalize</span> (<a class="idref" href="Color.html#Sremove_elements"><span class="id" type="axiom">Sremove_elements</span></a> <span class="id" type="var">_</span> <span class="id" type="var">_</span> <span class="id" type="var">H</span>); <span class="id" type="tactic">intro</span>.<br/>
+<span class="id" type="tactic">rewrite</span> <span class="id" type="var">H<sub>0</sub></span>; <span class="id" type="tactic">clear</span> <span class="id" type="var">H<sub>0</sub></span>.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+ We have a lemma <span class="inlinecode"><span class="id" type="var">SortA_equivlistA_eqlistA</span></span> that talks about
+    arbitrary equivalence relations and arbitrary total-order relations
+    (as long as they are compatible.  Here is a specialization to
+    a particular equivalence (<span class="inlinecode"><span class="id" type="var">M.eq_key_elt</span></span>) and order (<span class="inlinecode"><span class="id" type="var">M.lt_key</span></span>). 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Lemma</span> <a name="specialize_SortA_equivlistA_eqlistA"><span class="id" type="lemma">specialize_SortA_equivlistA_eqlistA</span></a>:<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">A</span> <span class="id" type="var">al</span> <span class="id" type="var">bl</span>, <br/>
+&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/library/Coq.Sorting.Sorted.html#Sorted"><span class="id" type="inductive">Sorted</span></a> (@<a class="idref" href="Color.html#lt_key"><span class="id" type="definition">M.lt_key</span></a> <a class="idref" href="Color.html#A"><span class="id" type="variable">A</span></a>) <a class="idref" href="Color.html#al"><span class="id" type="variable">al</span></a> →<br/>
+&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/library/Coq.Sorting.Sorted.html#Sorted"><span class="id" type="inductive">Sorted</span></a> (@<a class="idref" href="Color.html#lt_key"><span class="id" type="definition">M.lt_key</span></a> <a class="idref" href="Color.html#A"><span class="id" type="variable">A</span></a>) <a class="idref" href="Color.html#bl"><span class="id" type="variable">bl</span></a> →<br/>
+&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.SetoidList.html#equivlistA"><span class="id" type="definition">equivlistA</span></a> (@<a class="idref" href="Color.html#eq_key_elt"><span class="id" type="definition">M.eq_key_elt</span></a> <a class="idref" href="Color.html#A"><span class="id" type="variable">A</span></a>) <a class="idref" href="Color.html#al"><span class="id" type="variable">al</span></a> <a class="idref" href="Color.html#bl"><span class="id" type="variable">bl</span></a> →<br/>
+&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.SetoidList.html#eqlistA"><span class="id" type="inductive">eqlistA</span></a> (@<a class="idref" href="Color.html#eq_key_elt"><span class="id" type="definition">M.eq_key_elt</span></a> <a class="idref" href="Color.html#A"><span class="id" type="variable">A</span></a>) <a class="idref" href="Color.html#al"><span class="id" type="variable">al</span></a> <a class="idref" href="Color.html#bl"><span class="id" type="variable">bl</span></a>.<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="id" type="tactic">intros</span>.<br/>
+<span class="id" type="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Lists.SetoidList.html#SortA_equivlistA_eqlistA"><span class="id" type="lemma">SortA_equivlistA_eqlistA</span></a> <span class="id" type="keyword">with</span> (@<a class="idref" href="Color.html#lt_key"><span class="id" type="definition">M.lt_key</span></a> <span class="id" type="var">A</span>); <span class="id" type="tactic">auto</span>.<br/>
+<span class="id" type="tactic">apply</span> <a class="idref" href="Color.html#eqke_equiv"><span class="id" type="instance">M.eqke_equiv</span></a>.<br/>
+<span class="id" type="tactic">apply</span> <a class="idref" href="Color.html#ltk_strorder"><span class="id" type="instance">M.ltk_strorder</span></a>.<br/>
+<span class="id" type="tactic">clear</span>.<br/>
+<span class="id" type="tactic">repeat</span> <span class="id" type="tactic">intro</span>.<br/>
+<span class="id" type="tactic">unfold</span> <a class="idref" href="Color.html#lt_key"><span class="id" type="definition">M.lt_key</span></a>, <a class="idref" href="Color.html#eq_key_elt"><span class="id" type="definition">M.eq_key_elt</span></a> <span class="id" type="keyword">in</span> *.<br/>
+<span class="id" type="tactic">destruct</span> <span class="id" type="var">H</span>, <span class="id" type="var">H<sub>0</sub></span>. <span class="id" type="tactic">rewrite</span> <span class="id" type="var">H</span>,<span class="id" type="var">H<sub>0</sub></span>. <span class="id" type="tactic">split</span>; <span class="id" type="tactic">auto</span>.<br/>
+<span class="id" type="keyword">Qed</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Lemma</span> <a name="Proper_eq_key_elt"><span class="id" type="lemma">Proper_eq_key_elt</span></a>: <br/>
+&nbsp;<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">A</span>, <br/>
+&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/library/Coq.Classes.Morphisms.html#Proper"><span class="id" type="class">Proper</span></a> (@<a class="idref" href="Color.html#eq_key_elt"><span class="id" type="definition">M.eq_key_elt</span></a> <a class="idref" href="Color.html#A"><span class="id" type="variable">A</span></a> ==&gt; @<a class="idref" href="Color.html#eq_key_elt"><span class="id" type="definition">M.eq_key_elt</span></a> <a class="idref" href="Color.html#A"><span class="id" type="variable">A</span></a> ==&gt; <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Logic.html#iff"><span class="id" type="definition">iff</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> : <a class="idref" href="Color.html#t"><span class="id" type="definition">E.t</span></a> * <a class="idref" href="Color.html#A"><span class="id" type="variable">A</span></a> ⇒ <a class="idref" href="Color.html#lt"><span class="id" type="definition">E.lt</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#fst"><span class="id" type="definition">fst</span></a> <a class="idref" href="Color.html#x"><span class="id" type="variable">x</span></a>) (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#fst"><span class="id" type="definition">fst</span></a> <a class="idref" href="Color.html#y"><span class="id" type="variable">y</span></a>)).<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+&nbsp;<span class="id" type="tactic">repeat</span> <span class="id" type="tactic">intro</span>. <span class="id" type="tactic">destruct</span> <span class="id" type="var">H</span>,<span class="id" type="var">H<sub>0</sub></span>. <span class="id" type="tactic">rewrite</span> <span class="id" type="var">H</span>,<span class="id" type="var">H<sub>0</sub></span>. <span class="id" type="tactic">split</span>; <span class="id" type="tactic">auto</span>.<br/>
+<span class="id" type="keyword">Qed</span>.<br/>
+</div>
+
+<div class="doc">
+<a name="lab205"></a><h4 class="section">Exercise: 4 stars (Mremove_elements)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Lemma</span> <a name="Mremove_elements"><span class="id" type="lemma">Mremove_elements</span></a>:  <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">A</span> <span class="id" type="var">i</span> <span class="id" type="var">s</span>, <br/>
+&nbsp;&nbsp;<a class="idref" href="Color.html#In"><span class="id" type="definition">M.In</span></a> <a class="idref" href="Color.html#i"><span class="id" type="variable">i</span></a> <a class="idref" href="Color.html#s"><span class="id" type="variable">s</span></a> → <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.SetoidList.html#eqlistA"><span class="id" type="inductive">eqlistA</span></a> (@<a class="idref" href="Color.html#eq_key_elt"><span class="id" type="definition">M.eq_key_elt</span></a> <a class="idref" href="Color.html#A"><span class="id" type="variable">A</span></a>) (<a class="idref" href="Color.html#elements"><span class="id" type="definition">M.elements</span></a> (<a class="idref" href="Color.html#remove"><span class="id" type="definition">M.remove</span></a> <a class="idref" href="Color.html#i"><span class="id" type="variable">i</span></a> <a class="idref" href="Color.html#s"><span class="id" type="variable">s</span></a>)) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#filter"><span class="id" type="definition">List.filter</span></a> (<span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> ⇒ <span class="id" type="keyword">if</span> <a class="idref" href="Color.html#eq_dec"><span class="id" type="lemma">E.eq_dec</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#fst"><span class="id" type="definition">fst</span></a> <a class="idref" href="Color.html#x"><span class="id" type="variable">x</span></a>) <a class="idref" href="Color.html#i"><span class="id" type="variable">i</span></a> <span class="id" type="keyword">then</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#false"><span class="id" type="constructor">false</span></a> <span class="id" type="keyword">else</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#true"><span class="id" type="constructor">true</span></a>) (<a class="idref" href="Color.html#elements"><span class="id" type="definition">M.elements</span></a> <a class="idref" href="Color.html#s"><span class="id" type="variable">s</span></a>)).<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Hints:&nbsp;*)</span><br/>
+<span class="id" type="keyword">Check</span> <a class="idref" href="Color.html#specialize_SortA_equivlistA_eqlistA"><span class="id" type="lemma">specialize_SortA_equivlistA_eqlistA</span></a>.<br/>
+<span class="id" type="keyword">Check</span> <a class="idref" href="Color.html#elements_1"><span class="id" type="lemma">M.elements_1</span></a>.<br/>
+<span class="id" type="keyword">Check</span> <a class="idref" href="Color.html#elements_2"><span class="id" type="lemma">M.elements_2</span></a>.<br/>
+<span class="id" type="keyword">Check</span> <a class="idref" href="Color.html#elements_3"><span class="id" type="lemma">M.elements_3</span></a>.<br/>
+<span class="id" type="keyword">Check</span> <a class="idref" href="Color.html#remove_1"><span class="id" type="lemma">M.remove_1</span></a>.<br/>
+<span class="id" type="keyword">Check</span> <a class="idref" href="Color.html#eqke_equiv"><span class="id" type="instance">M.eqke_equiv</span></a>.<br/>
+<span class="id" type="keyword">Check</span> <a class="idref" href="Color.html#ltk_strorder"><span class="id" type="instance">M.ltk_strorder</span></a>.<br/>
+<span class="id" type="keyword">Check</span> <a class="idref" href="Color.html#Proper_eq_key_elt"><span class="id" type="lemma">Proper_eq_key_elt</span></a>.<br/>
+<span class="id" type="keyword">Check</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Lists.SetoidList.html#filter_InA"><span class="id" type="lemma">filter_InA</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+<a name="lab206"></a><h4 class="section">Exercise: 3 stars (Mremove_cardinal_less)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Lemma</span> <a name="Mremove_cardinal_less"><span class="id" type="lemma">Mremove_cardinal_less</span></a>: <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">A</span> <span class="id" type="var">i</span> (<span class="id" type="var">s</span>: <a class="idref" href="Color.html#t"><span class="id" type="definition">M.t</span></a> <a class="idref" href="Color.html#A"><span class="id" type="variable">A</span></a>), <a class="idref" href="Color.html#In"><span class="id" type="definition">M.In</span></a> <a class="idref" href="Color.html#i"><span class="id" type="variable">i</span></a> <a class="idref" href="Color.html#s"><span class="id" type="variable">s</span></a> → <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Color.html#cardinal"><span class="id" type="definition">M.cardinal</span></a> (<a class="idref" href="Color.html#remove"><span class="id" type="definition">M.remove</span></a> <a class="idref" href="Color.html#i"><span class="id" type="variable">i</span></a> <a class="idref" href="Color.html#s"><span class="id" type="variable">s</span></a>) &lt; <a class="idref" href="Color.html#cardinal"><span class="id" type="definition">M.cardinal</span></a> <a class="idref" href="Color.html#s"><span class="id" type="variable">s</span></a>.<br/>
+</div>
+
+<div class="doc">
+Look at the proof of <span class="inlinecode"><span class="id" type="var">Sremove_cardinal_less</span></span>, if you succeeded
+   in that, for an idea of how to do this one.   
+</div>
+<div class="code code-tight">
+
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+<a name="lab207"></a><h4 class="section">Exercise: 2 stars (two_little_lemmas)</h4>
+
+</div>
+<div class="code code-space">
+
+<br/>
+<span class="id" type="keyword">Lemma</span> <a name="fold_right_rev_left"><span class="id" type="lemma">fold_right_rev_left</span></a>:<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> (<span class="id" type="var">A</span> <span class="id" type="var">B</span>: <span class="id" type="keyword">Type</span>) (<span class="id" type="var">f</span>: <a class="idref" href="Color.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="Color.html#B"><span class="id" type="variable">B</span></a> → <a class="idref" href="Color.html#A"><span class="id" type="variable">A</span></a>) (<span class="id" type="var">l</span>: <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="Color.html#B"><span class="id" type="variable">B</span></a>) (<span class="id" type="var">i</span>: <a class="idref" href="Color.html#A"><span class="id" type="variable">A</span></a>),<br/>
+&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#fold_left"><span class="id" type="definition">fold_left</span></a> <a class="idref" href="Color.html#f"><span class="id" type="variable">f</span></a> <a class="idref" href="Color.html#l"><span class="id" type="variable">l</span></a> <a class="idref" href="Color.html#i"><span class="id" type="variable">i</span></a> = <a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#fold_right"><span class="id" type="definition">fold_right</span></a> (<span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> ⇒ <a class="idref" href="Color.html#f"><span class="id" type="variable">f</span></a> <a class="idref" href="Color.html#y"><span class="id" type="variable">y</span></a> <a class="idref" href="Color.html#x"><span class="id" type="variable">x</span></a>) <a class="idref" href="Color.html#i"><span class="id" type="variable">i</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#rev"><span class="id" type="definition">rev</span></a> <a class="idref" href="Color.html#l"><span class="id" type="variable">l</span></a>).<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Lemma</span> <a name="Snot_in_empty"><span class="id" type="lemma">Snot_in_empty</span></a>: <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">n</span>, ¬ <a class="idref" href="Color.html#In"><span class="id" type="definition">S.In</span></a> <a class="idref" href="Color.html#n"><span class="id" type="variable">n</span></a> <a class="idref" href="Color.html#empty"><span class="id" type="definition">S.empty</span></a>.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+<a name="lab208"></a><h4 class="section">Exercise: 3 stars (Sin_domain)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Lemma</span> <a name="Sin_domain"><span class="id" type="lemma">Sin_domain</span></a>: <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">A</span> <span class="id" type="var">n</span> (<span class="id" type="var">g</span>: <a class="idref" href="Color.html#t"><span class="id" type="definition">M.t</span></a> <a class="idref" href="Color.html#A"><span class="id" type="variable">A</span></a>), <a class="idref" href="Color.html#In"><span class="id" type="definition">S.In</span></a> <a class="idref" href="Color.html#n"><span class="id" type="variable">n</span></a> (<a class="idref" href="Color.html#Mdomain"><span class="id" type="definition">Mdomain</span></a> <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a>) ↔ <a class="idref" href="Color.html#In"><span class="id" type="definition">M.In</span></a> <a class="idref" href="Color.html#n"><span class="id" type="variable">n</span></a> <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a>.<br/>
+</div>
+
+<div class="doc">
+This seems so obvious!  But I didn't find a really simple proof of it. 
+</div>
+<div class="code code-tight">
+
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+<a name="lab209"></a><h1 class="section">Now Begins the Graph Coloring Program</h1>
+
+</div>
+<div class="code code-space">
+
+<br/>
+<span class="id" type="keyword">Definition</span> <a name="node"><span class="id" type="definition">node</span></a> := <a class="idref" href="Color.html#t"><span class="id" type="definition">E.t</span></a>.<br/>
+<span class="id" type="keyword">Definition</span> <a name="nodeset"><span class="id" type="definition">nodeset</span></a> := <a class="idref" href="Color.html#t"><span class="id" type="definition">S.t</span></a>.<br/>
+<span class="id" type="keyword">Definition</span> <a name="nodemap"><span class="id" type="definition">nodemap</span></a>: <span class="id" type="keyword">Type</span> → <span class="id" type="keyword">Type</span> := <a class="idref" href="Color.html#t"><span class="id" type="definition">M.t</span></a>.<br/>
+<span class="id" type="keyword">Definition</span> <a name="graph"><span class="id" type="definition">graph</span></a> := <a class="idref" href="Color.html#nodemap"><span class="id" type="definition">nodemap</span></a> <a class="idref" href="Color.html#nodeset"><span class="id" type="definition">nodeset</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="adj"><span class="id" type="definition">adj</span></a> (<span class="id" type="var">g</span>: <a class="idref" href="Color.html#graph"><span class="id" type="definition">graph</span></a>) (<span class="id" type="var">i</span>: <a class="idref" href="Color.html#node"><span class="id" type="definition">node</span></a>) : <a class="idref" href="Color.html#nodeset"><span class="id" type="definition">nodeset</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">match</span> <a class="idref" href="Color.html#find"><span class="id" type="definition">M.find</span></a> <a class="idref" href="Color.html#i"><span class="id" type="variable">i</span></a> <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a> <span class="id" type="keyword">with</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some"><span class="id" type="constructor">Some</span></a> <span class="id" type="var">a</span> ⇒ <span class="id" type="var">a</span> | <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#None"><span class="id" type="constructor">None</span></a> ⇒ <a class="idref" href="Color.html#empty"><span class="id" type="definition">S.empty</span></a> <span class="id" type="keyword">end</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="undirected"><span class="id" type="definition">undirected</span></a> (<span class="id" type="var">g</span>: <a class="idref" href="Color.html#graph"><span class="id" type="definition">graph</span></a>) := <br/>
+&nbsp;&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">i</span> <span class="id" type="var">j</span>, <a class="idref" href="Color.html#In"><span class="id" type="definition">S.In</span></a> <a class="idref" href="Color.html#j"><span class="id" type="variable">j</span></a> (<a class="idref" href="Color.html#adj"><span class="id" type="definition">adj</span></a> <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a> <a class="idref" href="Color.html#i"><span class="id" type="variable">i</span></a>) → <a class="idref" href="Color.html#In"><span class="id" type="definition">S.In</span></a> <a class="idref" href="Color.html#i"><span class="id" type="variable">i</span></a> (<a class="idref" href="Color.html#adj"><span class="id" type="definition">adj</span></a> <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a> <a class="idref" href="Color.html#j"><span class="id" type="variable">j</span></a>).<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="no_selfloop"><span class="id" type="definition">no_selfloop</span></a> (<span class="id" type="var">g</span>: <a class="idref" href="Color.html#graph"><span class="id" type="definition">graph</span></a>) := <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">i</span>, ¬ <a class="idref" href="Color.html#In"><span class="id" type="definition">S.In</span></a> <a class="idref" href="Color.html#i"><span class="id" type="variable">i</span></a> (<a class="idref" href="Color.html#adj"><span class="id" type="definition">adj</span></a> <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a> <a class="idref" href="Color.html#i"><span class="id" type="variable">i</span></a>).<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="nodes"><span class="id" type="definition">nodes</span></a> (<span class="id" type="var">g</span>: <a class="idref" href="Color.html#graph"><span class="id" type="definition">graph</span></a>) := <a class="idref" href="Color.html#Mdomain"><span class="id" type="definition">Mdomain</span></a> <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="subset_nodes"><span class="id" type="definition">subset_nodes</span></a> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">P</span>: <a class="idref" href="Color.html#node"><span class="id" type="definition">node</span></a> → <a class="idref" href="Color.html#nodeset"><span class="id" type="definition">nodeset</span></a> → <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#bool"><span class="id" type="inductive">bool</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">g</span>: <a class="idref" href="Color.html#graph"><span class="id" type="definition">graph</span></a>) :=<br/>
+&nbsp;&nbsp;&nbsp;<a class="idref" href="Color.html#fold"><span class="id" type="definition">M.fold</span></a> (<span class="id" type="keyword">fun</span> <span class="id" type="var">n</span> <span class="id" type="var">adj</span> <span class="id" type="var">s</span> ⇒ <span class="id" type="keyword">if</span> <a class="idref" href="Color.html#P"><span class="id" type="variable">P</span></a> <a class="idref" href="Color.html#n"><span class="id" type="variable">n</span></a> <a class="idref" href="Color.html#adj"><span class="id" type="variable">adj</span></a> <span class="id" type="keyword">then</span> <a class="idref" href="Color.html#add"><span class="id" type="definition">S.add</span></a> <a class="idref" href="Color.html#n"><span class="id" type="variable">n</span></a> <a class="idref" href="Color.html#s"><span class="id" type="variable">s</span></a> <span class="id" type="keyword">else</span> <a class="idref" href="Color.html#s"><span class="id" type="variable">s</span></a>) <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a> <a class="idref" href="Color.html#empty"><span class="id" type="definition">S.empty</span></a>.<br/>
+</div>
+
+<div class="doc">
+A node has "low degree" if the cardinality of its adjacency set is less than <span class="inlinecode"><span class="id" type="var">K</span></span> 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Definition</span> <a name="low_deg"><span class="id" type="definition">low_deg</span></a> (<span class="id" type="var">K</span>: <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>) (<span class="id" type="var">n</span>: <a class="idref" href="Color.html#node"><span class="id" type="definition">node</span></a>) (<span class="id" type="var">adj</span>: <a class="idref" href="Color.html#nodeset"><span class="id" type="definition">nodeset</span></a>) : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#bool"><span class="id" type="inductive">bool</span></a> := <a class="idref" href="Color.html#cardinal"><span class="id" type="definition">S.cardinal</span></a> <a class="idref" href="Color.html#adj"><span class="id" type="variable">adj</span></a> &lt;? <a class="idref" href="Color.html#K"><span class="id" type="variable">K</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="remove_node"><span class="id" type="definition">remove_node</span></a> (<span class="id" type="var">n</span>: <a class="idref" href="Color.html#node"><span class="id" type="definition">node</span></a>) (<span class="id" type="var">g</span>: <a class="idref" href="Color.html#graph"><span class="id" type="definition">graph</span></a>) : <a class="idref" href="Color.html#graph"><span class="id" type="definition">graph</span></a> :=<br/>
+&nbsp;&nbsp;<a class="idref" href="Color.html#map"><span class="id" type="definition">M.map</span></a> (<a class="idref" href="Color.html#remove"><span class="id" type="definition">S.remove</span></a> <a class="idref" href="Color.html#n"><span class="id" type="variable">n</span></a>) (<a class="idref" href="Color.html#remove"><span class="id" type="definition">M.remove</span></a> <a class="idref" href="Color.html#n"><span class="id" type="variable">n</span></a> <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a>).<br/>
+</div>
+
+<div class="doc">
+<a name="lab210"></a><h2 class="section">Some Proofs in Support of Termination</h2>
+ We need to prove some lemmas related to the termination of the algorithm
+  before we can actually define the <span class="inlinecode"><span class="id" type="var">Function</span></span>. 
+<div class="paragraph"> </div>
+
+<a name="lab211"></a><h4 class="section">Exercise: 3 stars (subset_nodes_sub)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Lemma</span> <a name="subset_nodes_sub"><span class="id" type="lemma">subset_nodes_sub</span></a>:  <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">P</span> <span class="id" type="var">g</span>, <a class="idref" href="Color.html#Subset"><span class="id" type="definition">S.Subset</span></a> (<a class="idref" href="Color.html#subset_nodes"><span class="id" type="definition">subset_nodes</span></a> <a class="idref" href="Color.html#P"><span class="id" type="variable">P</span></a> <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a>) (<a class="idref" href="Color.html#nodes"><span class="id" type="definition">nodes</span></a> <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a>).<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+<a name="lab212"></a><h4 class="section">Exercise: 3 stars (select_terminates)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Lemma</span> <a name="select_terminates"><span class="id" type="lemma">select_terminates</span></a>: <br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> (<span class="id" type="var">K</span>: <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>) (<span class="id" type="var">g</span> : <a class="idref" href="Color.html#graph"><span class="id" type="definition">graph</span></a>) (<span class="id" type="var">n</span> : <a class="idref" href="Color.html#elt"><span class="id" type="definition">S.elt</span></a>),<br/>
+&nbsp;&nbsp;&nbsp;<a class="idref" href="Color.html#choose"><span class="id" type="definition">S.choose</span></a> (<a class="idref" href="Color.html#subset_nodes"><span class="id" type="definition">subset_nodes</span></a> (<a class="idref" href="Color.html#low_deg"><span class="id" type="definition">low_deg</span></a> <a class="idref" href="Color.html#K"><span class="id" type="variable">K</span></a>) <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a>) = <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some"><span class="id" type="constructor">Some</span></a> <a class="idref" href="Color.html#n"><span class="id" type="variable">n</span></a> → <br/>
+&nbsp;&nbsp;&nbsp;<a class="idref" href="Color.html#cardinal"><span class="id" type="definition">M.cardinal</span></a> (<a class="idref" href="Color.html#remove_node"><span class="id" type="definition">remove_node</span></a> <a class="idref" href="Color.html#n"><span class="id" type="variable">n</span></a> <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a>) &lt; <a class="idref" href="Color.html#cardinal"><span class="id" type="definition">M.cardinal</span></a> <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a>.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+<a name="lab213"></a><h2 class="section">The Rest of the Algorithm</h2>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/library/Coq.funind.Recdef.html#"><span class="id" type="library">Recdef</span></a>. <span class="comment">(*&nbsp;Must&nbsp;import&nbsp;this&nbsp;to&nbsp;use&nbsp;the&nbsp;<span class="inlinecode"><span class="id" type="var">Function</span></span>&nbsp;feature&nbsp;*)</span><br/><hr class='doublespaceincode'/>
+<span class="id" type="var">Function</span> <span class="id" type="var">select</span> (<span class="id" type="var">K</span>: <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>) (<span class="id" type="var">g</span>: <a class="idref" href="Color.html#graph"><span class="id" type="definition">graph</span></a>) {<span class="id" type="keyword">measure</span> <a class="idref" href="Color.html#cardinal"><span class="id" type="definition">M.cardinal</span></a> <span class="id" type="var">g</span>}: <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="Color.html#node"><span class="id" type="definition">node</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">match</span> <a class="idref" href="Color.html#choose"><span class="id" type="definition">S.choose</span></a> (<a class="idref" href="Color.html#subset_nodes"><span class="id" type="definition">subset_nodes</span></a> (<a class="idref" href="Color.html#low_deg"><span class="id" type="definition">low_deg</span></a> <a class="idref" href="Color.html#K"><span class="id" type="variable">K</span></a>) <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a>) <span class="id" type="keyword">with</span><br/>
+&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some"><span class="id" type="constructor">Some</span></a> <span class="id" type="var">n</span> ⇒ <span class="id" type="var">n</span> :: <a class="idref" href="Color.html#select"><span class="id" type="definition">select</span></a> <a class="idref" href="Color.html#K"><span class="id" type="variable">K</span></a> (<a class="idref" href="Color.html#remove_node"><span class="id" type="definition">remove_node</span></a> <span class="id" type="var">n</span> <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a>)<br/>
+&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#None"><span class="id" type="constructor">None</span></a> ⇒ <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil"><span class="id" type="constructor">nil</span></a><br/>
+&nbsp;&nbsp;<span class="id" type="keyword">end</span>.<br/>
+<span class="id" type="keyword">Proof</span>. <span class="id" type="tactic">apply</span> <a class="idref" href="Color.html#select_terminates"><span class="id" type="axiom">select_terminates</span></a>.<br/>
+<span class="id" type="keyword">Defined</span>. <span class="comment">(*&nbsp;Do&nbsp;not&nbsp;use&nbsp;Qed&nbsp;on&nbsp;a&nbsp;Function,&nbsp;otherwise&nbsp;it&nbsp;won't&nbsp;Compute!&nbsp;*)</span><br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="coloring"><span class="id" type="definition">coloring</span></a> := <a class="idref" href="Color.html#t"><span class="id" type="definition">M.t</span></a> <a class="idref" href="Color.html#node"><span class="id" type="definition">node</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="colors_of"><span class="id" type="definition">colors_of</span></a> (<span class="id" type="var">f</span>: <a class="idref" href="Color.html#coloring"><span class="id" type="definition">coloring</span></a>) (<span class="id" type="var">s</span>: <a class="idref" href="Color.html#t"><span class="id" type="definition">S.t</span></a>) : <a class="idref" href="Color.html#t"><span class="id" type="definition">S.t</span></a> := <br/>
+&nbsp;&nbsp;&nbsp;<a class="idref" href="Color.html#fold"><span class="id" type="definition">S.fold</span></a> (<span class="id" type="keyword">fun</span> <span class="id" type="var">n</span> <span class="id" type="var">s</span> ⇒ <span class="id" type="keyword">match</span> <a class="idref" href="Color.html#find"><span class="id" type="definition">M.find</span></a> <a class="idref" href="Color.html#n"><span class="id" type="variable">n</span></a> <a class="idref" href="Color.html#f"><span class="id" type="variable">f</span></a> <span class="id" type="keyword">with</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some"><span class="id" type="constructor">Some</span></a> <span class="id" type="var">c</span> ⇒ <a class="idref" href="Color.html#add"><span class="id" type="definition">S.add</span></a> <span class="id" type="var">c</span> <a class="idref" href="Color.html#s"><span class="id" type="variable">s</span></a> | <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#None"><span class="id" type="constructor">None</span></a> ⇒ <a class="idref" href="Color.html#s"><span class="id" type="variable">s</span></a> <span class="id" type="keyword">end</span>) <a class="idref" href="Color.html#s"><span class="id" type="variable">s</span></a> <a class="idref" href="Color.html#empty"><span class="id" type="definition">S.empty</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="color1"><span class="id" type="definition">color1</span></a> (<span class="id" type="var">palette</span>: <a class="idref" href="Color.html#t"><span class="id" type="definition">S.t</span></a>) (<span class="id" type="var">g</span>: <a class="idref" href="Color.html#graph"><span class="id" type="definition">graph</span></a>) (<span class="id" type="var">n</span>: <a class="idref" href="Color.html#node"><span class="id" type="definition">node</span></a>) (<span class="id" type="var">f</span>: <a class="idref" href="Color.html#coloring"><span class="id" type="definition">coloring</span></a>) : <a class="idref" href="Color.html#coloring"><span class="id" type="definition">coloring</span></a> :=<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">match</span> <a class="idref" href="Color.html#choose"><span class="id" type="definition">S.choose</span></a> (<a class="idref" href="Color.html#diff"><span class="id" type="definition">S.diff</span></a> <a class="idref" href="Color.html#palette"><span class="id" type="variable">palette</span></a> (<a class="idref" href="Color.html#colors_of"><span class="id" type="definition">colors_of</span></a> <a class="idref" href="Color.html#f"><span class="id" type="variable">f</span></a> (<a class="idref" href="Color.html#adj"><span class="id" type="definition">adj</span></a> <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a> <a class="idref" href="Color.html#n"><span class="id" type="variable">n</span></a>))) <span class="id" type="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some"><span class="id" type="constructor">Some</span></a> <span class="id" type="var">c</span> ⇒ <a class="idref" href="Color.html#add"><span class="id" type="definition">M.add</span></a> <a class="idref" href="Color.html#n"><span class="id" type="variable">n</span></a> <span class="id" type="var">c</span> <a class="idref" href="Color.html#f"><span class="id" type="variable">f</span></a><br/>
+&nbsp;&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#None"><span class="id" type="constructor">None</span></a> ⇒ <a class="idref" href="Color.html#f"><span class="id" type="variable">f</span></a><br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">end</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="color"><span class="id" type="definition">color</span></a> (<span class="id" type="var">palette</span>: <a class="idref" href="Color.html#t"><span class="id" type="definition">S.t</span></a>) (<span class="id" type="var">g</span>: <a class="idref" href="Color.html#graph"><span class="id" type="definition">graph</span></a>) : <a class="idref" href="Color.html#coloring"><span class="id" type="definition">coloring</span></a> :=<br/>
+&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#fold_right"><span class="id" type="definition">fold_right</span></a> (<a class="idref" href="Color.html#color1"><span class="id" type="definition">color1</span></a> <a class="idref" href="Color.html#palette"><span class="id" type="variable">palette</span></a> <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a>)  (<a class="idref" href="Color.html#empty"><span class="id" type="definition">M.empty</span></a> <span class="id" type="var">_</span>) (<a class="idref" href="Color.html#select"><span class="id" type="lemma">select</span></a> (<a class="idref" href="Color.html#cardinal"><span class="id" type="definition">S.cardinal</span></a> <a class="idref" href="Color.html#palette"><span class="id" type="variable">palette</span></a>) <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a>).<br/>
+</div>
+
+<div class="doc">
+<a name="lab214"></a><h1 class="section">Proof of Correctness of the Algorithm.</h1>
+
+<div class="paragraph"> </div>
+
+ We want to show that any coloring produced by the <span class="inlinecode"><span class="id" type="var">color</span></span> function actually
+  respects the interference constraints.  This property is called <span class="inlinecode"><span class="id" type="var">coloring_ok</span></span>.  
+
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Definition</span> <a name="coloring_ok"><span class="id" type="definition">coloring_ok</span></a> (<span class="id" type="var">palette</span>: <a class="idref" href="Color.html#t"><span class="id" type="definition">S.t</span></a>) (<span class="id" type="var">g</span>: <a class="idref" href="Color.html#graph"><span class="id" type="definition">graph</span></a>) (<span class="id" type="var">f</span>: <a class="idref" href="Color.html#coloring"><span class="id" type="definition">coloring</span></a>) :=<br/>
+&nbsp;<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">i</span> <span class="id" type="var">j</span>, <a class="idref" href="Color.html#In"><span class="id" type="definition">S.In</span></a> <a class="idref" href="Color.html#j"><span class="id" type="variable">j</span></a> (<a class="idref" href="Color.html#adj"><span class="id" type="definition">adj</span></a> <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a> <a class="idref" href="Color.html#i"><span class="id" type="variable">i</span></a>) → <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">ci</span>, <a class="idref" href="Color.html#find"><span class="id" type="definition">M.find</span></a> <a class="idref" href="Color.html#i"><span class="id" type="variable">i</span></a> <a class="idref" href="Color.html#f"><span class="id" type="variable">f</span></a> = <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some"><span class="id" type="constructor">Some</span></a> <a class="idref" href="Color.html#ci"><span class="id" type="variable">ci</span></a> → <a class="idref" href="Color.html#In"><span class="id" type="definition">S.In</span></a> <a class="idref" href="Color.html#ci"><span class="id" type="variable">ci</span></a> <a class="idref" href="Color.html#palette"><span class="id" type="variable">palette</span></a>) ∧<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">ci</span> <span class="id" type="var">cj</span>, <a class="idref" href="Color.html#find"><span class="id" type="definition">M.find</span></a> <a class="idref" href="Color.html#i"><span class="id" type="variable">i</span></a> <a class="idref" href="Color.html#f"><span class="id" type="variable">f</span></a> = <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some"><span class="id" type="constructor">Some</span></a> <a class="idref" href="Color.html#ci"><span class="id" type="variable">ci</span></a> → <a class="idref" href="Color.html#find"><span class="id" type="definition">M.find</span></a> <a class="idref" href="Color.html#j"><span class="id" type="variable">j</span></a> <a class="idref" href="Color.html#f"><span class="id" type="variable">f</span></a> = <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some"><span class="id" type="constructor">Some</span></a> <a class="idref" href="Color.html#cj"><span class="id" type="variable">cj</span></a> → <a class="idref" href="Color.html#ci"><span class="id" type="variable">ci</span></a>≠<a class="idref" href="Color.html#cj"><span class="id" type="variable">cj</span></a>).<br/>
+</div>
+
+<div class="doc">
+<a name="lab215"></a><h4 class="section">Exercise: 2 stars (adj_ext)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Lemma</span> <a name="adj_ext"><span class="id" type="lemma">adj_ext</span></a>: <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">g</span> <span class="id" type="var">i</span> <span class="id" type="var">j</span>, <a class="idref" href="Color.html#eq"><span class="id" type="definition">E.eq</span></a> <a class="idref" href="Color.html#i"><span class="id" type="variable">i</span></a> <a class="idref" href="Color.html#j"><span class="id" type="variable">j</span></a> → <a class="idref" href="Color.html#eq"><span class="id" type="definition">S.eq</span></a> (<a class="idref" href="Color.html#adj"><span class="id" type="definition">adj</span></a> <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a> <a class="idref" href="Color.html#i"><span class="id" type="variable">i</span></a>) (<a class="idref" href="Color.html#adj"><span class="id" type="definition">adj</span></a> <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a> <a class="idref" href="Color.html#j"><span class="id" type="variable">j</span></a>).<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+<a name="lab216"></a><h4 class="section">Exercise: 3 stars (in_colors_of_1)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Lemma</span> <a name="in_colors_of_1"><span class="id" type="lemma">in_colors_of_1</span></a>:<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">i</span> <span class="id" type="var">s</span> <span class="id" type="var">f</span> <span class="id" type="var">c</span>, <a class="idref" href="Color.html#In"><span class="id" type="definition">S.In</span></a> <a class="idref" href="Color.html#i"><span class="id" type="variable">i</span></a> <a class="idref" href="Color.html#s"><span class="id" type="variable">s</span></a> → <a class="idref" href="Color.html#find"><span class="id" type="definition">M.find</span></a> <a class="idref" href="Color.html#i"><span class="id" type="variable">i</span></a> <a class="idref" href="Color.html#f"><span class="id" type="variable">f</span></a> = <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some"><span class="id" type="constructor">Some</span></a> <a class="idref" href="Color.html#c"><span class="id" type="variable">c</span></a> → <a class="idref" href="Color.html#In"><span class="id" type="definition">S.In</span></a> <a class="idref" href="Color.html#c"><span class="id" type="variable">c</span></a> (<a class="idref" href="Color.html#colors_of"><span class="id" type="definition">colors_of</span></a> <a class="idref" href="Color.html#f"><span class="id" type="variable">f</span></a> <a class="idref" href="Color.html#s"><span class="id" type="variable">s</span></a>).<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+<a name="lab217"></a><h4 class="section">Exercise: 4 stars (color_correct)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Theorem</span> <a name="color_correct"><span class="id" type="lemma">color_correct</span></a>:<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">palette</span> <span class="id" type="var">g</span>, <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Color.html#no_selfloop"><span class="id" type="definition">no_selfloop</span></a> <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a> → <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Color.html#undirected"><span class="id" type="definition">undirected</span></a> <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a> → <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Color.html#coloring_ok"><span class="id" type="definition">coloring_ok</span></a> <a class="idref" href="Color.html#palette"><span class="id" type="variable">palette</span></a> <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a> (<a class="idref" href="Color.html#color"><span class="id" type="definition">color</span></a> <a class="idref" href="Color.html#palette"><span class="id" type="variable">palette</span></a> <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a>).<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+ That concludes the proof that the algorithm is correct. 
+<div class="paragraph"> </div>
+
+<a name="lab218"></a><h1 class="section">Trying Out the Algorithm on an Actual Test Case</h1>
+
+</div>
+<div class="code code-space">
+
+<br/>
+<span class="id" type="keyword">Local</span> <span class="id" type="keyword">Open</span> <span class="id" type="keyword">Scope</span> <span class="id" type="var">positive</span>.<br/>
+<span class="comment">(*&nbsp;now&nbsp;1,2,3,&nbsp;etc.&nbsp;are&nbsp;notation&nbsp;for&nbsp;<span class="inlinecode"><span class="id" type="var">positive</span></span>&nbsp;numbers.&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;Let's&nbsp;use&nbsp;only&nbsp;three&nbsp;colors&nbsp;*)</span><br/>
+<span class="id" type="keyword">Definition</span> <a name="palette"><span class="id" type="definition">palette</span></a>: <a class="idref" href="Color.html#t"><span class="id" type="definition">S.t</span></a> := <a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#fold_right"><span class="id" type="definition">fold_right</span></a> <a class="idref" href="Color.html#add"><span class="id" type="definition">S.add</span></a> <a class="idref" href="Color.html#empty"><span class="id" type="definition">S.empty</span></a> [1; 2; 3].<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="add_edge"><span class="id" type="definition">add_edge</span></a> (<span class="id" type="var">e</span>: (<a class="idref" href="Color.html#t"><span class="id" type="definition">E.t</span></a>*<a class="idref" href="Color.html#t"><span class="id" type="definition">E.t</span></a>)) (<span class="id" type="var">g</span>: <a class="idref" href="Color.html#graph"><span class="id" type="definition">graph</span></a>) : <a class="idref" href="Color.html#graph"><span class="id" type="definition">graph</span></a> :=<br/>
+&nbsp;<a class="idref" href="Color.html#add"><span class="id" type="definition">M.add</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#fst"><span class="id" type="definition">fst</span></a> <a class="idref" href="Color.html#e"><span class="id" type="variable">e</span></a>) (<a class="idref" href="Color.html#add"><span class="id" type="definition">S.add</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#snd"><span class="id" type="definition">snd</span></a> <a class="idref" href="Color.html#e"><span class="id" type="variable">e</span></a>) (<a class="idref" href="Color.html#adj"><span class="id" type="definition">adj</span></a> <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#fst"><span class="id" type="definition">fst</span></a> <a class="idref" href="Color.html#e"><span class="id" type="variable">e</span></a>))) <br/>
+&nbsp;&nbsp;(<a class="idref" href="Color.html#add"><span class="id" type="definition">M.add</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#snd"><span class="id" type="definition">snd</span></a> <a class="idref" href="Color.html#e"><span class="id" type="variable">e</span></a>) (<a class="idref" href="Color.html#add"><span class="id" type="definition">S.add</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#fst"><span class="id" type="definition">fst</span></a> <a class="idref" href="Color.html#e"><span class="id" type="variable">e</span></a>) (<a class="idref" href="Color.html#adj"><span class="id" type="definition">adj</span></a> <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#snd"><span class="id" type="definition">snd</span></a> <a class="idref" href="Color.html#e"><span class="id" type="variable">e</span></a>))) <a class="idref" href="Color.html#g"><span class="id" type="variable">g</span></a>).<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="mk_graph"><span class="id" type="definition">mk_graph</span></a> (<span class="id" type="var">el</span>: <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> (<a class="idref" href="Color.html#t"><span class="id" type="definition">E.t</span></a>*<a class="idref" href="Color.html#t"><span class="id" type="definition">E.t</span></a>)) :=<br/>
+&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#fold_right"><span class="id" type="definition">fold_right</span></a> <a class="idref" href="Color.html#add_edge"><span class="id" type="definition">add_edge</span></a> (<a class="idref" href="Color.html#empty"><span class="id" type="definition">M.empty</span></a> <span class="id" type="var">_</span>) <a class="idref" href="Color.html#el"><span class="id" type="variable">el</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="G"><span class="id" type="definition">G</span></a> := <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Color.html#mk_graph"><span class="id" type="definition">mk_graph</span></a> [ (5,6); (6,2); (5,2); (1,5); (1,2); (2,4); (1,4)].<br/><hr class='doublespaceincode'/>
+<span class="id" type="var">Compute</span> (<a class="idref" href="Color.html#elements"><span class="id" type="definition">S.elements</span></a> (<a class="idref" href="Color.html#Mdomain"><span class="id" type="definition">Mdomain</span></a> <a class="idref" href="Color.html#G"><span class="id" type="definition">G</span></a>)). <span class="comment">(*&nbsp;=&nbsp;<span class="inlinecode">4;</span> <span class="inlinecode">2;</span> <span class="inlinecode">6;</span> <span class="inlinecode">1;</span> <span class="inlinecode">5</span>&nbsp;*)</span><br/><hr class='doublespaceincode'/>
+<span class="id" type="var">Compute</span> (<a class="idref" href="Color.html#elements"><span class="id" type="definition">M.elements</span></a> (<a class="idref" href="Color.html#color"><span class="id" type="definition">color</span></a> <a class="idref" href="Color.html#palette"><span class="id" type="definition">palette</span></a> <a class="idref" href="Color.html#G"><span class="id" type="definition">G</span></a>)). <span class="comment">(*&nbsp;=&nbsp;<span class="inlinecode">(4,</span> <span class="inlinecode">1);</span> <span class="inlinecode">(2,</span> <span class="inlinecode">3);</span> <span class="inlinecode">(6,</span> <span class="inlinecode">2);</span> <span class="inlinecode">(1,</span> <span class="inlinecode">2);</span> <span class="inlinecode">(5,</span> <span class="inlinecode">1)</span>&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+That is our graph coloring:  Node <span class="inlinecode">4</span> is colored with color <span class="inlinecode">1</span>, node <span class="inlinecode">2</span> with color <span class="inlinecode">3</span>,
+  nodes <span class="inlinecode">6</span> and <span class="inlinecode">1</span> with <span class="inlinecode">2</span>, and node <span class="inlinecode">5</span> with color <span class="inlinecode">1</span>. 
+</div>
+</div>
+
+
+
+</div>
+
+</body>
+</html>

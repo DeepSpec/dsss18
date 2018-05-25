@@ -1,0 +1,330 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<link href="common/css/sf.css" rel="stylesheet" type="text/css"/>
+<title>Table of contents</title>
+</head>
+<link href="common/jquery-ui/jquery-ui.css" rel="stylesheet">
+<script src="common/jquery-ui/external/jquery/jquery.js"></script>
+<script src="common/jquery-ui/jquery-ui.js"></script>
+<script src="common/toggleproofs.js"></script>
+<link href="common/css/vc.css" rel="stylesheet" type="text/css"/>
+
+<script>
+
+$(document).ready(function() {
+
+    $("#accordion").show().accordion({
+        autoHeight: false
+    });
+
+    $("#accordion div").css({ 'height': 'auto' });
+});      
+
+
+$( function() {
+    var icons = {
+      header: "ui-icon-circle-arrow-e",
+      activeHeader: "ui-icon-circle-arrow-s"
+    };
+    
+    $( "#accordion" ).accordion({
+      icons: icons
+    });
+    $("#accordion").accordion({collapsible : true, active : 'none'});
+
+    $( "#toggle" ).button().on( "click", function() {
+      if ( $( "#accordion" ).accordion( "option", "icons" ) ) {
+        $( "#accordion" ).accordion( "option", "icons", null );
+      } else {
+        $( "#accordion" ).accordion( "option", "icons", icons );
+      }
+    });
+  } );
+  </script>
+<body>
+
+<div id="page">
+
+<div id="header">
+<a href='https://www.cis.upenn.edu/~bcpierce/sf/current/index.html'>
+<img src='common/media/image/sf_logo_sm.png'></a>
+</br><a href='index.html'>  <span class='booktitleinheader'>Volume 5beta: Verifiable C</span><br></br>
+<ul id='menu'>
+   <a href='toc.html'><li class='section_name'>Table of Contents</li></a>
+   <a href='coqindex.html'><li class='section_name'>Index</li></a>
+   <a href='deps.html'><li class='section_name'>Roadmap</li></a>
+</ul>
+</div>
+</a></div>
+
+<div id="main">
+
+<div id="toc">
+<div id="accordion">
+<h2><a href="Preface.html">Preface</a></h2>
+<div>
+<ul class="doclist">
+<li><a href="Preface.html">Top</a>
+<li><a href="Preface.html#lab1">Welcome</a>
+
+</li>
+<li><a href="Preface.html#lab2">Practicalities</a>
+<div>
+<ul class="doclist">
+<li><a href="Preface.html#lab3">System Requirements</a>
+
+</li>
+<li><a href="Preface.html#lab4">Configuration</a>
+
+</li>
+<li><a href="Preface.html#lab5">Exercises</a>
+
+</li>
+<li><a href="Preface.html#lab6">Downloading the Coq Files</a>
+
+</li>
+<li><a href="Preface.html#lab7">For Instructors and Contributors</a>
+
+</li>
+</ul>
+</div>
+
+</li>
+<li><a href="Preface.html#lab8">Thanks</a>
+
+</li>
+</ul>
+</div>
+<h2><a href="Verif_sumarray.html">Introduction to Verifiable C&nbsp;&nbsp;&nbsp;&nbsp;(<i>Verif_sumarray</i>)</a></h2>
+<div>
+<ul class="doclist">
+<li><a href="Verif_sumarray.html">Top</a>
+<li><div>
+<ul class="doclist">
+<li><a href="Verif_sumarray.html#lab9">Here is a little C program, <span class="inlinecode"><span class="id" type="var">sumarray.c</span></span></a>
+
+</li>
+<li><a href="Verif_sumarray.html#lab10">Workflow</a>
+
+</li>
+<li><a href="Verif_sumarray.html#lab11">Let's verify!</a>
+
+</li>
+<li><a href="Verif_sumarray.html#lab14">API spec for the sumarray.c program</a>
+
+</li>
+<li><a href="Verif_sumarray.html#lab17">Packaging the Gprog and Vprog</a>
+
+</li>
+<li><a href="Verif_sumarray.html#lab18">Proof of the sumarray program</a>
+
+</li>
+<li><a href="Verif_sumarray.html#lab28">Global variables and main()</a>
+
+</li>
+<li><a href="Verif_sumarray.html#lab29">Tying all the funtions together</a>
+
+</li>
+<li><a href="Verif_sumarray.html#lab30">Additional recommended reading</a>
+
+</li>
+</ul>
+</div>
+
+</li>
+</ul>
+</div>
+<h2><a href="Verif_reverse.html">Linked lists in Verifiable C&nbsp;&nbsp;&nbsp;&nbsp;(<i>Verif_reverse</i>)</a></h2>
+<div>
+<ul class="doclist">
+<li><a href="Verif_reverse.html">Top</a>
+<li><div>
+<ul class="doclist">
+<li><a href="Verif_reverse.html#lab31">Here is a little C program, <span class="inlinecode"><span class="id" type="var">reverse.c</span></span></a>
+
+</li>
+<li><a href="Verif_reverse.html#lab32">Inductive definition of linked lists</a>
+
+</li>
+<li><a href="Verif_reverse.html#lab33">Hint databases for spatial operators</a>
+
+</li>
+<li><a href="Verif_reverse.html#lab35">Specification of the <span class="inlinecode"><span class="id" type="var">reverse</span></span> function.</a>
+
+</li>
+<li><a href="Verif_reverse.html#lab36">Proof of the <span class="inlinecode"><span class="id" type="var">reverse</span></span> function</a>
+
+</li>
+</ul>
+</div>
+
+</li>
+</ul>
+</div>
+<h2><a href="Verif_stack.html">Stack ADT implemented by linked lists&nbsp;&nbsp;&nbsp;&nbsp;(<i>Verif_stack</i>)</a></h2>
+<div>
+<ul class="doclist">
+<li><a href="Verif_stack.html">Top</a>
+<li><div>
+<ul class="doclist">
+<li><a href="Verif_stack.html#lab37">Here is a little C program, <span class="inlinecode"><span class="id" type="var">stack.c</span></span></a>
+
+</li>
+<li><a href="Verif_stack.html#lab38">Let's verify!</a>
+
+</li>
+<li><a href="Verif_stack.html#lab39">Malloc and free</a>
+
+</li>
+<li><a href="Verif_stack.html#lab40">Specification of linked lists</a>
+
+</li>
+<li><a href="Verif_stack.html#lab42">Specification of stack data structure</a>
+
+</li>
+<li><a href="Verif_stack.html#lab44">Function specifications for the stack operations</a>
+
+</li>
+<li><a href="Verif_stack.html#lab45">Proofs of the function bodies</a>
+
+</li>
+</ul>
+</div>
+
+</li>
+</ul>
+</div>
+<h2><a href="Verif_triang.html">A client of the stack functions&nbsp;&nbsp;&nbsp;&nbsp;(<i>Verif_triang</i>)</a></h2>
+<div>
+<ul class="doclist">
+<li><a href="Verif_triang.html">Top</a>
+<li><div>
+<ul class="doclist">
+<li><a href="Verif_triang.html#lab49">Proofs with integers</a>
+
+</li>
+<li><a href="Verif_triang.html#lab53">Specification of the stack-client functions</a>
+
+</li>
+<li><a href="Verif_triang.html#lab54">Proofs of the stack-client function-bodies</a>
+
+</li>
+</ul>
+</div>
+
+</li>
+</ul>
+</div>
+<h2><a href="Verif_append.html">List segments, magic wand&nbsp;&nbsp;&nbsp;&nbsp;(<i>Verif_append</i>)</a></h2>
+<div>
+<ul class="doclist">
+<li><a href="Verif_append.html">Top</a>
+<li><div>
+<ul class="doclist">
+<li><a href="Verif_append.html#lab61">Here is a little C program, <span class="inlinecode"><span class="id" type="var">reverse.c</span></span></a>
+
+</li>
+<li><a href="Verif_append.html#lab62">Inductive definition of linked lists</a>
+
+</li>
+<li><a href="Verif_append.html#lab63">Hint databases for spatial operators</a>
+
+</li>
+<li><a href="Verif_append.html#lab64">Specification of the <span class="inlinecode"><span class="id" type="var">sumlist</span></span> and <span class="inlinecode"><span class="id" type="var">append</span></span> functions.</a>
+
+</li>
+<li><a href="Verif_append.html#lab65">Proof of the <span class="inlinecode"><span class="id" type="var">sumlist</span></span> function</a>
+
+</li>
+<li><a href="Verif_append.html#lab66">start-function; then forward.</a>
+
+</li>
+<li><a href="Verif_append.html#lab67">Proof of the <span class="inlinecode"><span class="id" type="var">append</span></span> function</a>
+
+</li>
+</ul>
+</div>
+
+</li>
+</ul>
+</div>
+<h2><a href="Verif_strlib.html">String functions&nbsp;&nbsp;&nbsp;&nbsp;(<i>Verif_strlib</i>)</a></h2>
+<div>
+<ul class="doclist">
+<li><a href="Verif_strlib.html">Top</a>
+<li><div>
+<ul class="doclist">
+<li><a href="Verif_strlib.html#lab68">Here are some functions from the C standard library, <span class="inlinecode"><span class="id" type="var">strlib.c</span></span></a>
+
+</li>
+<li><a href="Verif_strlib.html#lab69">Standard boilerplate</a>
+
+</li>
+<li><a href="Verif_strlib.html#lab70">Function specs</a>
+
+</li>
+<li><a href="Verif_strlib.html#lab71">Proof of the <span class="inlinecode"><span class="id" type="var">strlen</span></span> function</a>
+
+</li>
+<li><a href="Verif_strlib.html#lab72">Proof of the <span class="inlinecode"><span class="id" type="var">strcpy</span></span> function</a>
+
+</li>
+</ul>
+</div>
+
+</li>
+</ul>
+</div>
+<h2><a href="Hashfun.html">Functional model of hash tables&nbsp;&nbsp;&nbsp;&nbsp;(<i>Hashfun</i>)</a></h2>
+<div>
+<ul class="doclist">
+<li><a href="Hashfun.html">Top</a>
+<li><div>
+<ul class="doclist">
+<li><a href="Hashfun.html#lab73">This C program, <span class="inlinecode"><span class="id" type="var">hash.c</span></span>, implements a hash table with</a>
+
+</li>
+<li><a href="Hashfun.html#lab74">A functional model</a>
+
+</li>
+<li><a href="Hashfun.html#lab79">Functional model satisfies the high-level specification</a>
+
+</li>
+</ul>
+</div>
+
+</li>
+</ul>
+</div>
+<h2><a href="Verif_hash.html">Correctness proof of hash.c&nbsp;&nbsp;&nbsp;&nbsp;(<i>Verif_hash</i>)</a></h2>
+<div>
+<ul class="doclist">
+<li><a href="Verif_hash.html">Top</a>
+<li><div>
+<ul class="doclist">
+<li><a href="Verif_hash.html#lab84">Function specifications</a>
+
+</li>
+<li><a href="Verif_hash.html#lab92">Proofs of the function bodies</a>
+
+</li>
+<li><a href="Verif_hash.html#lab95">Auxiliary lemmas about data-structure predicates</a>
+
+</li>
+</ul>
+</div>
+
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+</div>
+
+</div>
+</body>
+</html>

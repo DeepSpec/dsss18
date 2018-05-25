@@ -1,0 +1,20 @@
+-include CONFIGURE
+ifeq ($(VST_LOC),)
+$(info VST_LOC is not defined!)
+$(info Create a CONFIGURE file containing this definition:)
+$(info VST_LOC= .../file/path/to/VST)
+$(info and optionally (if you have installed CompCert/clightgen) containing this:)
+$(info CC_LOC= .../file/path/to/CompCert)
+$(info or instead of a CONFIGURE file, you may define these as environment variables.)
+$(error "VST_LOC not defined")
+endif
+
+VST_DIRS= msl sepcomp veric floyd
+VSTFLAGS= -R $(VST_LOC)/compcert compcert $(foreach d, $(VST_DIRS), -Q $(VST_LOC)/$(d) VST.$(d))
+COQLIBS= $(VSTFLAGS)
+
+pre-all:: _CoqProject
+
+_CoqProject: 
+	@echo $(COQLIBS) > _CoqProject
+

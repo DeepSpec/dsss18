@@ -1,0 +1,386 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<link href="common/css/sf.css" rel="stylesheet" type="text/css"/>
+<title>Hashfun: Functional model of hash tables</title>
+</head>
+<link href="common/jquery-ui/jquery-ui.css" rel="stylesheet">
+<script src="common/jquery-ui/external/jquery/jquery.js"></script>
+<script src="common/jquery-ui/jquery-ui.js"></script>
+<script src="common/toggleproofs.js"></script>
+<link href="common/css/vc.css" rel="stylesheet" type="text/css"/>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+<a href='https://www.cis.upenn.edu/~bcpierce/sf/current/index.html'>
+<img src='common/media/image/sf_logo_sm.png'></a>
+</br><a href='index.html'>  <span class='booktitleinheader'>Volume 5beta: Verifiable C</span><br></br>
+<ul id='menu'>
+   <a href='toc.html'><li class='section_name'>Table of Contents</li></a>
+   <a href='coqindex.html'><li class='section_name'>Index</li></a>
+   <a href='deps.html'><li class='section_name'>Roadmap</li></a>
+</ul>
+</a></div>
+
+<div id="main">
+
+<h1 class="libtitle">Hashfun<span class="subtitle">Functional model of hash tables</span></h1>
+
+
+<div class="doc">
+
+<div class="paragraph"> </div>
+
+<a name="lab73"></a><h2 class="section">This C program, <span class="inlinecode"><span class="id" type="var">hash.c</span></span>, implements a hash table with</h2>
+
+   external chaining.  See <a href="http://www.cs.princeton.edu/~appel/HashTables.pdf"><span class="inlineref">http://www.cs.princeton.edu/~appel/HashTables.pdf</span></a>
+   for an introduction to hash tables.  
+<div class="paragraph"> </div>
+
+
+<div class="paragraph"> </div>
+
+<pre>
+#include &lt;stddef.h&gt;
+
+extern void * malloc (size_t n);
+extern void exit(int n);
+extern size_t strlen(const char *str);
+extern char *strcpy(char *dest, const char *src);
+extern int strcmp(const char *str1, const char *str2);
+
+unsigned int hash (char *s) {
+  unsigned int n=0;
+  unsigned int i=0;
+  int c=s[i];
+  while (c) {
+    n = n*65599u+(unsigned)c;
+    i++;
+    c=s[i];
+  }
+  return n;
+}
+
+struct cell {
+  char *key;
+  unsigned int count;
+  struct cell *next;
+};
+
+enum {N = 109};
+
+struct hashtable {
+  struct cell *buckets[N];
+};
+
+char *copy_string (char *s) {
+  int i,n = strlen(s)+1;
+  char *p = malloc(n);
+  if (!p) exit(1);
+  strcpy(p,s);
+  return p;
+}
+
+struct hashtable *new_table (void) {
+  int i;
+  struct hashtable *p = (struct hashtable * )malloc(sizeof(struct hashtable));
+  if (!p) exit(1);
+  for (i=0; i&lt;N; i++) p-&gt;buckets[i]=NULL;
+  return p;
+}  
+
+struct cell *new_cell (char *key, int count, struct cell *next) {
+  struct cell *p = (struct cell * )malloc(sizeof(struct cell));
+  if (!p) exit(1);
+  p-&gt;key = copy_string(key);
+  p-&gt;count = count;
+  p-&gt;next = next;
+  return p;
+}
+
+unsigned int get (struct hashtable *table, char *s) {
+  unsigned int h = hash(s);
+  unsigned int b = h % N;
+  struct cell *p = table-&gt;buckets[b];
+  while (p) {
+    if (strcmp(p-&gt;key, s)==0)
+      return p-&gt;count;
+    p=p-&gt;next;
+  }
+  return 0;
+}
+
+void incr_list (struct cell **r<sub>0</sub>, char *s) {
+  struct cell *p, **r;
+  for(r=r<sub>0</sub>; ; r=&amp;p-&gt;next) {
+    p = *r;
+    if (!p) {
+      *r = new_cell(s,1,NULL);
+      return;
+    }
+    if (strcmp(p-&gt;key, s)==0) {
+      p-&gt;count++;
+      return;
+    }
+  }
+}  
+
+void incr (struct hashtable *table, char *s) {
+  unsigned int h = hash(s);
+  unsigned int b = h % N;
+  incr_list (&amp; table-&gt;buckets[b], s);
+}
+</pre>
+
+<div class="paragraph"> </div>
+
+<a name="lab74"></a><h2 class="section">A functional model</h2>
+
+<div class="paragraph"> </div>
+
+ Before we prove the C program correct, we write a functional
+ program that models its behavior as closely as possible.  
+ The functional program won't be (average) constant time per access,
+ like the C program, because it takes linear time to get the nth
+ element of a list, while the C program can subscript an array in
+ constant time.  But we are not worried about the execution time
+ of the functional program; only that it serve as a model
+ for specifying the C program. 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="library">VST.floyd.functional_base</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="string"><span class="id" type="definition">string</span></a> := <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <span class="id" type="abbreviation">byte</span>.<br/>
+<span class="id" type="keyword">Instance</span> <a name="EqDec_string"><span class="id" type="instance">EqDec_string</span></a>: <span class="id" type="class">EqDec</span> <a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a> := <a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#list_eq_dec"><span class="id" type="lemma">list_eq_dec</span></a> <span class="id" type="lemma">Byte.eq_dec</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Fixpoint</span> <a name="hashfun_aux"><span class="id" type="definition">hashfun_aux</span></a> (<span class="id" type="var">h</span>: <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>) (<span class="id" type="var">s</span>: <a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a>) : <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a> :=<br/>
+&nbsp;<span class="id" type="keyword">match</span> <a class="idref" href="Hashfun.html#s"><span class="id" type="variable">s</span></a> <span class="id" type="keyword">with</span><br/>
+&nbsp;| <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil"><span class="id" type="constructor">nil</span></a> ⇒ <a class="idref" href="Hashfun.html#h"><span class="id" type="variable">h</span></a><br/>
+&nbsp;| <span class="id" type="var">c</span> :: <span class="id" type="var">s'</span> ⇒<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Hashfun.html#hashfun_aux"><span class="id" type="definition">hashfun_aux</span></a> ((<a class="idref" href="Hashfun.html#h"><span class="id" type="variable">h</span></a> * 65599 + <span class="id" type="definition">Byte.signed</span> <span class="id" type="var">c</span>) <span class="id" type="var">mod</span> <span class="id" type="definition">Int.modulus</span>) <span class="id" type="var">s'</span><br/>
+<span class="id" type="keyword">end</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="hashfun"><span class="id" type="definition">hashfun</span></a> (<span class="id" type="var">s</span>: <a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a>) := <a class="idref" href="Hashfun.html#hashfun_aux"><span class="id" type="definition">hashfun_aux</span></a> 0 <a class="idref" href="Hashfun.html#s"><span class="id" type="variable">s</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="hashtable_contents"><span class="id" type="definition">hashtable_contents</span></a> := <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> (<a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a> * <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>)).<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="N"><span class="id" type="definition">N</span></a> := 109.<br/>
+<span class="id" type="keyword">Lemma</span> <a name="N_eq"><span class="id" type="lemma">N_eq</span></a> : <a class="idref" href="Hashfun.html#N"><span class="id" type="definition">N</span></a> = 109.<br/>
+<span class="id" type="keyword">Proof</span>. <span class="id" type="tactic">reflexivity</span>. <span class="id" type="keyword">Qed</span>.<br/>
+<span class="id" type="keyword">Hint</span> <span class="id" type="var">Rewrite</span> <a class="idref" href="Hashfun.html#N_eq"><span class="id" type="lemma">N_eq</span></a> : <span class="id" type="var">rep_omega</span>.<br/>
+<span class="id" type="keyword">Global</span> <span class="id" type="var">Opaque</span> <a class="idref" href="Hashfun.html#N"><span class="id" type="definition">N</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="empty_table"><span class="id" type="definition">empty_table</span></a> : <a class="idref" href="Hashfun.html#hashtable_contents"><span class="id" type="definition">hashtable_contents</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" type="definition">list_repeat</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.to_nat"><span class="id" type="definition">Z.to_nat</span></a> <a class="idref" href="Hashfun.html#N"><span class="id" type="definition">N</span></a>) <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil"><span class="id" type="constructor">nil</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Fixpoint</span> <a name="list_get"><span class="id" type="definition">list_get</span></a> (<span class="id" type="var">s</span>: <a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a>) (<span class="id" type="var">al</span>: <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> (<a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a> * <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>)) : <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">match</span> <a class="idref" href="Hashfun.html#al"><span class="id" type="variable">al</span></a> <span class="id" type="keyword">with</span><br/>
+&nbsp;| (<span class="id" type="var">k</span>,<span class="id" type="var">i</span>) :: <span class="id" type="var">al'</span> ⇒ <span class="id" type="keyword">if</span> <span class="id" type="definition">eq_dec</span> <a class="idref" href="Hashfun.html#s"><span class="id" type="variable">s</span></a> <span class="id" type="var">k</span> <span class="id" type="keyword">then</span> <span class="id" type="var">i</span> <span class="id" type="keyword">else</span> <a class="idref" href="Hashfun.html#list_get"><span class="id" type="definition">list_get</span></a> <a class="idref" href="Hashfun.html#s"><span class="id" type="variable">s</span></a> <span class="id" type="var">al'</span><br/>
+&nbsp;| <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil"><span class="id" type="constructor">nil</span></a> ⇒ 0<br/>
+&nbsp;<span class="id" type="keyword">end</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Fixpoint</span> <a name="list_incr"><span class="id" type="definition">list_incr</span></a> (<span class="id" type="var">s</span>: <a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a>) (<span class="id" type="var">al</span>: <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> (<a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a> * <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:  <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> (<a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a> * <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>) :=<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">match</span> <a class="idref" href="Hashfun.html#al"><span class="id" type="variable">al</span></a> <span class="id" type="keyword">with</span><br/>
+&nbsp;| (<span class="id" type="var">k</span>,<span class="id" type="var">i</span>) :: <span class="id" type="var">al'</span> ⇒ <span class="id" type="keyword">if</span> <span class="id" type="definition">eq_dec</span> <a class="idref" href="Hashfun.html#s"><span class="id" type="variable">s</span></a> <span class="id" type="var">k</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">then</span> (<span class="id" type="var">k</span>, <span class="id" type="var">i</span> +1)::<span class="id" type="var">al'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">else</span> (<span class="id" type="var">k</span>,<span class="id" type="var">i</span>)::<a class="idref" href="Hashfun.html#list_incr"><span class="id" type="definition">list_incr</span></a> <a class="idref" href="Hashfun.html#s"><span class="id" type="variable">s</span></a> <span class="id" type="var">al'</span><br/>
+&nbsp;| <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil"><span class="id" type="constructor">nil</span></a> ⇒ (<a class="idref" href="Hashfun.html#s"><span class="id" type="variable">s</span></a>, 1)::<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil"><span class="id" type="constructor">nil</span></a><br/>
+&nbsp;<span class="id" type="keyword">end</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="hashtable_get"><span class="id" type="definition">hashtable_get</span></a>  (<span class="id" type="var">s</span>: <a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a>) (<span class="id" type="var">contents</span>: <a class="idref" href="Hashfun.html#hashtable_contents"><span class="id" type="definition">hashtable_contents</span></a>) : <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a> :=<br/>
+&nbsp;&nbsp;<a class="idref" href="Hashfun.html#list_get"><span class="id" type="definition">list_get</span></a> <a class="idref" href="Hashfun.html#s"><span class="id" type="variable">s</span></a> (<span class="id" type="definition">Znth</span> (<a class="idref" href="Hashfun.html#hashfun"><span class="id" type="definition">hashfun</span></a> <a class="idref" href="Hashfun.html#s"><span class="id" type="variable">s</span></a> <span class="id" type="var">mod</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <a class="idref" href="Hashfun.html#contents"><span class="id" type="variable">contents</span></a>)) <a class="idref" href="Hashfun.html#contents"><span class="id" type="variable">contents</span></a>).<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="hashtable_incr"><span class="id" type="definition">hashtable_incr</span></a> (<span class="id" type="var">s</span>: <a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a>) (<span class="id" type="var">contents</span>: <a class="idref" href="Hashfun.html#hashtable_contents"><span class="id" type="definition">hashtable_contents</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <a class="idref" href="Hashfun.html#hashtable_contents"><span class="id" type="definition">hashtable_contents</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">h</span> := <a class="idref" href="Hashfun.html#hashfun"><span class="id" type="definition">hashfun</span></a> <a class="idref" href="Hashfun.html#s"><span class="id" type="variable">s</span></a> <span class="id" type="var">mod</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <a class="idref" href="Hashfun.html#contents"><span class="id" type="variable">contents</span></a>)<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">in</span> <span class="id" type="keyword">let</span> <span class="id" type="var">al</span> := <span class="id" type="definition">Znth</span> <a class="idref" href="Hashfun.html#h"><span class="id" type="variable">h</span></a> <a class="idref" href="Hashfun.html#contents"><span class="id" type="variable">contents</span></a><br/>
+&nbsp;&nbsp;<span class="id" type="keyword">in</span> <span class="id" type="definition">upd_Znth</span> <a class="idref" href="Hashfun.html#h"><span class="id" type="variable">h</span></a> <a class="idref" href="Hashfun.html#contents"><span class="id" type="variable">contents</span></a> (<a class="idref" href="Hashfun.html#list_incr"><span class="id" type="definition">list_incr</span></a> <a class="idref" href="Hashfun.html#s"><span class="id" type="variable">s</span></a> <a class="idref" href="Hashfun.html#al"><span class="id" type="variable">al</span></a>).<br/>
+</div>
+
+<div class="doc">
+<a name="lab75"></a><h4 class="section">Exercise: 2 stars (hashfun_inrange)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Lemma</span> <a name="hashfun_inrange"><span class="id" type="lemma">hashfun_inrange</span></a>: <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">s</span>, 0 ≤ <a class="idref" href="Hashfun.html#hashfun"><span class="id" type="definition">hashfun</span></a> <a class="idref" href="Hashfun.html#s"><span class="id" type="variable">s</span></a> ≤ <span class="id" type="definition">Int.max_unsigned</span>.<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+<a name="lab76"></a><h4 class="section">Exercise: 1 star (hashfun_get_unfold)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Lemma</span> <a name="hashtable_get_unfold"><span class="id" type="lemma">hashtable_get_unfold</span></a>:<br/>
+&nbsp;<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">sigma</span> (<span class="id" type="var">cts</span>: <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> (<a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a> * <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>) * <span class="id" type="inductive">val</span>)),<br/>
+&nbsp;<a class="idref" href="Hashfun.html#hashtable_get"><span class="id" type="definition">hashtable_get</span></a> <a class="idref" href="Hashfun.html#sigma"><span class="id" type="variable">sigma</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#map"><span class="id" type="definition">map</span></a> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#fst"><span class="id" type="definition">fst</span></a> <a class="idref" href="Hashfun.html#cts"><span class="id" type="variable">cts</span></a>) =<br/>
+&nbsp;&nbsp;<a class="idref" href="Hashfun.html#list_get"><span class="id" type="definition">list_get</span></a> <a class="idref" href="Hashfun.html#sigma"><span class="id" type="variable">sigma</span></a> (<span class="id" type="definition">Znth</span> (<a class="idref" href="Hashfun.html#hashfun"><span class="id" type="definition">hashfun</span></a> <a class="idref" href="Hashfun.html#sigma"><span class="id" type="variable">sigma</span></a> <span class="id" type="var">mod</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <a class="idref" href="Hashfun.html#cts"><span class="id" type="variable">cts</span></a>)) (<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#map"><span class="id" type="definition">map</span></a> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#fst"><span class="id" type="definition">fst</span></a> <a class="idref" href="Hashfun.html#cts"><span class="id" type="variable">cts</span></a>)).<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+<a name="lab77"></a><h4 class="section">Exercise: 2 stars (Zlength_hashtable_incr)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Lemma</span> <a name="Zlength_hashtable_incr"><span class="id" type="lemma">Zlength_hashtable_incr</span></a>:<br/>
+&nbsp;<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">sigma</span> <span class="id" type="var">cts</span>, <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0 &lt; <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <a class="idref" href="Hashfun.html#cts"><span class="id" type="variable">cts</span></a> → <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> (<a class="idref" href="Hashfun.html#hashtable_incr"><span class="id" type="definition">hashtable_incr</span></a> <a class="idref" href="Hashfun.html#sigma"><span class="id" type="variable">sigma</span></a> <a class="idref" href="Hashfun.html#cts"><span class="id" type="variable">cts</span></a>) = <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <a class="idref" href="Hashfun.html#cts"><span class="id" type="variable">cts</span></a>.<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+<span class="id" type="keyword">Hint</span> <span class="id" type="var">Rewrite</span> <a class="idref" href="Hashfun.html#Zlength_hashtable_incr"><span class="id" type="axiom">Zlength_hashtable_incr</span></a> <span class="id" type="keyword">using</span> <span class="id" type="var">list_solve</span> : <span class="id" type="var">sublist</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+<a name="lab78"></a><h4 class="section">Exercise: 3 stars (hashfun_snoc)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Lemma</span> <a name="hashfun_snoc"><span class="id" type="lemma">hashfun_snoc</span></a>:<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">sigma</span> <span class="id" type="var">h</span> <span class="id" type="var">lo</span> <span class="id" type="var">i</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;0 ≤ <a class="idref" href="Hashfun.html#lo"><span class="id" type="variable">lo</span></a> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Hashfun.html#lo"><span class="id" type="variable">lo</span></a> ≤ <a class="idref" href="Hashfun.html#i"><span class="id" type="variable">i</span></a> &lt; <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <a class="idref" href="Hashfun.html#sigma"><span class="id" type="variable">sigma</span></a> →<br/>
+&nbsp;&nbsp;<span class="id" type="definition">Int.repr</span> (<a class="idref" href="Hashfun.html#hashfun_aux"><span class="id" type="definition">hashfun_aux</span></a> <a class="idref" href="Hashfun.html#h"><span class="id" type="variable">h</span></a> (<span class="id" type="definition">sublist</span> <a class="idref" href="Hashfun.html#lo"><span class="id" type="variable">lo</span></a> (<a class="idref" href="Hashfun.html#i"><span class="id" type="variable">i</span></a> + 1) <a class="idref" href="Hashfun.html#sigma"><span class="id" type="variable">sigma</span></a>)) =<br/>
+&nbsp;&nbsp;<span class="id" type="definition">Int.repr</span> (<a class="idref" href="Hashfun.html#hashfun_aux"><span class="id" type="definition">hashfun_aux</span></a> <a class="idref" href="Hashfun.html#h"><span class="id" type="variable">h</span></a> (<span class="id" type="definition">sublist</span> <a class="idref" href="Hashfun.html#lo"><span class="id" type="variable">lo</span></a> <a class="idref" href="Hashfun.html#i"><span class="id" type="variable">i</span></a> <a class="idref" href="Hashfun.html#sigma"><span class="id" type="variable">sigma</span></a>) * 65599 + <span class="id" type="definition">Byte.signed</span> (<span class="id" type="definition">Znth</span> <a class="idref" href="Hashfun.html#i"><span class="id" type="variable">i</span></a> <a class="idref" href="Hashfun.html#sigma"><span class="id" type="variable">sigma</span></a>)).<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+<a name="lab79"></a><h2 class="section">Functional model satisfies the high-level specification</h2>
+
+<div class="paragraph"> </div>
+
+ The purpose of a hash table is to implement a finite mapping,
+  (a finite function) from keys to values.  We claim that the
+  functional model (<span class="inlinecode"><span class="id" type="var">empty_table</span>,</span> <span class="inlinecode"><span class="id" type="var">hashtable_get</span>,</span> <span class="inlinecode"><span class="id" type="var">hashtable_incr</span></span>)
+  correctly implements the appropriate operations on the abstract
+  data type of finite functions.
+
+<div class="paragraph"> </div>
+
+  We formalize that statement by defining a Module Type: 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Module</span> <span class="id" type="keyword">Type</span> <a name="COUNT_TABLE"><span class="id" type="module">COUNT_TABLE</span></a>.<br/>
+&nbsp;<span class="id" type="keyword">Parameter</span> <a name="COUNT_TABLE.table"><span class="id" type="axiom">table</span></a>: <span class="id" type="keyword">Type</span>.<br/>
+&nbsp;<span class="id" type="keyword">Parameter</span> <a name="COUNT_TABLE.key"><span class="id" type="axiom">key</span></a> : <span class="id" type="keyword">Type</span>.<br/>
+&nbsp;<span class="id" type="keyword">Parameter</span> <a name="COUNT_TABLE.empty"><span class="id" type="axiom">empty</span></a>: <a class="idref" href="Hashfun.html#COUNT_TABLE.table"><span class="id" type="axiom">table</span></a>.<br/>
+&nbsp;<span class="id" type="keyword">Parameter</span> <a name="COUNT_TABLE.get"><span class="id" type="axiom">get</span></a>: <a class="idref" href="Hashfun.html#COUNT_TABLE.key"><span class="id" type="axiom">key</span></a> → <a class="idref" href="Hashfun.html#COUNT_TABLE.table"><span class="id" type="axiom">table</span></a> → <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>.<br/>
+&nbsp;<span class="id" type="keyword">Parameter</span> <a name="COUNT_TABLE.incr"><span class="id" type="axiom">incr</span></a>: <a class="idref" href="Hashfun.html#COUNT_TABLE.key"><span class="id" type="axiom">key</span></a> → <a class="idref" href="Hashfun.html#COUNT_TABLE.table"><span class="id" type="axiom">table</span></a> → <a class="idref" href="Hashfun.html#COUNT_TABLE.table"><span class="id" type="axiom">table</span></a>.<br/>
+&nbsp;<span class="id" type="keyword">Axiom</span> <a name="COUNT_TABLE.gempty"><span class="id" type="axiom">gempty</span></a>: <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">k</span>,   <span class="comment">(*&nbsp;get-empty&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Hashfun.html#COUNT_TABLE.get"><span class="id" type="axiom">get</span></a> <a class="idref" href="Hashfun.html#k"><span class="id" type="variable">k</span></a> <a class="idref" href="Hashfun.html#COUNT_TABLE.empty"><span class="id" type="axiom">empty</span></a> = 0.<br/>
+&nbsp;<span class="id" type="keyword">Axiom</span> <a name="COUNT_TABLE.gss"><span class="id" type="axiom">gss</span></a>: <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">k</span> <span class="id" type="var">t</span>,      <span class="comment">(*&nbsp;get-set-same&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Hashfun.html#COUNT_TABLE.get"><span class="id" type="axiom">get</span></a> <a class="idref" href="Hashfun.html#k"><span class="id" type="variable">k</span></a> (<a class="idref" href="Hashfun.html#COUNT_TABLE.incr"><span class="id" type="axiom">incr</span></a> <a class="idref" href="Hashfun.html#k"><span class="id" type="variable">k</span></a> <a class="idref" href="Hashfun.html#t"><span class="id" type="variable">t</span></a>) = 1+(<a class="idref" href="Hashfun.html#COUNT_TABLE.get"><span class="id" type="axiom">get</span></a> <a class="idref" href="Hashfun.html#k"><span class="id" type="variable">k</span></a> <a class="idref" href="Hashfun.html#t"><span class="id" type="variable">t</span></a>).<br/>
+&nbsp;<span class="id" type="keyword">Axiom</span> <a name="COUNT_TABLE.gso"><span class="id" type="axiom">gso</span></a>: <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">j</span> <span class="id" type="var">k</span> <span class="id" type="var">t</span>,    <span class="comment">(*&nbsp;get-set-other&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Hashfun.html#j"><span class="id" type="variable">j</span></a> ≠ <a class="idref" href="Hashfun.html#k"><span class="id" type="variable">k</span></a> → <a class="idref" href="Hashfun.html#COUNT_TABLE.get"><span class="id" type="axiom">get</span></a> <a class="idref" href="Hashfun.html#j"><span class="id" type="variable">j</span></a> (<a class="idref" href="Hashfun.html#COUNT_TABLE.incr"><span class="id" type="axiom">incr</span></a> <a class="idref" href="Hashfun.html#k"><span class="id" type="variable">k</span></a> <a class="idref" href="Hashfun.html#t"><span class="id" type="variable">t</span></a>) = <a class="idref" href="Hashfun.html#COUNT_TABLE.get"><span class="id" type="axiom">get</span></a> <a class="idref" href="Hashfun.html#j"><span class="id" type="variable">j</span></a> <a class="idref" href="Hashfun.html#t"><span class="id" type="variable">t</span></a>.<br/>
+<span class="id" type="keyword">End</span> <a class="idref" href="Hashfun.html#COUNT_TABLE"><span class="id" type="module">COUNT_TABLE</span></a>.<br/>
+</div>
+
+<div class="doc">
+This means:  in any <span class="inlinecode"><span class="id" type="keyword">Module</span></span> that satisfies this <span class="inlinecode"><span class="id" type="keyword">Module</span></span> <span class="inlinecode"><span class="id" type="keyword">Type</span></span>,
+   there's a type <span class="inlinecode"><span class="id" type="var">table</span></span> of count-tables,
+   and operators <span class="inlinecode"><span class="id" type="var">empty</span></span>, <span class="inlinecode"><span class="id" type="var">get</span></span>, <span class="inlinecode"><span class="id" type="tactic">set</span></span> that satisfy the axioms
+   <span class="inlinecode"><span class="id" type="var">gempty</span></span>, <span class="inlinecode"><span class="id" type="var">gss</span></span>, and <span class="inlinecode"><span class="id" type="var">gso</span></span>. 
+<div class="paragraph"> </div>
+
+<a name="lab80"></a><h3 class="section">A "reference" implementation of COUNT_TABLE</h3>
+
+<div class="paragraph"> </div>
+
+<a name="lab81"></a><h4 class="section">Exercise: 2 stars (FunTable)</h4>
+  It's easy to make a slow implementation of <span class="inlinecode"><span class="id" type="var">COUNT_TABLE</span></span>, using functions. 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Module</span> <a name="FunTable"><span class="id" type="module">FunTable</span></a> &lt;: <a class="idref" href="Hashfun.html#COUNT_TABLE"><span class="id" type="module">COUNT_TABLE</span></a>.<br/>
+&nbsp;<span class="id" type="keyword">Definition</span> <a name="FunTable.table"><span class="id" type="definition">table</span></a>: <span class="id" type="keyword">Type</span> := <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a> → <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>.<br/>
+&nbsp;<span class="id" type="keyword">Definition</span> <a name="FunTable.key"><span class="id" type="definition">key</span></a> : <span class="id" type="keyword">Type</span> := <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>.<br/>
+&nbsp;<span class="id" type="keyword">Definition</span> <a name="FunTable.empty"><span class="id" type="definition">empty</span></a>: <a class="idref" href="Hashfun.html#FunTable.table"><span class="id" type="definition">table</span></a> := <span class="id" type="keyword">fun</span> <span class="id" type="var">k</span> ⇒ 0.<br/>
+&nbsp;<span class="id" type="keyword">Definition</span> <a name="FunTable.get"><span class="id" type="definition">get</span></a> (<span class="id" type="var">k</span>: <a class="idref" href="Hashfun.html#FunTable.key"><span class="id" type="definition">key</span></a>) (<span class="id" type="var">t</span>: <a class="idref" href="Hashfun.html#FunTable.table"><span class="id" type="definition">table</span></a>) : <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a> := <a class="idref" href="Hashfun.html#t"><span class="id" type="variable">t</span></a> <a class="idref" href="Hashfun.html#k"><span class="id" type="variable">k</span></a>.<br/>
+&nbsp;<span class="id" type="keyword">Definition</span> <a name="FunTable.incr"><span class="id" type="definition">incr</span></a> (<span class="id" type="var">k</span>: <a class="idref" href="Hashfun.html#FunTable.key"><span class="id" type="definition">key</span></a>) (<span class="id" type="var">t</span>: <a class="idref" href="Hashfun.html#FunTable.table"><span class="id" type="definition">table</span></a>) : <a class="idref" href="Hashfun.html#FunTable.table"><span class="id" type="definition">table</span></a> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">fun</span> <span class="id" type="var">k'</span> ⇒ <span class="id" type="keyword">if</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Arith.PeanoNat.html#Nat.eqb"><span class="id" type="definition">Nat.eqb</span></a> <a class="idref" href="Hashfun.html#k'"><span class="id" type="variable">k'</span></a> <a class="idref" href="Hashfun.html#k"><span class="id" type="variable">k</span></a> <span class="id" type="keyword">then</span> 1 + <a class="idref" href="Hashfun.html#t"><span class="id" type="variable">t</span></a> <a class="idref" href="Hashfun.html#k'"><span class="id" type="variable">k'</span></a> <span class="id" type="keyword">else</span> <a class="idref" href="Hashfun.html#t"><span class="id" type="variable">t</span></a> <a class="idref" href="Hashfun.html#k'"><span class="id" type="variable">k'</span></a>.<br/>
+&nbsp;<span class="id" type="keyword">Lemma</span> <a name="FunTable.gempty"><span class="id" type="lemma">gempty</span></a>: <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">k</span>,  <a class="idref" href="Hashfun.html#FunTable.get"><span class="id" type="definition">get</span></a> <a class="idref" href="Hashfun.html#k"><span class="id" type="variable">k</span></a> <a class="idref" href="Hashfun.html#FunTable.empty"><span class="id" type="definition">empty</span></a> = 0.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+&nbsp;<span class="id" type="keyword">Lemma</span> <a name="FunTable.gss"><span class="id" type="lemma">gss</span></a>: <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">k</span> <span class="id" type="var">t</span>,  <a class="idref" href="Hashfun.html#FunTable.get"><span class="id" type="definition">get</span></a> <a class="idref" href="Hashfun.html#k"><span class="id" type="variable">k</span></a> (<a class="idref" href="Hashfun.html#FunTable.incr"><span class="id" type="definition">incr</span></a> <a class="idref" href="Hashfun.html#k"><span class="id" type="variable">k</span></a> <a class="idref" href="Hashfun.html#t"><span class="id" type="variable">t</span></a>) = 1+(<a class="idref" href="Hashfun.html#FunTable.get"><span class="id" type="definition">get</span></a> <a class="idref" href="Hashfun.html#k"><span class="id" type="variable">k</span></a> <a class="idref" href="Hashfun.html#t"><span class="id" type="variable">t</span></a>).<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+&nbsp;<span class="id" type="keyword">Lemma</span> <a name="FunTable.gso"><span class="id" type="lemma">gso</span></a>: <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">j</span> <span class="id" type="var">k</span> <span class="id" type="var">t</span>,  <a class="idref" href="Hashfun.html#j"><span class="id" type="variable">j</span></a> ≠ <a class="idref" href="Hashfun.html#k"><span class="id" type="variable">k</span></a> → <a class="idref" href="Hashfun.html#FunTable.get"><span class="id" type="definition">get</span></a> <a class="idref" href="Hashfun.html#j"><span class="id" type="variable">j</span></a> (<a class="idref" href="Hashfun.html#FunTable.incr"><span class="id" type="definition">incr</span></a> <a class="idref" href="Hashfun.html#k"><span class="id" type="variable">k</span></a> <a class="idref" href="Hashfun.html#t"><span class="id" type="variable">t</span></a>) = <a class="idref" href="Hashfun.html#FunTable.get"><span class="id" type="definition">get</span></a> <a class="idref" href="Hashfun.html#j"><span class="id" type="variable">j</span></a> <a class="idref" href="Hashfun.html#t"><span class="id" type="variable">t</span></a>.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+<span class="id" type="keyword">End</span> <a class="idref" href="Hashfun.html#FunTable"><span class="id" type="module">FunTable</span></a>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+<a name="lab82"></a><h3 class="section">Demonstration that hash tables implement COUNT_TABLE</h3>
+
+<div class="paragraph"> </div>
+
+<a name="lab83"></a><h4 class="section">Exercise: 3 stars (IntHashTable)</h4>
+  Now we make a "fast" implementation using hash tables.  We
+  put "fast" in quotes because, unlike the imperative implementation,
+ the purely functional implementation takes linear time, not constant time,
+ to select the the i'th bucket.  That is, <span class="inlinecode"><span class="id" type="var">Znth</span></span> <span class="inlinecode"><span class="id" type="var">i</span></span> <span class="inlinecode"><span class="id" type="var">al</span></span> takes time proportional to <span class="inlinecode"><span class="id" type="var">i</span></span>.
+ But that is no problem, because we are not using <span class="inlinecode"><span class="id" type="var">hashtable_get</span></span> and
+ <span class="inlinecode"><span class="id" type="var">hashtable_incr</span></span> as our real implementation; they are serving as the 
+ <i>functional model</i> of the fast implementation in C.  
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Module</span> <a name="IntHashTable"><span class="id" type="module">IntHashTable</span></a> &lt;: <a class="idref" href="Hashfun.html#COUNT_TABLE"><span class="id" type="module">COUNT_TABLE</span></a>.<br/>
+&nbsp;<span class="id" type="keyword">Definition</span> <a name="IntHashTable.hashtable_invariant"><span class="id" type="definition">hashtable_invariant</span></a> (<span class="id" type="var">cts</span>: <a class="idref" href="Hashfun.html#hashtable_contents"><span class="id" type="definition">hashtable_contents</span></a>) : <span class="id" type="keyword">Prop</span> :=<br/>
+&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <a class="idref" href="Hashfun.html#cts"><span class="id" type="variable">cts</span></a> = <a class="idref" href="Hashfun.html#N"><span class="id" type="definition">N</span></a> ∧<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">i</span>, 0 ≤ <a class="idref" href="Hashfun.html#i"><span class="id" type="variable">i</span></a> &lt; <a class="idref" href="Hashfun.html#N"><span class="id" type="definition">N</span></a> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="inductive">list_norepet</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#map"><span class="id" type="definition">map</span></a> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#fst"><span class="id" type="definition">fst</span></a> (<span class="id" type="definition">Znth</span> <a class="idref" href="Hashfun.html#i"><span class="id" type="variable">i</span></a> <a class="idref" href="Hashfun.html#cts"><span class="id" type="variable">cts</span></a>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;∧ <a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#Forall"><span class="id" type="inductive">Forall</span></a> (<span class="id" type="keyword">fun</span> <span class="id" type="var">s</span> ⇒ <a class="idref" href="Hashfun.html#hashfun"><span class="id" type="definition">hashfun</span></a> <a class="idref" href="Hashfun.html#s"><span class="id" type="variable">s</span></a> <span class="id" type="var">mod</span> <a class="idref" href="Hashfun.html#N"><span class="id" type="definition">N</span></a> = <a class="idref" href="Hashfun.html#i"><span class="id" type="variable">i</span></a>) (<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#map"><span class="id" type="definition">map</span></a> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#fst"><span class="id" type="definition">fst</span></a> (<span class="id" type="definition">Znth</span> <a class="idref" href="Hashfun.html#i"><span class="id" type="variable">i</span></a> <a class="idref" href="Hashfun.html#cts"><span class="id" type="variable">cts</span></a>)).<br/>
+&nbsp;<span class="id" type="keyword">Definition</span> <a name="IntHashTable.table"><span class="id" type="definition">table</span></a> := <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Specif.html#sig"><span class="id" type="inductive">sig</span></a> <a class="idref" href="Hashfun.html#IntHashTable.hashtable_invariant"><span class="id" type="definition">hashtable_invariant</span></a>.<br/>
+&nbsp;<span class="id" type="keyword">Definition</span> <a name="IntHashTable.key"><span class="id" type="definition">key</span></a> := <a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a>.<br/><hr class='doublespaceincode'/>
+&nbsp;<span class="id" type="keyword">Lemma</span> <a name="IntHashTable.empty_invariant"><span class="id" type="lemma">empty_invariant</span></a>: <a class="idref" href="Hashfun.html#IntHashTable.hashtable_invariant"><span class="id" type="definition">hashtable_invariant</span></a> <a class="idref" href="Hashfun.html#empty_table"><span class="id" type="definition">empty_table</span></a>.<br/>
+&nbsp;<span class="id" type="keyword">Proof</span>.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Lemma</span> <a name="IntHashTable.incr_invariant"><span class="id" type="lemma">incr_invariant</span></a>: <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">k</span> <span class="id" type="var">cts</span>, <a class="idref" href="Hashfun.html#IntHashTable.hashtable_invariant"><span class="id" type="definition">hashtable_invariant</span></a> <a class="idref" href="Hashfun.html#cts"><span class="id" type="variable">cts</span></a> → <a class="idref" href="Hashfun.html#IntHashTable.hashtable_invariant"><span class="id" type="definition">hashtable_invariant</span></a> (<a class="idref" href="Hashfun.html#hashtable_incr"><span class="id" type="definition">hashtable_incr</span></a> <a class="idref" href="Hashfun.html#k"><span class="id" type="variable">k</span></a> <a class="idref" href="Hashfun.html#cts"><span class="id" type="variable">cts</span></a>).<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/><hr class='doublespaceincode'/>
+&nbsp;<span class="id" type="keyword">Definition</span> <a name="IntHashTable.empty"><span class="id" type="definition">empty</span></a> : <a class="idref" href="Hashfun.html#IntHashTable.table"><span class="id" type="definition">table</span></a> := <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Specif.html#exist"><span class="id" type="constructor">exist</span></a> <span class="id" type="var">_</span> <span class="id" type="var">_</span> <a class="idref" href="Hashfun.html#IntHashTable.empty_invariant"><span class="id" type="axiom">empty_invariant</span></a>.<br/>
+&nbsp;<span class="id" type="keyword">Definition</span> <a name="IntHashTable.get"><span class="id" type="definition">get</span></a> : <a class="idref" href="Hashfun.html#IntHashTable.key"><span class="id" type="definition">key</span></a> → <a class="idref" href="Hashfun.html#IntHashTable.table"><span class="id" type="definition">table</span></a> → <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a> := <span class="id" type="keyword">fun</span> <span class="id" type="var">k</span> <span class="id" type="var">tbl</span> ⇒ <a class="idref" href="Hashfun.html#hashtable_get"><span class="id" type="definition">hashtable_get</span></a> <a class="idref" href="Hashfun.html#k"><span class="id" type="variable">k</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Specif.html#proj1_sig"><span class="id" type="definition">proj1_sig</span></a> <a class="idref" href="Hashfun.html#tbl"><span class="id" type="variable">tbl</span></a>).<br/>
+&nbsp;<span class="id" type="keyword">Definition</span> <a name="IntHashTable.incr"><span class="id" type="definition">incr</span></a> : <a class="idref" href="Hashfun.html#IntHashTable.key"><span class="id" type="definition">key</span></a> → <a class="idref" href="Hashfun.html#IntHashTable.table"><span class="id" type="definition">table</span></a> → <a class="idref" href="Hashfun.html#IntHashTable.table"><span class="id" type="definition">table</span></a> := <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">fun</span> <span class="id" type="var">k</span> <span class="id" type="var">tbl</span> ⇒ <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Specif.html#exist"><span class="id" type="constructor">exist</span></a> <span class="id" type="var">_</span> <span class="id" type="var">_</span> (<a class="idref" href="Hashfun.html#IntHashTable.incr_invariant"><span class="id" type="axiom">incr_invariant</span></a> <a class="idref" href="Hashfun.html#k"><span class="id" type="variable">k</span></a> <span class="id" type="var">_</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Specif.html#proj2_sig"><span class="id" type="definition">proj2_sig</span></a> <a class="idref" href="Hashfun.html#tbl"><span class="id" type="variable">tbl</span></a>)).<br/><hr class='doublespaceincode'/>
+&nbsp;<span class="id" type="keyword">Theorem</span> <a name="IntHashTable.gempty"><span class="id" type="lemma">gempty</span></a>: <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">k</span>, <a class="idref" href="Hashfun.html#IntHashTable.get"><span class="id" type="definition">get</span></a> <a class="idref" href="Hashfun.html#k"><span class="id" type="variable">k</span></a> <a class="idref" href="Hashfun.html#IntHashTable.empty"><span class="id" type="definition">empty</span></a> = 0.<br/>
+&nbsp;<span class="id" type="keyword">Proof</span>.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/><hr class='doublespaceincode'/>
+&nbsp;<span class="id" type="keyword">Theorem</span> <a name="IntHashTable.gss"><span class="id" type="lemma">gss</span></a>: <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">k</span> <span class="id" type="var">t</span>,  <a class="idref" href="Hashfun.html#IntHashTable.get"><span class="id" type="definition">get</span></a> <a class="idref" href="Hashfun.html#k"><span class="id" type="variable">k</span></a> (<a class="idref" href="Hashfun.html#IntHashTable.incr"><span class="id" type="definition">incr</span></a> <a class="idref" href="Hashfun.html#k"><span class="id" type="variable">k</span></a> <a class="idref" href="Hashfun.html#t"><span class="id" type="variable">t</span></a>) =  1 + (<a class="idref" href="Hashfun.html#IntHashTable.get"><span class="id" type="definition">get</span></a> <a class="idref" href="Hashfun.html#k"><span class="id" type="variable">k</span></a> <a class="idref" href="Hashfun.html#t"><span class="id" type="variable">t</span></a>).<br/>
+&nbsp;<span class="id" type="keyword">Proof</span>.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/><hr class='doublespaceincode'/>
+&nbsp;<span class="id" type="keyword">Theorem</span> <a name="IntHashTable.gso"><span class="id" type="lemma">gso</span></a>: <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">j</span> <span class="id" type="var">k</span> <span class="id" type="var">t</span>,    <span class="comment">(*&nbsp;get-set-other&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Hashfun.html#j"><span class="id" type="variable">j</span></a> ≠ <a class="idref" href="Hashfun.html#k"><span class="id" type="variable">k</span></a> → <a class="idref" href="Hashfun.html#IntHashTable.get"><span class="id" type="definition">get</span></a> <a class="idref" href="Hashfun.html#j"><span class="id" type="variable">j</span></a> (<a class="idref" href="Hashfun.html#IntHashTable.incr"><span class="id" type="definition">incr</span></a> <a class="idref" href="Hashfun.html#k"><span class="id" type="variable">k</span></a> <a class="idref" href="Hashfun.html#t"><span class="id" type="variable">t</span></a>) = <a class="idref" href="Hashfun.html#IntHashTable.get"><span class="id" type="definition">get</span></a> <a class="idref" href="Hashfun.html#j"><span class="id" type="variable">j</span></a> <a class="idref" href="Hashfun.html#t"><span class="id" type="variable">t</span></a>.<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="code code-tight">
+
+<span class="id" type="keyword">End</span> <a class="idref" href="Hashfun.html#IntHashTable"><span class="id" type="module">IntHashTable</span></a>.<br/>
+</div>
+</div>
+
+
+
+</div>
+
+</body>
+</html>

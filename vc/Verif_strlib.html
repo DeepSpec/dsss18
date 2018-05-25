@@ -1,0 +1,406 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<link href="common/css/sf.css" rel="stylesheet" type="text/css"/>
+<title>Verif_strlib: String functions</title>
+</head>
+<link href="common/jquery-ui/jquery-ui.css" rel="stylesheet">
+<script src="common/jquery-ui/external/jquery/jquery.js"></script>
+<script src="common/jquery-ui/jquery-ui.js"></script>
+<script src="common/toggleproofs.js"></script>
+<link href="common/css/vc.css" rel="stylesheet" type="text/css"/>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+<a href='https://www.cis.upenn.edu/~bcpierce/sf/current/index.html'>
+<img src='common/media/image/sf_logo_sm.png'></a>
+</br><a href='index.html'>  <span class='booktitleinheader'>Volume 5beta: Verifiable C</span><br></br>
+<ul id='menu'>
+   <a href='toc.html'><li class='section_name'>Table of Contents</li></a>
+   <a href='coqindex.html'><li class='section_name'>Index</li></a>
+   <a href='deps.html'><li class='section_name'>Roadmap</li></a>
+</ul>
+</a></div>
+
+<div id="main">
+
+<h1 class="libtitle">Verif_strlib<span class="subtitle">String functions</span></h1>
+
+
+<div class="doc">
+
+<div class="paragraph"> </div>
+
+ THIS CHAPTER IS JUST A STUB RIGHT NOW. 
+<div class="paragraph"> </div>
+
+ This chapter should show how to prove the correctness
+ of functions on C null-terminated character strings:
+ strlen, strcmp, strcpy.
+
+<div class="paragraph"> </div>
+
+<a name="lab68"></a><h2 class="section">Here are some functions from the C standard library, <span class="inlinecode"><span class="id" type="var">strlib.c</span></span></h2>
+
+<div class="paragraph"> </div>
+
+
+<div class="paragraph"> </div>
+
+<pre>
+#include &lt;stddef.h&gt;
+
+size_t strlen(const char *str) {
+  size_t i;
+  for (i=0; ; i++)
+    if (str[i]==0) return i;
+}
+
+char *strcpy(char *dest, const char *src) {
+  size_t i;
+  for(i = 0;; i++){
+    char d = src[i];
+    dest[i] = d;
+    if(d == 0) return dest;
+  }
+}
+
+int strcmp(const char *str1, const char *str2) {
+  size_t i;
+  for(i = 0;; i++){
+    char d<sub>1</sub> = str1[i];
+    char d<sub>2</sub> = str2[i];
+    if(d<sub>1</sub> == 0 &amp;&amp; d<sub>2</sub> == 0) return 0;
+    else if(d<sub>1</sub> &lt; d<sub>2</sub>) return -1;
+    else if(d<sub>1</sub> &gt; d<sub>2</sub>) return 1;
+  }
+}    
+</pre>
+
+<div class="paragraph"> </div>
+
+<a name="lab69"></a><h2 class="section">Standard boilerplate</h2>
+
+</div>
+<div class="code code-space">
+
+<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="library">VST.floyd.proofauto</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="library">strlib</span>.<br/>
+<span class="id" type="keyword">Instance</span> <a name="CompSpecs"><span class="id" type="instance">CompSpecs</span></a> : <span class="id" type="class">compspecs</span>. <span class="id" type="var">make_compspecs</span> <span class="id" type="definition">prog</span>. <span class="id" type="keyword">Defined</span>.<br/>
+<span class="id" type="keyword">Definition</span> <a name="Vprog"><span class="id" type="definition">Vprog</span></a> : <span class="id" type="definition">varspecs</span>. <span class="id" type="var">mk_varspecs</span> <span class="id" type="definition">prog</span>. <span class="id" type="keyword">Defined</span>.<br/>
+</div>
+
+<div class="doc">
+<a name="lab70"></a><h2 class="section">Function specs</h2>
+
+</div>
+<div class="code code-space">
+
+<br/>
+<span class="id" type="keyword">Definition</span> <a name="strlen_spec"><span class="id" type="definition">strlen_spec</span></a> :=<br/>
+&nbsp;<span class="id" type="notation">DECLARE</span> <span class="id" type="definition">_strlen</span><br/>
+&nbsp;&nbsp;<span class="id" type="notation">WITH</span> <span class="id" type="var">s</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <span class="id" type="abbreviation">byte</span>, <span class="id" type="var">str</span>: <span class="id" type="inductive">val</span><br/>
+&nbsp;&nbsp;<span class="id" type="var">PRE</span> [ <span class="id" type="definition">_str</span> <span class="id" type="var">OF</span> <span class="id" type="definition">tptr</span> <span class="id" type="definition">tschar</span> ]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span> ( )<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> <span class="id" type="definition">_str</span> <a class="idref" href="Verif_strlib.html#str"><span class="id" type="variable">str</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span> (<span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_strlib.html#s"><span class="id" type="variable">s</span></a> <a class="idref" href="Verif_strlib.html#str"><span class="id" type="variable">str</span></a>)<br/>
+&nbsp;&nbsp;<span class="id" type="var">POST</span> [ <span class="id" type="definition">tptr</span> <span class="id" type="definition">tschar</span> ]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span> ()<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> <span class="id" type="definition">ret_temp</span> (<span class="id" type="definition">Vptrofs</span> (<span class="id" type="definition">Ptrofs.repr</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <a class="idref" href="Verif_strlib.html#s"><span class="id" type="variable">s</span></a>))))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span> (<span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_strlib.html#s"><span class="id" type="variable">s</span></a> <a class="idref" href="Verif_strlib.html#str"><span class="id" type="variable">str</span></a>).<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="strcpy_spec"><span class="id" type="definition">strcpy_spec</span></a> :=<br/>
+&nbsp;<span class="id" type="notation">DECLARE</span> <span class="id" type="definition">_strcpy</span><br/>
+&nbsp;&nbsp;<span class="id" type="notation">WITH</span> <span class="id" type="keyword">dest</span> : <span class="id" type="inductive">val</span>, <span class="id" type="var">n</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>, <span class="id" type="var">src</span> : <span class="id" type="inductive">val</span>, <span class="id" type="var">s</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <span class="id" type="abbreviation">byte</span><br/>
+&nbsp;&nbsp;<span class="id" type="var">PRE</span> [ <span class="id" type="definition">_dest</span> <span class="id" type="var">OF</span> <span class="id" type="definition">tptr</span> <span class="id" type="definition">tschar</span>, <span class="id" type="definition">_src</span> <span class="id" type="var">OF</span> <span class="id" type="definition">tptr</span> <span class="id" type="definition">tschar</span> ]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <a class="idref" href="Verif_strlib.html#s"><span class="id" type="variable">s</span></a> &lt; <a class="idref" href="Verif_strlib.html#n"><span class="id" type="variable">n</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> <span class="id" type="definition">_dest</span> <span class="id" type="keyword">dest</span>; <span class="id" type="constructor">temp</span> <span class="id" type="definition">_src</span> <a class="idref" href="Verif_strlib.html#src"><span class="id" type="variable">src</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span> (<span class="id" type="definition">data_at_</span> <span class="id" type="definition">Tsh</span> (<span class="id" type="definition">tarray</span> <span class="id" type="definition">tschar</span> <a class="idref" href="Verif_strlib.html#n"><span class="id" type="variable">n</span></a>) <span class="id" type="keyword">dest</span>; <span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_strlib.html#s"><span class="id" type="variable">s</span></a> <a class="idref" href="Verif_strlib.html#src"><span class="id" type="variable">src</span></a>)<br/>
+&nbsp;&nbsp;<span class="id" type="var">POST</span> [ <span class="id" type="definition">tptr</span> <span class="id" type="definition">tschar</span> ]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span> ()<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> <span class="id" type="definition">ret_temp</span> <span class="id" type="keyword">dest</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span> (<span class="id" type="definition">cstringn</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_strlib.html#s"><span class="id" type="variable">s</span></a> <a class="idref" href="Verif_strlib.html#n"><span class="id" type="variable">n</span></a> <span class="id" type="keyword">dest</span>; <span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_strlib.html#s"><span class="id" type="variable">s</span></a> <a class="idref" href="Verif_strlib.html#src"><span class="id" type="variable">src</span></a>).<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="strcmp_spec"><span class="id" type="definition">strcmp_spec</span></a> :=<br/>
+&nbsp;<span class="id" type="notation">DECLARE</span> <span class="id" type="definition">_strcmp</span><br/>
+&nbsp;&nbsp;<span class="id" type="notation">WITH</span> <span class="id" type="var">str1</span> : <span class="id" type="inductive">val</span>, <span class="id" type="var">s<sub>1</sub></span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <span class="id" type="abbreviation">byte</span>, <span class="id" type="var">str2</span> : <span class="id" type="inductive">val</span>, <span class="id" type="var">s<sub>2</sub></span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <span class="id" type="abbreviation">byte</span><br/>
+&nbsp;&nbsp;<span class="id" type="var">PRE</span> [ <span class="id" type="definition">_str1</span> <span class="id" type="var">OF</span> <span class="id" type="definition">tptr</span> <span class="id" type="definition">tschar</span>, <span class="id" type="definition">_str2</span> <span class="id" type="var">OF</span> <span class="id" type="definition">tptr</span> <span class="id" type="definition">tschar</span> ]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span> ()<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> <span class="id" type="definition">_str1</span> <a class="idref" href="Verif_strlib.html#str1"><span class="id" type="variable">str1</span></a>; <span class="id" type="constructor">temp</span> <span class="id" type="definition">_str2</span> <a class="idref" href="Verif_strlib.html#str2"><span class="id" type="variable">str2</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span> (<span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_strlib.html#s<sub>1</sub>"><span class="id" type="variable">s<sub>1</sub></span></a> <a class="idref" href="Verif_strlib.html#str1"><span class="id" type="variable">str1</span></a>; <span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_strlib.html#s<sub>2</sub>"><span class="id" type="variable">s<sub>2</sub></span></a> <a class="idref" href="Verif_strlib.html#str2"><span class="id" type="variable">str2</span></a>)<br/>
+&nbsp;&nbsp;<span class="id" type="var">POST</span> [ <span class="id" type="definition">tint</span> ]<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="notation">EX</span> <span class="id" type="var">i</span> : <span class="id" type="abbreviation">int</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span> (<span class="id" type="keyword">if</span> <span class="id" type="lemma">Int.eq_dec</span> <a class="idref" href="Verif_strlib.html#i"><span class="id" type="variable">i</span></a> <span class="id" type="definition">Int.zero</span> <span class="id" type="keyword">then</span> <a class="idref" href="Verif_strlib.html#s<sub>1</sub>"><span class="id" type="variable">s<sub>1</sub></span></a> = <a class="idref" href="Verif_strlib.html#s<sub>2</sub>"><span class="id" type="variable">s<sub>2</sub></span></a> <span class="id" type="keyword">else</span> <a class="idref" href="Verif_strlib.html#s<sub>1</sub>"><span class="id" type="variable">s<sub>1</sub></span></a> ≠ <a class="idref" href="Verif_strlib.html#s<sub>2</sub>"><span class="id" type="variable">s<sub>2</sub></span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> <span class="id" type="definition">ret_temp</span> (<span class="id" type="constructor">Vint</span> <a class="idref" href="Verif_strlib.html#i"><span class="id" type="variable">i</span></a>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span> (<span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_strlib.html#s<sub>1</sub>"><span class="id" type="variable">s<sub>1</sub></span></a> <a class="idref" href="Verif_strlib.html#str1"><span class="id" type="variable">str1</span></a>; <span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_strlib.html#s<sub>2</sub>"><span class="id" type="variable">s<sub>2</sub></span></a> <a class="idref" href="Verif_strlib.html#str2"><span class="id" type="variable">str2</span></a>).<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="Gprog"><span class="id" type="definition">Gprog</span></a> : <span class="id" type="definition">funspecs</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">ltac</span>:(<span class="id" type="var">with_library</span> <span class="id" type="definition">prog</span> [ <a class="idref" href="Verif_strlib.html#strlen_spec"><span class="id" type="definition">strlen_spec</span></a>; <a class="idref" href="Verif_strlib.html#strcpy_spec"><span class="id" type="definition">strcpy_spec</span></a>; <a class="idref" href="Verif_strlib.html#strcmp_spec"><span class="id" type="definition">strcmp_spec</span></a> ]).<br/>
+</div>
+
+<div class="doc">
+<a name="lab71"></a><h2 class="section">Proof of the <span class="inlinecode"><span class="id" type="var">strlen</span></span> function</h2>
+
+</div>
+<div class="code code-space">
+
+<br/>
+<span class="id" type="keyword">Lemma</span> <a name="body_strlen"><span class="id" type="lemma">body_strlen</span></a>: <span class="id" type="definition">semax_body</span> <a class="idref" href="Verif_strlib.html#Vprog"><span class="id" type="definition">Vprog</span></a> <a class="idref" href="Verif_strlib.html#Gprog"><span class="id" type="definition">Gprog</span></a> <span class="id" type="definition">f_strlen</span> <a class="idref" href="Verif_strlib.html#strlen_spec"><span class="id" type="definition">strlen_spec</span></a>.<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="id" type="var">start_function</span>.<br/>
+<span class="id" type="tactic">unfold</span> <span class="id" type="definition">cstring</span> <span class="id" type="keyword">in</span> *.<br/>
+<span class="id" type="tactic">rename</span> <span class="id" type="var">s</span> <span class="id" type="var">into</span> <span class="id" type="var">ls</span>.<br/>
+<span class="id" type="var">Intros</span>.<br/>
+<span class="id" type="var">forward</span>.<br/>
+<span class="id" type="var">forward_loop</span>  (<span class="id" type="notation">EX</span> <span class="id" type="var">i</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>,<br/>
+&nbsp;&nbsp;<span class="id" type="notation">PROP</span> (0 ≤ <a class="idref" href="Verif_strlib.html#i"><span class="id" type="variable">i</span></a> &lt; <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls</span> + 1)<br/>
+&nbsp;&nbsp;<span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> <span class="id" type="definition">_str</span> <span class="id" type="var">str</span>; <span class="id" type="constructor">temp</span> <span class="id" type="definition">_i</span> (<span class="id" type="definition">Vptrofs</span> (<span class="id" type="definition">Ptrofs.repr</span> <a class="idref" href="Verif_strlib.html#i"><span class="id" type="variable">i</span></a>)))<br/>
+&nbsp;&nbsp;<span class="id" type="notation">SEP</span> (<span class="id" type="definition">data_at</span> <span class="id" type="definition">Tsh</span> (<span class="id" type="definition">tarray</span> <span class="id" type="definition">tschar</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls</span> + 1))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#map"><span class="id" type="definition">map</span></a> <span class="id" type="definition">Vbyte</span> (<span class="id" type="var">ls</span> ++ [<span class="id" type="definition">Byte.zero</span>])) <span class="id" type="var">str</span>)).<br/>
+*<br/>
+<span class="id" type="var">Exists</span> 0. <span class="id" type="var">entailer</span>!.<br/>
+*<br/>
+<span class="id" type="var">Intros</span> <span class="id" type="var">i</span>.<br/>
+<span class="id" type="tactic">assert</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> (<span class="id" type="var">ls</span> ++ [<span class="id" type="definition">Byte.zero</span>]) = <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls</span> + 1) <span class="id" type="tactic">by</span> (<span class="id" type="var">autorewrite</span> <span class="id" type="keyword">with</span> <span class="id" type="var">sublist</span>; <span class="id" type="tactic">auto</span>).<br/>
+<span class="id" type="var">forward</span>.<br/>
+<span class="id" type="var">normalize</span>.<br/>
+<span class="id" type="var">forward_if</span>.<br/>
+<span class="id" type="var">forward</span>.<br/>
+<span class="id" type="var">entailer</span>!. <span class="id" type="tactic">f_equal</span>. <span class="id" type="tactic">f_equal</span>. <span class="id" type="var">cstring</span>.<br/>
+<span class="id" type="var">forward</span>. <span class="comment">(*&nbsp;entailer!.&nbsp;&nbsp;*)</span><br/>
+<span class="id" type="var">forward</span>.<br/>
+<span class="id" type="var">Exists</span> (<span class="id" type="var">i</span>+1).<br/>
+<span class="id" type="var">entailer</span>!. <span class="id" type="var">cstring</span>.<br/>
+<span class="id" type="keyword">Qed</span>.<br/>
+</div>
+
+<div class="doc">
+<a name="lab72"></a><h2 class="section">Proof of the <span class="inlinecode"><span class="id" type="var">strcpy</span></span> function</h2>
+
+</div>
+<div class="code code-space">
+
+<br/>
+<span class="id" type="keyword">Lemma</span> <a name="split_data_at_app"><span class="id" type="lemma">split_data_at_app</span></a>:<br/>
+&nbsp;<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">sh</span> <span class="id" type="var">t</span> <span class="id" type="var">n</span> (<span class="id" type="var">al</span> <span class="id" type="var">bl</span>: <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> (<span class="id" type="definition">reptype</span> <a class="idref" href="Verif_strlib.html#t"><span class="id" type="variable">t</span></a>)) <span class="id" type="var">abl'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">al'</span>: <span class="id" type="definition">reptype</span> (<span class="id" type="definition">tarray</span> <a class="idref" href="Verif_strlib.html#t"><span class="id" type="variable">t</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <a class="idref" href="Verif_strlib.html#al"><span class="id" type="variable">al</span></a>)))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">bl'</span>: <span class="id" type="definition">reptype</span> (<span class="id" type="definition">tarray</span> <a class="idref" href="Verif_strlib.html#t"><span class="id" type="variable">t</span></a> (<a class="idref" href="Verif_strlib.html#n"><span class="id" type="variable">n</span></a> - <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <a class="idref" href="Verif_strlib.html#al"><span class="id" type="variable">al</span></a>)))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">p</span> ,<br/>
+&nbsp;&nbsp;&nbsp;<a class="idref" href="Verif_strlib.html#n"><span class="id" type="variable">n</span></a> = <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> (<a class="idref" href="Verif_strlib.html#al"><span class="id" type="variable">al</span></a>++<a class="idref" href="Verif_strlib.html#bl"><span class="id" type="variable">bl</span></a>) →<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="definition">JMeq</span> <a class="idref" href="Verif_strlib.html#abl'"><span class="id" type="variable">abl'</span></a> (<a class="idref" href="Verif_strlib.html#al"><span class="id" type="variable">al</span></a>++<a class="idref" href="Verif_strlib.html#bl"><span class="id" type="variable">bl</span></a>) →<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="definition">JMeq</span> <a class="idref" href="Verif_strlib.html#al'"><span class="id" type="variable">al'</span></a> <a class="idref" href="Verif_strlib.html#al"><span class="id" type="variable">al</span></a> →<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="definition">JMeq</span> <a class="idref" href="Verif_strlib.html#bl'"><span class="id" type="variable">bl'</span></a> <a class="idref" href="Verif_strlib.html#bl"><span class="id" type="variable">bl</span></a> →<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="definition">data_at</span> <a class="idref" href="Verif_strlib.html#sh"><span class="id" type="variable">sh</span></a> (<span class="id" type="definition">tarray</span> <a class="idref" href="Verif_strlib.html#t"><span class="id" type="variable">t</span></a> <a class="idref" href="Verif_strlib.html#n"><span class="id" type="variable">n</span></a>) <a class="idref" href="Verif_strlib.html#abl'"><span class="id" type="variable">abl'</span></a> <a class="idref" href="Verif_strlib.html#p"><span class="id" type="variable">p</span></a> = <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="definition">data_at</span> <a class="idref" href="Verif_strlib.html#sh"><span class="id" type="variable">sh</span></a> (<span class="id" type="definition">tarray</span> <a class="idref" href="Verif_strlib.html#t"><span class="id" type="variable">t</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <a class="idref" href="Verif_strlib.html#al"><span class="id" type="variable">al</span></a>)) <a class="idref" href="Verif_strlib.html#al'"><span class="id" type="variable">al'</span></a> <a class="idref" href="Verif_strlib.html#p"><span class="id" type="variable">p</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" type="definition">data_at</span> <a class="idref" href="Verif_strlib.html#sh"><span class="id" type="variable">sh</span></a> (<span class="id" type="definition">tarray</span> <a class="idref" href="Verif_strlib.html#t"><span class="id" type="variable">t</span></a> (<a class="idref" href="Verif_strlib.html#n"><span class="id" type="variable">n</span></a> - <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <a class="idref" href="Verif_strlib.html#al"><span class="id" type="variable">al</span></a>)) <a class="idref" href="Verif_strlib.html#bl'"><span class="id" type="variable">bl'</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="definition">field_address0</span> (<span class="id" type="definition">tarray</span> <a class="idref" href="Verif_strlib.html#t"><span class="id" type="variable">t</span></a> <a class="idref" href="Verif_strlib.html#n"><span class="id" type="variable">n</span></a>) [<span class="id" type="constructor">ArraySubsc</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <a class="idref" href="Verif_strlib.html#al"><span class="id" type="variable">al</span></a>)] <a class="idref" href="Verif_strlib.html#p"><span class="id" type="variable">p</span></a>).<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="id" type="tactic">intros</span>.<br/>
+<span class="id" type="tactic">unfold</span> <span class="id" type="definition">tarray</span>.<br/>
+<span class="id" type="var">erewrite</span> <span class="id" type="lemma">split2_data_at_Tarray</span>.<br/>
+4: <span class="id" type="tactic">rewrite</span> <span class="id" type="lemma">sublist_same</span>; [<span class="id" type="var">eassumption</span> | <span class="id" type="tactic">auto</span> | <span class="id" type="tactic">auto</span> ].<br/>
+4: <span class="id" type="tactic">rewrite</span> <span class="id" type="lemma">sublist_app1</span>.<br/>
+4: <span class="id" type="tactic">rewrite</span> <span class="id" type="lemma">sublist_same</span>; [<span class="id" type="var">eassumption</span> | <span class="id" type="tactic">auto</span> | <span class="id" type="tactic">auto</span> ].<br/>
+2: <span class="id" type="tactic">rewrite</span> <span class="id" type="lemma">Zlength_app</span> <span class="id" type="keyword">in</span> <span class="id" type="var">H</span> <span class="id" type="tactic">by</span> <span class="id" type="var">list_solve</span>; <span class="id" type="var">list_solve</span>.<br/>
+2: <span class="id" type="tactic">rewrite</span> <span class="id" type="lemma">Zlength_app</span> <span class="id" type="keyword">in</span> <span class="id" type="var">H</span> <span class="id" type="tactic">by</span> <span class="id" type="var">list_solve</span>; <span class="id" type="var">list_solve</span>.<br/>
+2: <span class="id" type="var">list_solve</span>.<br/>
+2: <span class="id" type="tactic">omega</span>.<br/>
+2: <span class="id" type="tactic">rewrite</span> <span class="id" type="lemma">sublist_app2</span>.<br/>
+2: <span class="id" type="tactic">rewrite</span> <span class="id" type="lemma">sublist_same</span>; [<span class="id" type="var">eassumption</span> | <span class="id" type="tactic">auto</span> | <span class="id" type="tactic">auto</span> ].<br/>
+<span class="id" type="tactic">auto</span>.<br/>
+<span class="id" type="var">all</span>: <span class="id" type="tactic">rewrite</span> <span class="id" type="lemma">Zlength_app</span> <span class="id" type="keyword">in</span> <span class="id" type="var">H</span>; <span class="id" type="var">rep_omega</span>.<br/>
+<span class="id" type="keyword">Qed</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Lemma</span> <a name="split_data_at_app_tschar"><span class="id" type="lemma">split_data_at_app_tschar</span></a>:<br/>
+&nbsp;<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">sh</span> <span class="id" type="var">n</span> (<span class="id" type="var">al</span> <span class="id" type="var">bl</span>: <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <span class="id" type="inductive">val</span>) <span class="id" type="var">p</span> ,<br/>
+&nbsp;&nbsp;&nbsp;<a class="idref" href="Verif_strlib.html#n"><span class="id" type="variable">n</span></a> = <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> (<a class="idref" href="Verif_strlib.html#al"><span class="id" type="variable">al</span></a>++<a class="idref" href="Verif_strlib.html#bl"><span class="id" type="variable">bl</span></a>) →<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="definition">data_at</span> <a class="idref" href="Verif_strlib.html#sh"><span class="id" type="variable">sh</span></a> (<span class="id" type="definition">tarray</span> <span class="id" type="definition">tschar</span> <a class="idref" href="Verif_strlib.html#n"><span class="id" type="variable">n</span></a>) (<a class="idref" href="Verif_strlib.html#al"><span class="id" type="variable">al</span></a>++<a class="idref" href="Verif_strlib.html#bl"><span class="id" type="variable">bl</span></a>) <a class="idref" href="Verif_strlib.html#p"><span class="id" type="variable">p</span></a> = <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="definition">data_at</span> <a class="idref" href="Verif_strlib.html#sh"><span class="id" type="variable">sh</span></a> (<span class="id" type="definition">tarray</span> <span class="id" type="definition">tschar</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <a class="idref" href="Verif_strlib.html#al"><span class="id" type="variable">al</span></a>)) <a class="idref" href="Verif_strlib.html#al"><span class="id" type="variable">al</span></a> <a class="idref" href="Verif_strlib.html#p"><span class="id" type="variable">p</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" type="definition">data_at</span> <a class="idref" href="Verif_strlib.html#sh"><span class="id" type="variable">sh</span></a> (<span class="id" type="definition">tarray</span> <span class="id" type="definition">tschar</span> (<a class="idref" href="Verif_strlib.html#n"><span class="id" type="variable">n</span></a> - <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <a class="idref" href="Verif_strlib.html#al"><span class="id" type="variable">al</span></a>)) <a class="idref" href="Verif_strlib.html#bl"><span class="id" type="variable">bl</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="definition">field_address0</span> (<span class="id" type="definition">tarray</span> <span class="id" type="definition">tschar</span> <a class="idref" href="Verif_strlib.html#n"><span class="id" type="variable">n</span></a>) [<span class="id" type="constructor">ArraySubsc</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <a class="idref" href="Verif_strlib.html#al"><span class="id" type="variable">al</span></a>)] <a class="idref" href="Verif_strlib.html#p"><span class="id" type="variable">p</span></a>).<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="id" type="tactic">intros</span>.<br/>
+<span class="id" type="tactic">apply</span> (<a class="idref" href="Verif_strlib.html#split_data_at_app"><span class="id" type="lemma">split_data_at_app</span></a> <span class="id" type="var">sh</span> <span class="id" type="definition">tschar</span> <span class="id" type="var">n</span> <span class="id" type="var">al</span> <span class="id" type="var">bl</span> (<span class="id" type="var">al</span>++<span class="id" type="var">bl</span>)); <span class="id" type="tactic">auto</span>.<br/>
+<span class="id" type="keyword">Qed</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Lemma</span> <a name="body_strcpy"><span class="id" type="lemma">body_strcpy</span></a>: <span class="id" type="definition">semax_body</span> <a class="idref" href="Verif_strlib.html#Vprog"><span class="id" type="definition">Vprog</span></a> <a class="idref" href="Verif_strlib.html#Gprog"><span class="id" type="definition">Gprog</span></a> <span class="id" type="definition">f_strcpy</span> <a class="idref" href="Verif_strlib.html#strcpy_spec"><span class="id" type="definition">strcpy_spec</span></a>.<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="id" type="var">start_function</span>.<br/>
+<span class="id" type="tactic">unfold</span> <span class="id" type="definition">cstring</span>,<span class="id" type="definition">cstringn</span> <span class="id" type="keyword">in</span> *.<br/>
+<span class="id" type="tactic">rename</span> <span class="id" type="var">s</span> <span class="id" type="var">into</span> <span class="id" type="var">ls</span>.<br/>
+<span class="id" type="var">forward</span>.<br/>
+<span class="id" type="var">Intros</span>.<br/>
+<span class="id" type="var">forward_loop</span> (<span class="id" type="notation">EX</span> <span class="id" type="var">i</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>,<br/>
+&nbsp;&nbsp;<span class="id" type="notation">PROP</span> (0 ≤ <a class="idref" href="Verif_strlib.html#i"><span class="id" type="variable">i</span></a> &lt; <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls</span> + 1)<br/>
+&nbsp;&nbsp;<span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> <span class="id" type="definition">_i</span> (<span class="id" type="constructor">Vint</span> (<span class="id" type="definition">Int.repr</span> <a class="idref" href="Verif_strlib.html#i"><span class="id" type="variable">i</span></a>)); <span class="id" type="constructor">temp</span> <span class="id" type="definition">_dest</span> <span class="id" type="keyword">dest</span>; <span class="id" type="constructor">temp</span> <span class="id" type="definition">_src</span> <span class="id" type="var">src</span>)<br/>
+&nbsp;&nbsp;<span class="id" type="notation">SEP</span> (<span class="id" type="definition">data_at</span> <span class="id" type="definition">Tsh</span> (<span class="id" type="definition">tarray</span> <span class="id" type="definition">tschar</span> <span class="id" type="var">n</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#map"><span class="id" type="definition">map</span></a> <span class="id" type="definition">Vbyte</span> (<span class="id" type="definition">sublist</span> 0 <a class="idref" href="Verif_strlib.html#i"><span class="id" type="variable">i</span></a> <span class="id" type="var">ls</span>) ++ <span class="id" type="definition">list_repeat</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.to_nat"><span class="id" type="definition">Z.to_nat</span></a> (<span class="id" type="var">n</span> - <a class="idref" href="Verif_strlib.html#i"><span class="id" type="variable">i</span></a>)) <span class="id" type="constructor">Vundef</span>) <span class="id" type="keyword">dest</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="definition">data_at</span> <span class="id" type="definition">Tsh</span> (<span class="id" type="definition">tarray</span> <span class="id" type="definition">tschar</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls</span> + 1)) (<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#map"><span class="id" type="definition">map</span></a> <span class="id" type="definition">Vbyte</span> (<span class="id" type="var">ls</span> ++ [<span class="id" type="definition">Byte.zero</span>])) <span class="id" type="var">src</span>)).<br/>
+*<br/>
+&nbsp;<span class="id" type="var">Exists</span> 0. <span class="id" type="tactic">rewrite</span> <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.sub_0_r"><span class="id" type="lemma">Z.sub_0_r</span></a>; <span class="id" type="var">entailer</span>!.<br/>
+*<br/>
+&nbsp;<span class="id" type="var">Intros</span> <span class="id" type="var">i</span>.<br/>
+&nbsp;<span class="id" type="tactic">assert</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> (<span class="id" type="var">ls</span> ++ [<span class="id" type="definition">Byte.zero</span>]) = <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls</span> + 1) <span class="id" type="tactic">by</span> (<span class="id" type="var">autorewrite</span> <span class="id" type="keyword">with</span> <span class="id" type="var">sublist</span>; <span class="id" type="tactic">auto</span>).<br/>
+&nbsp;<span class="id" type="var">forward</span>. <span class="id" type="var">normalize</span>.<br/>
+&nbsp;<span class="id" type="var">forward</span>. <span class="id" type="var">fold_Vbyte</span>.<br/>
+&nbsp;<span class="id" type="var">forward</span>.<br/>
+&nbsp;<span class="id" type="var">forward_if</span>.<br/>
++ <span class="id" type="var">forward</span>.<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="var">entailer</span>!.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">assert</span> (<span class="id" type="var">i</span> = <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls</span>) <span class="id" type="tactic">by</span> <span class="id" type="var">cstring</span>. <span class="id" type="tactic">subst</span> <span class="id" type="var">i</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="var">change</span> (<span class="id" type="definition">field_at</span> <span class="id" type="definition">Tsh</span> (<span class="id" type="definition">tarray</span> <span class="id" type="definition">tschar</span> <span class="id" type="var">n</span>) []) <span class="id" type="keyword">with</span> (<span class="id" type="definition">data_at</span> <span class="id" type="definition">Tsh</span> (<span class="id" type="definition">tarray</span> <span class="id" type="definition">tschar</span> <span class="id" type="var">n</span>)).<br/>
+&nbsp;&nbsp;<span class="id" type="var">autorewrite</span> <span class="id" type="keyword">with</span> <span class="id" type="var">sublist</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> !<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#map_app"><span class="id" type="lemma">map_app</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> &lt;- <a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#app_assoc"><span class="id" type="lemma">app_assoc</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> (<a class="idref" href="Verif_strlib.html#split_data_at_app_tschar"><span class="id" type="lemma">split_data_at_app_tschar</span></a> <span class="id" type="var">_</span> <span class="id" type="var">n</span>) <span class="id" type="tactic">by</span> <span class="id" type="var">list_solve</span>.<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> (<a class="idref" href="Verif_strlib.html#split_data_at_app_tschar"><span class="id" type="lemma">split_data_at_app_tschar</span></a> <span class="id" type="var">_</span> <span class="id" type="var">n</span>) <span class="id" type="tactic">by</span> <span class="id" type="var">list_solve</span>.<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="var">autorewrite</span> <span class="id" type="keyword">with</span> <span class="id" type="var">sublist</span>.<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">replace</span> (<span class="id" type="var">n</span> - <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls</span>) <span class="id" type="keyword">with</span> (1 + (<span class="id" type="var">n</span> - (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls</span> + 1))) <span class="id" type="tactic">at</span> 2 <span class="id" type="tactic">by</span> <span class="id" type="var">list_solve</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> &lt;- <span class="id" type="lemma">list_repeat_app'</span> <span class="id" type="tactic">by</span> <span class="id" type="tactic">omega</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="var">autorewrite</span> <span class="id" type="keyword">with</span> <span class="id" type="var">sublist</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> !<a class="idref" href="Verif_strlib.html#split_data_at_app_tschar"><span class="id" type="lemma">split_data_at_app_tschar</span></a> <span class="id" type="tactic">by</span> <span class="id" type="var">list_solve</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="var">cancel</span>.<br/>
++<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">assert</span> (<span class="id" type="var">i</span> &lt; <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls</span>) <span class="id" type="tactic">by</span> <span class="id" type="var">cstring</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="var">forward</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="var">forward</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="var">Exists</span> (<span class="id" type="var">i</span>+1). <span class="id" type="var">entailer</span>!.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> <span class="id" type="lemma">upd_Znth_app2</span> <span class="id" type="tactic">by</span> <span class="id" type="var">list_solve</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">assert</span> (<span class="id" type="var">i</span> &lt; <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls</span>) <span class="id" type="tactic">by</span> <span class="id" type="var">cstring</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> (<span class="id" type="lemma">sublist_split</span> 0 <span class="id" type="var">i</span> (<span class="id" type="var">i</span>+1)) <span class="id" type="tactic">by</span> <span class="id" type="var">list_solve</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> !<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#map_app"><span class="id" type="lemma">map_app</span></a>. <span class="id" type="tactic">rewrite</span> &lt;- <a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#app_assoc"><span class="id" type="lemma">app_assoc</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" type="var">autorewrite</span> <span class="id" type="keyword">with</span> <span class="id" type="var">sublist</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="var">change</span> (<span class="id" type="definition">field_at</span> <span class="id" type="definition">Tsh</span> (<span class="id" type="definition">tarray</span> <span class="id" type="definition">tschar</span> <span class="id" type="var">n</span>) []) <span class="id" type="keyword">with</span> (<span class="id" type="definition">data_at</span> <span class="id" type="definition">Tsh</span> (<span class="id" type="definition">tarray</span> <span class="id" type="definition">tschar</span> <span class="id" type="var">n</span>)).<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> !(<a class="idref" href="Verif_strlib.html#split_data_at_app_tschar"><span class="id" type="lemma">split_data_at_app_tschar</span></a> <span class="id" type="var">_</span> <span class="id" type="var">n</span>) <span class="id" type="tactic">by</span> <span class="id" type="var">list_solve</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="var">autorewrite</span> <span class="id" type="keyword">with</span> <span class="id" type="var">sublist</span>.<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">replace</span> (<span class="id" type="var">n</span> - <span class="id" type="var">i</span>) <span class="id" type="keyword">with</span> (1 + (<span class="id" type="var">n</span>-(<span class="id" type="var">i</span>+ 1))) <span class="id" type="tactic">at</span> 2 <span class="id" type="tactic">by</span> <span class="id" type="var">list_solve</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> &lt;- <span class="id" type="lemma">list_repeat_app'</span> <span class="id" type="tactic">by</span> <span class="id" type="tactic">omega</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="var">autorewrite</span> <span class="id" type="keyword">with</span> <span class="id" type="var">sublist</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="var">cancel</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> !<a class="idref" href="Verif_strlib.html#split_data_at_app_tschar"><span class="id" type="lemma">split_data_at_app_tschar</span></a> <span class="id" type="tactic">by</span> <span class="id" type="var">list_solve</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="var">autorewrite</span> <span class="id" type="keyword">with</span> <span class="id" type="var">sublist</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> <span class="id" type="lemma">sublist_len_1</span> <span class="id" type="tactic">by</span> <span class="id" type="tactic">omega</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">simpl</span>. <span class="id" type="var">cancel</span>.<br/>
+<span class="id" type="keyword">Qed</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Lemma</span> <a name="body_strcmp"><span class="id" type="lemma">body_strcmp</span></a>: <span class="id" type="definition">semax_body</span> <a class="idref" href="Verif_strlib.html#Vprog"><span class="id" type="definition">Vprog</span></a> <a class="idref" href="Verif_strlib.html#Gprog"><span class="id" type="definition">Gprog</span></a> <span class="id" type="definition">f_strcmp</span> <a class="idref" href="Verif_strlib.html#strcmp_spec"><span class="id" type="definition">strcmp_spec</span></a>.<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="id" type="var">start_function</span>.<br/>
+<span class="id" type="tactic">unfold</span> <span class="id" type="definition">cstring</span> <span class="id" type="keyword">in</span> *.<br/>
+<span class="id" type="tactic">rename</span> <span class="id" type="var">s<sub>1</sub></span> <span class="id" type="var">into</span> <span class="id" type="var">ls<sub>1</sub></span>. <span class="id" type="tactic">rename</span> <span class="id" type="var">s<sub>2</sub></span> <span class="id" type="var">into</span> <span class="id" type="var">ls<sub>2</sub></span>.<br/>
+<span class="id" type="var">forward</span>.<br/>
+<span class="id" type="var">Intros</span>.<br/>
+<span class="id" type="var">forward_loop</span> (<span class="id" type="notation">EX</span> <span class="id" type="var">i</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>,<br/>
+&nbsp;&nbsp;<span class="id" type="notation">PROP</span> (0 ≤ <a class="idref" href="Verif_strlib.html#i"><span class="id" type="variable">i</span></a> &lt; <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls<sub>1</sub></span> + 1; 0 ≤ <a class="idref" href="Verif_strlib.html#i"><span class="id" type="variable">i</span></a> &lt; <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls<sub>2</sub></span> + 1;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="definition">sublist</span> 0 <a class="idref" href="Verif_strlib.html#i"><span class="id" type="variable">i</span></a> <span class="id" type="var">ls<sub>1</sub></span> = <span class="id" type="definition">sublist</span> 0 <a class="idref" href="Verif_strlib.html#i"><span class="id" type="variable">i</span></a> <span class="id" type="var">ls<sub>2</sub></span>)<br/>
+&nbsp;&nbsp;<span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> <span class="id" type="definition">_str1</span> <span class="id" type="var">str1</span>; <span class="id" type="constructor">temp</span> <span class="id" type="definition">_str2</span> <span class="id" type="var">str2</span>; <span class="id" type="constructor">temp</span> <span class="id" type="definition">_i</span> (<span class="id" type="constructor">Vint</span> (<span class="id" type="definition">Int.repr</span> <a class="idref" href="Verif_strlib.html#i"><span class="id" type="variable">i</span></a>)))<br/>
+&nbsp;&nbsp;<span class="id" type="notation">SEP</span> (<span class="id" type="definition">data_at</span> <span class="id" type="definition">Tsh</span> (<span class="id" type="definition">tarray</span> <span class="id" type="definition">tschar</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls<sub>1</sub></span> + 1))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#map"><span class="id" type="definition">map</span></a> <span class="id" type="definition">Vbyte</span> (<span class="id" type="var">ls<sub>1</sub></span> ++ [<span class="id" type="definition">Byte.zero</span>])) <span class="id" type="var">str1</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="definition">data_at</span> <span class="id" type="definition">Tsh</span> (<span class="id" type="definition">tarray</span> <span class="id" type="definition">tschar</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls<sub>2</sub></span> + 1))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#map"><span class="id" type="definition">map</span></a> <span class="id" type="definition">Vbyte</span> (<span class="id" type="var">ls<sub>2</sub></span> ++ [<span class="id" type="definition">Byte.zero</span>])) <span class="id" type="var">str2</span>)).<br/>
+- <span class="id" type="var">Exists</span> 0; <span class="id" type="var">entailer</span>!.<br/>
+- <span class="id" type="var">Intros</span> <span class="id" type="var">i</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">assert</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> (<span class="id" type="var">ls<sub>1</sub></span> ++ [<span class="id" type="definition">Byte.zero</span>]) = <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls<sub>1</sub></span> + 1) <span class="id" type="tactic">by</span> (<span class="id" type="var">autorewrite</span> <span class="id" type="keyword">with</span> <span class="id" type="var">sublist</span>; <span class="id" type="tactic">auto</span>).<br/>
+&nbsp;&nbsp;<span class="id" type="var">forward</span>. <span class="id" type="var">normalize</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">assert</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> (<span class="id" type="var">ls<sub>2</sub></span> ++ [<span class="id" type="definition">Byte.zero</span>]) = <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls<sub>2</sub></span> + 1) <span class="id" type="tactic">by</span> (<span class="id" type="var">autorewrite</span> <span class="id" type="keyword">with</span> <span class="id" type="var">sublist</span>; <span class="id" type="tactic">auto</span>).<br/>
+&nbsp;&nbsp;<span class="id" type="var">forward</span>. <span class="id" type="var">fold_Vbyte</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">assert</span> (<span class="id" type="definition">Znth</span> <span class="id" type="var">i</span> (<span class="id" type="var">ls<sub>1</sub></span> ++ [<span class="id" type="definition">Byte.zero</span>]) = <span class="id" type="definition">Byte.zero</span> ↔ <span class="id" type="var">i</span> = <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls<sub>1</sub></span>) <span class="id" type="keyword">as</span> <span class="id" type="var">Hs<sub>1</sub></span>.<br/>
+&nbsp;&nbsp;{ <span class="id" type="tactic">split</span>; [|<span class="id" type="tactic">intro</span>; <span class="id" type="tactic">subst</span>; <span class="id" type="tactic">rewrite</span> <span class="id" type="lemma">app_Znth2</span>, <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Zminus_diag"><span class="id" type="abbreviation">Zminus_diag</span></a> <span class="id" type="tactic">by</span> <span class="id" type="tactic">omega</span>; <span class="id" type="tactic">auto</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">destruct</span> (<span class="id" type="definition">zlt</span> <span class="id" type="var">i</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls<sub>1</sub></span>)); [|<span class="id" type="tactic">omega</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">intro</span> <span class="id" type="var">X</span>; <span class="id" type="var">lapply</span> (<span class="id" type="lemma">Znth_In</span> <span class="id" type="var">i</span> <span class="id" type="var">ls<sub>1</sub></span>); [|<span class="id" type="tactic">omega</span>]. <span class="id" type="var">cstring</span>. }<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">assert</span> (<span class="id" type="definition">Znth</span> <span class="id" type="var">i</span> (<span class="id" type="var">ls<sub>2</sub></span> ++ [<span class="id" type="definition">Byte.zero</span>]) = <span class="id" type="definition">Byte.zero</span> ↔ <span class="id" type="var">i</span> = <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls<sub>2</sub></span>) <span class="id" type="keyword">as</span> <span class="id" type="var">Hs<sub>2</sub></span>.<br/>
+&nbsp;&nbsp;{ <span class="id" type="tactic">split</span>; [|<span class="id" type="tactic">intro</span>; <span class="id" type="tactic">subst</span>; <span class="id" type="tactic">rewrite</span> <span class="id" type="lemma">app_Znth2</span>, <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Zminus_diag"><span class="id" type="abbreviation">Zminus_diag</span></a> <span class="id" type="tactic">by</span> <span class="id" type="tactic">omega</span>; <span class="id" type="tactic">auto</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">destruct</span> (<span class="id" type="definition">zlt</span> <span class="id" type="var">i</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls<sub>2</sub></span>)); [|<span class="id" type="tactic">omega</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">intro</span> <span class="id" type="var">X</span>; <span class="id" type="var">lapply</span> (<span class="id" type="lemma">Znth_In</span> <span class="id" type="var">i</span> <span class="id" type="var">ls<sub>2</sub></span>); [|<span class="id" type="tactic">omega</span>]. <span class="id" type="var">cstring</span>. }<br/>
+&nbsp;&nbsp;<span class="id" type="var">forward</span>. <span class="id" type="var">normalize</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="var">forward</span>. <span class="id" type="var">fold_Vbyte</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="var">forward_if</span> (<span class="id" type="constructor">temp</span> <span class="id" type="definition">_t'1</span> (<span class="id" type="definition">Val.of_bool</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.eqb"><span class="id" type="definition">Z.eqb</span></a> <span class="id" type="var">i</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls<sub>1</sub></span>) &amp;&amp; <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.eqb"><span class="id" type="definition">Z.eqb</span></a> <span class="id" type="var">i</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls<sub>2</sub></span>)))).<br/>
+&nbsp;&nbsp;{ <span class="id" type="var">forward</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">simpl</span> <span class="id" type="var">force_val</span>. <span class="id" type="var">normalize</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> <span class="id" type="var">Hs<sub>1</sub></span> <span class="id" type="keyword">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">destruct</span> (<span class="id" type="lemma">Byte.eq_dec</span> (<span class="id" type="definition">Znth</span> <span class="id" type="var">i</span> (<span class="id" type="var">ls<sub>2</sub></span> ++ [<span class="id" type="definition">Byte.zero</span>])) <span class="id" type="definition">Byte.zero</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" type="tactic">rewrite</span> <span class="id" type="var">e</span>; <span class="id" type="tactic">simpl</span> <span class="id" type="var">force_val</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">assert</span> (<span class="id" type="var">i</span> = <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls<sub>2</sub></span>) <span class="id" type="tactic">by</span> <span class="id" type="var">cstring</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span>  (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Logic.html#proj2"><span class="id" type="lemma">proj2</span></a> <span class="id" type="var">Hs<sub>1</sub></span> <span class="id" type="var">H<sub>6</sub></span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Logic.html#proj2"><span class="id" type="lemma">proj2</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.eqb_eq"><span class="id" type="lemma">Z.eqb_eq</span></a> <span class="id" type="var">i</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls<sub>1</sub></span>)) <span class="id" type="var">H<sub>6</sub></span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Logic.html#proj2"><span class="id" type="lemma">proj2</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.eqb_eq"><span class="id" type="lemma">Z.eqb_eq</span></a> <span class="id" type="var">i</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls<sub>2</sub></span>)) <span class="id" type="var">H<sub>7</sub></span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">entailer</span>!.<br/>
+&nbsp;&nbsp;+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> <span class="id" type="lemma">Int.eq_false</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Logic.html#proj2"><span class="id" type="lemma">proj2</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.eqb_eq"><span class="id" type="lemma">Z.eqb_eq</span></a> <span class="id" type="var">i</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls<sub>1</sub></span>)) <span class="id" type="var">H<sub>6</sub></span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> <span class="id" type="var">Hs<sub>2</sub></span> <span class="id" type="keyword">in</span> <span class="id" type="var">n</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Logic.html#proj2"><span class="id" type="lemma">proj2</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.eqb_neq"><span class="id" type="lemma">Z.eqb_neq</span></a> <span class="id" type="var">i</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls<sub>2</sub></span>))) <span class="id" type="tactic">by</span> <span class="id" type="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">entailer</span>!.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">contradict</span> <span class="id" type="var">n</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">apply</span> <span class="id" type="lemma">repr_inj_signed</span> <span class="id" type="keyword">in</span> <span class="id" type="var">n</span>; <span class="id" type="tactic">try</span> <span class="id" type="var">rep_omega</span>. <span class="id" type="var">normalize</span> <span class="id" type="keyword">in</span> <span class="id" type="var">n</span>.<br/>
+&nbsp;}<br/>
+&nbsp;&nbsp;{ <span class="id" type="var">forward</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">entailer</span>!.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">destruct</span> (<span class="id" type="var">i</span> =? <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls<sub>1</sub></span>) <span class="id" type="var">eqn</span>: <span class="id" type="var">Heq</span>; <span class="id" type="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.eqb_eq"><span class="id" type="lemma">Z.eqb_eq</span></a> <span class="id" type="keyword">in</span> <span class="id" type="var">Heq</span>; <span class="id" type="tactic">tauto</span>. }<br/>
+&nbsp;&nbsp;<span class="id" type="var">forward_if</span>.<br/>
+&nbsp;+<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Bool.Bool.html#andb_true_iff"><span class="id" type="lemma">andb_true_iff</span></a> <span class="id" type="keyword">in</span> <span class="id" type="var">H<sub>6</sub></span>; <span class="id" type="tactic">destruct</span> <span class="id" type="var">H<sub>6</sub></span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.eqb_eq"><span class="id" type="lemma">Z.eqb_eq</span></a> <span class="id" type="keyword">in</span> <span class="id" type="var">H<sub>6</sub></span>,<span class="id" type="var">H<sub>7</sub></span>.<br/>
+&nbsp;&nbsp;<span class="id" type="var">forward</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="var">Exists</span> (<span class="id" type="definition">Int.repr</span> 0).<br/>
+&nbsp;&nbsp;<span class="id" type="var">entailer</span>!. <span class="id" type="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="var">autorewrite</span> <span class="id" type="keyword">with</span> <span class="id" type="var">sublist</span> <span class="id" type="keyword">in</span> <span class="id" type="var">H<sub>3</sub></span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">auto</span>.<br/>
+&nbsp;+<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Bool.Bool.html#andb_false_iff"><span class="id" type="lemma">andb_false_iff</span></a> <span class="id" type="keyword">in</span> <span class="id" type="var">H<sub>6</sub></span>. <span class="id" type="tactic">rewrite</span> !<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.eqb_neq"><span class="id" type="lemma">Z.eqb_neq</span></a> <span class="id" type="keyword">in</span> <span class="id" type="var">H<sub>6</sub></span>.<br/>
+&nbsp;&nbsp;<span class="id" type="var">forward_if</span>.<br/>
+&nbsp;&nbsp;*<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">forward</span>. <span class="id" type="var">Exists</span> (<span class="id" type="definition">Int.repr</span> (-1)). <span class="id" type="var">entailer</span>!.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">simpl</span>. <span class="id" type="tactic">intro</span>; <span class="id" type="tactic">subst</span>. <span class="id" type="tactic">omega</span>.<br/>
+&nbsp;*<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="var">forward_if</span>.<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="var">forward</span>.<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="var">Exists</span> (<span class="id" type="definition">Int.repr</span> 1). <span class="id" type="var">entailer</span>!. <span class="id" type="tactic">simpl</span>. <span class="id" type="tactic">intro</span>. <span class="id" type="tactic">subst</span>. <span class="id" type="tactic">omega</span>.<br/><hr class='doublespaceincode'/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">assert</span> (<span class="id" type="var">H<sub>17</sub></span>: <span class="id" type="definition">Byte.signed</span> (<span class="id" type="definition">Znth</span> <span class="id" type="var">i</span> (<span class="id" type="var">ls<sub>1</sub></span> ++ [<span class="id" type="definition">Byte.zero</span>])) =<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="definition">Byte.signed</span> (<span class="id" type="definition">Znth</span> <span class="id" type="var">i</span> (<span class="id" type="var">ls<sub>2</sub></span> ++ [<span class="id" type="definition">Byte.zero</span>]))) <span class="id" type="tactic">by</span> <span class="id" type="tactic">omega</span>.<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="var">normalize</span> <span class="id" type="keyword">in</span> <span class="id" type="var">H<sub>17</sub></span>. <span class="id" type="tactic">clear</span> <span class="id" type="var">H<sub>7</sub></span> <span class="id" type="var">H<sub>8</sub></span>.<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="var">forward</span>.<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="var">forward</span>.<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="var">Exists</span> (<span class="id" type="var">i</span>+1).<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="var">entailer</span>!.<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">clear</span> - <span class="id" type="var">H<sub>17</sub></span> <span class="id" type="var">H<sub>6</sub></span> <span class="id" type="var">Hs<sub>1</sub></span> <span class="id" type="var">Hs<sub>2</sub></span> <span class="id" type="var">H<sub>3</sub></span> <span class="id" type="var">H<sub>1</sub></span> <span class="id" type="var">H<sub>2</sub></span> <span class="id" type="var">H</span> <span class="id" type="var">H<sub>0</sub></span>.<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">destruct</span> (<span class="id" type="definition">zlt</span> <span class="id" type="var">i</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls<sub>1</sub></span>)).<br/>
+&nbsp;&nbsp;<span class="id" type="var">Focus</span> 2. {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">assert</span> (<span class="id" type="var">i</span> = <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls<sub>1</sub></span>) <span class="id" type="tactic">by</span> <span class="id" type="tactic">omega</span>. <span class="id" type="tactic">subst</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">destruct</span> <span class="id" type="var">H<sub>6</sub></span>; [<span class="id" type="tactic">congruence</span> | ].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">assert</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls<sub>1</sub></span> &lt; <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls<sub>2</sub></span>) <span class="id" type="tactic">by</span> <span class="id" type="tactic">omega</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> <span class="id" type="lemma">app_Znth2</span> <span class="id" type="keyword">in</span> <span class="id" type="var">H<sub>17</sub></span> <span class="id" type="tactic">by</span> <span class="id" type="var">rep_omega</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> <span class="id" type="lemma">app_Znth1</span> <span class="id" type="keyword">in</span> <span class="id" type="var">H<sub>17</sub></span> <span class="id" type="tactic">by</span> <span class="id" type="var">rep_omega</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.sub_diag"><span class="id" type="lemma">Z.sub_diag</span></a> <span class="id" type="keyword">in</span> <span class="id" type="var">H<sub>17</sub></span>. <span class="id" type="var">contradiction</span> <span class="id" type="var">H<sub>0</sub></span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">change</span> (<span class="id" type="definition">Znth</span> 0 [<span class="id" type="definition">Byte.zero</span>]) <span class="id" type="keyword">with</span> <span class="id" type="definition">Byte.zero</span> <span class="id" type="keyword">in</span> <span class="id" type="var">H<sub>17</sub></span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> <span class="id" type="var">H<sub>17</sub></span>. <span class="id" type="tactic">apply</span> <span class="id" type="lemma">Znth_In</span>. <span class="id" type="tactic">omega</span>.<br/>
+&nbsp;&nbsp;&nbsp;} <span class="id" type="var">Unfocus</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">destruct</span> (<span class="id" type="definition">zlt</span> <span class="id" type="var">i</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls<sub>2</sub></span>)).<br/>
+&nbsp;&nbsp;<span class="id" type="var">Focus</span> 2. {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">assert</span> (<span class="id" type="var">i</span> = <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls<sub>2</sub></span>) <span class="id" type="tactic">by</span> <span class="id" type="tactic">omega</span>. <span class="id" type="tactic">subst</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">destruct</span> <span class="id" type="var">H<sub>6</sub></span>; [ | <span class="id" type="tactic">congruence</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">assert</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls<sub>1</sub></span> &gt; <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.Zcomplements.html#Zlength"><span class="id" type="definition">Zlength</span></a> <span class="id" type="var">ls<sub>2</sub></span>) <span class="id" type="tactic">by</span> <span class="id" type="tactic">omega</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> <span class="id" type="lemma">app_Znth1</span> <span class="id" type="keyword">in</span> <span class="id" type="var">H<sub>17</sub></span> <span class="id" type="tactic">by</span> <span class="id" type="var">rep_omega</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> <span class="id" type="lemma">app_Znth2</span> <span class="id" type="keyword">in</span> <span class="id" type="var">H<sub>17</sub></span> <span class="id" type="tactic">by</span> <span class="id" type="var">rep_omega</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.sub_diag"><span class="id" type="lemma">Z.sub_diag</span></a> <span class="id" type="keyword">in</span> <span class="id" type="var">H<sub>17</sub></span>. <span class="id" type="var">contradiction</span> <span class="id" type="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">change</span> (<span class="id" type="definition">Znth</span> 0 [<span class="id" type="definition">Byte.zero</span>]) <span class="id" type="keyword">with</span> <span class="id" type="definition">Byte.zero</span> <span class="id" type="keyword">in</span> <span class="id" type="var">H<sub>17</sub></span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> &lt;- <span class="id" type="var">H<sub>17</sub></span>. <span class="id" type="tactic">apply</span> <span class="id" type="lemma">Znth_In</span>. <span class="id" type="tactic">omega</span>.<br/>
+&nbsp;&nbsp;&nbsp;} <span class="id" type="var">Unfocus</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> (<span class="id" type="lemma">sublist_split</span> 0 <span class="id" type="var">i</span> (<span class="id" type="var">i</span>+1)) <span class="id" type="tactic">by</span> <span class="id" type="tactic">omega</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> (<span class="id" type="lemma">sublist_split</span> 0 <span class="id" type="var">i</span> (<span class="id" type="var">i</span>+1)) <span class="id" type="tactic">by</span> <span class="id" type="tactic">omega</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">f_equal</span>; <span class="id" type="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> !<span class="id" type="lemma">sublist_len_1</span> <span class="id" type="tactic">by</span> <span class="id" type="tactic">omega</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="var">autorewrite</span> <span class="id" type="keyword">with</span> <span class="id" type="var">sublist</span> <span class="id" type="keyword">in</span> <span class="id" type="var">H<sub>17</sub></span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">split</span>. <span class="id" type="var">rep_omega</span>. <span class="id" type="tactic">split</span>. <span class="id" type="var">rep_omega</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">f_equal</span>; <span class="id" type="tactic">auto</span>. <span class="id" type="tactic">f_equal</span>. <span class="id" type="tactic">auto</span>.<br/>
+<span class="id" type="keyword">Qed</span>.<br/>
+</div>
+</div>
+
+
+
+</div>
+
+</body>
+</html>

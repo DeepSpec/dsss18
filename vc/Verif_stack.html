@@ -1,0 +1,426 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<link href="common/css/sf.css" rel="stylesheet" type="text/css"/>
+<title>Verif_stack: Stack ADT implemented by linked lists</title>
+</head>
+<link href="common/jquery-ui/jquery-ui.css" rel="stylesheet">
+<script src="common/jquery-ui/external/jquery/jquery.js"></script>
+<script src="common/jquery-ui/jquery-ui.js"></script>
+<script src="common/toggleproofs.js"></script>
+<link href="common/css/vc.css" rel="stylesheet" type="text/css"/>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+<a href='https://www.cis.upenn.edu/~bcpierce/sf/current/index.html'>
+<img src='common/media/image/sf_logo_sm.png'></a>
+</br><a href='index.html'>  <span class='booktitleinheader'>Volume 5beta: Verifiable C</span><br></br>
+<ul id='menu'>
+   <a href='toc.html'><li class='section_name'>Table of Contents</li></a>
+   <a href='coqindex.html'><li class='section_name'>Index</li></a>
+   <a href='deps.html'><li class='section_name'>Roadmap</li></a>
+</ul>
+</a></div>
+
+<div id="main">
+
+<h1 class="libtitle">Verif_stack<span class="subtitle">Stack ADT implemented by linked lists</span></h1>
+
+
+<div class="doc">
+
+<div class="paragraph"> </div>
+
+<a name="lab37"></a><h2 class="section">Here is a little C program, <span class="inlinecode"><span class="id" type="var">stack.c</span></span></h2>
+
+<div class="paragraph"> </div>
+
+
+<div class="paragraph"> </div>
+
+<pre>
+#include &lt;stddef.h&gt;
+
+extern void * malloc (size_t n);
+extern void free (void *p);
+extern void exit(int n);
+
+struct cons {
+  int value;
+  struct cons *next;
+};
+
+struct stack {
+  struct cons *top;
+};
+
+struct stack *newstack(void) {
+  struct stack *p;
+  p = (struct stack * ) malloc (sizeof (struct stack));
+  if (!p) exit(1);
+  p-&gt;top = NULL;
+  return p;
+}
+
+void push (struct stack *p, int i) {
+  struct cons *q;
+  q = (struct cons * ) malloc (sizeof (struct cons));
+  if (!q) exit(1);
+  q-&gt;value = i;
+  q-&gt;next = p-&gt;top;
+  p-&gt;top = q;
+}
+
+int pop (struct stack *p) {
+  struct cons *q;
+  int i;
+  q = p-&gt;top;
+  p-&gt;top = q-&gt;next;
+  i = q-&gt;value;
+  free(q);
+  return i;
+}
+</pre>
+
+<div class="paragraph"> </div>
+
+ This program implements a stack ADT (abstract data type).
+
+<div class="paragraph"> </div>
+
+<ul class="doclist">
+<li> To create a new stack, <span class="inlinecode"><span class="id" type="var">st</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" type="var">newstack</span>();</span>
+
+</li>
+<li> To push integer <span class="inlinecode"><span class="id" type="var">i</span></span> onto the stack, <span class="inlinecode"><span class="id" type="var">push</span>(<span class="id" type="var">st</span>,<span class="id" type="var">i</span>);</span>
+
+</li>
+<li> To pop from the stack, <span class="inlinecode"><span class="id" type="var">i</span>=<span class="id" type="var">pop</span>(<span class="id" type="var">st</span>);</span>
+
+</li>
+</ul>
+ This stack is implemented as a header node (<span class="inlinecode"><span class="id" type="keyword">struct</span></span> <span class="inlinecode"><span class="id" type="var">stack</span></span>)
+ pointing to a linked list of cons cells (<span class="inlinecode"><span class="id" type="keyword">struct</span></span> <span class="inlinecode"><span class="id" type="var">cons</span></span>).
+
+<div class="paragraph"> </div>
+
+ 
+<div class="paragraph"> </div>
+
+<a name="lab38"></a><h2 class="section">Let's verify!</h2>
+
+</div>
+<div class="code code-space">
+
+<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="library">VST.floyd.proofauto</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="library">VST.floyd.library</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span>  <span class="id" type="library">stack</span>.<br/>
+<span class="id" type="keyword">Instance</span> <a name="CompSpecs"><span class="id" type="instance">CompSpecs</span></a> : <span class="id" type="class">compspecs</span>. <span class="id" type="var">make_compspecs</span> <span class="id" type="definition">prog</span>. <span class="id" type="keyword">Defined</span>.<br/>
+<span class="id" type="keyword">Definition</span> <a name="Vprog"><span class="id" type="definition">Vprog</span></a> : <span class="id" type="definition">varspecs</span>. <span class="id" type="var">mk_varspecs</span> <span class="id" type="definition">prog</span>. <span class="id" type="keyword">Defined</span>.<br/>
+</div>
+
+<div class="doc">
+<a name="lab39"></a><h2 class="section">Malloc and free</h2>
+
+<div class="paragraph"> </div>
+
+ When you use C's malloc/free library, you write <span class="inlinecode"><span class="id" type="var">p</span>=<span class="id" type="var">malloc</span>(<span class="id" type="var">n</span>);</span>
+  to get a pointer <span class="inlinecode"><span class="id" type="var">p</span></span> to a block of <span class="inlinecode"><span class="id" type="var">n</span></span> bytes; when you're done
+  with that block, you call <span class="inlinecode"><span class="id" type="var">free</span>(<span class="id" type="var">p</span>)</span> to dispose of it.
+  How does the <span class="inlinecode"><span class="id" type="var">free</span></span> function know how many bytes to dispose?
+
+<div class="paragraph"> </div>
+
+  The answer is, the malloc/free library puts an extra "header"
+  field just before address <span class="inlinecode"><span class="id" type="var">p</span></span>, so really you get this:
+
+<div class="paragraph"> </div>
+
+<pre>
+      +-----------+
+      | header    |
+      +-----------+
+  p<span style="font-size: 80%;"><span style="letter-spacing:-.1em;">-</span><span style="letter-spacing:-.1em;">-</span>&gt;</span>|  zero     |
+      +-----------+
+      |  one      |
+      +-----------+
+      |  two      |
+      +-----------+
+</pre>
+  where in this case, <span class="inlinecode"><span class="id" type="var">header</span>=3</span>.
+
+<div class="paragraph"> </div>
+
+  In separation logic, we can describe this as 
+
+<div class="paragraph"> </div>
+
+<ul class="doclist">
+<li> <span class="inlinecode"><span class="id" type="var">malloc_token</span></span> <span class="inlinecode"><span class="id" type="var">p</span></span> <span class="inlinecode">*</span> <span class="inlinecode"><span class="id" type="var">data_at</span></span> <span class="inlinecode"><span class="id" type="var">Tsh</span></span> <span class="inlinecode">(<span class="id" type="var">Tstruct</span></span> <span class="inlinecode"><span class="id" type="var">_mystruct</span></span> <span class="inlinecode"><span class="id" type="var">noattr</span>)</span> <span class="inlinecode">(<span class="id" type="var">zero</span>,<span class="id" type="var">one</span>,<span class="id" type="var">two</span>)</span> <span class="inlinecode"><span class="id" type="var">p</span></span>
+
+</li>
+</ul>
+  where <span class="inlinecode"><span class="id" type="var">malloc_token</span></span> <span class="inlinecode"><span class="id" type="var">p</span></span> describes this picture:
+<pre>
+      +-----------+
+      | header    |
+      +-----------+
+  p<span style="font-size: 80%;"><span style="letter-spacing:-.1em;">-</span><span style="letter-spacing:-.1em;">-</span>&gt;</span>
+</pre>
+  Of course, the malloc/free library might have a different way
+  of "remembering" the size that <span class="inlinecode"><span class="id" type="var">p</span></span> points to, so its representation
+  of <span class="inlinecode"><span class="id" type="var">malloc_token</span></span> is <i>not necessarily</i> a word at offset -1.
+  Therefore, as clients of the malloc/free library, we treat <span class="inlinecode"><span class="id" type="var">malloc_token</span></span>
+  as an abstract predicate.  Now, the function-specifications of malloc 
+  and free are something like this:
+
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Definition</span> <a name="malloc_spec_example"><span class="id" type="definition">malloc_spec_example</span></a>  :=<br/>
+&nbsp;<span class="id" type="notation">DECLARE</span> <span class="id" type="definition">_malloc</span><br/>
+&nbsp;<span class="id" type="notation">WITH</span> <span class="id" type="var">t</span>:<span class="id" type="inductive">type</span><br/>
+&nbsp;<span class="id" type="var">PRE</span> [ 1%<span class="id" type="var">positive</span> <span class="id" type="var">OF</span> <span class="id" type="definition">tuint</span> ]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span> (0 ≤ <span class="id" type="definition">sizeof</span> <a class="idref" href="Verif_stack.html#t"><span class="id" type="variable">t</span></a> ≤ <span class="id" type="definition">Int.max_unsigned</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="definition">complete_legal_cosu_type</span> <a class="idref" href="Verif_stack.html#t"><span class="id" type="variable">t</span></a> = <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#true"><span class="id" type="constructor">true</span></a>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="definition">natural_aligned</span> <span class="id" type="definition">natural_alignment</span> <a class="idref" href="Verif_stack.html#t"><span class="id" type="variable">t</span></a> = <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#true"><span class="id" type="constructor">true</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> 1%<span class="id" type="var">positive</span> (<span class="id" type="constructor">Vint</span> (<span class="id" type="definition">Int.repr</span> (<span class="id" type="definition">sizeof</span> <a class="idref" href="Verif_stack.html#t"><span class="id" type="variable">t</span></a>))))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span> ()<br/>
+&nbsp;<span class="id" type="var">POST</span> [ <span class="id" type="definition">tptr</span> <span class="id" type="definition">tvoid</span> ] <span class="id" type="notation">EX</span> <span class="id" type="var">p</span>:_,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span> ()<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> <span class="id" type="definition">ret_temp</span> <a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span> (<span class="id" type="keyword">if</span> <span class="id" type="definition">eq_dec</span> <a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a> <span class="id" type="definition">nullval</span> <span class="id" type="keyword">then</span> <span class="id" type="method">emp</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">else</span> (<span class="id" type="axiom">malloc_token</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_stack.html#t"><span class="id" type="variable">t</span></a> <a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a> * <span class="id" type="definition">data_at_</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_stack.html#t"><span class="id" type="variable">t</span></a> <a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a>)).<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="free_spec_example"><span class="id" type="definition">free_spec_example</span></a> :=<br/>
+&nbsp;<span class="id" type="notation">DECLARE</span> <span class="id" type="definition">_free</span><br/>
+&nbsp;<span class="id" type="notation">WITH</span> <span class="id" type="var">t</span>: <span class="id" type="inductive">type</span>, <span class="id" type="var">p</span>:<span class="id" type="inductive">val</span><br/>
+&nbsp;<span class="id" type="var">PRE</span> [ 1%<span class="id" type="var">positive</span> <span class="id" type="var">OF</span> <span class="id" type="definition">tptr</span> <span class="id" type="definition">tvoid</span> ]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span> ()<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> 1%<span class="id" type="var">positive</span> <a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span> (<span class="id" type="axiom">malloc_token</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_stack.html#t"><span class="id" type="variable">t</span></a> <a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a>; <span class="id" type="definition">data_at_</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_stack.html#t"><span class="id" type="variable">t</span></a> <a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a>)<br/>
+&nbsp;<span class="id" type="var">POST</span> [ <span class="id" type="constructor">Tvoid</span> ]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span> () <span class="id" type="notation">LOCAL</span> () <span class="id" type="notation">SEP</span> ().<br/>
+</div>
+
+<div class="doc">
+If your source program says <span class="inlinecode"><span class="id" type="var">malloc</span>(<span class="id" type="var">sizeof</span>(<span class="id" type="var">t</span>))</span>, your <span class="inlinecode"><span class="id" type="var">forward_call</span></span> 
+    should supply (as a WITH-witness) the C type <span class="inlinecode"><span class="id" type="var">t</span></span>.
+    Malloc may choose to return NULL, in which case the SEP part
+    of the postcondition is <span class="inlinecode"><span class="id" type="var">emp</span></span>, or it may return a pointer,
+    in which case you get <span class="inlinecode"><span class="id" type="var">data_at_</span></span> <span class="inlinecode"><span class="id" type="var">Tsh</span></span> <span class="inlinecode"><span class="id" type="var">t</span></span> <span class="inlinecode"><span class="id" type="var">p</span></span>, and as a free bonus
+    you get a <span class="inlinecode"><span class="id" type="var">malloc_token</span></span> <span class="inlinecode"><span class="id" type="var">Tsh</span></span> <span class="inlinecode"><span class="id" type="var">t</span></span> <span class="inlinecode"><span class="id" type="var">p</span></span>.  But don't lose that <span class="inlinecode"><span class="id" type="var">malloc_token</span></span>!
+    You will need to supply it later to the <span class="inlinecode"><span class="id" type="var">free</span></span> function when
+    you dispose of the object.
+
+<div class="paragraph"> </div>
+
+    The SEP predicate <span class="inlinecode"><span class="id" type="var">data_at_</span></span> <span class="inlinecode"><span class="id" type="var">Tsh</span></span> <span class="inlinecode"><span class="id" type="var">t</span></span> <span class="inlinecode"><span class="id" type="var">p</span></span> is an <i>uninitialized</i>
+    structure of type <span class="inlinecode"><span class="id" type="var">t</span></span>.  It is equivalent to,
+    <span class="inlinecode"><span class="id" type="var">data_at</span></span> <span class="inlinecode"><span class="id" type="var">Tsh</span></span> <span class="inlinecode"><span class="id" type="var">t</span></span> <span class="inlinecode">(<span class="id" type="var">default_val</span></span> <span class="inlinecode"><span class="id" type="var">t</span>)</span> <span class="inlinecode"><span class="id" type="var">p</span></span>.  The <span class="inlinecode"><span class="id" type="var">default_val</span></span> is basically
+    a struct or array full of <span class="inlinecode"><span class="id" type="var">Vundef</span></span> values.
+ 
+<div class="paragraph"> </div>
+
+<a name="lab40"></a><h2 class="section">Specification of linked lists</h2>
+ This is much like the linked lists in <a href="Verif_reverse.html"><span class="inlineref">Verif_reverse</span></a>. 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Fixpoint</span> <a name="listrep"><span class="id" type="definition">listrep</span></a> (<span class="id" type="var">il</span>: <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>) (<span class="id" type="var">p</span>: <span class="id" type="inductive">val</span>) : <span class="id" type="definition">mpred</span> :=<br/>
+&nbsp;<span class="id" type="keyword">match</span> <a class="idref" href="Verif_stack.html#il"><span class="id" type="variable">il</span></a> <span class="id" type="keyword">with</span><br/>
+&nbsp;| <span class="id" type="var">i</span>::<span class="id" type="var">il'</span> ⇒ <span class="id" type="notation">EX</span> <span class="id" type="var">y</span>: <span class="id" type="inductive">val</span>, <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="axiom">malloc_token</span> <span class="id" type="definition">Tsh</span> (<span class="id" type="constructor">Tstruct</span> <span class="id" type="definition">_cons</span> <span class="id" type="definition">noattr</span>) <a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a> *<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="definition">data_at</span> <span class="id" type="definition">Tsh</span> (<span class="id" type="constructor">Tstruct</span> <span class="id" type="definition">_cons</span> <span class="id" type="definition">noattr</span>) (<span class="id" type="constructor">Vint</span> (<span class="id" type="definition">Int.repr</span> <span class="id" type="var">i</span>),<a class="idref" href="Verif_stack.html#y"><span class="id" type="variable">y</span></a>) <a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a> * <a class="idref" href="Verif_stack.html#listrep"><span class="id" type="definition">listrep</span></a> <span class="id" type="var">il'</span> <a class="idref" href="Verif_stack.html#y"><span class="id" type="variable">y</span></a><br/>
+&nbsp;| <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil"><span class="id" type="constructor">nil</span></a> ⇒ !! (<a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a> = <span class="id" type="definition">nullval</span>) &amp;&amp; <span class="id" type="method">emp</span><br/>
+&nbsp;<span class="id" type="keyword">end</span>.<br/>
+</div>
+
+<div class="doc">
+As usual, we should populate the Hint databases
+    <span class="inlinecode"><span class="id" type="var">saturate_local</span></span> and <span class="inlinecode"><span class="id" type="var">valid_pointer</span></span> 
+<div class="paragraph"> </div>
+
+<a name="lab41"></a><h4 class="section">Exercise: 1 star (stack_listrep_properties)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Lemma</span> <a name="listrep_local_prop"><span class="id" type="lemma">listrep_local_prop</span></a>: <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">il</span> <span class="id" type="var">p</span>, <a class="idref" href="Verif_stack.html#listrep"><span class="id" type="definition">listrep</span></a> <a class="idref" href="Verif_stack.html#il"><span class="id" type="variable">il</span></a> <a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a> |--<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;!! (<span class="id" type="definition">is_pointer_or_null</span> <a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a>  ∧ (<a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a>=<span class="id" type="definition">nullval</span> ↔ <a class="idref" href="Verif_stack.html#il"><span class="id" type="variable">il</span></a>=<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil"><span class="id" type="constructor">nil</span></a>)).<br/>
+</div>
+
+<div class="doc">
+See if you can remember how to prove this; or look again
+  at <a href="Verif_reverse.html"><span class="inlineref">Verif_reverse</span></a> to see how it's done. 
+</div>
+<div class="code code-tight">
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+<span class="id" type="keyword">Hint</span> <span class="id" type="keyword">Resolve</span> <span class="id" type="var">listrep_local_prop</span> : <span class="id" type="var">saturate_local</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Lemma</span> <a name="listrep_valid_pointer"><span class="id" type="lemma">listrep_valid_pointer</span></a>:<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">il</span> <span class="id" type="var">p</span>,<br/>
+&nbsp;&nbsp;&nbsp;<a class="idref" href="Verif_stack.html#listrep"><span class="id" type="definition">listrep</span></a> <a class="idref" href="Verif_stack.html#il"><span class="id" type="variable">il</span></a> <a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a> |-- <span class="id" type="definition">valid_pointer</span> <a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a>.<br/>
+</div>
+
+<div class="doc">
+See if you can remember how to prove this; or look again
+  at <a href="Verif_reverse.html"><span class="inlineref">Verif_reverse</span></a> to see how it's done. 
+</div>
+<div class="code code-tight">
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+<span class="id" type="keyword">Hint</span> <span class="id" type="keyword">Resolve</span> <span class="id" type="var">listrep_valid_pointer</span> : <span class="id" type="var">valid_pointer</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+<a name="lab42"></a><h2 class="section">Specification of stack data structure</h2>
+
+<div class="paragraph"> </div>
+
+ Our stack data structure looks like this:
+<pre>
+      +-----------+
+      | token     |
+      +-----------+       +---------
+  p<span style="font-size: 80%;"><span style="letter-spacing:-.1em;">-</span><span style="letter-spacing:-.1em;">-</span>&gt;</span>|  top------+---q<span style="font-size: 80%;"><span style="letter-spacing:-.1em;">-</span><span style="letter-spacing:-.1em;">-</span>&gt;</span>| linked list...
+      +-----------+       +---------
+</pre>
+ The stack object <span class="inlinecode"><span class="id" type="var">p</span></span> points to a header node with one field <span class="inlinecode"><span class="id" type="var">top</span></span>
+ (plus a malloc token); the <i>contents</i> of the <span class="inlinecode"><span class="id" type="var">top</span></span> field
+ is some pointer <span class="inlinecode"><span class="id" type="var">q</span></span> that points to a linked list.
+
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Definition</span> <a name="stack"><span class="id" type="definition">stack</span></a> (<span class="id" type="var">il</span>: <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>) (<span class="id" type="var">p</span>: <span class="id" type="inductive">val</span>) :=<br/>
+&nbsp;<span class="id" type="notation">EX</span> <span class="id" type="var">q</span>: <span class="id" type="inductive">val</span>,<br/>
+&nbsp;&nbsp;<span class="id" type="axiom">malloc_token</span> <span class="id" type="definition">Tsh</span> (<span class="id" type="constructor">Tstruct</span> <span class="id" type="definition">_stack</span> <span class="id" type="definition">noattr</span>) <a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a> * <br/>
+&nbsp;&nbsp;<span class="id" type="definition">data_at</span> <span class="id" type="definition">Tsh</span> (<span class="id" type="constructor">Tstruct</span> <span class="id" type="definition">_stack</span> <span class="id" type="definition">noattr</span>) <a class="idref" href="Verif_stack.html#q"><span class="id" type="variable">q</span></a> <a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a> *<br/>
+&nbsp;&nbsp;<a class="idref" href="Verif_stack.html#listrep"><span class="id" type="definition">listrep</span></a> <a class="idref" href="Verif_stack.html#il"><span class="id" type="variable">il</span></a> <a class="idref" href="Verif_stack.html#q"><span class="id" type="variable">q</span></a>.<br/>
+</div>
+
+<div class="doc">
+<a name="lab43"></a><h4 class="section">Exercise: 1 star (stack_properties)</h4>
+
+</div>
+<div class="code code-space">
+
+<br/>
+<span class="id" type="keyword">Lemma</span> <a name="stack_local_prop"><span class="id" type="lemma">stack_local_prop</span></a>: <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">il</span> <span class="id" type="var">p</span>, <a class="idref" href="Verif_stack.html#stack"><span class="id" type="definition">stack</span></a> <a class="idref" href="Verif_stack.html#il"><span class="id" type="variable">il</span></a> <a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a> |--  !! (<span class="id" type="definition">isptr</span> <a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a>).<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+<span class="id" type="keyword">Hint</span> <span class="id" type="keyword">Resolve</span> <span class="id" type="var">stack_local_prop</span> : <span class="id" type="var">saturate_local</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Lemma</span> <a name="stack_valid_pointer"><span class="id" type="lemma">stack_valid_pointer</span></a>:<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">il</span> <span class="id" type="var">p</span>,<br/>
+&nbsp;&nbsp;&nbsp;<a class="idref" href="Verif_stack.html#stack"><span class="id" type="definition">stack</span></a> <a class="idref" href="Verif_stack.html#il"><span class="id" type="variable">il</span></a> <a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a> |-- <span class="id" type="definition">valid_pointer</span> <a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a>.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+<span class="id" type="keyword">Hint</span> <span class="id" type="keyword">Resolve</span> <span class="id" type="var">stack_valid_pointer</span> : <span class="id" type="var">valid_pointer</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+<a name="lab44"></a><h2 class="section">Function specifications for the stack operations</h2>
+
+</div>
+<div class="code code-space">
+
+<br/>
+<span class="id" type="keyword">Definition</span> <a name="newstack_spec"><span class="id" type="definition">newstack_spec</span></a> : <span class="id" type="definition">ident</span> * <span class="id" type="inductive">funspec</span> :=<br/>
+&nbsp;<span class="id" type="notation">DECLARE</span> <span class="id" type="definition">_newstack</span><br/>
+&nbsp;<span class="id" type="notation">WITH</span> <span class="id" type="var">tt</span>: <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#unit"><span class="id" type="inductive">unit</span></a><br/>
+&nbsp;<span class="id" type="var">PRE</span> [ ] <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span> () <span class="id" type="notation">LOCAL</span> () <span class="id" type="notation">SEP</span> ()<br/>
+&nbsp;<span class="id" type="var">POST</span> [ <span class="id" type="definition">tptr</span> (<span class="id" type="constructor">Tstruct</span> <span class="id" type="definition">_stack</span> <span class="id" type="definition">noattr</span>) ] <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">EX</span> <span class="id" type="var">p</span>: <span class="id" type="inductive">val</span>, <span class="id" type="notation">PROP</span> ( ) <span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> <span class="id" type="definition">ret_temp</span> <a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a>) <span class="id" type="notation">SEP</span> (<a class="idref" href="Verif_stack.html#stack"><span class="id" type="definition">stack</span></a> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil"><span class="id" type="constructor">nil</span></a> <a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a>).<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="push_spec"><span class="id" type="definition">push_spec</span></a> : <span class="id" type="definition">ident</span> * <span class="id" type="inductive">funspec</span> :=<br/>
+&nbsp;<span class="id" type="notation">DECLARE</span> <span class="id" type="definition">_push</span><br/>
+&nbsp;<span class="id" type="notation">WITH</span> <span class="id" type="var">p</span>: <span class="id" type="inductive">val</span>, <span class="id" type="var">i</span>: <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>, <span class="id" type="var">il</span>: <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a><br/>
+&nbsp;<span class="id" type="var">PRE</span> [ <span class="id" type="definition">_p</span> <span class="id" type="var">OF</span> <span class="id" type="definition">tptr</span> (<span class="id" type="constructor">Tstruct</span> <span class="id" type="definition">_stack</span> <span class="id" type="definition">noattr</span>), <span class="id" type="definition">_i</span> <span class="id" type="var">OF</span> <span class="id" type="definition">tint</span> ] <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span> (<span class="id" type="definition">Int.min_signed</span> ≤ <a class="idref" href="Verif_stack.html#i"><span class="id" type="variable">i</span></a> ≤ <span class="id" type="definition">Int.max_signed</span>) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> <span class="id" type="definition">_p</span> <a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a>; <span class="id" type="constructor">temp</span> <span class="id" type="definition">_i</span> (<span class="id" type="constructor">Vint</span> (<span class="id" type="definition">Int.repr</span> <a class="idref" href="Verif_stack.html#i"><span class="id" type="variable">i</span></a>))) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span> (<a class="idref" href="Verif_stack.html#stack"><span class="id" type="definition">stack</span></a> <a class="idref" href="Verif_stack.html#il"><span class="id" type="variable">il</span></a> <a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a>)<br/>
+&nbsp;<span class="id" type="var">POST</span> [ <span class="id" type="definition">tvoid</span> ] <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span> ( ) <span class="id" type="notation">LOCAL</span> () <span class="id" type="notation">SEP</span> (<a class="idref" href="Verif_stack.html#stack"><span class="id" type="definition">stack</span></a> (<a class="idref" href="Verif_stack.html#i"><span class="id" type="variable">i</span></a>::<a class="idref" href="Verif_stack.html#il"><span class="id" type="variable">il</span></a>) <a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a>).<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="pop_spec"><span class="id" type="definition">pop_spec</span></a> : <span class="id" type="definition">ident</span> * <span class="id" type="inductive">funspec</span> :=<br/>
+&nbsp;<span class="id" type="notation">DECLARE</span> <span class="id" type="definition">_pop</span><br/>
+&nbsp;<span class="id" type="notation">WITH</span> <span class="id" type="var">p</span>: <span class="id" type="inductive">val</span>, <span class="id" type="var">i</span>: <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>, <span class="id" type="var">il</span>: <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a><br/>
+&nbsp;<span class="id" type="var">PRE</span> [ <span class="id" type="definition">_p</span> <span class="id" type="var">OF</span> <span class="id" type="definition">tptr</span> (<span class="id" type="constructor">Tstruct</span> <span class="id" type="definition">_stack</span> <span class="id" type="definition">noattr</span>) ] <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span> () <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> <span class="id" type="definition">_p</span> <a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a>) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span> (<a class="idref" href="Verif_stack.html#stack"><span class="id" type="definition">stack</span></a> (<a class="idref" href="Verif_stack.html#i"><span class="id" type="variable">i</span></a>::<a class="idref" href="Verif_stack.html#il"><span class="id" type="variable">il</span></a>) <a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a>)<br/>
+&nbsp;<span class="id" type="var">POST</span> [ <span class="id" type="definition">tint</span> ] <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span> ( ) <span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> <span class="id" type="definition">ret_temp</span> (<span class="id" type="constructor">Vint</span> (<span class="id" type="definition">Int.repr</span> <a class="idref" href="Verif_stack.html#i"><span class="id" type="variable">i</span></a>))) <span class="id" type="notation">SEP</span> (<a class="idref" href="Verif_stack.html#stack"><span class="id" type="definition">stack</span></a> <a class="idref" href="Verif_stack.html#il"><span class="id" type="variable">il</span></a> <a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a>).<br/>
+</div>
+
+<div class="doc">
+Putting all the funspecs together: 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Definition</span> <a name="Gprog"><span class="id" type="definition">Gprog</span></a> : <span class="id" type="definition">funspecs</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">ltac</span>:(<span class="id" type="var">with_library</span> <span class="id" type="definition">prog</span> [<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Verif_stack.html#newstack_spec"><span class="id" type="definition">newstack_spec</span></a>; <a class="idref" href="Verif_stack.html#push_spec"><span class="id" type="definition">push_spec</span></a>; <a class="idref" href="Verif_stack.html#pop_spec"><span class="id" type="definition">pop_spec</span></a><br/>
+&nbsp;]).<br/>
+</div>
+
+<div class="doc">
+<a name="lab45"></a><h2 class="section">Proofs of the function bodies</h2>
+
+<div class="paragraph"> </div>
+
+<a name="lab46"></a><h4 class="section">Exercise: 2 stars (body_pop)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Lemma</span> <a name="body_pop"><span class="id" type="lemma">body_pop</span></a>: <span class="id" type="definition">semax_body</span> <a class="idref" href="Verif_stack.html#Vprog"><span class="id" type="definition">Vprog</span></a> <a class="idref" href="Verif_stack.html#Gprog"><span class="id" type="definition">Gprog</span></a> <span class="id" type="definition">f_pop</span> <a class="idref" href="Verif_stack.html#pop_spec"><span class="id" type="definition">pop_spec</span></a>.<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="id" type="var">start_function</span>.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+<a name="lab47"></a><h4 class="section">Exercise: 2 stars (body_push)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Lemma</span> <a name="body_push"><span class="id" type="lemma">body_push</span></a>: <span class="id" type="definition">semax_body</span> <a class="idref" href="Verif_stack.html#Vprog"><span class="id" type="definition">Vprog</span></a> <a class="idref" href="Verif_stack.html#Gprog"><span class="id" type="definition">Gprog</span></a> <span class="id" type="definition">f_push</span> <a class="idref" href="Verif_stack.html#push_spec"><span class="id" type="definition">push_spec</span></a>.<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="id" type="var">start_function</span>.<br/>
+<span class="id" type="var">forward_call</span> (<span class="id" type="constructor">Tstruct</span> <span class="id" type="definition">_cons</span> <span class="id" type="definition">noattr</span>).<br/>
+<span class="id" type="tactic">simpl</span>; <span class="id" type="var">split3</span>; <span class="id" type="tactic">auto</span>.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+<a name="lab48"></a><h4 class="section">Exercise: 2 stars (body_newstack)</h4>
+
+</div>
+<div class="code code-space">
+<span class="id" type="keyword">Lemma</span> <a name="body_newstack"><span class="id" type="lemma">body_newstack</span></a>: <span class="id" type="definition">semax_body</span> <a class="idref" href="Verif_stack.html#Vprog"><span class="id" type="definition">Vprog</span></a> <a class="idref" href="Verif_stack.html#Gprog"><span class="id" type="definition">Gprog</span></a> <span class="id" type="definition">f_newstack</span> <a class="idref" href="Verif_stack.html#newstack_spec"><span class="id" type="definition">newstack_spec</span></a>.<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="id" type="var">start_function</span>.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+</div>
+
+
+
+</div>
+
+</body>
+</html>
