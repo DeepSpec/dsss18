@@ -1,0 +1,646 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<link href="common/css/sf.css" rel="stylesheet" type="text/css"/>
+<title>BasicInterface: QuickChick Reference Manual</title>
+</head>
+<link href="common/jquery-ui/jquery-ui.css" rel="stylesheet">
+<script src="common/jquery-ui/external/jquery/jquery.js"></script>
+<script src="common/jquery-ui/jquery-ui.js"></script>
+<script src="common/toggleproofs.js"></script>
+<link href="common/css/qc.css" rel="stylesheet" type="text/css"/>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+<a href='https://www.cis.upenn.edu/~bcpierce/sf/current/index.html'>
+<img src='common/media/image/sf_logo_sm.png'></a>
+</br><a href='index.html'>  <span class='booktitleinheader'>Volume 4: QuickChick: Property-Based Testing in Coq</span><br></br>
+<ul id='menu'>
+   <a href='toc.html'><li class='section_name'>Table of Contents</li></a>
+   <a href='coqindex.html'><li class='section_name'>Index</li></a>
+   <a href='deps.html'><li class='section_name'>Roadmap</li></a>
+</ul>
+</a></div>
+
+<div id="main">
+
+<h1 class="libtitle">BasicInterface<span class="subtitle">QuickChick Reference Manual</span></h1>
+
+
+<div class="doc">
+
+<div class="paragraph"> </div>
+
+ <div style="background-color:lightgray; color:red; margin:10px; padding:10px; "> Needs a bunch of work on writing, throughout... 
+</div> 
+</div>
+<div class="code code-tight">
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="library">mathcomp.ssreflect.ssreflect</span>.<br/>
+<span class="id" type="var">From</span> <span class="id" type="var">mathcomp</span> <span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="library">ssrbool</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.ZArith.html#"><span class="id" type="library">ZArith</span></a> <a class="idref" href="http://coq.inria.fr/library/Coq.Strings.Ascii.html#"><span class="id" type="library">Strings.Ascii</span></a> <a class="idref" href="http://coq.inria.fr/library/Coq.Strings.String.html#"><span class="id" type="library">Strings.String</span></a>.<br/>
+<span class="id" type="var">From</span> <span class="id" type="var">QuickChick</span> <span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="library">QuickChick</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Module</span> <span class="id" type="keyword">Type</span> <a name="QuickChickSig"><span class="id" type="module">QuickChickSig</span></a>.<br/>
+</div>
+
+<div class="doc">
+<a name="lab95"></a><h1 class="section">Fundamental Types</h1>
+
+</div>
+<div class="code code-space">
+
+<br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.RandomSeed"><span class="id" type="axiom">RandomSeed</span></a> : <span class="id" type="keyword">Type</span>.<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;The&nbsp;monad&nbsp;G&nbsp;of&nbsp;generators&nbsp;that&nbsp;hides&nbsp;random&nbsp;seeds&nbsp;*)</span><br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.G"><span class="id" type="axiom">G</span></a> : <span class="id" type="keyword">Type</span> → <span class="id" type="keyword">Type</span>.<br/>
+</div>
+
+<div class="doc">
+<a name="lab96"></a><h1 class="section">Monadic operations</h1>
+
+<div class="paragraph"> </div>
+
+ <div style="background-color:lightgray; color:red; margin:10px; padding:10px; "> In what sense are these monadic operations?  I'd have expected
+   to see returnGen and bindGen at this point.
+</div> 
+</div>
+<div class="code code-tight">
+<span class="comment">(*&nbsp;Semantics&nbsp;of&nbsp;<span class="inlinecode"><span class="id" type="var">G</span></span>&nbsp;based&nbsp;on&nbsp;sets&nbsp;of&nbsp;outcomes&nbsp;*)</span><br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.semGen"><span class="id" type="axiom">semGen</span></a> : <span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>} (<span class="id" type="var">g</span> : <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>), <span class="id" type="definition">set</span> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>.<br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.semGenSize"><span class="id" type="axiom">semGenSize</span></a> : <span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>} (<span class="id" type="var">g</span> : <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>) (<span class="id" type="var">size</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>), <span class="id" type="definition">set</span> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>.<br/>
+</div>
+
+<div class="doc">
+<a name="lab97"></a><h1 class="section">Primitive generator combinators</h1>
+
+</div>
+<div class="code code-space">
+<span class="comment">(*&nbsp;Note:&nbsp;We&nbsp;also&nbsp;provide&nbsp;an&nbsp;(ext-lib)&nbsp;Monad&nbsp;instance&nbsp;based&nbsp;on&nbsp;these.&nbsp;*)</span><br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.returnGen"><span class="id" type="axiom">returnGen</span></a>  : <span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>}, <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>.<br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.fmap"><span class="id" type="axiom">fmap</span></a> : <span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> <span class="id" type="var">B</span> : <span class="id" type="keyword">Type</span>}, (<a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="BasicInterface.html#B"><span class="id" type="variable">B</span></a>) → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#B"><span class="id" type="variable">B</span></a>.<br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.bindGen"><span class="id" type="axiom">bindGen</span></a> :  <span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> <span class="id" type="var">B</span> : <span class="id" type="keyword">Type</span>}, <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> → (<a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#B"><span class="id" type="variable">B</span></a>) → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#B"><span class="id" type="variable">B</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Version&nbsp;of&nbsp;bind&nbsp;where&nbsp;the&nbsp;continuation&nbsp;also&nbsp;takes&nbsp;a&nbsp;_proof_&nbsp;that<br/>
+&nbsp;&nbsp;&nbsp;the&nbsp;value&nbsp;received&nbsp;is&nbsp;within&nbsp;the&nbsp;set&nbsp;of&nbsp;outcomes&nbsp;of&nbsp;the&nbsp;generator&nbsp;*)</span><br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.bindGen'"><span class="id" type="axiom">bindGen'</span></a> : <span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> <span class="id" type="var">B</span> : <span class="id" type="keyword">Type</span>} (<span class="id" type="var">g</span> : <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>), <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span style='font-size:120%;'>&forall;</span> (<span class="id" type="var">a</span> : <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>), (<a class="idref" href="BasicInterface.html#a"><span class="id" type="variable">a</span></a> &#x2208; <a class="idref" href="BasicInterface.html#QuickChickSig.semGen"><span class="id" type="axiom">semGen</span></a> <a class="idref" href="BasicInterface.html#g"><span class="id" type="variable">g</span></a>) → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#B"><span class="id" type="variable">B</span></a>) → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#B"><span class="id" type="variable">B</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Version&nbsp;of&nbsp;bind&nbsp;for&nbsp;the&nbsp;(G&nbsp;(option&nbsp;.))&nbsp;monad.&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;Useful&nbsp;for&nbsp;chaining&nbsp;generators&nbsp;that&nbsp;could&nbsp;fail/backtrack.&nbsp;*)</span><br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.bindGenOpt"><span class="id" type="axiom">bindGenOpt</span></a> : <span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> <span class="id" type="var">B</span> : <span class="id" type="keyword">Type</span>}, <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>) → (<a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="BasicInterface.html#B"><span class="id" type="variable">B</span></a>)) → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="BasicInterface.html#B"><span class="id" type="variable">B</span></a>).<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Lifts.&nbsp;*)</span><br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.liftGen"><span class="id" type="axiom">liftGen</span></a> : <span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> <span class="id" type="var">B</span> : <span class="id" type="keyword">Type</span>}, (<a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="BasicInterface.html#B"><span class="id" type="variable">B</span></a>) → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#B"><span class="id" type="variable">B</span></a>.<br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.liftGen2"><span class="id" type="axiom">liftGen2</span></a> : <span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A<sub>1</sub></span> <span class="id" type="var">A<sub>2</sub></span> <span class="id" type="var">B</span> : <span class="id" type="keyword">Type</span>},<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="BasicInterface.html#A<sub>1</sub>"><span class="id" type="variable">A<sub>1</sub></span></a> → <a class="idref" href="BasicInterface.html#A<sub>2</sub>"><span class="id" type="variable">A<sub>2</sub></span></a> → <a class="idref" href="BasicInterface.html#B"><span class="id" type="variable">B</span></a>) → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A<sub>1</sub>"><span class="id" type="variable">A<sub>1</sub></span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A<sub>2</sub>"><span class="id" type="variable">A<sub>2</sub></span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#B"><span class="id" type="variable">B</span></a>.<br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.liftGen3"><span class="id" type="axiom">liftGen3</span></a> : <span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A<sub>1</sub></span> <span class="id" type="var">A<sub>2</sub></span> <span class="id" type="var">A<sub>3</sub></span> <span class="id" type="var">B</span> : <span class="id" type="keyword">Type</span>},<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="BasicInterface.html#A<sub>1</sub>"><span class="id" type="variable">A<sub>1</sub></span></a> → <a class="idref" href="BasicInterface.html#A<sub>2</sub>"><span class="id" type="variable">A<sub>2</sub></span></a> → <a class="idref" href="BasicInterface.html#A<sub>3</sub>"><span class="id" type="variable">A<sub>3</sub></span></a> → <a class="idref" href="BasicInterface.html#B"><span class="id" type="variable">B</span></a>) → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A<sub>1</sub>"><span class="id" type="variable">A<sub>1</sub></span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A<sub>2</sub>"><span class="id" type="variable">A<sub>2</sub></span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A<sub>3</sub>"><span class="id" type="variable">A<sub>3</sub></span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#B"><span class="id" type="variable">B</span></a>.<br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.liftGen4"><span class="id" type="axiom">liftGen4</span></a> : <span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A<sub>1</sub></span> <span class="id" type="var">A<sub>2</sub></span> <span class="id" type="var">A<sub>3</sub></span> <span class="id" type="var">A<sub>4</sub></span> <span class="id" type="var">B</span> : <span class="id" type="keyword">Type</span>},<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="BasicInterface.html#A<sub>1</sub>"><span class="id" type="variable">A<sub>1</sub></span></a> → <a class="idref" href="BasicInterface.html#A<sub>2</sub>"><span class="id" type="variable">A<sub>2</sub></span></a> → <a class="idref" href="BasicInterface.html#A<sub>3</sub>"><span class="id" type="variable">A<sub>3</sub></span></a> → <a class="idref" href="BasicInterface.html#A<sub>4</sub>"><span class="id" type="variable">A<sub>4</sub></span></a> → <a class="idref" href="BasicInterface.html#B"><span class="id" type="variable">B</span></a>) →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A<sub>1</sub>"><span class="id" type="variable">A<sub>1</sub></span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A<sub>2</sub>"><span class="id" type="variable">A<sub>2</sub></span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A<sub>3</sub>"><span class="id" type="variable">A<sub>3</sub></span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A<sub>4</sub>"><span class="id" type="variable">A<sub>4</sub></span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#B"><span class="id" type="variable">B</span></a>.<br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.liftGen5"><span class="id" type="axiom">liftGen5</span></a> : <span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A<sub>1</sub></span> <span class="id" type="var">A<sub>2</sub></span> <span class="id" type="var">A<sub>3</sub></span> <span class="id" type="var">A<sub>4</sub></span> <span class="id" type="var">A<sub>5</sub></span> <span class="id" type="var">B</span> : <span class="id" type="keyword">Type</span>},<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="BasicInterface.html#A<sub>1</sub>"><span class="id" type="variable">A<sub>1</sub></span></a> → <a class="idref" href="BasicInterface.html#A<sub>2</sub>"><span class="id" type="variable">A<sub>2</sub></span></a> → <a class="idref" href="BasicInterface.html#A<sub>3</sub>"><span class="id" type="variable">A<sub>3</sub></span></a> → <a class="idref" href="BasicInterface.html#A<sub>4</sub>"><span class="id" type="variable">A<sub>4</sub></span></a> → <a class="idref" href="BasicInterface.html#A<sub>5</sub>"><span class="id" type="variable">A<sub>5</sub></span></a> → <a class="idref" href="BasicInterface.html#B"><span class="id" type="variable">B</span></a>) →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A<sub>1</sub>"><span class="id" type="variable">A<sub>1</sub></span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A<sub>2</sub>"><span class="id" type="variable">A<sub>2</sub></span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A<sub>3</sub>"><span class="id" type="variable">A<sub>3</sub></span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A<sub>4</sub>"><span class="id" type="variable">A<sub>4</sub></span></a>→ <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A<sub>5</sub>"><span class="id" type="variable">A<sub>5</sub></span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#B"><span class="id" type="variable">B</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;sequence&nbsp;*)</span><br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.sequenceGen"><span class="id" type="axiom">sequenceGen</span></a>: <span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>}, <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> (<a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>) → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>).<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;foldM&nbsp;*)</span><br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.foldGen"><span class="id" type="axiom">foldGen</span></a> :<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> <span class="id" type="var">B</span> : <span class="id" type="keyword">Type</span>}, (<a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="BasicInterface.html#B"><span class="id" type="variable">B</span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>) → <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="BasicInterface.html#B"><span class="id" type="variable">B</span></a> → <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Run&nbsp;a&nbsp;generator&nbsp;on&nbsp;a&nbsp;particular&nbsp;random&nbsp;seed.&nbsp;*)</span><br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.run"><span class="id" type="axiom">run</span></a>  : <span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>}, <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.RandomSeed"><span class="id" type="axiom">RandomSeed</span></a> → <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>.<br/>
+</div>
+
+<div class="doc">
+<a name="lab98"></a><h1 class="section">Combinators borrowed from Haskell's QuickCheck</h1>
+
+</div>
+<div class="code code-space">
+
+<br/>
+<span class="comment">(*&nbsp;List&nbsp;combinators.&nbsp;*)</span><br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.listOf"><span class="id" type="axiom">listOf</span></a> : <span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>}, <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>).<br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.vectorOf"><span class="id" type="axiom">vectorOf</span></a> : <span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>}, <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>).<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Choose&nbsp;an&nbsp;element&nbsp;of&nbsp;a&nbsp;list.&nbsp;*)</span><br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.elements"><span class="id" type="axiom">elements</span></a> : <span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>}, <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Uniformly&nbsp;pick&nbsp;a&nbsp;generator&nbsp;from&nbsp;a&nbsp;list.&nbsp;*)</span><br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.oneof"><span class="id" type="axiom">oneof</span></a> : <span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>}, <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> (<a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>) → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Pick&nbsp;a&nbsp;generator&nbsp;based&nbsp;on&nbsp;a&nbsp;discrete&nbsp;distribution.&nbsp;*)</span><br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.frequency"><span class="id" type="axiom">frequency</span></a> : <br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>}, <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a> * <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>) → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Same&nbsp;as&nbsp;frequency,&nbsp;but&nbsp;using&nbsp;generators&nbsp;that&nbsp;can&nbsp;fail.<br/>
+&nbsp;&nbsp;&nbsp;Performs&nbsp;local&nbsp;backtracking&nbsp;until&nbsp;all&nbsp;options&nbsp;are&nbsp;exhausted.&nbsp;*)</span><br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.backtrack"><span class="id" type="axiom">backtrack</span></a> : <br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>}, <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a> * <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>)) → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>).<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Sets&nbsp;QC's&nbsp;internal&nbsp;size&nbsp;parameter.&nbsp;*)</span><br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.resize"><span class="id" type="axiom">resize</span></a> : <span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span>: <span class="id" type="keyword">Type</span>}, <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>.<br/>
+<span class="comment">(*&nbsp;Allows&nbsp;a&nbsp;size-parametric&nbsp;generator&nbsp;access&nbsp;to&nbsp;QC's&nbsp;internal&nbsp;size.&nbsp;*)</span><br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.sized"><span class="id" type="axiom">sized</span></a> : <span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span>: <span class="id" type="keyword">Type</span>}, (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>) → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Generate-and-test&nbsp;approach&nbsp;to&nbsp;generate&nbsp;data&nbsp;with&nbsp;preconditions.&nbsp;*)</span><br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.suchThatMaybe"><span class="id" type="axiom">suchThatMaybe</span></a> : <br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>}, <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> → (<a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#bool"><span class="id" type="inductive">bool</span></a>) → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>).<br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.suchThatMaybeOpt"><span class="id" type="axiom">suchThatMaybeOpt</span></a> : <br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>}, <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>) → (<a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#bool"><span class="id" type="inductive">bool</span></a>) → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>).<br/>
+</div>
+
+<div class="doc">
+<a name="lab99"></a><h1 class="section">Choosing from intervals (choose)</h1>
+
+</div>
+<div class="code code-space">
+
+<br/>
+<span class="comment">(*&nbsp;OrdType&nbsp;:&nbsp;reflexive,&nbsp;transitive,&nbsp;antisymmetric&nbsp;predicates.&nbsp;*)</span><br/>
+<span class="comment">(*<br/>
+&nbsp;&nbsp;Class&nbsp;OrdType&nbsp;(A:&nbsp;Type)&nbsp;:=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;leq&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;A&nbsp;-&gt;&nbsp;A&nbsp;-&gt;&nbsp;bool;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;refl&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;reflexive&nbsp;leq;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;trans&nbsp;&nbsp;&nbsp;:&nbsp;transitive&nbsp;leq;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;antisym&nbsp;:&nbsp;antisymmetric&nbsp;leq<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;}.<br/>
+&nbsp;*)</span><br/><hr class='doublespaceincode'/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.OrdBool"><span class="id" type="instance">OrdBool</span></a> : <span class="id" type="class">OrdType</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#bool"><span class="id" type="inductive">bool</span></a>.<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.OrdNat"><span class="id" type="instance">OrdNat</span></a>  : <span class="id" type="class">OrdType</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>.<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.OrdZ"><span class="id" type="instance">OrdZ</span></a>    : <span class="id" type="class">OrdType</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;OrdTypes&nbsp;that&nbsp;support&nbsp;choosing&nbsp;from&nbsp;an&nbsp;interval.&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;<br/>
+&nbsp;&nbsp;Class&nbsp;ChoosableFromInterval&nbsp;(A&nbsp;:&nbsp;Type)&nbsp;&nbsp;:=<br/>
+&nbsp;&nbsp;{<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;super&nbsp;:&gt;&nbsp;OrdType&nbsp;A;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;randomR&nbsp;:&nbsp;A&nbsp;*&nbsp;A&nbsp;-&gt;&nbsp;RandomSeed&nbsp;-&gt;&nbsp;A&nbsp;*&nbsp;RandomSeed;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;randomRCorrect&nbsp;:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;forall&nbsp;(a&nbsp;a<sub>1</sub>&nbsp;a<sub>2</sub>&nbsp;:&nbsp;A),&nbsp;leq&nbsp;a<sub>1</sub>&nbsp;a<sub>2</sub>&nbsp;-&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(leq&nbsp;a<sub>1</sub>&nbsp;a&nbsp;&amp;&amp;&nbsp;leq&nbsp;a&nbsp;a<sub>2</sub>&nbsp;&lt;-&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exists&nbsp;seed,&nbsp;fst&nbsp;(randomR&nbsp;(a<sub>1</sub>,&nbsp;a<sub>2</sub>)&nbsp;seed)&nbsp;=&nbsp;a)<br/>
+&nbsp;&nbsp;}.<br/>
+*)</span><br/><hr class='doublespaceincode'/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.ChooseBool"><span class="id" type="instance">ChooseBool</span></a> : <span class="id" type="class">ChoosableFromInterval</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#bool"><span class="id" type="inductive">bool</span></a>.<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.ChooseNat"><span class="id" type="instance">ChooseNat</span></a> : <span class="id" type="class">ChoosableFromInterval</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>.<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.ChooseZ"><span class="id" type="instance">ChooseZ</span></a> : <span class="id" type="class">ChoosableFromInterval</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Generate&nbsp;a&nbsp;value&nbsp;between&nbsp;two&nbsp;extremes,&nbsp;inclusive.&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;Causes&nbsp;a&nbsp;runtime&nbsp;error&nbsp;if&nbsp;the&nbsp;values&nbsp;are&nbsp;not&nbsp;ordered.&nbsp;*)</span><br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.choose"><span class="id" type="axiom">choose</span></a> : <br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>} `{<span class="id" type="class">ChoosableFromInterval</span> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>}, (<a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> * <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>) → <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>.<br/>
+</div>
+
+<div class="doc">
+<a name="lab100"></a><h1 class="section">Notations</h1>
+
+</div>
+<div class="code code-space">
+
+<br/>
+<span class="id" type="keyword">Module</span> <a name="QuickChickSig.QcDefaultNotation"><span class="id" type="module">QcDefaultNotation</span></a>.<br/>
+</div>
+
+<div class="doc">
+'elems' as a shorthand for elements without a default argument 
+</div>
+<div class="code code-tight">
+&nbsp;&nbsp;<span class="id" type="keyword">Notation</span> " 'elems' [ x ] " := <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="BasicInterface.html#QuickChickSig.elements"><span class="id" type="axiom">elements</span></a> <span class="id" type="var">x</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#cons"><span class="id" type="constructor">cons</span></a> <span class="id" type="var">x</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil"><span class="id" type="constructor">nil</span></a>)) : <span class="id" type="var">qc_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Notation</span> " 'elems' [ x ; y ] " := <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="BasicInterface.html#QuickChickSig.elements"><span class="id" type="axiom">elements</span></a> <span class="id" type="var">x</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#cons"><span class="id" type="constructor">cons</span></a> <span class="id" type="var">x</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#cons"><span class="id" type="constructor">cons</span></a> <span class="id" type="var">y</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil"><span class="id" type="constructor">nil</span></a>))) : <span class="id" type="var">qc_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Notation</span> " 'elems' [ x ; y ; .. ; z ] " :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="BasicInterface.html#QuickChickSig.elements"><span class="id" type="axiom">elements</span></a> <span class="id" type="var">x</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#cons"><span class="id" type="constructor">cons</span></a> <span class="id" type="var">x</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#cons"><span class="id" type="constructor">cons</span></a> <span class="id" type="var">y</span> .. (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#cons"><span class="id" type="constructor">cons</span></a> <span class="id" type="var">z</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil"><span class="id" type="constructor">nil</span></a>) ..))) : <span class="id" type="var">qc_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Notation</span> " 'elems' ( x ;; l ) " :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="BasicInterface.html#QuickChickSig.elements"><span class="id" type="axiom">elements</span></a> <span class="id" type="var">x</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#cons"><span class="id" type="constructor">cons</span></a> <span class="id" type="var">x</span> <span class="id" type="var">l</span>)) (<span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 1, <span class="id" type="var">no</span> <span class="id" type="var">associativity</span>) : <span class="id" type="var">qc_scope</span>.<br/>
+</div>
+
+<div class="doc">
+'oneOf' as a shorthand for oneof without a default argument 
+</div>
+<div class="code code-tight">
+&nbsp;&nbsp;<span class="id" type="keyword">Notation</span> " 'oneOf' [ x ] " := <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="BasicInterface.html#QuickChickSig.oneof"><span class="id" type="axiom">oneof</span></a> <span class="id" type="var">x</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#cons"><span class="id" type="constructor">cons</span></a> <span class="id" type="var">x</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil"><span class="id" type="constructor">nil</span></a>)) : <span class="id" type="var">qc_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Notation</span> " 'oneOf' [ x ; y ] " := <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="BasicInterface.html#QuickChickSig.oneof"><span class="id" type="axiom">oneof</span></a> <span class="id" type="var">x</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#cons"><span class="id" type="constructor">cons</span></a> <span class="id" type="var">x</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#cons"><span class="id" type="constructor">cons</span></a> <span class="id" type="var">y</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil"><span class="id" type="constructor">nil</span></a>))) : <span class="id" type="var">qc_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Notation</span> " 'oneOf' [ x ; y ; .. ; z ] " :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="BasicInterface.html#QuickChickSig.oneof"><span class="id" type="axiom">oneof</span></a> <span class="id" type="var">x</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#cons"><span class="id" type="constructor">cons</span></a> <span class="id" type="var">x</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#cons"><span class="id" type="constructor">cons</span></a> <span class="id" type="var">y</span> .. (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#cons"><span class="id" type="constructor">cons</span></a> <span class="id" type="var">z</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil"><span class="id" type="constructor">nil</span></a>) ..))) : <span class="id" type="var">qc_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Notation</span> " 'oneOf' ( x ;; l ) " :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="BasicInterface.html#QuickChickSig.oneof"><span class="id" type="axiom">oneof</span></a> <span class="id" type="var">x</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#cons"><span class="id" type="constructor">cons</span></a> <span class="id" type="var">x</span> <span class="id" type="var">l</span>))  (<span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 1, <span class="id" type="var">no</span> <span class="id" type="var">associativity</span>) : <span class="id" type="var">qc_scope</span>.<br/>
+</div>
+
+<div class="doc">
+'freq' as a shorthund for frequency without a default argument 
+</div>
+<div class="code code-tight">
+&nbsp;&nbsp;<span class="id" type="keyword">Notation</span> " 'freq' [ x ] " := <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="BasicInterface.html#QuickChickSig.frequency"><span class="id" type="axiom">frequency</span></a> <span class="id" type="var">x</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#cons"><span class="id" type="constructor">cons</span></a> <span class="id" type="var">x</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil"><span class="id" type="constructor">nil</span></a>)) : <span class="id" type="var">qc_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Notation</span> " 'freq' [ ( n , x ) ; y ] " :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="BasicInterface.html#QuickChickSig.frequency"><span class="id" type="axiom">frequency</span></a> <span class="id" type="var">x</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#cons"><span class="id" type="constructor">cons</span></a> (<span class="id" type="var">n</span>, <span class="id" type="var">x</span>) (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#cons"><span class="id" type="constructor">cons</span></a> <span class="id" type="var">y</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil"><span class="id" type="constructor">nil</span></a>))) : <span class="id" type="var">qc_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Notation</span> " 'freq' [ ( n , x ) ; y ; .. ; z ] " :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="BasicInterface.html#QuickChickSig.frequency"><span class="id" type="axiom">frequency</span></a> <span class="id" type="var">x</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#cons"><span class="id" type="constructor">cons</span></a> (<span class="id" type="var">n</span>, <span class="id" type="var">x</span>) (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#cons"><span class="id" type="constructor">cons</span></a> <span class="id" type="var">y</span> .. (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#cons"><span class="id" type="constructor">cons</span></a> <span class="id" type="var">z</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil"><span class="id" type="constructor">nil</span></a>) ..))) : <span class="id" type="var">qc_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Notation</span> " 'freq' ( ( n , x ) ;; l ) " :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="BasicInterface.html#QuickChickSig.frequency"><span class="id" type="axiom">frequency</span></a> <span class="id" type="var">x</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#cons"><span class="id" type="constructor">cons</span></a> (<span class="id" type="var">n</span>, <span class="id" type="var">x</span>) <span class="id" type="var">l</span>)) (<span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 1, <span class="id" type="var">no</span> <span class="id" type="var">associativity</span>) : <span class="id" type="var">qc_scope</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">End</span> <a class="idref" href="BasicInterface.html#QuickChickSig.QcDefaultNotation"><span class="id" type="module">QcDefaultNotation</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Deprecated:&nbsp;Using&nbsp;the&nbsp;ExtLib&nbsp;notations&nbsp;is&nbsp;recommended.&nbsp;*)</span><br/>
+<span class="id" type="keyword">Module</span> <a name="QuickChickSig.QcDoNotation"><span class="id" type="module">QcDoNotation</span></a>.<br/><hr class='doublespaceincode'/>
+&nbsp;&nbsp;<span class="id" type="keyword">Notation</span> "'do!' X &lt;- A ; B" :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="BasicInterface.html#QuickChickSig.bindGen"><span class="id" type="axiom">bindGen</span></a> <span class="id" type="var">A</span> (<span class="id" type="keyword">fun</span> <span class="id" type="var">X</span> ⇒ <span class="id" type="var">B</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 200, <span class="id" type="var">X</span> <span class="id" type="var">ident</span>, <span class="id" type="var">A</span> <span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 100, <span class="id" type="var">B</span> <span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 200).<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Notation</span> "'do\'' X &lt;- A ; B" :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="BasicInterface.html#QuickChickSig.bindGen'"><span class="id" type="axiom">bindGen'</span></a> <span class="id" type="var">A</span> (<span class="id" type="keyword">fun</span> <span class="id" type="var">X</span> <span class="id" type="var">H</span> ⇒ <span class="id" type="var">B</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 200, <span class="id" type="var">X</span> <span class="id" type="var">ident</span>, <span class="id" type="var">A</span> <span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 100, <span class="id" type="var">B</span> <span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 200).<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Notation</span> "'doM!' X &lt;- A ; B" :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="BasicInterface.html#QuickChickSig.bindGenOpt"><span class="id" type="axiom">bindGenOpt</span></a> <span class="id" type="var">A</span> (<span class="id" type="keyword">fun</span> <span class="id" type="var">X</span> ⇒ <span class="id" type="var">B</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 200, <span class="id" type="var">X</span> <span class="id" type="var">ident</span>, <span class="id" type="var">A</span> <span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 100, <span class="id" type="var">B</span> <span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 200).<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">End</span> <a class="idref" href="BasicInterface.html#QuickChickSig.QcDoNotation"><span class="id" type="module">QcDoNotation</span></a>.<br/>
+</div>
+
+<div class="doc">
+<a name="lab101"></a><h1 class="section">Printing</h1>
+
+</div>
+<div class="code code-space">
+
+<br/>
+<span class="comment">(*&nbsp;Show&nbsp;typeclass.&nbsp;*)</span><br/>
+<span class="comment">(*<br/>
+Class&nbsp;Show&nbsp;(A&nbsp;:&nbsp;Type)&nbsp;:&nbsp;Type&nbsp;:=<br/>
+&nbsp;&nbsp;{<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;show&nbsp;:&nbsp;A&nbsp;-&gt;&nbsp;string<br/>
+&nbsp;&nbsp;}.<br/>
+&nbsp;*)</span><br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Instances.&nbsp;*)</span><br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.showNat"><span class="id" type="instance">showNat</span></a>    : <span class="id" type="keyword">Show</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>.<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.showBool"><span class="id" type="instance">showBool</span></a>   : <span class="id" type="keyword">Show</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#bool"><span class="id" type="inductive">bool</span></a>.<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.showInt"><span class="id" type="instance">showInt</span></a>    : <span class="id" type="keyword">Show</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>.<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.showString"><span class="id" type="instance">showString</span></a> : <span class="id" type="keyword">Show</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Strings.String.html#string"><span class="id" type="inductive">string</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.showList"><span class="id" type="instance">showList</span></a> : <br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>} `{<span class="id" type="keyword">Show</span> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>}, <span class="id" type="keyword">Show</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>).<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.showPair"><span class="id" type="instance">showPair</span></a> :<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> <span class="id" type="var">B</span> : <span class="id" type="keyword">Type</span>} `{<span class="id" type="keyword">Show</span> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>} `{<span class="id" type="keyword">Show</span> <a class="idref" href="BasicInterface.html#B"><span class="id" type="variable">B</span></a>}, <span class="id" type="keyword">Show</span> (<a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> * <a class="idref" href="BasicInterface.html#B"><span class="id" type="variable">B</span></a>).<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.showOpt"><span class="id" type="instance">showOpt</span></a> :<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>} `{<span class="id" type="keyword">Show</span> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>}, <span class="id" type="keyword">Show</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>).<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.showEx"><span class="id" type="instance">showEx</span></a> :<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span>} `{<span class="id" type="keyword">Show</span> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>} <span class="id" type="var">P</span>, <span class="id" type="keyword">Show</span> ({<span class="id" type="var">x</span> : <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> | <a class="idref" href="BasicInterface.html#P"><span class="id" type="variable">P</span></a> <a class="idref" href="BasicInterface.html#x"><span class="id" type="variable">x</span></a>}).<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Newline&nbsp;*)</span><br/>
+<span class="id" type="keyword">Definition</span> <a name="QuickChickSig.nl"><span class="id" type="definition">nl</span></a> : <a class="idref" href="http://coq.inria.fr/library/Coq.Strings.String.html#string"><span class="id" type="inductive">string</span></a> := <a class="idref" href="http://coq.inria.fr/library/Coq.Strings.String.html#String"><span class="id" type="constructor">String</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Strings.Ascii.html#ascii_of_nat"><span class="id" type="definition">ascii_of_nat</span></a> 10) <a class="idref" href="http://coq.inria.fr/library/Coq.Strings.String.html#EmptyString"><span class="id" type="constructor">EmptyString</span></a>.<br/>
+</div>
+
+<div class="doc">
+<a name="lab102"></a><h1 class="section">Generation typeclasses and instances</h1>
+
+</div>
+<div class="code code-space">
+
+<br/>
+<span class="comment">(*<br/>
+Class&nbsp;GenSized&nbsp;(A&nbsp;:&nbsp;Type)&nbsp;:=&nbsp;{&nbsp;arbitrarySized&nbsp;:&nbsp;nat&nbsp;-&gt;&nbsp;G&nbsp;A&nbsp;}.<br/>
+Class&nbsp;Gen&nbsp;(A&nbsp;:&nbsp;Type)&nbsp;:=&nbsp;{&nbsp;arbitrary&nbsp;:&nbsp;G&nbsp;A&nbsp;}.<br/>
+&nbsp;*)</span><br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Automatic&nbsp;conversion&nbsp;of&nbsp;GenSized&nbsp;instances&nbsp;to&nbsp;Gen&nbsp;using&nbsp;'sized'.&nbsp;*)</span><br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.GenOfGenSized"><span class="id" type="instance">GenOfGenSized</span></a> {<span class="id" type="var">A</span>} `{<span class="id" type="class">GenSized</span> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>} : <span class="id" type="class">Gen</span> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Basic&nbsp;generator&nbsp;instances&nbsp;*)</span><br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.genBoolSized"><span class="id" type="instance">genBoolSized</span></a> : <span class="id" type="class">GenSized</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#bool"><span class="id" type="inductive">bool</span></a>.<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.genNatSized"><span class="id" type="instance">genNatSized</span></a>  : <span class="id" type="class">GenSized</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>.<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.genZSized"><span class="id" type="instance">genZSized</span></a>    : <span class="id" type="class">GenSized</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.genListSized"><span class="id" type="instance">genListSized</span></a> :<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>} `{<span class="id" type="class">GenSized</span> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>}, <span class="id" type="class">GenSized</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>).<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.genList"><span class="id" type="instance">genList</span></a> :<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>} `{<span class="id" type="class">Gen</span> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>}, <span class="id" type="class">Gen</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>).<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.genOption"><span class="id" type="instance">genOption</span></a> : <br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>} `{<span class="id" type="class">Gen</span> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>}, <span class="id" type="class">Gen</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>).<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.genPairSized"><span class="id" type="instance">genPairSized</span></a> :<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> <span class="id" type="var">B</span> : <span class="id" type="keyword">Type</span>} `{<span class="id" type="class">GenSized</span> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>} `{<span class="id" type="class">GenSized</span> <a class="idref" href="BasicInterface.html#B"><span class="id" type="variable">B</span></a>}, <span class="id" type="class">GenSized</span> (<a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>*<a class="idref" href="BasicInterface.html#B"><span class="id" type="variable">B</span></a>).<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.genPair"><span class="id" type="instance">genPair</span></a> : <br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> <span class="id" type="var">B</span> : <span class="id" type="keyword">Type</span>} `{<span class="id" type="class">Gen</span> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>} `{<span class="id" type="class">Gen</span> <a class="idref" href="BasicInterface.html#B"><span class="id" type="variable">B</span></a>}, <span class="id" type="class">Gen</span> (<a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> * <a class="idref" href="BasicInterface.html#B"><span class="id" type="variable">B</span></a>).<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;TODO:&nbsp;Strings?&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+<a name="lab103"></a><h1 class="section">Shrinking typeclass and instances</h1>
+
+<div class="paragraph"> </div>
+
+ Shrink class 
+</div>
+<div class="code code-tight">
+<span class="comment">(*<br/>
+Class&nbsp;Shrink&nbsp;(A&nbsp;:&nbsp;Type)&nbsp;:=<br/>
+&nbsp;&nbsp;{&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;shrink&nbsp;:&nbsp;A&nbsp;-&gt;&nbsp;list&nbsp;A&nbsp;<br/>
+&nbsp;&nbsp;}.<br/>
+&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+Shrink instances 
+</div>
+<div class="code code-tight">
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.shrinkBool"><span class="id" type="instance">shrinkBool</span></a> : <span class="id" type="class">Shrink</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#bool"><span class="id" type="inductive">bool</span></a>.<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.shrinkNat"><span class="id" type="instance">shrinkNat</span></a> : <span class="id" type="class">Shrink</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>.<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.shrinkZ"><span class="id" type="instance">shrinkZ</span></a> : <span class="id" type="class">Shrink</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.shrinkList"><span class="id" type="instance">shrinkList</span></a> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>} `{<span class="id" type="class">Shrink</span> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>} : <span class="id" type="class">Shrink</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>).<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.shrinkPair"><span class="id" type="instance">shrinkPair</span></a> {<span class="id" type="var">A</span> <span class="id" type="var">B</span>} `{<span class="id" type="class">Shrink</span> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>} `{<span class="id" type="class">Shrink</span> <a class="idref" href="BasicInterface.html#B"><span class="id" type="variable">B</span></a>} : <span class="id" type="class">Shrink</span> (<a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> * <a class="idref" href="BasicInterface.html#B"><span class="id" type="variable">B</span></a>).<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.shrinkOption"><span class="id" type="instance">shrinkOption</span></a> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>} `{<span class="id" type="class">Shrink</span> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>} : <span class="id" type="class">Shrink</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>).<br/>
+</div>
+
+<div class="doc">
+<a name="lab104"></a><h1 class="section">Arbitrary and typeclass hierarchy</h1>
+
+<div class="paragraph"> </div>
+
+ Arbitrary Class 
+</div>
+<div class="code code-tight">
+<span class="comment">(*<br/>
+Class&nbsp;Arbitrary&nbsp;(A&nbsp;:&nbsp;Type)&nbsp;`{Gen&nbsp;A}&nbsp;`{Shrink&nbsp;A}.<br/>
+&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+
+<div class="paragraph"> </div>
+
+                            GenSized 
+                               |
+                               |
+                              Gen   Shrink
+                                \    /
+                                 \  /
+                               Arbitrary
+ 
+</div>
+<div class="code code-tight">
+
+<span class="comment">(*&nbsp;Automatic&nbsp;conversion&nbsp;*)</span><br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.ArbitraryOfGenShrink"><span class="id" type="instance">ArbitraryOfGenShrink</span></a> : <br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span>} `{<span class="id" type="class">Gen</span> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>} `{<span class="id" type="class">Shrink</span> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>}, <span class="id" type="class">Arbitrary</span> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>.<br/>
+</div>
+
+<div class="doc">
+<a name="lab105"></a><h1 class="section">Properties - Checkers</h1>
+
+</div>
+<div class="code code-space">
+
+<br/>
+<span class="comment">(*&nbsp;The&nbsp;opaque&nbsp;type&nbsp;of&nbsp;QuickChick&nbsp;properties&nbsp;that&nbsp;can&nbsp;be&nbsp;checked.&nbsp;*)</span><br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.Checker"><span class="id" type="axiom">Checker</span></a> : <span class="id" type="keyword">Type</span>.<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;A&nbsp;Class&nbsp;that&nbsp;indicates&nbsp;we&nbsp;can&nbsp;check&nbsp;a&nbsp;type&nbsp;A.&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;<br/>
+Class&nbsp;Checkable&nbsp;(A&nbsp;:&nbsp;Type)&nbsp;:&nbsp;Type&nbsp;:=<br/>
+&nbsp;&nbsp;{<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;checker&nbsp;:&nbsp;A&nbsp;-&gt;&nbsp;Checker<br/>
+&nbsp;&nbsp;}.<br/>
+&nbsp;*)</span><br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Bools&nbsp;signify&nbsp;pass/fail.&nbsp;*)</span><br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.testBool"><span class="id" type="instance">testBool</span></a> : <span class="id" type="class">Checkable</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#bool"><span class="id" type="inductive">bool</span></a>.<br/>
+<span class="comment">(*&nbsp;Units&nbsp;signify&nbsp;discarded&nbsp;tests.&nbsp;*)</span><br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.testUnit"><span class="id" type="instance">testUnit</span></a> : <span class="id" type="class">Checkable</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#unit"><span class="id" type="inductive">unit</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Given&nbsp;a&nbsp;generator&nbsp;for&nbsp;showable&nbsp;As,&nbsp;construct&nbsp;a&nbsp;Checker.&nbsp;*)</span><br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.forAll"><span class="id" type="axiom">forAll</span></a> : <br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> <span class="id" type="var">prop</span> : <span class="id" type="keyword">Type</span>} `{<span class="id" type="class">Checkable</span> <a class="idref" href="BasicInterface.html#prop"><span class="id" type="variable">prop</span></a>} `{<span class="id" type="keyword">Show</span> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>} <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">gen</span> : <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>)  (<span class="id" type="var">pf</span> : <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="BasicInterface.html#prop"><span class="id" type="variable">prop</span></a>), <a class="idref" href="BasicInterface.html#QuickChickSig.Checker"><span class="id" type="axiom">Checker</span></a>.<br/>
+<span class="comment">(*&nbsp;Variant&nbsp;of&nbsp;forAll&nbsp;that&nbsp;uses&nbsp;evidence&nbsp;for&nbsp;the&nbsp;generated&nbsp;value.&nbsp;*)</span><br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.forAllProof"><span class="id" type="axiom">forAllProof</span></a> : <br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> <span class="id" type="var">prop</span> : <span class="id" type="keyword">Type</span>} `{<span class="id" type="class">Checkable</span> <a class="idref" href="BasicInterface.html#prop"><span class="id" type="variable">prop</span></a>} `{<span class="id" type="keyword">Show</span> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">gen</span> : <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>)  (<span class="id" type="var">pf</span> : <span style='font-size:120%;'>&forall;</span> (<span class="id" type="var">x</span> : <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>), <a class="idref" href="BasicInterface.html#QuickChickSig.semGen"><span class="id" type="axiom">semGen</span></a> <a class="idref" href="BasicInterface.html#gen"><span class="id" type="variable">gen</span></a> <a class="idref" href="BasicInterface.html#x"><span class="id" type="variable">x</span></a> → <a class="idref" href="BasicInterface.html#prop"><span class="id" type="variable">prop</span></a>), <a class="idref" href="BasicInterface.html#QuickChickSig.Checker"><span class="id" type="axiom">Checker</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Given&nbsp;a&nbsp;generator&nbsp;and&nbsp;a&nbsp;shrinker&nbsp;for&nbsp;showable&nbsp;As,&nbsp;construct&nbsp;a&nbsp;Checker&nbsp;*)</span><br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.forAllShrink"><span class="id" type="axiom">forAllShrink</span></a> :<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> <span class="id" type="var">prop</span> : <span class="id" type="keyword">Type</span>} `{<span class="id" type="class">Checkable</span> <a class="idref" href="BasicInterface.html#prop"><span class="id" type="variable">prop</span></a>} `{<span class="id" type="keyword">Show</span> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">gen</span> : <a class="idref" href="BasicInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>) (<span class="id" type="var">shrinker</span> : <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>) (<span class="id" type="var">pf</span> : <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="BasicInterface.html#prop"><span class="id" type="variable">prop</span></a>), <a class="idref" href="BasicInterface.html#QuickChickSig.Checker"><span class="id" type="axiom">Checker</span></a>.<br/>
+<span class="comment">(*&nbsp;TODO:&nbsp;Do&nbsp;we&nbsp;need&nbsp;a&nbsp;forAllShrinkProof&nbsp;variant?&nbsp;*)</span><br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Typeclass&nbsp;magic:&nbsp;Lift&nbsp;(Show,&nbsp;Gen,&nbsp;Shrink)&nbsp;instances&nbsp;for&nbsp;A&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;to&nbsp;a&nbsp;Checker&nbsp;for&nbsp;functions&nbsp;A&nbsp;-&gt;&nbsp;prop.&nbsp;*)</span><br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.testFun"><span class="id" type="instance">testFun</span></a> : <br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> <span class="id" type="var">prop</span> : <span class="id" type="keyword">Type</span>} `{<span class="id" type="keyword">Show</span> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>} `{<span class="id" type="class">Arbitrary</span> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>} `{<span class="id" type="class">Checkable</span> <a class="idref" href="BasicInterface.html#prop"><span class="id" type="variable">prop</span></a>},<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="class">Checkable</span> (<a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="BasicInterface.html#prop"><span class="id" type="variable">prop</span></a>).<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Typeclass&nbsp;magic&nbsp;revisited:&nbsp;Similar&nbsp;thing&nbsp;for&nbsp;products.&nbsp;*)</span><br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.testProd"><span class="id" type="instance">testProd</span></a> :<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>} {<span class="id" type="var">prop</span> : <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> → <span class="id" type="keyword">Type</span>} `{<span class="id" type="keyword">Show</span> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>} `{<span class="id" type="class">Arbitrary</span> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>} <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">x</span> : <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>, <span class="id" type="class">Checkable</span> (<a class="idref" href="BasicInterface.html#prop"><span class="id" type="variable">prop</span></a> <a class="idref" href="BasicInterface.html#x"><span class="id" type="variable">x</span></a>)},<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="class">Checkable</span> (<span style='font-size:120%;'>&forall;</span> (<span class="id" type="var">x</span> : <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>), <a class="idref" href="BasicInterface.html#prop"><span class="id" type="variable">prop</span></a> <a class="idref" href="BasicInterface.html#x"><span class="id" type="variable">x</span></a>).<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Test&nbsp;polymorphic&nbsp;functions&nbsp;by&nbsp;instantiating&nbsp;to&nbsp;'nat'.&nbsp;:-)&nbsp;*)</span><br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.testPolyFun"><span class="id" type="instance">testPolyFun</span></a> :<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">prop</span> : <span class="id" type="keyword">Type</span> → <span class="id" type="keyword">Type</span>} `{<span class="id" type="class">Checkable</span> (<a class="idref" href="BasicInterface.html#prop"><span class="id" type="variable">prop</span></a> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>)}, <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="class">Checkable</span> (<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">T</span>, <a class="idref" href="BasicInterface.html#prop"><span class="id" type="variable">prop</span></a> <a class="idref" href="BasicInterface.html#T"><span class="id" type="variable">T</span></a>).<br/>
+</div>
+
+<div class="doc">
+<a name="lab106"></a><h1 class="section">Checker combinators</h1>
+
+</div>
+<div class="code code-space">
+
+<br/>
+<span class="comment">(*&nbsp;Print&nbsp;a&nbsp;specific&nbsp;string&nbsp;if&nbsp;the&nbsp;property&nbsp;fails.&nbsp;*)</span><br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.whenFail"><span class="id" type="axiom">whenFail</span></a> : <br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">prop</span> : <span class="id" type="keyword">Type</span>} `{<span class="id" type="class">Checkable</span> <a class="idref" href="BasicInterface.html#prop"><span class="id" type="variable">prop</span></a>} (<span class="id" type="var">str</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Strings.String.html#string"><span class="id" type="inductive">string</span></a>), <a class="idref" href="BasicInterface.html#prop"><span class="id" type="variable">prop</span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.Checker"><span class="id" type="axiom">Checker</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Signify&nbsp;that&nbsp;the&nbsp;property&nbsp;is&nbsp;expected&nbsp;to&nbsp;fail.&nbsp;*)</span><br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.expectFailure"><span class="id" type="axiom">expectFailure</span></a> :<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">prop</span>: <span class="id" type="keyword">Type</span>} `{<span class="id" type="class">Checkable</span> <a class="idref" href="BasicInterface.html#prop"><span class="id" type="variable">prop</span></a>} (<span class="id" type="var">p</span>: <a class="idref" href="BasicInterface.html#prop"><span class="id" type="variable">prop</span></a>), <a class="idref" href="BasicInterface.html#QuickChickSig.Checker"><span class="id" type="axiom">Checker</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Collect&nbsp;statistics&nbsp;across&nbsp;all&nbsp;tests.&nbsp;*)</span><br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.collect"><span class="id" type="axiom">collect</span></a> :<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> <span class="id" type="var">prop</span> : <span class="id" type="keyword">Type</span>} `{<span class="id" type="keyword">Show</span> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>} `{<span class="id" type="class">Checkable</span> <a class="idref" href="BasicInterface.html#prop"><span class="id" type="variable">prop</span></a>} (<span class="id" type="var">x</span> : <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="BasicInterface.html#prop"><span class="id" type="variable">prop</span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.Checker"><span class="id" type="axiom">Checker</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Set&nbsp;the&nbsp;reason&nbsp;for&nbsp;failure.&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;Will&nbsp;only&nbsp;count&nbsp;shrinks&nbsp;as&nbsp;valid&nbsp;if&nbsp;they&nbsp;preserve&nbsp;the&nbsp;tag.&nbsp;*)</span><br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.tag"><span class="id" type="axiom">tag</span></a> : <br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">prop</span> : <span class="id" type="keyword">Type</span>} `{<span class="id" type="class">Checkable</span> <a class="idref" href="BasicInterface.html#prop"><span class="id" type="variable">prop</span></a>} (<span class="id" type="var">t</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Strings.String.html#string"><span class="id" type="inductive">string</span></a>), <a class="idref" href="BasicInterface.html#prop"><span class="id" type="variable">prop</span></a> → <a class="idref" href="BasicInterface.html#QuickChickSig.Checker"><span class="id" type="axiom">Checker</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Take&nbsp;the&nbsp;conjunction/disjunction&nbsp;of&nbsp;all&nbsp;the&nbsp;checkers.&nbsp;*)</span><br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.conjoin"><span class="id" type="axiom">conjoin</span></a> : <span style='font-size:120%;'>&forall;</span> (<span class="id" type="var">l</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="BasicInterface.html#QuickChickSig.Checker"><span class="id" type="axiom">Checker</span></a>), <a class="idref" href="BasicInterface.html#QuickChickSig.Checker"><span class="id" type="axiom">Checker</span></a>.<br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.disjoin"><span class="id" type="axiom">disjoin</span></a> : <span style='font-size:120%;'>&forall;</span> (<span class="id" type="var">l</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="BasicInterface.html#QuickChickSig.Checker"><span class="id" type="axiom">Checker</span></a>), <a class="idref" href="BasicInterface.html#QuickChickSig.Checker"><span class="id" type="axiom">Checker</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Conditional&nbsp;properties.&nbsp;Invalid&nbsp;generated&nbsp;inputs&nbsp;are&nbsp;discarded.&nbsp;*)</span><br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.implication"><span class="id" type="axiom">implication</span></a> :<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">prop</span> : <span class="id" type="keyword">Type</span>} `{<span class="id" type="class">Checkable</span> <a class="idref" href="BasicInterface.html#prop"><span class="id" type="variable">prop</span></a>} (<span class="id" type="var">b</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#bool"><span class="id" type="inductive">bool</span></a>) (<span class="id" type="var">p</span> : <a class="idref" href="BasicInterface.html#prop"><span class="id" type="variable">prop</span></a>), <a class="idref" href="BasicInterface.html#QuickChickSig.Checker"><span class="id" type="axiom">Checker</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Notation&nbsp;for&nbsp;implication.&nbsp;Clashes&nbsp;a&nbsp;lot,&nbsp;so&nbsp;it&nbsp;gets&nbsp;its&nbsp;own&nbsp;module.&nbsp;*)</span><br/>
+<span class="id" type="keyword">Module</span> <a name="QuickChickSig.QcNotation"><span class="id" type="module">QcNotation</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Export</span> <span class="id" type="var">QcDefaultNotation</span>.<br/><hr class='doublespaceincode'/>
+&nbsp;&nbsp;<span class="id" type="keyword">Notation</span> "x ==&gt; y" := <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="BasicInterface.html#QuickChickSig.implication"><span class="id" type="axiom">implication</span></a> <span class="id" type="var">x</span> <span class="id" type="var">y</span>) (<span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 55, <span class="id" type="var">right</span> <span class="id" type="var">associativity</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" type="var">Checker_scope</span>.<br/>
+<span class="id" type="keyword">End</span> <a class="idref" href="BasicInterface.html#QuickChickSig.QcNotation"><span class="id" type="module">QcNotation</span></a>.<br/>
+</div>
+
+<div class="doc">
+<a name="lab107"></a><h1 class="section">Decidability</h1>
+
+</div>
+<div class="code code-space">
+
+<br/>
+<span class="comment">(*&nbsp;Decidability&nbsp;typeclass&nbsp;using&nbsp;ssreflect's&nbsp;'decidable'.&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;<br/>
+Class&nbsp;Dec&nbsp;(P&nbsp;:&nbsp;Prop)&nbsp;:&nbsp;Type&nbsp;:=&nbsp;{&nbsp;dec&nbsp;:&nbsp;decidable&nbsp;P&nbsp;}.<br/>
+&nbsp;*)</span><br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Decidable&nbsp;properties&nbsp;are&nbsp;Checkable.&nbsp;*)</span><br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.testDec"><span class="id" type="instance">testDec</span></a> {<span class="id" type="var">P</span>} `{<span class="id" type="var">H</span> : <span class="id" type="class">Dec</span> <a class="idref" href="BasicInterface.html#P"><span class="id" type="variable">P</span></a>} : <span class="id" type="class">Checkable</span> <a class="idref" href="BasicInterface.html#P"><span class="id" type="variable">P</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Logic&nbsp;Combinator&nbsp;instances.&nbsp;*)</span><br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.Dec_neg"><span class="id" type="instance">Dec_neg</span></a> {<span class="id" type="var">P</span>} {<span class="id" type="var">H</span> : <span class="id" type="class">Dec</span> <a class="idref" href="BasicInterface.html#P"><span class="id" type="variable">P</span></a>} : <span class="id" type="class">Dec</span> (¬ <a class="idref" href="BasicInterface.html#P"><span class="id" type="variable">P</span></a>).<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.Dec_conj"><span class="id" type="instance">Dec_conj</span></a> {<span class="id" type="var">P</span> <span class="id" type="var">Q</span>} {<span class="id" type="var">H</span> : <span class="id" type="class">Dec</span> <a class="idref" href="BasicInterface.html#P"><span class="id" type="variable">P</span></a>} {<span class="id" type="var">I</span> : <span class="id" type="class">Dec</span> <a class="idref" href="BasicInterface.html#Q"><span class="id" type="variable">Q</span></a>} : <span class="id" type="class">Dec</span> (<a class="idref" href="BasicInterface.html#P"><span class="id" type="variable">P</span></a> ∧ <a class="idref" href="BasicInterface.html#Q"><span class="id" type="variable">Q</span></a>).<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.Dec_disj"><span class="id" type="instance">Dec_disj</span></a> {<span class="id" type="var">P</span> <span class="id" type="var">Q</span>} {<span class="id" type="var">H</span> : <span class="id" type="class">Dec</span> <a class="idref" href="BasicInterface.html#P"><span class="id" type="variable">P</span></a>} {<span class="id" type="var">I</span> : <span class="id" type="class">Dec</span> <a class="idref" href="BasicInterface.html#Q"><span class="id" type="variable">Q</span></a>} : <span class="id" type="class">Dec</span> (<a class="idref" href="BasicInterface.html#P"><span class="id" type="variable">P</span></a> ∨ <a class="idref" href="BasicInterface.html#Q"><span class="id" type="variable">Q</span></a>).<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Convenient&nbsp;notation.&nbsp;*)</span><br/>
+<span class="id" type="keyword">Notation</span> "P '?'" := (<span class="id" type="keyword">match</span> (@<span class="id" type="method">dec</span> <span class="id" type="var">P</span> <span class="id" type="var">_</span>) <span class="id" type="keyword">with</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Specif.html#left"><span class="id" type="constructor">left</span></a> <span class="id" type="var">_</span> ⇒ <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#true"><span class="id" type="constructor">true</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Specif.html#right"><span class="id" type="constructor">right</span></a> <span class="id" type="var">_</span> ⇒ <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#false"><span class="id" type="constructor">false</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">end</span>) (<span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 100).<br/>
+</div>
+
+<div class="doc">
+<a name="lab108"></a><h1 class="section">Decidable Equality</h1>
+
+</div>
+<div class="code code-space">
+
+<br/>
+<span class="comment">(*<br/>
+Class&nbsp;Eq&nbsp;(A&nbsp;:&nbsp;Type)&nbsp;:=<br/>
+&nbsp;&nbsp;{&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;dec_eq&nbsp;:&nbsp;forall&nbsp;(x&nbsp;y&nbsp;:&nbsp;A),&nbsp;decidable&nbsp;(x&nbsp;=&nbsp;y)<br/>
+&nbsp;&nbsp;}.<br/>
+*)</span><br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Automation&nbsp;and&nbsp;conversions&nbsp;for&nbsp;Dec.&nbsp;*)</span><br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.dec_if_dec_eq"><span class="id" type="axiom">dec_if_dec_eq</span></a> : <br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span>} (<span class="id" type="var">x</span> <span class="id" type="var">y</span>: <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>),  <span class="id" type="class">Dec</span> (<a class="idref" href="BasicInterface.html#x"><span class="id" type="variable">x</span></a> = <a class="idref" href="BasicInterface.html#y"><span class="id" type="variable">y</span></a>) → {<a class="idref" href="BasicInterface.html#x"><span class="id" type="variable">x</span></a> = <a class="idref" href="BasicInterface.html#y"><span class="id" type="variable">y</span></a>} + {<a class="idref" href="BasicInterface.html#x"><span class="id" type="variable">x</span></a> ≠ <a class="idref" href="BasicInterface.html#y"><span class="id" type="variable">y</span></a>}.<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;TODO:&nbsp;How&nbsp;to&nbsp;include&nbsp;LTac&nbsp;here?&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;Tactic&nbsp;that&nbsp;decides&nbsp;equalities&nbsp;of&nbsp;the&nbsp;form&nbsp;Dec&nbsp;(x&nbsp;=&nbsp;y).&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;Ltac&nbsp;dec_eq.&nbsp;*)</span><br/><hr class='doublespaceincode'/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.Eq__Dec"><span class="id" type="instance">Eq__Dec</span></a> {<span class="id" type="var">A</span>} `{<span class="id" type="var">H</span> : <span class="id" type="class">Eq</span> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>} (<span class="id" type="var">x</span> <span class="id" type="var">y</span> : <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>) : <span class="id" type="class">Dec</span> (<a class="idref" href="BasicInterface.html#x"><span class="id" type="variable">x</span></a> = <a class="idref" href="BasicInterface.html#y"><span class="id" type="variable">y</span></a>).<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Lifting&nbsp;common&nbsp;decidable&nbsp;instances&nbsp;*)</span><br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.Dec_eq_bool"><span class="id" type="instance">Dec_eq_bool</span></a> (<span class="id" type="var">x</span> <span class="id" type="var">y</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#bool"><span class="id" type="inductive">bool</span></a>) : <span class="id" type="class">Dec</span> (<a class="idref" href="BasicInterface.html#x"><span class="id" type="variable">x</span></a> = <a class="idref" href="BasicInterface.html#y"><span class="id" type="variable">y</span></a>).<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.Dec_eq_nat"><span class="id" type="instance">Dec_eq_nat</span></a> (<span class="id" type="var">m</span> <span class="id" type="var">n</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>) : <span class="id" type="class">Dec</span> (<a class="idref" href="BasicInterface.html#m"><span class="id" type="variable">m</span></a> = <a class="idref" href="BasicInterface.html#n"><span class="id" type="variable">n</span></a>).<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.Dec_eq_opt"><span class="id" type="instance">Dec_eq_opt</span></a> (<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>) (<span class="id" type="var">m</span> <span class="id" type="var">n</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>)<br/>
+`{<span class="id" type="var">_</span> : <span style='font-size:120%;'>&forall;</span> (<span class="id" type="var">x</span> <span class="id" type="var">y</span> : <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>), <span class="id" type="class">Dec</span> (<a class="idref" href="BasicInterface.html#x"><span class="id" type="variable">x</span></a> = <a class="idref" href="BasicInterface.html#y"><span class="id" type="variable">y</span></a>)} : <span class="id" type="class">Dec</span> (<a class="idref" href="BasicInterface.html#m"><span class="id" type="variable">m</span></a> = <a class="idref" href="BasicInterface.html#n"><span class="id" type="variable">n</span></a>).<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.Dec_eq_prod"><span class="id" type="instance">Dec_eq_prod</span></a> (<span class="id" type="var">A</span> <span class="id" type="var">B</span> : <span class="id" type="keyword">Type</span>) (<span class="id" type="var">m</span> <span class="id" type="var">n</span> : <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a> * <a class="idref" href="BasicInterface.html#B"><span class="id" type="variable">B</span></a>)<br/>
+`{<span class="id" type="var">_</span> : <span style='font-size:120%;'>&forall;</span> (<span class="id" type="var">x</span> <span class="id" type="var">y</span> : <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>), <span class="id" type="class">Dec</span> (<a class="idref" href="BasicInterface.html#x"><span class="id" type="variable">x</span></a> = <a class="idref" href="BasicInterface.html#y"><span class="id" type="variable">y</span></a>)} <br/>
+`{<span class="id" type="var">_</span> : <span style='font-size:120%;'>&forall;</span> (<span class="id" type="var">x</span> <span class="id" type="var">y</span> : <a class="idref" href="BasicInterface.html#B"><span class="id" type="variable">B</span></a>), <span class="id" type="class">Dec</span> (<a class="idref" href="BasicInterface.html#x"><span class="id" type="variable">x</span></a> = <a class="idref" href="BasicInterface.html#y"><span class="id" type="variable">y</span></a>)} <br/>
+: <span class="id" type="class">Dec</span> (<a class="idref" href="BasicInterface.html#m"><span class="id" type="variable">m</span></a> = <a class="idref" href="BasicInterface.html#n"><span class="id" type="variable">n</span></a>).<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.Dec_eq_list"><span class="id" type="instance">Dec_eq_list</span></a> (<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>) (<span class="id" type="var">m</span> <span class="id" type="var">n</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>)<br/>
+`{<span class="id" type="var">_</span> : <span style='font-size:120%;'>&forall;</span> (<span class="id" type="var">x</span> <span class="id" type="var">y</span> : <a class="idref" href="BasicInterface.html#A"><span class="id" type="variable">A</span></a>), <span class="id" type="class">Dec</span> (<a class="idref" href="BasicInterface.html#x"><span class="id" type="variable">x</span></a> = <a class="idref" href="BasicInterface.html#y"><span class="id" type="variable">y</span></a>)} : <span class="id" type="class">Dec</span> (<a class="idref" href="BasicInterface.html#m"><span class="id" type="variable">m</span></a> = <a class="idref" href="BasicInterface.html#n"><span class="id" type="variable">n</span></a>).<br/><hr class='doublespaceincode'/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.Dec_ascii"><span class="id" type="instance">Dec_ascii</span></a> (<span class="id" type="var">m</span> <span class="id" type="var">n</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Strings.Ascii.html#ascii"><span class="id" type="inductive">Ascii.ascii</span></a>) : <span class="id" type="class">Dec</span> (<a class="idref" href="BasicInterface.html#m"><span class="id" type="variable">m</span></a> = <a class="idref" href="BasicInterface.html#n"><span class="id" type="variable">n</span></a>).<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.Dec_string"><span class="id" type="instance">Dec_string</span></a> (<span class="id" type="var">m</span> <span class="id" type="var">n</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Strings.String.html#string"><span class="id" type="inductive">string</span></a>) : <span class="id" type="class">Dec</span> (<a class="idref" href="BasicInterface.html#m"><span class="id" type="variable">m</span></a> = <a class="idref" href="BasicInterface.html#n"><span class="id" type="variable">n</span></a>).<br/>
+</div>
+
+<div class="doc">
+<a name="lab109"></a><h1 class="section">QuickChick top-level commands and arguments</h1>
+
+</div>
+<div class="code code-space">
+
+<br/>
+<span class="comment">(*&nbsp;Samples&nbsp;a&nbsp;generator.&nbsp;'g'&nbsp;is&nbsp;of&nbsp;type&nbsp;'G&nbsp;A'&nbsp;for&nbsp;showable&nbsp;'A'.&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+
+<div class="paragraph"> </div>
+
+    Sample g.
+ 
+</div>
+<div class="code code-tight">
+
+<span class="comment">(*&nbsp;Runs&nbsp;a&nbsp;test.&nbsp;'prop'&nbsp;must&nbsp;be&nbsp;'Checkable'.&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+
+<div class="paragraph"> </div>
+
+     QuickChick prop. 
+ 
+</div>
+<div class="code code-tight">
+
+<span class="comment">(*&nbsp;Arguments&nbsp;to&nbsp;customize&nbsp;execution.&nbsp;*)</span><br/>
+<span class="id" type="keyword">Record</span> <a name="QuickChickSig.Args"><span class="id" type="record">Args</span></a> := <br/>
+&nbsp;&nbsp;<a name="QuickChickSig.MkArgs"><span class="id" type="constructor">MkArgs</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;Re-execute&nbsp;a&nbsp;test.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;Default:&nbsp;None&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="QuickChickSig.replay"><span class="id" type="projection">replay</span></a>     : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> (<a class="idref" href="BasicInterface.html#QuickChickSig.RandomSeed"><span class="id" type="axiom">RandomSeed</span></a> * <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>); <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;Maximum&nbsp;number&nbsp;of&nbsp;successful&nbsp;tests&nbsp;to&nbsp;run.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;Default:&nbsp;10000&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="QuickChickSig.maxSuccess"><span class="id" type="projection">maxSuccess</span></a> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>;                       <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;Maximum&nbsp;number&nbsp;of&nbsp;discards&nbsp;to&nbsp;accept.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;Default:&nbsp;20000&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="QuickChickSig.maxDiscard"><span class="id" type="projection">maxDiscard</span></a> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;Maximum&nbsp;number&nbsp;of&nbsp;shrinks&nbsp;to&nbsp;perform&nbsp;before&nbsp;terminating.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;Default&nbsp;:&nbsp;1000&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="QuickChickSig.maxShrinks"><span class="id" type="projection">maxShrinks</span></a> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;Maximum&nbsp;size&nbsp;of&nbsp;terms&nbsp;to&nbsp;generate&nbsp;(depth).&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;Default&nbsp;:&nbsp;7&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="QuickChickSig.maxSize"><span class="id" type="projection">maxSize</span></a>    : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;Verbosity.&nbsp;Note:&nbsp;Doesn't&nbsp;do&nbsp;much...&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;Default&nbsp;true.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="QuickChickSig.chatty"><span class="id" type="projection">chatty</span></a>     : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#bool"><span class="id" type="inductive">bool</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;}.<br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;Instead&nbsp;of&nbsp;record&nbsp;updates,&nbsp;you&nbsp;can&nbsp;overwrite&nbsp;extraction&nbsp;constants.&nbsp;*)</span><br/>
+<span class="comment">(*<br/>
+&nbsp;&nbsp;&nbsp;Extract&nbsp;Constant&nbsp;defNumTests&nbsp;&nbsp;&nbsp;&nbsp;=&gt;&nbsp;"10000".<br/>
+&nbsp;&nbsp;&nbsp;Extract&nbsp;Constant&nbsp;defNumDiscards&nbsp;=&gt;&nbsp;"(2&nbsp;*&nbsp;defNumTests)".<br/>
+&nbsp;&nbsp;&nbsp;Extract&nbsp;Constant&nbsp;defNumShrinks&nbsp;&nbsp;=&gt;&nbsp;"1000".<br/>
+&nbsp;&nbsp;&nbsp;Extract&nbsp;Constant&nbsp;defSize&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&gt;&nbsp;"7".<br/>
+&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+<a name="lab110"></a><h1 class="section">Generators for data satisfying inductive invariants</h1>
+
+</div>
+<div class="code code-space">
+
+<br/>
+<span class="comment">(*&nbsp;Sized&nbsp;and&nbsp;unsized&nbsp;version,&nbsp;plus&nbsp;convenient&nbsp;notation.&nbsp;*)</span><br/>
+<span class="comment">(*<br/>
+Class&nbsp;GenSizedSuchThat&nbsp;(A&nbsp;:&nbsp;Type)&nbsp;(P&nbsp;:&nbsp;A&nbsp;-&gt;&nbsp;Prop)&nbsp;:=&nbsp;<br/>
+&nbsp;&nbsp;{&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;arbitrarySizeST&nbsp;:&nbsp;nat&nbsp;-&gt;&nbsp;G&nbsp;(option&nbsp;A)&nbsp;<br/>
+&nbsp;&nbsp;}.<br/>
+<br/>
+Class&nbsp;GenSuchThat&nbsp;(A&nbsp;:&nbsp;Type)&nbsp;(P&nbsp;:&nbsp;A&nbsp;-&gt;&nbsp;Prop)&nbsp;:=&nbsp;<br/>
+&nbsp;&nbsp;{&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;arbitraryST&nbsp;:&nbsp;G&nbsp;(option&nbsp;A)<br/>
+&nbsp;&nbsp;}.<br/>
+&nbsp;*)</span><br/>
+<span class="id" type="keyword">Notation</span> "'genST' x" := (@<span class="id" type="method">arbitraryST</span> <span class="id" type="var">_</span> <span class="id" type="var">x</span> <span class="id" type="var">_</span>) (<span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 70).<br/>
+</div>
+
+<div class="doc">
+<a name="lab111"></a><h1 class="section">Automatic instance derivation</h1>
+
+</div>
+<div class="code code-space">
+
+<br/>
+<span class="comment">(*&nbsp;QuickChick&nbsp;allows&nbsp;the&nbsp;automatic&nbsp;derivation&nbsp;of&nbsp;typeclass&nbsp;instances&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;for&nbsp;simple&nbsp;types:&nbsp;<br/>
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Derive&nbsp;&lt;class&gt;&nbsp;for&nbsp;&lt;T&gt;.<br/>
+<br/>
+&nbsp;&nbsp;&nbsp;&lt;class&gt;&nbsp;must&nbsp;be&nbsp;one&nbsp;of:&nbsp;GenSized&nbsp;,&nbsp;Shrink&nbsp;,&nbsp;Arbitrary&nbsp;,&nbsp;Show<br/>
+&nbsp;&nbsp;&nbsp;&lt;T&gt;&nbsp;must&nbsp;be&nbsp;an&nbsp;inductive&nbsp;defined&nbsp;datatype&nbsp;(think&nbsp;Haskell/OCaml).<br/>
+&nbsp;*)</span><br/><hr class='doublespaceincode'/>
+<span class="comment">(*&nbsp;QuickChick&nbsp;also&nbsp;allows&nbsp;for&nbsp;the&nbsp;automatic&nbsp;derivation&nbsp;of&nbsp;generators&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;satisfying&nbsp;preconditions&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;inductive&nbsp;relations:<br/>
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Derive&nbsp;ArbitrarySizedSuchThat&nbsp;for&nbsp;(fun&nbsp;x&nbsp;=&gt;&nbsp;P&nbsp;x<sub>1</sub>&nbsp;...&nbsp;x&nbsp;....&nbsp;xn).<br/>
+<br/>
+&nbsp;&nbsp;&nbsp;&lt;P&gt;&nbsp;must&nbsp;be&nbsp;an&nbsp;inductively&nbsp;defined&nbsp;relation.<br/>
+&nbsp;&nbsp;&nbsp;&lt;x&gt;&nbsp;is&nbsp;the&nbsp;function&nbsp;to&nbsp;be&nbsp;generated.<br/>
+&nbsp;&nbsp;&nbsp;&lt;x<sub>1</sub>...xn&gt;&nbsp;are&nbsp;(implicitly&nbsp;universally&nbsp;quantified)&nbsp;variable&nbsp;names.&nbsp;<br/>
+&nbsp;*)</span><br/><hr class='doublespaceincode'/>
+&nbsp;<span class="comment">(*&nbsp;QuickChick&nbsp;also&nbsp;allows&nbsp;automatic&nbsp;derivations&nbsp;of&nbsp;proofs&nbsp;of&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;correctness&nbsp;of&nbsp;its&nbsp;derived&nbsp;generators!&nbsp;For&nbsp;more,&nbsp;look&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;at:&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;our&nbsp;ITP&nbsp;paper&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;our&nbsp;POPL&nbsp;paper<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;examples/DependentTest.v<br/>
+<br/>
+&nbsp;&nbsp;*)</span><br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">End</span> <a class="idref" href="BasicInterface.html#QuickChickSig"><span class="id" type="module">QuickChickSig</span></a>.<br/>
+</div>
+</div>
+
+
+
+</div>
+
+</body>
+</html>

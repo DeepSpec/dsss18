@@ -11,7 +11,7 @@
     out of date). *)
 
 Require Coq.extraction.Extraction.
-Extraction Language Ocaml.
+Extraction Language OCaml.
 
 (** Now we load up the Coq environment with some definitions, either
     directly or by importing them from other modules. *)

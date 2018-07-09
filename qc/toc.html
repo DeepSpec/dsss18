@@ -1,0 +1,439 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<link href="common/css/sf.css" rel="stylesheet" type="text/css"/>
+<title>Table of contents</title>
+</head>
+<link href="common/jquery-ui/jquery-ui.css" rel="stylesheet">
+<script src="common/jquery-ui/external/jquery/jquery.js"></script>
+<script src="common/jquery-ui/jquery-ui.js"></script>
+<script src="common/toggleproofs.js"></script>
+<link href="common/css/qc.css" rel="stylesheet" type="text/css"/>
+
+<script>
+
+$(document).ready(function() {
+
+    $("#accordion").show().accordion({
+        autoHeight: false
+    });
+
+    $("#accordion div").css({ 'height': 'auto' });
+});      
+
+
+$( function() {
+    var icons = {
+      header: "ui-icon-circle-arrow-e",
+      activeHeader: "ui-icon-circle-arrow-s"
+    };
+    
+    $( "#accordion" ).accordion({
+      icons: icons
+    });
+    $("#accordion").accordion({collapsible : true, active : 'none'});
+
+    $( "#toggle" ).button().on( "click", function() {
+      if ( $( "#accordion" ).accordion( "option", "icons" ) ) {
+        $( "#accordion" ).accordion( "option", "icons", null );
+      } else {
+        $( "#accordion" ).accordion( "option", "icons", icons );
+      }
+    });
+  } );
+  </script>
+<body>
+
+<div id="page">
+
+<div id="header">
+<a href='https://www.cis.upenn.edu/~bcpierce/sf/current/index.html'>
+<img src='common/media/image/sf_logo_sm.png'></a>
+</br><a href='index.html'>  <span class='booktitleinheader'>Volume 4: QuickChick: Property-Based Testing in Coq</span><br></br>
+<ul id='menu'>
+   <a href='toc.html'><li class='section_name'>Table of Contents</li></a>
+   <a href='coqindex.html'><li class='section_name'>Index</li></a>
+   <a href='deps.html'><li class='section_name'>Roadmap</li></a>
+</ul>
+</div>
+</a></div>
+
+<div id="main">
+
+<div id="toc">
+<div id="accordion">
+<h2><a href="Introduction.html">Introduction</a></h2>
+<div>
+<ul class="doclist">
+<li><a href="Introduction.html">Top</a>
+<li><a href="Introduction.html#lab1">A First Taste of Testing</a>
+
+</li>
+<li><a href="Introduction.html#lab4">Overview</a>
+
+</li>
+</ul>
+</div>
+<h2><a href="Typeclasses.html">A Tutorial on Typeclasses in Coq&nbsp;&nbsp;&nbsp;&nbsp;(<i>Typeclasses</i>)</a></h2>
+<div>
+<ul class="doclist">
+<li><a href="Typeclasses.html">Top</a>
+<li><a href="Typeclasses.html#lab5">Basics</a>
+<div>
+<ul class="doclist">
+<li><a href="Typeclasses.html#lab6">Classes and Instances</a>
+
+</li>
+<li><a href="Typeclasses.html#lab10">Parameterized Instances: New Typeclasses from Old</a>
+
+</li>
+<li><a href="Typeclasses.html#lab13">Class Hierarchies</a>
+
+</li>
+</ul>
+</div>
+
+</li>
+<li><a href="Typeclasses.html#lab17">How It Works</a>
+<div>
+<ul class="doclist">
+<li><a href="Typeclasses.html#lab18">Implicit Generalization</a>
+
+</li>
+<li><a href="Typeclasses.html#lab19">Records are Products</a>
+
+</li>
+<li><a href="Typeclasses.html#lab21">Typeclasses are Records</a>
+
+</li>
+<li><a href="Typeclasses.html#lab22">Inferring Instances</a>
+
+</li>
+</ul>
+</div>
+
+</li>
+<li><a href="Typeclasses.html#lab24">Typeclasses and Proofs</a>
+<div>
+<ul class="doclist">
+<li><a href="Typeclasses.html#lab25">Propositional Typeclass Members</a>
+
+</li>
+<li><a href="Typeclasses.html#lab26">Substructures</a>
+
+</li>
+</ul>
+</div>
+
+</li>
+<li><a href="Typeclasses.html#lab27">Some Useful Typeclasses</a>
+<div>
+<ul class="doclist">
+<li><a href="Typeclasses.html#lab28"><span class="inlinecode"><span class="id" type="var">Dec</span></span></a>
+
+</li>
+<li><a href="Typeclasses.html#lab31"><span class="inlinecode"><span class="id" type="var">Monad</span></span></a>
+
+</li>
+<li><a href="Typeclasses.html#lab32">Others</a>
+
+</li>
+</ul>
+</div>
+
+</li>
+<li><a href="Typeclasses.html#lab33">Controlling Instantiation</a>
+<div>
+<ul class="doclist">
+<li><a href="Typeclasses.html#lab34">"Defaulting"</a>
+
+</li>
+<li><a href="Typeclasses.html#lab36">Manipulating the Hint Database</a>
+
+</li>
+</ul>
+</div>
+
+</li>
+<li><a href="Typeclasses.html#lab37">Debugging</a>
+<div>
+<ul class="doclist">
+<li><a href="Typeclasses.html#lab38">Instantiation Failures</a>
+
+</li>
+<li><a href="Typeclasses.html#lab39">Nontermination</a>
+
+</li>
+</ul>
+</div>
+
+</li>
+<li><a href="Typeclasses.html#lab41">Alternative Structuring Mechanisms</a>
+
+</li>
+<li><a href="Typeclasses.html#lab42">Advice from Experts</a>
+<div>
+<ul class="doclist">
+<li><a href="Typeclasses.html#lab43">Matthieu Sozeau</a>
+
+</li>
+<li><a href="Typeclasses.html#lab44">John Wiegley</a>
+
+</li>
+<li><a href="Typeclasses.html#lab45">Michael Soegtrop</a>
+
+</li>
+<li><a href="Typeclasses.html#lab46">Abhishek Anand</a>
+
+</li>
+</ul>
+</div>
+
+</li>
+<li><a href="Typeclasses.html#lab47">Further Reading</a>
+
+</li>
+</ul>
+</div>
+<h2><a href="QC.html">Core QuickChick&nbsp;&nbsp;&nbsp;&nbsp;(<i>QC</i>)</a></h2>
+<div>
+<ul class="doclist">
+<li><a href="QC.html">Top</a>
+<li><a href="QC.html#lab48">Generators</a>
+<div>
+<ul class="doclist">
+<li><a href="QC.html#lab49">The <span class="inlinecode"><span class="id" type="var">G</span></span> Monad</a>
+
+</li>
+<li><a href="QC.html#lab50">Primitive generators</a>
+
+</li>
+<li><a href="QC.html#lab52">Lists</a>
+
+</li>
+<li><a href="QC.html#lab53">Custom Generators</a>
+
+</li>
+<li><a href="QC.html#lab56">Checkers</a>
+
+</li>
+</ul>
+</div>
+
+</li>
+<li><a href="QC.html#lab57">Shrinking</a>
+<div>
+<ul class="doclist">
+<li><a href="QC.html#lab58">Exercise: Ternary Trees</a>
+
+</li>
+</ul>
+</div>
+
+</li>
+<li><a href="QC.html#lab63">Putting it all Together</a>
+
+</li>
+<li><a href="QC.html#lab64">Sized Generators</a>
+
+</li>
+<li><a href="QC.html#lab66">Automation</a>
+
+</li>
+<li><a href="QC.html#lab67">Collecting Statistics</a>
+
+</li>
+<li><a href="QC.html#lab68">Dealing with Preconditions</a>
+<div>
+<ul class="doclist">
+<li><a href="QC.html#lab70">Another Precondition: Binary Search Trees</a>
+
+</li>
+</ul>
+</div>
+
+</li>
+</ul>
+</div>
+<h2><a href="TImp.html">Case Study: a Typed Imperative Language&nbsp;&nbsp;&nbsp;&nbsp;(<i>TImp</i>)</a></h2>
+<div>
+<ul class="doclist">
+<li><a href="TImp.html">Top</a>
+<li><a href="TImp.html#lab72">Atoms, Types and Contexts</a>
+<div>
+<ul class="doclist">
+<li><a href="TImp.html#lab73">Atoms</a>
+
+</li>
+<li><a href="TImp.html#lab75">Types</a>
+
+</li>
+<li><a href="TImp.html#lab76">List Map with Decidable Equality</a>
+
+</li>
+<li><a href="TImp.html#lab77">Contexts</a>
+
+</li>
+</ul>
+</div>
+
+</li>
+<li><a href="TImp.html#lab78">Expressions</a>
+<div>
+<ul class="doclist">
+<li><a href="TImp.html#lab79">Typed Expressions</a>
+
+</li>
+<li><a href="TImp.html#lab81">Generating Typed Expressions</a>
+
+</li>
+</ul>
+</div>
+
+</li>
+<li><a href="TImp.html#lab82">Values and States</a>
+<div>
+<ul class="doclist">
+<li><a href="TImp.html#lab83">Values</a>
+
+</li>
+<li><a href="TImp.html#lab84">States</a>
+
+</li>
+</ul>
+</div>
+
+</li>
+<li><a href="TImp.html#lab85">Evaluation</a>
+<div>
+<ul class="doclist">
+<li><a href="TImp.html#lab86">Shrinking for Expressions</a>
+
+</li>
+<li><a href="TImp.html#lab87">Back to Soundness</a>
+
+</li>
+</ul>
+</div>
+
+</li>
+<li><a href="TImp.html#lab88">Well-Typed Programs</a>
+<div>
+<ul class="doclist">
+<li><a href="TImp.html#lab89">Decidable instance for well-typed.</a>
+
+</li>
+</ul>
+</div>
+
+</li>
+<li><a href="TImp.html#lab92">Automation (Revisited)</a>
+<div>
+<ul class="doclist">
+<li><a href="TImp.html#lab93">(More) Typeclasses for Generation</a>
+
+</li>
+<li><a href="TImp.html#lab94">Using "SuchThat" Typeclasses</a>
+
+</li>
+</ul>
+</div>
+
+</li>
+</ul>
+</div>
+<h2><a href="QuickChickTool.html">The QuickChick Command-Line Tool&nbsp;&nbsp;&nbsp;&nbsp;(<i>QuickChickTool</i>)</a></h2>
+<div>
+<ul class="doclist">
+<li><a href="QuickChickTool.html">Top</a>
+<li><a href="QuickChickTool.html#lab95">Overview</a>
+
+</li>
+<li><a href="QuickChickTool.html#lab96">Sectioning</a>
+
+</li>
+<li><a href="QuickChickTool.html#lab97">Mutation Testing</a>
+
+</li>
+</ul>
+</div>
+<h2><a href="QuickChickInterface.html">QuickChick Reference Manual&nbsp;&nbsp;&nbsp;&nbsp;(<i>QuickChickInterface</i>)</a></h2>
+<div>
+<ul class="doclist">
+<li><a href="QuickChickInterface.html">Top</a>
+<li><a href="QuickChickInterface.html#lab98">Fundamental Types</a>
+
+</li>
+<li><a href="QuickChickInterface.html#lab99">Primitive Generator Combinators</a>
+
+</li>
+<li><a href="QuickChickInterface.html#lab100">Basic Generator Combinators</a>
+
+</li>
+<li><a href="QuickChickInterface.html#lab101">Choosing from intervals (choose)</a>
+
+</li>
+<li><a href="QuickChickInterface.html#lab102">Notations</a>
+
+</li>
+<li><a href="QuickChickInterface.html#lab103">Printing</a>
+
+</li>
+<li><a href="QuickChickInterface.html#lab104">Generation typeclasses and instances</a>
+
+</li>
+<li><a href="QuickChickInterface.html#lab105">Shrinking typeclass and instances</a>
+
+</li>
+<li><a href="QuickChickInterface.html#lab106">Arbitrary and typeclass hierarchy</a>
+
+</li>
+<li><a href="QuickChickInterface.html#lab107">Properties - Checkers</a>
+
+</li>
+<li><a href="QuickChickInterface.html#lab108">Checker combinators</a>
+
+</li>
+<li><a href="QuickChickInterface.html#lab109">Decidability</a>
+
+</li>
+<li><a href="QuickChickInterface.html#lab110">Decidable Equality</a>
+
+</li>
+<li><a href="QuickChickInterface.html#lab111">QuickChick top-level commands and arguments</a>
+
+</li>
+<li><a href="QuickChickInterface.html#lab112">Generators for data satisfying inductive invariants</a>
+
+</li>
+<li><a href="QuickChickInterface.html#lab113">Automatic instance derivation</a>
+
+</li>
+<li><a href="QuickChickInterface.html#lab114">Deprecated Features</a>
+
+</li>
+</ul>
+</div>
+<h2><a href="PostScript.html">PostScript</a></h2>
+<div>
+<ul class="doclist">
+<li><a href="PostScript.html">Top</a>
+<li><a href="PostScript.html#lab115">Future Directions</a>
+
+</li>
+<li><a href="PostScript.html#lab116">Recommended Reading</a>
+
+</li>
+</ul>
+</div>
+<h2><a href="Bib.html">Bibliography&nbsp;&nbsp;&nbsp;&nbsp;(<i>Bib</i>)</a></h2>
+</div>
+</div>
+
+</div>
+
+</div>
+</body>
+</html>
