@@ -1,0 +1,16 @@
+-Q Custom/ Custom
+-Q DeepWeb/ DeepWeb
+-R FreeMonad/ DeepWeb.Free.Monad
+
+Custom/Decidability.v
+Custom/List.v
+Custom/Monad.v
+Custom/Show.v
+Custom/String.v
+
+FreeMonad/Free.v
+FreeMonad/Event.v
+FreeMonad/Verif.v
+FreeMonad/Common.v
+FreeMonad/Spec.v
+FreeMonad/Semantics.v
