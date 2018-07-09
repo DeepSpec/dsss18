@@ -111,10 +111,9 @@ Proof.
 (** **** Exercise: 1 star, optional (apply_rewrite)  *)
 (** Briefly explain the difference between the tactics [apply] and
     [rewrite].  What are the situations where both can usefully be
-    applied?
+    applied? *)
 
 (* FILL IN HERE *)
-*)
 (** [] *)
 
 (* ################################################################# *)
@@ -1024,9 +1023,8 @@ Proof.
 
    Theorem: For any [nat]s [n] [m], [beq_nat n m = beq_nat m n].
 
-   Proof:
+   Proof: *)
    (* FILL IN HERE *)
-*)
 (** [] *)
 
 (** **** Exercise: 3 stars, optional (beq_nat_trans)  *)
@@ -1076,7 +1074,7 @@ Proof.
   (* FILL IN HERE *) Admitted.
 (** [] *)
 
-(** **** Exercise: 4 stars, advanced, recommended (forall_exists_challenge)  *) 
+(** **** Exercise: 4 stars, advanced, recommended (forall_exists_challenge)  *)
 (** Define two recursive [Fixpoints], [forallb] and [existsb].  The
     first checks whether every element in a list satisfies a given
     predicate:

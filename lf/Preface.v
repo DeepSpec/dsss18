@@ -83,7 +83,7 @@
     Effectiveness of Logic in Computer Science_ catalogs scores of
     ways in which logic offers critical tools and insights.  Indeed,
     they observe that, "As a matter of fact, logic has turned out to
-    be significiantly more effective in computer science than it has
+    be significantly more effective in computer science than it has
     been in mathematics.  This is quite remarkable, especially since
     much of the impetus for the development of logic during the past
     one hundred years came from mathematics."
@@ -267,7 +267,7 @@
 (** Coq runs on Windows, Linux, and macOS.  You will need:
 
        - A current installation of Coq, available from the Coq home
-         page.  These files have been tested with Coq 8.7.1.
+         page.  These files have been tested with Coq 8.8.0.
 
        - An IDE for interacting with Coq.  Currently, there are two
          choices:
@@ -372,10 +372,9 @@
     To get started, please send an email to Benjamin Pierce, describing
     yourself and how you plan to use the materials and including
        (1) the above copyright transfer text and
-       (2) the result of doing "htpasswd -s -n NAME"
-    where NAME is your preferred user name.
+       (2) your github username.
 
-    We'll set you up with access to the subversion repository and
+    We'll set you up with access to the git repository and
     developers' mailing lists.  In the repository you'll find a
     file [INSTRUCTORS] with further instructions. *)
 

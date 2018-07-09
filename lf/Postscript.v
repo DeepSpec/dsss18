@@ -8,7 +8,7 @@
 (** We've covered quite a bit of ground so far.  Here's a quick review...
 
    - _Functional programming_:
-          - "declarative" programming style (recursion over persistent
+          - "declarative" programming style (recursion over immutable
             data structures, rather than looping over mutable arrays
             or pointer structures)
           - higher-order functions
