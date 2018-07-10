@@ -8,9 +8,12 @@ $(info CC_LOC= .../file/path/to/CompCert)
 $(info or instead of a CONFIGURE file, you may define these as environment variables.)
 $(error "VST_LOC not defined")
 endif
+ifeq ($(CC_LOC),)
+  CC_LOC=$(VST_LOC)/compcert
+endif
 
-VST_DIRS= msl sepcomp veric floyd
-VSTFLAGS= -Q $(VST_LOC)/compcert compcert $(foreach d, $(VST_DIRS), -Q $(VST_LOC)/$(d) VST.$(d))
+VST_DIRS= msl sepcomp veric floyd progs
+VSTFLAGS= -Q $(CC_LOC) compcert $(foreach d, $(VST_DIRS), -Q $(VST_LOC)/$(d) VST.$(d))
 
 coq: Makefile.coq $(EXTR_BIN)
 	@$(MAKE) -f $<
@@ -18,7 +21,7 @@ coq: Makefile.coq $(EXTR_BIN)
 Makefile.coq: _CoqProject
 	coq_makefile -f $< -o $@
 
-_CoqProject:
+_CoqProject: _CoqConfig
 	echo "$(VSTFLAGS)" > _CoqProject
 	cat _CoqConfig >> _CoqProject
 
