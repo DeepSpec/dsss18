@@ -143,7 +143,7 @@ Definition hashtable_rep (contents: hashtable_contents) (p: val) : mpred :=
     !! (contents = map fst bl) &&
     malloc_token Tsh thashtable p * 
     field_at Tsh thashtable [StructField _buckets] (map snd bl) p 
-    * iter_sepcon bl (uncurry listrep).
+    * iter_sepcon (uncurry listrep) bl.
 
 (** **** Exercise: 2 stars (hashtable_rep_hints)  *)
 Lemma hashtable_rep_local_facts: forall contents p,
@@ -320,7 +320,7 @@ Proof.
 
 (** **** Exercise: 2 stars (iter_sepcon_hints)  *)
 Lemma iter_sepcon_listrep_local_facts:
- forall bl, iter_sepcon bl (uncurry listrep)
+ forall bl, iter_sepcon (uncurry listrep) bl
                     |-- !! Forall is_pointer_or_null (map snd bl).
 Proof.
 (* Hint: use [induction] and [sep_apply]. *)
@@ -333,8 +333,8 @@ Hint Resolve iter_sepcon_listrep_local_facts : saturate_local.
 Lemma iter_sepcon_split3: 
   forall {A}{d: Inhabitant A} (i: Z) (al: list A) (f: A -> mpred),
    0 <= i < Zlength al   -> 
-  iter_sepcon al f = 
-  iter_sepcon (sublist 0 i al) f * f (Znth i al) * iter_sepcon (sublist (i+1) (Zlength al) al) f.
+  iter_sepcon f al = 
+  iter_sepcon f (sublist 0 i al) * f (Znth i al) * iter_sepcon f (sublist (i+1) (Zlength al) al).
 Proof.
 intros.
 rewrite <- (sublist_same 0 (Zlength al) al) at 1 by auto.
@@ -351,7 +351,7 @@ Lemma body_new_table_helper:
   data_at Tsh thashtable (list_repeat (Z.to_nat N) nullval) p
   |-- field_at Tsh thashtable [StructField _buckets]
        (list_repeat (Z.to_nat N) nullval) p *
-         iter_sepcon (list_repeat (Z.to_nat N) ([], nullval)) (uncurry listrep).
+         iter_sepcon (uncurry listrep) (list_repeat (Z.to_nat N) ([], nullval)).
 Proof.
 intros.
 unfold_data_at 1%nat.
@@ -474,29 +474,27 @@ entailer!. rewrite field_at_data_at; auto.
 entailer!. rewrite field_at_data_at; auto.
 Qed.
 
-Lemma wand_slice_array_tptr_tcell: ltac:(wand_slice_array_spec (tptr tcell)).
-Proof. prove_wand_slice_array. Qed.
-
 (** Examine this carefully: *)
-Check wand_slice_array_tptr_tcell.
-(*  : forall (lo hi n : Z) (sh : Share.t)
-             (al' : list (reptype (tptr tcell))) (p : val),
+Check wand_slice_array.
+(*  : forall (lo hi n : Z) (t : type) (sh : Share.t)
+             (al' : list (reptype t)) (p : val),
        0 <= lo <= hi ->
        hi <= n ->
        Zlength al' = n ->
-       data_at sh (tarray (tptr tcell) n) al' p =
-       data_at sh (tarray (tptr tcell) (hi - lo)) 
+       data_at sh (tarray t n) al' p =
+       !! field_compatible (tarray (tptr tcell) n) [] p &&
+       data_at sh (tarray t (hi - lo)) 
          (sublist lo hi al')
-         (field_address0 (tarray (tptr tcell) n) [ArraySubsc lo] p) *
-       (!! field_compatible (tarray (tptr tcell) n) [] p &&
-        (ALL cl : list (reptype (tptr tcell)) ,
-         data_at sh (tarray (tptr tcell) (hi - lo)) cl
-           (field_address0 (tarray (tptr tcell) n) [ArraySubsc lo] p) -*
-         data_at sh (tarray (tptr tcell) n)
-           (sublist 0 lo al' ++ cl ++ sublist hi n al') p)) 
+         (field_address0 (tarray t n) [ArraySubsc lo] p) *
+       array_with_hole sh t lo hi n al p.
 *)
-(** It is a specialization of the [wand_slice_array] lemma that is easier to use,
-   because (unlike the general-case lemma) it does not use John Major equality (JMeq) *)
+(** Here (array_with_hole sh t lo hi n al p) means *)
+(*  :  (ALL cl : list (reptype t) ,
+         data_at sh (tarray t (hi - lo)) cl
+           (field_address0 (tarray t n) [ArraySubsc lo] p) -*
+         data_at sh (tarray t n)
+           (sublist 0 lo al' ++ cl ++ sublist hi n al') p)
+*)
 
 (** **** Exercise: 4 stars (body_incr)  *)
 Lemma body_incr: semax_body Vprog Gprog f_incr incr_spec.
@@ -509,7 +507,7 @@ assert_PROP (isptr table) as Htable by entailer!.
 (** The next two lines would not be part of an ordinary Verifiable C proof, 
    they are here only to guide you through the bigger proof. *)
 match goal with |- semax _ _ (Ssequence (Ssequence ?c1 (Ssequence ?c2 ?c3)) ?c4) _ => apply (semax_unfold_seq (Ssequence (Ssequence c1 c2) (Ssequence c3 c4))); [ reflexivity | ] end;
-pose (j := EX cts:_, PROP (contents = map fst cts; 0 <= hashfun sigma mod N < N; Zlength cts = N) LOCAL (temp _b (Vint (Int.repr (hashfun sigma mod N))); temp _h (Vint (Int.repr (hashfun sigma))); temp _table table; temp _s s) SEP (cstring Tsh sigma s; malloc_token Tsh thashtable table; data_at Tsh (tarray (tptr tcell) N) (map snd cts) (field_address thashtable [StructField _buckets] table); iter_sepcon cts (uncurry listrep))); apply semax_seq' with j; subst j; abbreviate_semax.
+pose (j := EX cts: list (list (string * Z) * val), PROP (contents = map fst cts; 0 <= hashfun sigma mod N < N; Zlength cts = N) LOCAL (temp _b (Vint (Int.repr (hashfun sigma mod N))); temp _h (Vint (Int.repr (hashfun sigma))); temp _table table; temp _s s) SEP (cstring Tsh sigma s; malloc_token Tsh thashtable table; data_at Tsh (tarray (tptr tcell) N) (map snd cts) (field_address thashtable [StructField _buckets] table); iter_sepcon (uncurry listrep) cts)); apply semax_seq' with j; subst j; abbreviate_semax.
 {
  (* FILL IN HERE *) admit.
  }
@@ -519,8 +517,8 @@ subst contents.
 unfold hashtable_get in Hmax.
 rewrite Zlength_map, H1 in Hmax.
 set (h := hashfun sigma mod N) in *. 
-erewrite (wand_slice_array_tptr_tcell h (h+1) N)
-  by first [apply JMeq_refl | rep_omega | list_solve ].
+erewrite (wand_slice_array h (h+1) N _ (tptr tcell))
+  by first [rep_omega | list_solve ].
 
 (** For the remainder of the proof, here are some useful lemmas:
     [sublist_len_1] [sublist_same] [sublist_map]

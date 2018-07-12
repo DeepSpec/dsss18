@@ -69,7 +69,7 @@
 
 (** Coq runs on Windows, Linux, and OS X.  The Preface of Volume 1
     describes the Coq installation you will need.  This edition was
-    built with Coq 8.7.1 or 8.8.0.
+    built with Coq 8.8.0 or 8.8.0.
 
     You must install the Verified Software Toolchain.
     Download the latest version from the web site,

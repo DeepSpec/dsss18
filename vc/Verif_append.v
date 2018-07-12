@@ -146,12 +146,38 @@ Definition append_spec :=
 Definition Gprog : funspecs :=
          ltac:(with_library prog [ sumlist_spec; append_spec ]).
 
+(** In separation-logic assertions, how should one specify integer values?
+    Normally, one should use the mathematical integers, Coq's [Z] type.
+    Then, inject [Z] into the 32-bit machine integers using Int.repr,
+    then from those into CompCert values by Vint.  That is,
+    [Vint (Int.repr z)], where [z:Z] is a mathematical integer.
+
+    If [z] is too big to fit in a 32-bit integer, [Int.repr] will take
+    the low-order 32 bits (i.e., modulo 2^32).  To make sure that doesn't
+    happen (if you didn't intend it), usually you maintain the assertion
+    [Int.min_signed <= z <= Int.max_signed].  
+
+    In this program, we are adding up a list of integers.  If we wanted
+    to prove that every partial sum is in range, we'd need a complicated
+    precondition.  Instead, we'll prove something simpler:  that the
+    sum mod 2^32 is right.   
+
+    In the C language, signed integer arithmetic is not allowed to
+    overflow (you get undefined behavior), so we must write this program
+    to use unsigned ints.  For that, we want to reason about
+    32-bit machine integers directly, not about the mathematical integers.
+    Therefore we'll use values of type [int], that is [Int.int], the
+    type of 32-bit machine integers.  That's why, in [sumlist_spec],
+    we use [sigma: list int] in our specification, instead of a list of [Z].
+
+    Compare with the proof of [pop_and_add] in [Verif_triang],
+    where we _do_ prove that each partial sum doesn't overflow, and
+    we can use signed integer arithmetic. *)
+
 (* ================================================================= *)
 (** ** Proof of the [sumlist] function *)
 
-(** TODO: Explain why we're using unsigned ints, and how
-this makes the proof much easier.  Compare with the proof
- of [pop_and_add] in [Verif_triang]. *)
+(** First, we prove a useful auxiliary lemma about [sum_int] *)
 
 Lemma sum_int_app:
   forall a b, sum_int (a++b) = Int.add (sum_int a) (sum_int b).
@@ -164,18 +190,18 @@ Qed.
 (** TODO: This proof needs cleanup, and lots more explanation.  **)
 Lemma body_sumlist: semax_body Vprog Gprog f_sumlist sumlist_spec.
 Proof.
-(** Here is the standard way to start a function-body proof:  First,
- ** start-function; then forward.
- **)
+(** Here is the standard way to start a function-body proof:  
+    First, [start-function], then [forward]. **)
 start_function.
 forward.  (* s = 0; *)
 forward.  (* t = p; *)
 forward_while
-          (EX sigma2: list int, EX t: val,
-            PROP ()
-            LOCAL (temp _t t; temp _s (Vint (Int.sub (sum_int sigma) (sum_int sigma2))))
-            SEP (listrep (map Vint sigma2) t;
-                   listrep (map Vint sigma2) t -* listrep (map Vint sigma) p)).
+    (EX sigma2: list int, EX t: val,
+     PROP ()
+     LOCAL (temp _t t;
+            temp _s (Vint (Int.sub (sum_int sigma) (sum_int sigma2))))
+     SEP (listrep (map Vint sigma2) t;
+          listrep (map Vint sigma2) t -* listrep (map Vint sigma) p)).
 - (* Prove that current precondition implies loop invariant *)
 Exists sigma p.
 entailer!.
@@ -184,10 +210,15 @@ apply wand_sepcon_adjoint. cancel.
 entailer!.
 - (* Prove that loop body preserves invariant *)
 assert_PROP (sigma2 <> nil). {
-  unfold listrep at 1. entailer!. assert (t=nullval) by intuition. subst; contradiction.
+  unfold listrep at 1. 
+  entailer!. 
+  assert (t=nullval) by intuition. 
+  subst; contradiction.
 }
-destruct sigma2 as [ | i r]; try contradiction. clear H.
-simpl map. unfold listrep at 1; fold listrep.
+destruct sigma2 as [ | i r]; try contradiction.
+clear H.
+simpl map.
+unfold listrep at 1; fold listrep.
 Intros y.
 forward.
 forward.
@@ -199,8 +230,10 @@ rewrite <- Int.sub_add_l.
 rewrite (Int.add_commut i).
 rewrite Int.sub_shifted. auto.
 apply -> wand_sepcon_adjoint.
-assert (data_at Tsh t_list (Vint i, y) t * listrep (map Vint r) y |-- listrep (Vint i :: map Vint r) t).
-unfold listrep at 2; fold listrep. Exists y; cancel.
+assert (data_at Tsh t_list (Vint i, y) t * listrep (map Vint r) y 
+         |-- listrep (Vint i :: map Vint r) t).
+unfold listrep at 2; fold listrep. 
+Exists y; cancel.
 sep_apply H2; clear H2.
 apply modus_ponens_wand.
 -
@@ -219,100 +252,127 @@ Qed.
 Definition lseg (s: list val) (x y : val) := 
   ALL s': list val, listrep s' y -* listrep (s ++ s') x.
 
+Lemma lseg_nullval: forall s t, lseg s t nullval = listrep s t.
+Proof.  
+unfold lseg; intros.
+apply pred_ext.
+apply allp_left with (@nil val).
+unfold listrep at 1.
+rewrite prop_true_andp by auto.
+rewrite emp_wand.
+rewrite <- app_nil_end.
+auto.
+apply allp_right; intro s'.
+apply wand_sepcon_adjoint.
+unfold listrep at 2.
+destruct s'; simpl.
+rewrite <- app_nil_end. entailer!.
+Intros y.
+entailer!.
+destruct H0; contradiction H0.
+Qed.
+
+Lemma lseg_listrep: forall s t x y ,
+      lseg s x y * listrep t y |-- listrep (s++t) x.
+Proof.
+intros.
+unfold lseg.
+allp_left t.
+rewrite sepcon_comm.
+apply modus_ponens_wand.
+Qed.
+
+Lemma lseg_app:
+   forall s t x y z,
+      lseg s x y * lseg t y z |-- lseg (s++t) x z.
+Proof.
+  intros.
+ apply allp_right; intro u.
+ apply -> wand_sepcon_adjoint.
+ sep_apply (lseg_listrep t u y z).
+ sep_apply (lseg_listrep s (t++u) x y).
+ rewrite app_ass.
+ auto.
+Qed.
+  
 Lemma body_append: semax_body Vprog Gprog f_append append_spec.
 Proof.
 start_function.
 forward_if.
--
+{ (* then-clause *)
  subst.
  forward.
  rewrite (proj1 H) by auto.
  unfold listrep at 1. simpl app. Exists y. entailer!.
--
-  forward.
-  assert_PROP (s1 <> nil). {
-   unfold listrep at 1. entailer!. assert (x=nullval) by intuition. subst; contradiction.
 }
-destruct s1 as [ | h r]; try congruence. clear H0.
+(* else-clause *)
+assert_PROP (s1 <> nil). {
+   unfold listrep at 1. 
+   entailer!.  intuition.
+  }
+destruct s1 as [ | h r]; try congruence. clear H H0.
 unfold listrep at 1; fold listrep.
 Intros u.
 forward.
-clear H.
-subst LOOP_BODY MORE_COMMANDS POSTCONDITION; unfold abbreviate.
-apply semax_seq' with
-    (EX s:list val, EX t:val, EX i:val,
-      PROP (s++[i]=[h]++r)  LOCAL (temp _x x; temp _t t; temp _y y)  SEP (lseg s x t; listrep [i] t; listrep s2 y)).
-forward_while (EX u:val, EX t:val, EX s': list val, EX i: val, EX r': list val,
-   PROP (s' ++ [i] ++ r' = [h] ++ r)
-   LOCAL (temp _u u; temp _t t; temp _x x; temp _y y)
-   SEP (lseg s' x t; lseg [i] t u; listrep r' u; listrep s2 y)).
-*
-Exists u x (@nil val) h r. entailer.
-apply sepcon_derives; auto.
-apply derives_trans with (emp * (lseg [h] x u * listrep r u)).
-cancel.
-unfold lseg. apply allp_right; intro s'. apply wand_sepcon_adjoint.
-simpl.
-unfold listrep at 2; fold listrep. Exists u; cancel.
-rewrite sepcon_assoc. apply sepcon_derives; auto.
-unfold lseg. apply allp_right; intro s'. apply wand_sepcon_adjoint.
-simpl. cancel.
-*
-entailer!.
-*
 forward.
-  assert_PROP (r' <> nil). {
-   entailer!. intuition.
-}
-destruct r' as [ | j r']; try congruence. clear H0.
-unfold listrep at 1; fold listrep.
-Intros z.
-forward.
-Exists (z,u0,s'++[i],j,r').
-entailer!.
-rewrite app_ass; auto.
-apply sepcon_derives.
-apply allp_right; intro s3.
-apply -> wand_sepcon_adjoint.
-unfold lseg.
-allp_left (i::s3).
-allp_left (s3).
-sep_apply (modus_ponens_wand (listrep s3 u0) (listrep ([i]++s3) t)).
-simpl.
-rewrite app_ass. simpl.
-apply modus_ponens_wand.
-unfold lseg. apply allp_right; intro. simpl.
-apply wand_sepcon_adjoint.
-unfold listrep at 2; fold listrep.
-Exists z. cancel.
-*
+forward_while 
+   (EX u:val, EX t:val, EX s': list val, 
+    EX i: val, EX r': list val,
+    PROP (s' ++ [i] ++ r' = [h] ++ r)
+    LOCAL (temp _u u; temp _t t; temp _x x; temp _y y)
+    SEP (lseg s' x t; lseg [i] t u; listrep r' u; listrep s2 y)).
+* (* Prove that the precondition implies the loop invariant *)
+ Exists u x (@nil val) h r. 
+ entailer. (* Cannot use entailer! here. *)
+ apply sepcon_derives; auto.
+ apply derives_trans with (emp * (lseg [h] x u * listrep r u)).
+ cancel.
+ unfold lseg. apply allp_right; intro s'. apply wand_sepcon_adjoint.
+ simpl.
+ unfold listrep at 2; fold listrep. Exists u; cancel.
+ rewrite sepcon_assoc. apply sepcon_derives; auto.
+ unfold lseg. apply allp_right; intro s'. apply wand_sepcon_adjoint.
+ simpl. cancel.
+* (* Prove that the loop test can evaluate *)
+ entailer!.
+* (* Prove the function body preserves the invariant *)
+ forward.
+ assert_PROP (r' <> nil) by (entailer!; intuition).
+ destruct r' as [ | j r']; try congruence. clear H0.
+ unfold listrep at 1; fold listrep.
+ Intros z.
+ forward.
+ Exists (z,u0,s'++[i],j,r').
+ entailer!.
+ rewrite app_ass; auto.
+ sep_apply (lseg_app s' [i] x t u0).
+ cancel.
+ unfold lseg. apply allp_right; intro. simpl.
+ apply wand_sepcon_adjoint.
+ unfold listrep at 2; fold listrep.
+ Exists z. cancel.
+ * (* After the loop *)
 subst u0.
-forward.
-Exists s' t i.
-entailer!.
-rewrite (proj1 H0 (eq_refl _)) in *.
-rewrite <- app_nil_end in H; apply H.
-rewrite (proj1 H0 (eq_refl _)) in *.
-unfold listrep at 1. entailer!.
-unfold lseg.
-allp_left (@nil val).
-simpl.
-unfold listrep at 1. entailer!.
-rewrite emp_wand. auto.
-*
-Intros s t i.
-unfold listrep at 1.
-Intros z.
-subst z.
+assert_PROP (r'=nil) by (entailer!; intuition).
+subst r'.
+rewrite lseg_nullval.
+rewrite <- app_nil_end in H.
+rename s' into s.
+unfold listrep at 1 2.
+Intros p. subst p.
 forward.
 forward.
 Exists x.
 entailer!.
-replace (h::r++s2) with (([h]++r)++s2) by (rewrite app_ass; auto).
-rewrite <- H. rewrite app_ass. simpl.
-apply derives_trans with (lseg s x t * listrep (i::s2) t).
-unfold listrep at 2; fold listrep; Exists y; cancel.
+change (h :: r ++ s2) with (([h]++r)++s2).
+rewrite <- H.
+rewrite app_ass.
 clear.
-unfold lseg. allp_left (i::s2). rewrite sepcon_comm.
-apply modus_ponens_wand.
+assert (data_at Tsh t_list (i, y) t * listrep s2 y |--
+           listrep (i::s2) t).
+ unfold listrep at 2; fold listrep; Exists y; cancel.            sep_apply H; clear H.                                           
+simpl.
+unfold lseg. allp_left (i::s2). 
+sep_apply (modus_ponens_wand (listrep (i::s2) t) (listrep (s++i::s2) x)).
+auto.
 Qed.

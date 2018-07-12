@@ -119,43 +119,12 @@ forward_if.
 forward.
 entailer!. f_equal. f_equal. cstring.
 forward. (* entailer!.  *)
-forward.
 Exists (i+1).
 entailer!. cstring.
 Qed.
 
 (* ================================================================= *)
 (** ** Proof of the [strcpy] function *)
-
-Lemma split_data_at_app:
- forall sh t n (al bl: list (reptype t)) abl'
-         (al': reptype (tarray t (Zlength al)))
-         (bl': reptype (tarray t (n - Zlength al)))
-          p ,
-   n = Zlength (al++bl) ->
-   JMeq abl' (al++bl) ->
-   JMeq al' al ->
-   JMeq bl' bl ->
-   data_at sh (tarray t n) abl' p = 
-         data_at sh (tarray t (Zlength al)) al' p
-        * data_at sh (tarray t (n - Zlength al)) bl'
-                 (field_address0 (tarray t n) [ArraySubsc (Zlength al)] p).
-Proof.
-intros.
-unfold tarray.
-erewrite split2_data_at_Tarray.
-4: rewrite sublist_same; [eassumption | auto | auto ].
-4: rewrite sublist_app1.
-4: rewrite sublist_same; [eassumption | auto | auto ].
-2: rewrite Zlength_app in H by list_solve; list_solve.
-2: rewrite Zlength_app in H by list_solve; list_solve.
-2: list_solve.
-2: omega.
-2: rewrite sublist_app2.
-2: rewrite sublist_same; [eassumption | auto | auto ].
-auto.
-all: rewrite Zlength_app in H; rep_omega.
-Qed.
 
 Lemma split_data_at_app_tschar:
  forall sh n (al bl: list val) p ,
@@ -166,7 +135,9 @@ Lemma split_data_at_app_tschar:
                  (field_address0 (tarray tschar n) [ArraySubsc (Zlength al)] p).
 Proof.
 intros.
-apply (split_data_at_app sh tschar n al bl (al++bl)); auto.
+apply (split2_data_at_Tarray_app _ n  sh tschar al bl ); auto.
+rewrite Zlength_app in H.
+change ( Zlength bl = n - Zlength al); omega.
 Qed.
 
 Lemma body_strcpy: semax_body Vprog Gprog f_strcpy strcpy_spec.
@@ -208,7 +179,6 @@ forward_loop (EX i : Z,
   cancel.
 +
    assert (i < Zlength ls) by cstring.
-  forward.
   forward.
   Exists (i+1). entailer!.
   rewrite upd_Znth_app2 by list_solve.
@@ -308,12 +278,11 @@ forward_loop (EX i : Z,
      Byte.signed (Znth i (ls2 ++ [Byte.zero]))) by omega.
    normalize in H17. clear H7 H8.
    forward.
-   forward.
    Exists (i+1).
    entailer!.
    clear - H17 H6 Hs1 Hs2 H3 H1 H2 H H0.
    destruct (zlt i (Zlength ls1)).
-  Focus 2. {
+  2: {
          assert (i = Zlength ls1) by omega. subst.
          destruct H6; [congruence | ].
          assert (Zlength ls1 < Zlength ls2) by omega.
@@ -322,9 +291,9 @@ forward_loop (EX i : Z,
          rewrite Z.sub_diag in H17. contradiction H0.
          change (Znth 0 [Byte.zero]) with Byte.zero in H17.
          rewrite H17. apply Znth_In. omega.
-   } Unfocus.
+   }
   destruct (zlt i (Zlength ls2)).
-  Focus 2. {
+  2: {
          assert (i = Zlength ls2) by omega. subst.
          destruct H6; [ | congruence].
          assert (Zlength ls1 > Zlength ls2) by omega.
@@ -333,7 +302,7 @@ forward_loop (EX i : Z,
          rewrite Z.sub_diag in H17. contradiction H.
          change (Znth 0 [Byte.zero]) with Byte.zero in H17.
          rewrite <- H17.  apply Znth_In. omega.
-   } Unfocus.
+   }
   rewrite (sublist_split 0 i (i+1)) by omega.
   rewrite (sublist_split 0 i (i+1)) by omega.
   f_equal; auto.
