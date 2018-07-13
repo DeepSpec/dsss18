@@ -30,3 +30,6 @@ nia.cache
 nlia.cache
 nra.cache
 CONFIGURE
+.coqdeps.d
+vc/Makefile.conf
+vc/_CoqProject
