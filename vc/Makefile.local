@@ -9,12 +9,8 @@ $(info or instead of a CONFIGURE file, you may define these as environment varia
 $(error "VST_LOC not defined")
 endif
 
-ifeq ($(CC_LOC),)
-CC_LOC= $(VST_LOC)/compcert
-endif
-
 VST_DIRS= msl sepcomp veric floyd
-VSTFLAGS= -R $(CC_LOC) compcert $(foreach d, $(VST_DIRS), -Q $(VST_LOC)/$(d) VST.$(d))
+VSTFLAGS= -R $(VST_LOC)/compcert compcert $(foreach d, $(VST_DIRS), -Q $(VST_LOC)/$(d) VST.$(d))
 COQLIBS= $(VSTFLAGS)
 
 pre-all:: _CoqProject
