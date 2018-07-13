@@ -33,3 +33,6 @@ CONFIGURE
 .coqdeps.d
 vc/Makefile.conf
 vc/_CoqProject
+vfa/Makefile.conf
+dw/Makefile.coq
+dw/Makefile.coq.conf
