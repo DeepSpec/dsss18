@@ -48,6 +48,9 @@ CAMLFLAGS         := $(COQMF_CAMLFLAGS)
 HASNATDYNLINK     := $(COQMF_HASNATDYNLINK)
 
 Makefile.conf:
+	# This also recreates Makefile.
+	# Since we moved "inlcude Makefile.local" up to allow proper CONFIGURATION file handling, this is not wanted.
+	# So copy and restore the main makefile (which reloads the makefile twice and can lead to minor hickups)
 	cp Makefile Makefile.bak
 	coq_makefile OTHERFLAGS = '' COQLIBS = '' -R $(CC_LOC) compcert -Q $(VST_LOC)/msl VST.msl -Q $(VST_LOC)/sepcomp VST.sepcomp -Q $(VST_LOC)/veric VST.veric -Q $(VST_LOC)/floyd VST.floyd -install none sumarray.v reverse.v append.v stack.v strlib.v hash.v Preface.v Verif_sumarray.v Verif_reverse.v Verif_stack.v Verif_triang.v Verif_append.v Verif_strlib.v Hashfun.v Verif_hash.v -o Makefile
 	mv -f Makefile.bak Makefile
