@@ -43,7 +43,7 @@ CAMLP5OPTIONS     := $(COQMF_CAMLP5OPTIONS)
 CAMLFLAGS         := $(COQMF_CAMLFLAGS)
 HASNATDYNLINK     := $(COQMF_HASNATDYNLINK)
 
-Makefile.conf: 
+Makefile.conf:
 	coq_makefile OTHERFLAGS = '' COQLIBS = '' -install none Introduction.v Typeclasses.v QC.v TImp.v QuickChickTool.v QuickChickInterface.v PostScript.v Bib.v -o Makefile
 
 # This file can be created by the user to hook into double colon rules or
@@ -797,4 +797,3 @@ debug:
 .PHONY: debug
 
 .DEFAULT_GOAL := all
-include .depend
