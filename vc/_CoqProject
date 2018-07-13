@@ -1,1 +1,0 @@
--R /u/appel/vst/compcert compcert -Q /u/appel/vst/msl VST.msl -Q /u/appel/vst/sepcomp VST.sepcomp -Q /u/appel/vst/veric VST.veric -Q /u/appel/vst/floyd VST.floyd
