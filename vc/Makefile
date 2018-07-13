@@ -43,12 +43,13 @@ CAMLP5OPTIONS     := $(COQMF_CAMLP5OPTIONS)
 CAMLFLAGS         := $(COQMF_CAMLFLAGS)
 HASNATDYNLINK     := $(COQMF_HASNATDYNLINK)
 
+Makefile.conf:
+	coq_makefile OTHERFLAGS = '' COQLIBS = '' -R $(VST_LOC)/compcert compcert -Q $(VST_LOC)/msl VST.msl -Q $(VST_LOC)/sepcomp VST.sepcomp -Q $(VST_LOC)/veric VST.veric -Q $(VST_LOC)/floyd VST.floyd -install none sumarray.v reverse.v append.v stack.v strlib.v hash.v Preface.v Verif_sumarray.v Verif_reverse.v Verif_stack.v Verif_triang.v Verif_append.v Verif_strlib.v Hashfun.v Verif_hash.v -o Makefile
+
 # This file can be created by the user to hook into double colon rules or
 # add any other Makefile code he may need
 -include Makefile.local
 
-Makefile.conf: 
-	coq_makefile OTHERFLAGS = '' COQLIBS = '' -R $(VST_LOC)/compcert compcert -Q $(VST_LOC)/msl VST.msl -Q $(VST_LOC)/sepcomp VST.sepcomp -Q $(VST_LOC)/veric VST.veric -Q $(VST_LOC)/floyd VST.floyd -install none sumarray.v reverse.v append.v stack.v strlib.v hash.v Preface.v Verif_sumarray.v Verif_reverse.v Verif_stack.v Verif_triang.v Verif_append.v Verif_strlib.v Hashfun.v Verif_hash.v -o Makefile
 
 # Parameters ##################################################################
 #
