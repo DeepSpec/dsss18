@@ -1,8 +1,21 @@
-DeepSpec Web Server
-===================
+DeepSpec Web Server Demo
+========================
 
-Build
------
+Directory Structure
+-------------------
+
+    Custom/       Miscellaneous standard library extensions
+    FreeMonad/    Interaction trees 
+    IODemo/       Simple I/O demo
+    DeepWeb/      Larger server demo
+       Spec         Specifications     
+       Proofs       Proofs
+       Util         Miscellaneous utilities
+       Lib          Effect types
+       Test         Testing
+
+Building
+--------
 
 In this `dw/` directory, create a `CONFIGURE` file containing
 
@@ -14,3 +27,11 @@ installation.
 Then run
 
     make
+
+Reading
+-------
+
+The top-level spec lives in Spec/TopLevelSpec.v
+
+
+
