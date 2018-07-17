@@ -2,7 +2,7 @@ Require Import String.
 
 From DeepWeb.Proofs.Vst
      Require Import VstInit VstLib VerifHelpers
-     SocketSpecs SocketTactics ServerSpecs MonadExports
+     SocketSpecs SocketTactics Gprog MonadExports
      Connection Store select_loop_spec AppLib AppLogic.
 
 Require Import DeepWeb.Spec.ITreeSpec.
@@ -45,7 +45,8 @@ Definition main_loop_invar
   EX head_ptr : val,
   PROP ( consistent_world st;
          lookup_socket st server_fd = ListeningSocket server_addr;
-         Forall (fun '(conn, fd, ptr) => consistent_state st (conn, fd))
+         Forall (fun '(conn, fd, ptr) =>
+                   consistent_state BUFFER_SIZE st (conn, fd))
                 connections;
          NoDup (map descriptor (map proj_fd connections));
          NoDup (map conn_id
@@ -76,7 +77,7 @@ Definition main_loop_invar
              (map rep_full_conn connections)
              head_ptr nullval;
         malloc_tokens (Tstruct _connection noattr) (map proj_ptr connections);
-        TRACE (r <- select_loop server_addr
+        TRACE (r <- select_loop server_addr BUFFER_SIZE
                  (true, (map proj_conn connections, last_msg))
                ;; k);
         field_at Tsh (Tstruct _store noattr) [] (rep_store last_msg)
@@ -85,7 +86,7 @@ Definition main_loop_invar
 
 
 Lemma body_select_loop:
-  semax_body Vprog Gprog f_select_loop (select_loop_spec unit).
+  semax_body Vprog Gprog f_select_loop (select_loop_spec unit BUFFER_SIZE).
 Proof.
   start_function.
 
@@ -385,7 +386,7 @@ Proof.
     gather_SEP 1 2 3 4 5.
     post_accept connections st0 head_ptr v_head
                 (fun connections' =>
-                   select_loop server_addr
+                   select_loop server_addr BUFFER_SIZE
                                (true, (map proj_conn connections', last_msg))
                                ;; k).
 
@@ -544,8 +545,9 @@ Proof.
       
     }
 
-    assert (Forall (fun '(conn, fd, _) =>
-                      consistent_state st1 (conn, fd)) connections1)
+    assert
+    (Forall (fun '(conn, fd, _) =>
+               consistent_state BUFFER_SIZE st1 (conn, fd)) connections1)
       as consistent_at_st1.
     {
       destruct conn_opt as [[[conn conn_fd] new_head] | ].      
@@ -629,7 +631,8 @@ Proof.
         as lookup_conn'_fd_st1.
       {
         (* true for RECVING and SENDING *)
-        apply consistent_RECVING_SENDING_connected; try assumption.
+        apply (consistent_RECVING_SENDING_connected BUFFER_SIZE);
+          try assumption.
         rewrite Forall_forall in consistent_at_st1.
         specialize (consistent_at_st1 (conn', conn'_fd, conn'_ptr)).
         apply consistent_at_st1.

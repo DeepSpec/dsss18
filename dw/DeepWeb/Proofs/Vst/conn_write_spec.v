@@ -12,7 +12,7 @@ Import TracePred.
 
 (********************************* conn_write **********************************)
 
-Definition conn_write_spec (T : Type) :=
+Definition conn_write_spec (T : Type) (buffer_size : Z) :=
   DECLARE _conn_write
   WITH k : connection -> SocketMonad T,
        st : SocketMap,
@@ -22,7 +22,7 @@ Definition conn_write_spec (T : Type) :=
   PRE [ _conn OF (tptr (Tstruct _connection noattr)) ] 
     PROP ( consistent_world st;
            conn_state conn = SENDING ;
-           consistent_state st (conn, fd) )
+           consistent_state buffer_size st (conn, fd) )
     LOCAL ( temp _conn conn_ptr )
     SEP ( SOCKAPI st ;
             TRACE (r <- conn_write conn ;; k r) ;
@@ -39,4 +39,3 @@ Definition conn_write_spec (T : Type) :=
     SEP ( SOCKAPI st' ; TRACE (k result) ;
             list_cell LS Tsh (rep_connection result fd) conn_ptr
         ).
-

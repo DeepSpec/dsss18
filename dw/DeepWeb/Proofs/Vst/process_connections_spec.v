@@ -10,7 +10,7 @@ Import TracePred.
 
 Require Import DeepWeb.Spec.ITreeSpec.
 
-Definition process_connections_spec :=
+Definition process_connections_spec (buffer_size : Z) :=
   DECLARE _process_connections
   WITH k : SocketMonad unit,
        st : SocketMap,
@@ -31,7 +31,8 @@ Definition process_connections_spec :=
       ]
   PROP (
          consistent_world st;
-         Forall (fun '(conn, fd, ptr) => consistent_state st (conn, fd))
+         Forall (fun '(conn, fd, ptr) =>
+                   consistent_state buffer_size st (conn, fd))
                 connections;
 
          let waiting_to_recv :=
@@ -66,7 +67,7 @@ Definition process_connections_spec :=
           temp _last_msg_store msg_store_ptr
         )
   SEP ( SOCKAPI st ;
-        TRACE (r <- select_loop server_addr
+        TRACE (r <- select_loop server_addr buffer_size
                  (true, (map proj_conn connections, last_msg))
                  ;; k);
         
@@ -84,7 +85,8 @@ Definition process_connections_spec :=
     EX last_msg' : string,
     EX st' : SocketMap,                                     
     PROP ( consistent_world st';
-           Forall (fun '(conn, fd, ptr) => consistent_state st' (conn, fd))
+           Forall (fun '(conn, fd, ptr) =>
+                     consistent_state buffer_size st' (conn, fd))
                   connections';
              
            lookup_socket st' server_fd = ListeningSocket server_addr;
@@ -93,7 +95,6 @@ Definition process_connections_spec :=
            map proj_ptr connections' = map proj_ptr connections;
            
            (* Retain this to preserve uniqueness *)
-           (* TODO: change to readable sh *)
            map proj_fd connections' = map proj_fd connections;
            
            (* May be useful later *)
@@ -110,8 +111,8 @@ Definition process_connections_spec :=
          )
     LOCAL ( )
     SEP ( SOCKAPI st' ;
-          TRACE (r <- select_loop server_addr
-                 (true, (map proj_conn connections', last_msg'))
+          TRACE (r <- select_loop server_addr buffer_size
+                   (true, (map proj_conn connections', last_msg'))
                  ;; k);
           
           lseg LS Tsh Tsh

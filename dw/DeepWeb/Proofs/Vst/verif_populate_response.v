@@ -2,7 +2,7 @@ Require Import String.
 
 From DeepWeb.Proofs.Vst
      Require Import VstInit VstLib VerifHelpers Connection Store
-     populate_response_spec SocketSpecs ServerSpecs LibrarySpecs.
+     populate_response_spec SocketSpecs Gprog LibrarySpecs.
 
 Require Import DeepWeb.Spec.ITreeSpec.
 
@@ -31,36 +31,30 @@ Proof.
   
   unfold rep_connection.
   rewrite connection_list_cell_eq; [| assumption].
-  erewrite field_at_rep_store_eq; [| reflexivity ].
+
+  focus_SEP 1.
   Intros.
-  forward.
-  forward.
-  forward.
-  simpl.
-
-  freeze [0; 5; 6] FR1.
-  simpl.
-
-  forward.
-  forward.
-  simpl.
+  unfold_field_at 1%nat.
   
-  freeze [0; 1; 2; 3; 5] FR2.
+  forward.
+  forward.
+  forward.
+  forward.
+  forward.
   simpl.
 
-  (* Split: lower to [data_at], introduce bounds, rewrite split *)
+  freeze [0; 2; 3; 4; 5; 7; 8] FR1; simpl.
+
+  focus_SEP 1.
+  rewrite field_at_data_at; simpl; unfold tarray; saturate_rep_msg_bounds.
+  split_data_at (Zlength (val_of_string last_msg)).
+
   focus_SEP 2.
   rewrite field_at_data_at; simpl; unfold tarray; saturate_rep_msg_bounds.
   split_data_at (Zlength (val_of_string last_msg)).
-  
-  focus_SEP 2.
-  rewrite field_at_data_at; simpl; unfold tarray; saturate_rep_msg_bounds.
-  split_data_at (Zlength (val_of_string last_msg)).
-  
-  Intros.
-  simpl.
 
-  (* memcpy *)
+  Intros.
+
   rem_ptr dst_ptr.
   focus_SEP 2.
   rem_ptr src_ptr.
@@ -90,15 +84,14 @@ Proof.
   focus_SEP 1.
   data_at_to_field_at.
 
-  thaw FR2.
+  thaw FR1.
   simpl.
 
   forward.
   forward.
   forward.
 
-  freeze [0; 2; 3; 5; 6] FR2.
-  simpl.
+  freeze [0; 2; 3; 4; 6; 7; 8] FR1; simpl.
   
   (* Split *)
   focus_SEP 2.
@@ -143,12 +136,9 @@ Proof.
   set (conn' :=
          upd_conn_response_bytes_sent
            (upd_conn_response conn last_msg) 0).
-  Exists conn'.
-  Exists (conn_request conn).
+  Exists conn' (conn_request conn).
+  thaw FR1; simpl.
 
-  thaw FR2; thaw FR1.
-
-  simpl.
   erewrite field_at_rep_store_eq; [| reflexivity].
   unfold rep_connection.
   rewrite connection_list_cell_eq; [| assumption].
@@ -159,8 +149,9 @@ Proof.
   - repeat rewrite field_at_data_at.
     cancel.
     rewrite field_address_offset.
+    
     2: {
-      rewrite field_address_offset; auto.
+      rewrite field_address_offset by assumption.
       pose proof (field_compatible_nested_field
                     (Tstruct _connection noattr)
                     [StructField _response_buffer] conn_ptr).

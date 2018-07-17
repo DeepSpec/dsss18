@@ -12,7 +12,7 @@ Import TracePred.
 
 (******************************** select_loop *********************************)
 
-Definition select_loop_spec (T : Type) :=
+Definition select_loop_spec (T : Type) (buffer_size : Z) :=
   DECLARE _select_loop
   WITH k : SocketMonad unit,
        st : SocketMap,
@@ -29,7 +29,8 @@ Definition select_loop_spec (T : Type) :=
           temp _last_msg_store msg_store_ptr 
         )
   SEP ( SOCKAPI st ;
-        TRACE ( r <- select_loop server_addr (true, ([], "")) ;; k ) ;
+        TRACE ( r <- select_loop
+                  server_addr buffer_size (true, ([], "")) ;; k ) ;
         field_at Tsh (Tstruct _store noattr) [] (rep_store "")
                  msg_store_ptr  
       )

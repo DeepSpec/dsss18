@@ -9,6 +9,7 @@ Generalizable All Variables.
 Require Import List.
 Import ListNotations.
 Require Import String.
+Require Fin.
 
 From QuickChick Require Show.
 
@@ -195,6 +196,102 @@ Definition select {X} : list X -> list (X * list X) :=
   select' [].
 
 End NonDeterminism.
+
+(* Another more flexible and informative variant of [nondetE]
+   (that also incorporates something like [failureE]). *)
+Module NonDeterminismBis.
+  Import List.
+
+  Inductive nondetE : Type -> Type :=
+  | Or : forall (n : nat), string -> nondetE (Fin.t n).
+
+  Arguments Or n reason : clear implicits.
+
+  Definition fail {E A} `{nondetE -< E}
+             (reason : string) : M E A :=
+    Vis (convert (Or 0 reason))
+        (fun f => match f : Fin.t 0 with end).
+
+  Fixpoint ix {A} (xs : list A) (i : Fin.t (List.length xs)) : A.
+  Proof.
+    destruct xs as [| x xs']; inversion i as [ | ? i' ].
+    - apply x.
+    - apply (ix _ xs' i').
+  Defined.
+
+  (* Choose one element in a list. *)
+  Definition choose {E A} `{nondetE -< E}
+             (reason : string) (xs : list A) : M E A :=
+    Vis (convert (Or (length xs) reason)) (fun i => Ret (ix xs i)).
+
+  Definition noFinZ {A} (m : Fin.t O) : A := match m with end.
+
+  (* Extend a continuation indexed by [Fin.t] with a new case. *)
+  Definition or_ {E A n} (f1 : M E A) (f2 : Fin.t n -> M E A)
+             (m : Fin.t (S n)) : M E A :=
+    match m in Fin.t n0 return
+          match n0 with
+          | O => False : Type
+          | S n0 => (Fin.t n0 -> Fin.t n)
+          end -> _ with
+    | Fin.F1 => fun _ => f1
+    | Fin.FS m => fun id => f2 (id m)
+    end (fun x => x).
+
+  Definition VisOr {E A n} `{nondetE -< E}
+             (reason : string) (k : Fin.t n -> M E A) :
+    M E A := Vis (convert (Or n reason)) k.
+
+  Notation "'disj' reason ( f1 | .. | fn )" :=
+    (VisOr reason (or_ f1 .. (or_ fn noFinZ) ..))
+  (at level 0, reason at next level) : nondet_scope.
+
+  Delimit Scope nondet_scope with nondet.
+  Open Scope nondet_scope.
+
+  Example ex_disj : M nondetE nat :=
+    (disj "test" ( ret 0 | ret 1 | ret 2 )).
+
+  (* Remove an element from a list, also returning the remaining
+     elements. *)
+
+  (* Helper for [picks]. *)
+  Fixpoint picks' {A} (xs1 xs2 : list A) : list (A * list A) :=
+    match xs2 with
+    | [] => []
+    | x2 :: xs2' =>
+      (x2, rev_append xs1 xs2') :: picks' (x2 :: xs1) xs2'
+    end.
+
+  (* List of ways to pick an element out of a list. *)
+  Definition picks {A} (xs : list A) : list (A * list A) :=
+    picks' [] xs.
+
+  (* [picks] embedded in a tree. *)
+  Definition pick_one {E A} `{nondetE -< E}
+             (reason : string) (xs : list A) : M E (A * list A) :=
+    choose reason (picks xs).
+
+  (* A few helpers for [Fin.t]. *)
+
+  (* A list of [Fin.t]. *)
+  Definition every_fin (m : nat) : list (Fin.t m) :=
+    (fix every_fin m n :=
+       match n return (Fin.t n -> Fin.t m) -> list (Fin.t m) with
+       | O => fun _ => []
+       | S n' => fun k =>
+         k (@Fin.F1 n') :: every_fin m n' (fun i => k (Fin.FS i))
+       end) m m (fun i => i).
+
+  (* Convert a [nat] to a [Fin.t] without too much care. *)
+  Fixpoint to_fin {n : nat} (m : nat) : option (Fin.t n) :=
+    match n, m return option (Fin.t n) with
+    | O, _ => None
+    | S n, O => Some Fin.F1
+    | S n, S m => option_map Fin.FS (to_fin m)
+    end.
+
+End NonDeterminismBis.
 
 Section Reader.
 

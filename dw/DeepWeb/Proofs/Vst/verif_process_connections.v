@@ -2,7 +2,7 @@ Require Import String.
 
 From DeepWeb.Proofs.Vst
      Require Import VstInit VstLib VerifHelpers
-     SocketSpecs SocketTactics ServerSpecs MonadExports
+     SocketSpecs SocketTactics Gprog MonadExports
      Connection Store process_connections_spec AppLogic AppLib.
 
 Require Import DeepWeb.Spec.ITreeSpec.
@@ -38,8 +38,10 @@ Definition process_loop_prop_invar
            (prefix suffix : list (connection * sockfd * val))
            (st : SocketMap) :=
   [consistent_world st;
-     Forall (fun '(conn, fd, ptr) => consistent_state st (conn, fd)) prefix;
-     Forall (fun '(conn, fd, ptr) => consistent_state st (conn, fd)) suffix;
+     Forall (fun '(conn, fd, ptr) =>
+               consistent_state BUFFER_SIZE st (conn, fd)) prefix;
+     Forall (fun '(conn, fd, ptr) =>
+               consistent_state BUFFER_SIZE st (conn, fd)) suffix;
      exists old_prefix,
      (connections = old_prefix ++ suffix /\
       map proj_fd old_prefix = map proj_fd prefix /\
@@ -75,6 +77,7 @@ Definition process_loop_sep_invar
     [SOCKAPI st ;
      TRACE ( (select_loop
                 server_addr
+                BUFFER_SIZE
                 (true, (map proj_conn (prefix ++ suffix), last_msg)))
                ;; k );
      FD_SET Tsh read_set read_set_ptr;
@@ -151,9 +154,9 @@ Definition process_loop_postcond
 
 
 Lemma body_process_connections:
-  semax_body Vprog Gprog f_process_connections process_connections_spec.
+  semax_body Vprog Gprog f_process_connections
+             (process_connections_spec BUFFER_SIZE).
 Proof.
-
   start_function.
   
   forward.
@@ -241,7 +244,7 @@ Proof.
                                   ptr)
       by entailer!.
 
-    assert (consistent_state st0 (conn, fd)) as Hconsistent.
+    assert (consistent_state BUFFER_SIZE st0 (conn, fd)) as Hconsistent.
     { 
       match goal with
       | [H: Forall _  ((conn, fd, ptr) :: rest) |- _] =>
@@ -349,6 +352,7 @@ Proof.
     set (tr conn last_msg :=
            select_loop
              server_addr
+             BUFFER_SIZE
              (true, (map proj_conn
                          (prefix ++ conn :: rest), last_msg))
              ;; k).
@@ -374,9 +378,11 @@ Proof.
        EX st' : SocketMap,
        PROP ( 
            consistent_world st';
-           consistent_state st' (conn', fd);
-           Forall (fun '(conn, fd, _) => consistent_state st' (conn, fd)) prefix;
-           Forall (fun '(conn, fd, _) => consistent_state st' (conn, fd)) suffix;
+           consistent_state BUFFER_SIZE st' (conn', fd);
+           Forall (fun '(conn, fd, _) =>
+                     consistent_state BUFFER_SIZE st' (conn, fd)) prefix;
+           Forall (fun '(conn, fd, _) =>
+                     consistent_state BUFFER_SIZE st' (conn, fd)) suffix;
            lookup_socket st' server_fd = ListeningSocket server_addr;
            conn_id conn = conn_id conn';
            NoDup
@@ -578,9 +584,9 @@ Proof.
 
       assert
         (Forall (fun '(conn0, fd0, _) =>
-                   consistent_state st' (conn0, fd0)) prefix
+                   consistent_state BUFFER_SIZE st' (conn0, fd0)) prefix
          /\ Forall (fun '(conn0, fd0, _) =>
-                     consistent_state st' (conn0, fd0)) rest)
+                     consistent_state BUFFER_SIZE st' (conn0, fd0)) rest)
         as frame_consistent.
       {
 

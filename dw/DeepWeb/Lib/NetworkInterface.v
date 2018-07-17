@@ -29,7 +29,7 @@ Inductive networkE : Type -> Type :=
 | Recv : connection_id -> networkE (option string)
 | Send : connection_id -> string -> networkE unit.
 (* Note: Recv returns [None] if connection is empty AND closed.
-   It blocks if connection is empty. *)
+   It blocks if connection is empty and open. *)
   
 Definition listen `{networkE -< E}
   : endpoint_id -> M E unit := embed Listen.
@@ -61,5 +61,3 @@ Definition send_any_prefix (conn : connection_id) (msg : string)
   len <- choose (range (String.length msg + 1)) ;;
   send conn (substring 0 len msg) ;;
   ret len.
-
-  

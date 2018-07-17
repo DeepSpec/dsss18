@@ -105,7 +105,7 @@ Proof.
 Qed.
 
 Definition accept_connection (addr : endpoint_id):
-  M SocketM (option connection) :=
+  M SocketE (option connection) :=
   or (client_conn <- accept addr ;;
       or (* possible internal malloc failure *)
         (ret (Some {| conn_id := client_conn ;
@@ -132,38 +132,44 @@ Definition has_conn_state {A} `{HasConnectionState A}
   ssrbool.is_left
     (@dec (st = get_conn_state conn) _).
 
-Parameter is_complete : string -> bool.
+Definition is_complete (buffer_size : Z) (msg : string) :=
+  Z.eqb (Z.of_nat (String.length msg)) buffer_size.
 
-Definition conn_read 
-           (conn: connection) (last_full_msg : string)
-  : M SocketM (connection * string) :=
+Definition conn_read (buffer_size : Z)
+           (conn: connection) (last_full_msg : string) 
+  : M SocketE (connection * string) :=
   or (r <- recv (conn_id conn) ;;
       match r with
       | None => ret (upd_conn_state conn DELETED, last_full_msg)
       | Some msg =>
-        let msg' := (conn_request conn ++ msg)%string in
-        if is_complete msg' then
-          let conn' :=  {| conn_id := conn_id conn ;
-                           conn_request := msg';
-                           conn_response := last_full_msg;
-                           conn_response_bytes_sent := 0;
-                           conn_state := SENDING
-                        |}
-          in ret (conn', msg')
+        let msg_len := Z.of_nat (String.length msg) in
+        let req_len := Z.of_nat (String.length (conn_request conn)) in
+        if Z.gtb msg_len (BUFFER_SIZE - req_len) then
+          fail "should not happen" (* recv only bounded messages *)
         else
-          let conn' := {| conn_id := conn_id conn ;
-                          conn_request := msg';
-                          conn_response := conn_response conn;
-                          conn_response_bytes_sent := conn_response_bytes_sent conn;
-                          conn_state := RECVING
-                       |}
-          in ret (conn', last_full_msg)
+          let msg' := (conn_request conn ++ msg)%string in
+          if is_complete buffer_size msg' then
+            let conn' :=  {| conn_id := conn_id conn ;
+                             conn_request := msg';
+                             conn_response := last_full_msg;
+                             conn_response_bytes_sent := 0;
+                             conn_state := SENDING
+                          |}
+            in ret (conn', msg')
+          else
+            let conn' := {| conn_id := conn_id conn ;
+                            conn_request := msg';
+                            conn_response := conn_response conn;
+                            conn_response_bytes_sent := conn_response_bytes_sent conn;
+                            conn_state := RECVING
+                         |}
+            in ret (conn', last_full_msg)
       end
      )
      (ret (conn, last_full_msg)).
 
 Definition conn_write 
-           (conn: connection) : M SocketM connection :=
+           (conn: connection) : M SocketE connection :=
   or (let num_bytes_sent := Z.to_nat (conn_response_bytes_sent conn) in
       r <- send_any_prefix
             (conn_id conn)
@@ -200,11 +206,11 @@ Definition replace_when {A : Type} (f : A -> bool) (new : A) (l : list A) :=
     )
     [] l.
 
-Definition process_conn
+Definition process_conn (buffer_size : Z)
            (conn: connection) (last_full_msg : string)
-  : M SocketM (connection * string) :=
+  : M SocketE (connection * string) :=
   match conn_state conn with
-  | RECVING => conn_read conn last_full_msg
+  | RECVING => conn_read  buffer_size conn last_full_msg
   | SENDING =>
     conn' <- conn_write conn ;;
     ret (conn', last_full_msg)
@@ -213,8 +219,9 @@ Definition process_conn
 
 Definition select_loop_body
            (server_addr : endpoint_id)
+           (buffer_size : Z)
            (server_st : list connection * string)
-  : M SocketM (bool * (list connection * string)) :=
+  : M SocketE (bool * (list connection * string)) :=
   let '(connections, last_full_msg) := server_st in
   or
     (or
@@ -227,7 +234,7 @@ Definition select_loop_body
        (let waiting_to_recv := filter (has_conn_state RECVING) connections in
         let waiting_to_send := filter (has_conn_state SENDING) connections in
         conn <- choose (waiting_to_recv ++ waiting_to_send) ;;
-        new_st <- process_conn conn last_full_msg ;;
+        new_st <- process_conn buffer_size conn last_full_msg ;;
         let '(conn', last_full_msg') := new_st in
         let connections' :=
             replace_when
@@ -245,8 +252,9 @@ Definition select_loop_body
     )
     (ret (false, (connections, last_full_msg))).
 
-Definition select_loop (server_addr : endpoint_id)
+Definition select_loop (server_addr : endpoint_id) (buffer_size : Z)
   : (bool * (list connection * string))
-    -> M SocketM (bool * (list connection * string)) :=
+    -> M SocketE (bool * (list connection * string)) :=
   while fst
-        (fun '(_, server_st) => select_loop_body server_addr server_st).
+        (fun '(_, server_st) =>
+           select_loop_body server_addr buffer_size server_st).

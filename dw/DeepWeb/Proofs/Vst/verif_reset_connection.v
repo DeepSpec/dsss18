@@ -2,7 +2,7 @@ Require Import String.
 
 From DeepWeb.Proofs.Vst
      Require Import VstInit VstLib VerifHelpers Connection
-     reset_connection_spec ServerSpecs.
+     reset_connection_spec Gprog.
 
 Require Import DeepWeb.Spec.ITreeSpec.
 

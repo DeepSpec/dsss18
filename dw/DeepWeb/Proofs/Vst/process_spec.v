@@ -14,7 +14,7 @@ Import TracePred.
 
 (********************************* process **********************************)
 
-Definition process_spec (T : Type) :=
+Definition process_spec (T : Type) (buffer_size : Z) :=
   DECLARE _process
   WITH k : connection * string -> SocketMonad T,
        st : SocketMap,
@@ -27,11 +27,11 @@ Definition process_spec (T : Type) :=
         _last_msg_store OF tptr (Tstruct _store noattr)
       ] 
     PROP ( consistent_world st;
-           consistent_state st (conn, fd) )
+           consistent_state buffer_size st (conn, fd) )
     LOCAL ( temp _conn conn_ptr;
             temp _last_msg_store msg_store_ptr )
     SEP ( SOCKAPI st ;
-            TRACE (r <- process_conn conn last_msg ;; k r) ;
+            TRACE (r <- process_conn buffer_size conn last_msg ;; k r) ;
             list_cell LS Tsh (rep_connection conn fd) conn_ptr;
             field_at Tsh (Tstruct _store noattr) []
                      (rep_store last_msg) msg_store_ptr
@@ -43,7 +43,8 @@ Definition process_spec (T : Type) :=
     EX r : Z, 
     PROP ( r = YES ;
            conn_state conn = RECVING ->
-             recv_step (conn, fd, st, last_msg) (conn', fd, st', last_msg');
+           recv_step buffer_size
+                     (conn, fd, st, last_msg) (conn', fd, st', last_msg');
            conn_state conn = SENDING ->
            send_step (conn, fd, st) (conn', fd, st') /\ last_msg' = last_msg;
            consistent_world st'

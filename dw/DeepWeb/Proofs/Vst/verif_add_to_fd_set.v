@@ -2,7 +2,7 @@ Require Import String.
 
 From DeepWeb.Proofs.Vst
      Require Import VstInit VstLib VerifHelpers
-     add_to_fd_set_spec SocketSpecs SocketTactics ServerSpecs.
+     add_to_fd_set_spec SocketSpecs SocketTactics Gprog.
 
 Import FDSetPred.
 Import SockAPIPred.

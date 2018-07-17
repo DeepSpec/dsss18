@@ -17,7 +17,8 @@ Set Bullet Behavior "Strict Subproofs".
 
 (***************************** Application Logic ******************************)
 
-Inductive recv_step:
+
+Inductive recv_step (buffer_size : Z):
   (connection * sockfd * SocketMap * string) ->
   (connection * sockfd * SocketMap * string) -> Prop :=
 | Conn_RECVING_RECVING:
@@ -33,7 +34,8 @@ Inductive recv_step:
                  conn_state := RECVING
               |} ->
       lookup_socket sock_st fd = ConnectedSocket (conn_id conn) ->
-      recv_step (conn, fd, sock_st, msg_in_store)
+      recv_step buffer_size
+                (conn, fd, sock_st, msg_in_store)
                 (conn', fd, sock_st, msg_in_store)
 | Conn_RECVING_SENDING:
     forall (conn : connection) (fd : sockfd) (sock_st : SocketMap)
@@ -42,7 +44,7 @@ Inductive recv_step:
       (conn' : connection),
       let full_request := (conn_request conn ++ recved_msg)%string in
       conn_state conn = RECVING ->
-      is_complete full_request = true ->
+      is_complete buffer_size full_request = true ->
       conn' = {| conn_id := conn_id conn;
                  conn_request := full_request;
                  conn_response := msg_in_store;
@@ -50,7 +52,8 @@ Inductive recv_step:
                  conn_state := SENDING
               |} ->
       lookup_socket sock_st fd = ConnectedSocket (conn_id conn) ->
-      recv_step (conn, fd, sock_st, msg_in_store)
+      recv_step buffer_size
+                (conn, fd, sock_st, msg_in_store)
                 (conn', fd, sock_st, full_request)
 | Conn_RECVING_EOF:
     forall (conn : connection) (fd : sockfd) (sock_st : SocketMap)
@@ -65,13 +68,16 @@ Inductive recv_step:
               |} ->
       lookup_socket sock_st fd = ConnectedSocket (conn_id conn) ->
       sock_st' = update_socket_state sock_st fd OpenedSocket ->
-      recv_step (conn, fd, sock_st, msg_in_store)
+      recv_step buffer_size
+                (conn, fd, sock_st, msg_in_store)
                 (conn', fd, sock_st', msg_in_store)
 | Conn_RECVING_Id:
     forall (conn : connection) (fd : sockfd) (sock_st : SocketMap)
       (msg_in_store : string), 
-      recv_step (conn, fd, sock_st, msg_in_store)
+      recv_step buffer_size
+                (conn, fd, sock_st, msg_in_store)
                 (conn, fd, sock_st, msg_in_store).
+
 
 Inductive send_step:
   (connection * sockfd * SocketMap) ->
@@ -122,7 +128,9 @@ Inductive send_step:
        sock_st' = update_socket_state sock_st fd OpenedSocket) ->
       send_step (conn, fd, sock_st) (conn', fd, sock_st').
 
-Inductive consistent_state: SocketMap -> (connection * sockfd) -> Prop :=
+
+Inductive consistent_state (buffer_size : Z)
+  : SocketMap -> (connection * sockfd) -> Prop :=
 | Consistent_RECVING:
     forall (client_fd : sockfd) (client_id : connection_id) (request : string)
       (conn: connection) (sock_st : SocketMap),
@@ -134,7 +142,7 @@ Inductive consistent_state: SocketMap -> (connection * sockfd) -> Prop :=
                 conn_state := RECVING
              |} ->
       lookup_socket sock_st client_fd = ConnectedSocket client_id ->
-      consistent_state sock_st (conn, client_fd)
+      consistent_state buffer_size sock_st (conn, client_fd)
 | Consistent_SENDING:
     forall (client_fd : sockfd) (client_id : connection_id)
       (request : string) (response: string) (num_bytes_sent : Z)
@@ -147,9 +155,9 @@ Inductive consistent_state: SocketMap -> (connection * sockfd) -> Prop :=
                 conn_state := SENDING
              |} ->
       lookup_socket sock_st client_fd = ConnectedSocket client_id ->
-      is_complete request = true ->
+      is_complete buffer_size request = true ->
       0 <= num_bytes_sent <= Zlength (val_of_string response) ->      
-      consistent_state sock_st (conn, client_fd)
+      consistent_state buffer_size sock_st (conn, client_fd)
 | Consistent_DELETED:
     forall (client_fd : sockfd) (client_id : connection_id)
       (request : string) (response : string)
@@ -165,13 +173,13 @@ Inductive consistent_state: SocketMap -> (connection * sockfd) -> Prop :=
       (lookup_socket sock_st client_fd = OpenedSocket \/
        lookup_socket sock_st client_fd = ConnectedSocket client_id) ->
       0 <= num_bytes_sent <= Zlength (val_of_string response) ->
-      consistent_state sock_st (conn, client_fd).
+      consistent_state buffer_size sock_st (conn, client_fd).
 
 
 Section Consistent_Facts.
   Lemma consistent_connection_not_closed:
-    forall (st : SocketMap) (conn : connection) (fd: sockfd), 
-      consistent_state st (conn, fd) ->
+    forall (buffer_size : Z) (st : SocketMap) (conn : connection) (fd: sockfd), 
+      consistent_state buffer_size st (conn, fd) ->
       lookup_socket st fd <> ClosedSocket.
   Proof.
     intros.
@@ -188,8 +196,8 @@ Section Consistent_Facts.
   Qed.
 
   Lemma consistent_connection_not_listening:
-    forall (st : SocketMap) (conn : connection) (fd : sockfd), 
-      consistent_state st (conn, fd) ->
+    forall (buffer_size : Z) (st : SocketMap) (conn : connection) (fd : sockfd), 
+      consistent_state buffer_size st (conn, fd) ->
       (forall addr, lookup_socket st fd <> ListeningSocket addr).
   Proof.
     intros.
@@ -206,19 +214,19 @@ Section Consistent_Facts.
   Qed.
 
   Lemma consistent_RECVING_SENDING_connected:
-    forall (st : SocketMap) (conn : connection) (fd : sockfd), 
-      consistent_state st (conn, fd) ->
+    forall (buffer_size : Z) (st : SocketMap) (conn : connection) (fd : sockfd), 
+      consistent_state buffer_size st (conn, fd) ->
       conn_state conn = RECVING \/ conn_state conn = SENDING -> 
       lookup_socket st fd = ConnectedSocket (conn_id conn).
   Proof.
-    intros st conn fd H Hconn_state.
+    intros ? ? ? ? H Hconn_state.
     inversion H; subst; simpl in *; auto.
     destruct Hconn_state; discriminate.
   Qed.    
 
   Lemma consistent_connection_fd_bound:
-    forall (st : SocketMap) (conn : connection) (fd : sockfd), 
-      consistent_state st (conn, fd) ->
+    forall (buffer_size : Z) (st : SocketMap) (conn : connection) (fd : sockfd), 
+      consistent_state buffer_size st (conn, fd) ->
       0 <= descriptor fd < FD_SETSIZE.
   Proof.
     intros.
@@ -230,13 +238,13 @@ Section Consistent_Facts.
   Qed.
 
   Lemma consistent_connection_response_bytes_sent_bound:
-    forall (st : SocketMap) (conn : connection) (fd : sockfd), 
-      consistent_state st (conn, fd) ->
+    forall (buffer_size : Z) (st : SocketMap) (conn : connection) (fd : sockfd), 
+      consistent_state buffer_size st (conn, fd) ->
       conn_state conn = SENDING ->
       0 <= conn_response_bytes_sent conn
       <= Zlength (val_of_string (conn_response conn)).
   Proof.
-    intros st conn fd Hconsistent Hsend.
+    intros ? ? conn ? Hconsistent ?.
     inversion Hconsistent; subst conn; simpl; split;
       try omega; [apply Zlength_nonneg |..].
   Qed.
@@ -246,18 +254,19 @@ End Consistent_Facts.
 Section Preservation.
   
   Lemma update_preserves_frame_consistency:
-    forall (st1 st2 : SocketMap)
+    forall (buffer_size : Z) (st1 st2 : SocketMap)
       (fd : sockfd)
       (new_state : socket_status)
       (connections : list (connection * sockfd * val)),
       ~In (descriptor fd) (map descriptor (map proj_fd connections)) ->
       st2 = update_socket_state st1 fd new_state ->
       Forall (fun '(conn, fd, _) =>
-                consistent_state st1 (conn, fd)) connections ->
+                consistent_state buffer_size st1 (conn, fd)) connections ->
       Forall (fun '(conn, fd, _) =>
-                consistent_state st2 (conn, fd)) connections.
+                consistent_state buffer_size st2 (conn, fd)) connections.
   Proof.
-    intros st1 st2 fd new_state connections not_in st2_eq all_consistent.
+    intros buffer_size
+           st1 st2 fd new_state connections not_in st2_eq all_consistent.
     rewrite Forall_forall in *.
     intros [[conn conn_fd] ptr] conn_in.
     assert (descriptor fd <> descriptor conn_fd) as Hneq.
@@ -288,9 +297,10 @@ End Preservation.
 Section Step_Preservation.
   
   Lemma recv_step_preserves_descriptors:
-    forall (conn conn' : connection) (fd fd' : sockfd)
+    forall (buffer_size : Z) (conn conn' : connection) (fd fd' : sockfd)
       (st st' : SocketMap) (msg_in_store msg_in_store' : string),
-      recv_step (conn, fd, st, msg_in_store)
+      recv_step buffer_size
+                (conn, fd, st, msg_in_store)
                 (conn', fd', st', msg_in_store') ->
       fd = fd'.
   Proof.
@@ -321,13 +331,14 @@ Section Step_Preservation.
   Qed.
 
   Lemma recv_step_preserves_consistency:
-    forall conn fd st conn' fd' st' msg_in_store msg_in_store',
-      recv_step (conn, fd, st, msg_in_store)
+    forall buffer_size conn fd st conn' fd' st' msg_in_store msg_in_store',
+      recv_step buffer_size
+                (conn, fd, st, msg_in_store)
                 (conn', fd', st', msg_in_store') ->
-      consistent_state st (conn, fd) ->
-      consistent_state st' (conn', fd').
+      consistent_state buffer_size st (conn, fd) ->
+      consistent_state buffer_size st' (conn', fd').
   Proof.
-    intros conn fd st conn' fd' st' msg_in_store msg_in_store'
+    intros ? conn fd st conn' fd' st' msg_in_store msg_in_store'
            Hrecv Hconsistent.
     inversion Hrecv.
     - (* Conn_RECVING_RECVING *)
@@ -371,12 +382,12 @@ Section Step_Preservation.
   Qed.    
 
   Lemma send_step_preserves_consistency:
-    forall conn fd st conn' fd' st',
+    forall buffer_size conn fd st conn' fd' st',
       send_step (conn, fd, st) (conn', fd', st') ->
-      consistent_state st (conn, fd) ->
-      consistent_state st' (conn', fd').
+      consistent_state buffer_size st (conn, fd) ->
+      consistent_state buffer_size st' (conn', fd').
   Proof.
-    intros conn fd st conn' fd' st' Hsend Hconsistent.
+    intros ? conn fd st conn' fd' st' Hsend Hconsistent.
     inversion Hsend.
     - (* Conn_SENDING_SENDING *)
       inversion Hconsistent.
@@ -422,30 +433,35 @@ Section Step_Preservation.
   Qed.
   
   Lemma recv_step_preserves_frame_consistency:
-    forall (st1 st2 : SocketMap)
+    forall (buffer_size : Z) (st1 st2 : SocketMap)
       (prefix suffix : list (connection * sockfd * val))
       (conn1 conn2 : connection)
       (fd : sockfd) (ptr : val)
       (msg_in_store1 msg_in_store2 : string),
-      Forall (fun '(conn, fd, ptr) => consistent_state st1 (conn, fd))
+      Forall (fun '(conn, fd, ptr) =>
+                consistent_state buffer_size st1 (conn, fd))
              prefix ->
-      Forall (fun '(conn, fd, ptr) => consistent_state st1 (conn, fd))
+      Forall (fun '(conn, fd, ptr) =>
+                consistent_state buffer_size st1 (conn, fd))
              suffix ->
       NoDup
         (map descriptor
              (map proj_fd (prefix ++ (conn1, fd, ptr) :: suffix))) ->
-      recv_step (conn1, fd, st1, msg_in_store1)
+      recv_step buffer_size
+                (conn1, fd, st1, msg_in_store1)
                 (conn2, fd, st2, msg_in_store2) ->
-      Forall (fun '(conn, fd, ptr) => consistent_state st2 (conn, fd))
+      Forall (fun '(conn, fd, ptr) =>
+                consistent_state buffer_size st2 (conn, fd))
              prefix /\
-      Forall (fun '(conn, fd, ptr) => consistent_state st2 (conn, fd))
+      Forall (fun '(conn, fd, ptr) =>
+                consistent_state buffer_size st2 (conn, fd))
              suffix.
   Proof.
-    intros st1 st2 prefix suffix conn1 conn2 fd ptr
+    intros ? st1 st2 prefix suffix conn1 conn2 fd ptr
            msg_in_store1 msg_in_store2
            prefix_consistent suffix_consistent
            HNoDup Hstep.
-    pose proof (recv_step_preserves_descriptors _ _ _ _ _ _ _ _ Hstep).
+    pose proof (recv_step_preserves_descriptors _ _ _ _ _ _ _ _ _ Hstep).
     repeat rewrite map_app in HNoDup.
     simpl in HNoDup.
     apply NoDup_remove_2 in HNoDup.
@@ -470,23 +486,27 @@ Section Step_Preservation.
   Qed.
 
   Lemma send_step_preserves_frame_consistency:
-    forall (st1 st2 : SocketMap)
+    forall (buffer_size : Z) (st1 st2 : SocketMap)
       (prefix suffix : list (connection * sockfd * val))
       (conn1 conn2 : connection)
       (fd : sockfd) (ptr : val),
-      Forall (fun '(conn, fd, ptr) => consistent_state st1 (conn, fd))
+      Forall (fun '(conn, fd, ptr) =>
+                consistent_state buffer_size st1 (conn, fd))
              prefix ->
-      Forall (fun '(conn, fd, ptr) => consistent_state st1 (conn, fd))
+      Forall (fun '(conn, fd, ptr) =>
+                consistent_state buffer_size st1 (conn, fd))
              suffix ->
       NoDup
         (map descriptor (map proj_fd (prefix ++ (conn1, fd, ptr) :: suffix))) ->
       send_step (conn1, fd, st1) (conn2, fd, st2) ->
-      Forall (fun '(conn, fd, ptr) => consistent_state st2 (conn, fd))
+      Forall (fun '(conn, fd, ptr) =>
+                consistent_state buffer_size st2 (conn, fd))
              prefix /\
-      Forall (fun '(conn, fd, ptr) => consistent_state st2 (conn, fd))
+      Forall (fun '(conn, fd, ptr) =>
+                consistent_state buffer_size st2 (conn, fd))
              suffix.
   Proof.
-    intros st1 st2 prefix suffix conn1 conn2 fd ptr
+    intros ? st1 st2 prefix suffix conn1 conn2 fd ptr
            prefix_consistent suffix_consistent
            HNoDup Hstep.
     pose proof (send_step_preserves_descriptors _ _ _ _ _ _ Hstep).
@@ -522,13 +542,14 @@ Section Step_Preservation.
   Qed.
 
   Lemma recv_step_preserves_frame_lookup:
-    forall conn conn' fd st st' msg_in_store msg_in_store' frame_fd,
-      recv_step (conn, fd, st, msg_in_store)
+    forall buffer_size conn conn' fd st st' msg_in_store msg_in_store' frame_fd,
+      recv_step buffer_size
+                (conn, fd, st, msg_in_store)
                 (conn', fd, st', msg_in_store') ->
       descriptor frame_fd <> descriptor fd ->
       lookup_socket st frame_fd = lookup_socket st' frame_fd.
   Proof.
-    intros ? ? ? ? ? ? ? ? Hstep Hdescr.
+    intros ? ? ? ? ? ? ? ? ? Hstep Hdescr.
     inversion Hstep; subst; auto.
     rewrite lookup_update_socket_neq; auto.
   Qed.
@@ -549,9 +570,10 @@ Section Step_Preservation.
   Qed.
  
   Lemma recv_step_preserves_conn_ids:
-    forall (conn conn' : connection) (fd fd' : sockfd)
+    forall (buffer_size : Z) (conn conn' : connection) (fd fd' : sockfd)
       (st st' : SocketMap) (msg_in_store msg_in_store' : string),
-      recv_step (conn, fd, st, msg_in_store)
+      recv_step buffer_size
+                (conn, fd, st, msg_in_store)
                 (conn', fd', st', msg_in_store') ->
       conn_id conn = conn_id conn'.
   Proof.
@@ -585,13 +607,13 @@ End Step_Preservation.
 
 Section New_Descriptor.
   
-  Lemma new_descriptor_is_distinct: forall st connections fd,
+  Lemma new_descriptor_is_distinct: forall buffer_size st connections fd,
     Forall (fun '(conn, fd, _) =>
-              consistent_state st (conn, fd)) connections ->
+              consistent_state buffer_size st (conn, fd)) connections ->
     lookup_socket st fd = ClosedSocket ->
     ~ In (descriptor fd) (map descriptor (map proj_fd connections)).
   Proof.
-    intros st connections fd all_consistent lookup_closed.
+    intros ? st connections fd all_consistent lookup_closed.
     unfold not; intros Hcontra.
     apply list_in_map_inv in Hcontra.
     destruct Hcontra
@@ -610,36 +632,36 @@ Section New_Descriptor.
   Qed.
   
   Lemma new_descriptor_preserves_consistency:
-    forall (st1 st2 : SocketMap)
+    forall (buffer_size : Z) (st1 st2 : SocketMap)
       (client_conn : connection_id)
       (client_fd : sockfd)
       (connections : list (connection * sockfd * val)),
       lookup_socket st1 client_fd = ClosedSocket ->
       st2 = update_socket_state st1 client_fd
                                 (ConnectedSocket client_conn) ->
-      Forall (fun '(conn, fd, _) => consistent_state st1 (conn, fd)) connections ->
-      Forall (fun '(conn, fd, _) => consistent_state st2 (conn, fd)) connections.
+      Forall (fun '(conn, fd, _) =>
+                consistent_state buffer_size st1 (conn, fd)) connections ->
+      Forall (fun '(conn, fd, _) =>
+                consistent_state buffer_size st2 (conn, fd)) connections.
   Proof.
-    intros st1 st2 client_conn client_fd connections
-           Hlookup st2_eq all_consistent.
+    intros.
     eapply update_preserves_frame_consistency; eauto.
     eapply new_descriptor_is_distinct; eauto.
   Qed.
 
   
   Lemma new_descriptor_preserves_NoDup:
-    forall (st : SocketMap) (new_fd : sockfd)
+    forall (buffer_size : Z) (st : SocketMap) (new_fd : sockfd)
       (connections : list (connection * sockfd * val)) (descriptors : list Z),
       lookup_socket st new_fd = ClosedSocket ->
       Forall (fun '(conn, fd, _) => 
-                consistent_state st (conn, fd))
+                consistent_state buffer_size st (conn, fd))
              connections ->
       descriptors = map descriptor (map proj_fd connections) ->
       NoDup descriptors ->
       NoDup ((descriptor new_fd) :: descriptors).
   Proof.
-    intros st new_fd connections descriptors Hlookup
-           all_consistent descriptors_eq HNoDup.
+    intros.
     rewrite NoDup_cons_iff.
     subst.
     split; [eapply new_descriptor_is_distinct; eauto |].

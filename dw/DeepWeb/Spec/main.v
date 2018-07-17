@@ -3,6 +3,7 @@ From compcert Require Import Coqlib Integers Floats AST Ctypes Cop Clight Clight
 Local Open Scope Z_scope.
 
 Definition _fd_set : ident := 15%positive.
+Definition ___arr : ident := 101%positive.
 Definition ___builtin_annot : ident := 34%positive.
 Definition ___builtin_annot_intval : ident := 35%positive.
 Definition ___builtin_bswap : ident := 28%positive.
@@ -55,109 +56,127 @@ Definition ___compcert_va_float64 : ident := 43%positive.
 Definition ___compcert_va_int32 : ident := 41%positive.
 Definition ___compcert_va_int64 : ident := 42%positive.
 Definition ___fds_bits : ident := 14%positive.
-Definition ___stringlit_1 : ident := 149%positive.
-Definition _accept : ident := 87%positive.
-Definition _accept_connection : ident := 123%positive.
-Definition _add_to_fd_set : ident := 127%positive.
-Definition _addr : ident := 147%positive.
-Definition _addr_len : ident := 148%positive.
-Definition _argc : ident := 145%positive.
-Definition _argv : ident := 146%positive.
+Definition ___i : ident := 100%positive.
+Definition ___stringlit_1 : ident := 158%positive.
+Definition ___stringlit_2 : ident := 159%positive.
+Definition _accept : ident := 90%positive.
+Definition _accept_connection : ident := 133%positive.
+Definition _add_to_fd_set : ident := 136%positive.
+Definition _addr : ident := 156%positive.
+Definition _addr_len : ident := 157%positive.
+Definition _argc : ident := 154%positive.
+Definition _argv : ident := 155%positive.
 Definition _atoi : ident := 79%positive.
-Definition _bind : ident := 85%positive.
-Definition _buffer : ident := 99%positive.
-Definition _check_if_complete : ident := 96%positive.
-Definition _close : ident := 83%positive.
-Definition _complete : ident := 110%positive.
-Definition _conn : ident := 101%positive.
-Definition _conn_fd : ident := 107%positive.
-Definition _conn_read : ident := 112%positive.
-Definition _conn_st : ident := 118%positive.
-Definition _conn_write : ident := 117%positive.
+Definition _bind : ident := 86%positive.
+Definition _buffer : ident := 109%positive.
+Definition _buffer_ptr : ident := 94%positive.
+Definition _check_if_complete : ident := 106%positive.
+Definition _close : ident := 84%positive.
+Definition _complete : ident := 120%positive.
+Definition _conn : ident := 111%positive.
+Definition _conn_fd : ident := 117%positive.
+Definition _conn_read : ident := 122%positive.
+Definition _conn_st : ident := 128%positive.
+Definition _conn_write : ident := 127%positive.
 Definition _connection : ident := 23%positive.
-Definition _curr : ident := 130%positive.
-Definition _curr_fd : ident := 132%positive.
-Definition _curr_st : ident := 131%positive.
-Definition _es : ident := 139%positive.
+Definition _curr : ident := 139%positive.
+Definition _curr_fd : ident := 141%positive.
+Definition _curr_st : ident := 140%positive.
+Definition _es : ident := 148%positive.
 Definition _fd : ident := 16%positive.
-Definition _fd_isset_macro : ident := 94%positive.
-Definition _fd_set_macro : ident := 95%positive.
-Definition _fd_zero_macro : ident := 93%positive.
-Definition _head : ident := 121%positive.
-Definition _htons : ident := 89%positive.
+Definition _fd_clr_macro : ident := 104%positive.
+Definition _fd_isset_macro : ident := 103%positive.
+Definition _fd_set_macro : ident := 105%positive.
+Definition _fd_zero_macro : ident := 102%positive.
+Definition _flags : ident := 96%positive.
+Definition _head : ident := 131%positive.
+Definition _htons : ident := 92%positive.
 Definition _in_addr : ident := 5%positive.
-Definition _last_msg : ident := 103%positive.
-Definition _last_msg_len : ident := 104%positive.
-Definition _last_msg_store : ident := 102%positive.
-Definition _listen : ident := 86%positive.
-Definition _main : ident := 150%positive.
+Definition _last_msg : ident := 113%positive.
+Definition _last_msg_len : ident := 114%positive.
+Definition _last_msg_store : ident := 112%positive.
+Definition _len : ident := 95%positive.
+Definition _listen : ident := 89%positive.
+Definition _main : ident := 160%positive.
 Definition _malloc : ident := 80%positive.
-Definition _max_fd : ident := 125%positive.
-Definition _maxsock : ident := 141%positive.
+Definition _max_fd : ident := 134%positive.
+Definition _maxsock : ident := 150%positive.
 Definition _memcpy : ident := 81%positive.
 Definition _memset : ident := 82%positive.
-Definition _monitor_connections : ident := 133%positive.
-Definition _new_connection : ident := 98%positive.
-Definition _new_len : ident := 109%positive.
-Definition _new_store : ident := 100%positive.
+Definition _monitor_connections : ident := 142%positive.
+Definition _new_connection : ident := 108%positive.
+Definition _new_len : ident := 119%positive.
+Definition _new_store : ident := 110%positive.
 Definition _next : ident := 24%positive.
 Definition _num_bytes_sent : ident := 21%positive.
-Definition _num_bytes_to_send : ident := 116%positive.
-Definition _num_ready : ident := 143%positive.
-Definition _old_head : ident := 122%positive.
-Definition _populate_response : ident := 105%positive.
-Definition _process : ident := 119%positive.
-Definition _process_connections : ident := 137%positive.
-Definition _ptr : ident := 108%positive.
-Definition _r : ident := 106%positive.
-Definition _read_socket_ready : ident := 135%positive.
-Definition _recv_msg : ident := 91%positive.
-Definition _request : ident := 113%positive.
+Definition _num_bytes_to_send : ident := 126%positive.
+Definition _num_ready : ident := 152%positive.
+Definition _old_head : ident := 132%positive.
+Definition _populate_response : ident := 115%positive.
+Definition _process : ident := 129%positive.
+Definition _process_connections : ident := 146%positive.
+Definition _ptr : ident := 118%positive.
+Definition _r : ident := 116%positive.
+Definition _read_socket_ready : ident := 144%positive.
+Definition _recv : ident := 88%positive.
+Definition _recv_msg : ident := 97%positive.
+Definition _request : ident := 123%positive.
 Definition _request_buffer : ident := 18%positive.
 Definition _request_len : ident := 17%positive.
-Definition _reset_connection : ident := 115%positive.
-Definition _response : ident := 114%positive.
+Definition _reset_connection : ident := 125%positive.
+Definition _response : ident := 124%positive.
 Definition _response_buffer : ident := 20%positive.
 Definition _response_len : ident := 19%positive.
-Definition _response_ok : ident := 111%positive.
-Definition _result : ident := 97%positive.
-Definition _rs : ident := 128%positive.
+Definition _response_ok : ident := 121%positive.
+Definition _result : ident := 107%positive.
+Definition _rs : ident := 137%positive.
 Definition _s_addr : ident := 4%positive.
 Definition _sa_data : ident := 2%positive.
 Definition _sa_family : ident := 1%positive.
-Definition _select : ident := 90%positive.
-Definition _select_loop : ident := 144%positive.
-Definition _send_msg : ident := 92%positive.
-Definition _server_socket : ident := 138%positive.
-Definition _set : ident := 124%positive.
-Definition _shutdown : ident := 88%positive.
+Definition _select : ident := 93%positive.
+Definition _select_loop : ident := 153%positive.
+Definition _send : ident := 87%positive.
+Definition _send_msg : ident := 98%positive.
+Definition _server_socket : ident := 147%positive.
+Definition _set : ident := 99%positive.
+Definition _shutdown : ident := 91%positive.
 Definition _sin_addr : ident := 8%positive.
 Definition _sin_family : ident := 6%positive.
 Definition _sin_port : ident := 7%positive.
 Definition _sin_zero : ident := 9%positive.
 Definition _sockaddr : ident := 3%positive.
 Definition _sockaddr_in : ident := 10%positive.
-Definition _socket : ident := 84%positive.
-Definition _socket__1 : ident := 120%positive.
-Definition _socket_ready : ident := 134%positive.
+Definition _socket : ident := 85%positive.
+Definition _socket__1 : ident := 130%positive.
+Definition _socket_ready : ident := 143%positive.
 Definition _st : ident := 22%positive.
 Definition _store : ident := 27%positive.
 Definition _stored_msg : ident := 26%positive.
 Definition _stored_msg_len : ident := 25%positive.
-Definition _timeout : ident := 140%positive.
+Definition _strcpy : ident := 83%positive.
+Definition _timeout : ident := 149%positive.
 Definition _timeval : ident := 13%positive.
-Definition _tmp : ident := 126%positive.
-Definition _tmp_head : ident := 142%positive.
+Definition _tmp : ident := 135%positive.
+Definition _tmp_head : ident := 151%positive.
 Definition _tv_sec : ident := 11%positive.
 Definition _tv_usec : ident := 12%positive.
-Definition _write_socket_ready : ident := 136%positive.
-Definition _ws : ident := 129%positive.
-Definition _t'1 : ident := 151%positive.
-Definition _t'2 : ident := 152%positive.
-Definition _t'3 : ident := 153%positive.
-Definition _t'4 : ident := 154%positive.
-Definition _t'5 : ident := 155%positive.
-Definition _t'6 : ident := 156%positive.
+Definition _write_socket_ready : ident := 145%positive.
+Definition _ws : ident := 138%positive.
+Definition _t'1 : ident := 161%positive.
+Definition _t'2 : ident := 162%positive.
+Definition _t'3 : ident := 163%positive.
+Definition _t'4 : ident := 164%positive.
+Definition _t'5 : ident := 165%positive.
+Definition _t'6 : ident := 166%positive.
+
+Definition v___stringlit_2 := {|
+  gvar_info := (tarray tschar 5);
+  gvar_init := (Init_int8 (Int.repr 116) :: Init_int8 (Int.repr 101) ::
+                Init_int8 (Int.repr 115) :: Init_int8 (Int.repr 116) ::
+                Init_int8 (Int.repr 0) :: nil);
+  gvar_readonly := true;
+  gvar_volatile := false
+|}.
 
 Definition v___stringlit_1 := {|
   gvar_info := (tarray tschar 5);
@@ -166,6 +185,199 @@ Definition v___stringlit_1 := {|
                 Init_int8 (Int.repr 0) :: nil);
   gvar_readonly := true;
   gvar_volatile := false
+|}.
+
+Definition f_recv_msg := {|
+  fn_return := tint;
+  fn_callconv := cc_default;
+  fn_params := ((_fd, tint) :: (_buffer_ptr, (tptr tuchar)) ::
+                (_len, tuint) :: (_flags, tint) :: nil);
+  fn_vars := nil;
+  fn_temps := ((_t'1, tint) :: nil);
+  fn_body :=
+(Ssequence
+  (Scall (Some _t'1)
+    (Evar _recv (Tfunction
+                  (Tcons tint
+                    (Tcons (tptr tvoid) (Tcons tuint (Tcons tint Tnil))))
+                  tint cc_default))
+    ((Etempvar _fd tint) :: (Etempvar _buffer_ptr (tptr tuchar)) ::
+     (Etempvar _len tuint) :: (Etempvar _flags tint) :: nil))
+  (Sreturn (Some (Etempvar _t'1 tint))))
+|}.
+
+Definition f_send_msg := {|
+  fn_return := tint;
+  fn_callconv := cc_default;
+  fn_params := ((_fd, tint) :: (_buffer_ptr, (tptr tuchar)) ::
+                (_len, tuint) :: (_flags, tint) :: nil);
+  fn_vars := nil;
+  fn_temps := ((_t'1, tint) :: nil);
+  fn_body :=
+(Ssequence
+  (Scall (Some _t'1)
+    (Evar _send (Tfunction
+                  (Tcons tint
+                    (Tcons (tptr tvoid) (Tcons tuint (Tcons tint Tnil))))
+                  tint cc_default))
+    ((Etempvar _fd tint) :: (Etempvar _buffer_ptr (tptr tuchar)) ::
+     (Etempvar _len tuint) :: (Etempvar _flags tint) :: nil))
+  (Sreturn (Some (Etempvar _t'1 tint))))
+|}.
+
+Definition f_fd_zero_macro := {|
+  fn_return := tvoid;
+  fn_callconv := cc_default;
+  fn_params := ((_set, (tptr (Tstruct _fd_set noattr))) :: nil);
+  fn_vars := nil;
+  fn_temps := ((___i, tuint) :: (___arr, (tptr (Tstruct _fd_set noattr))) ::
+               nil);
+  fn_body :=
+(Sloop
+  (Ssequence
+    (Sset ___arr (Etempvar _set (tptr (Tstruct _fd_set noattr))))
+    (Ssequence
+      (Sset ___i (Econst_int (Int.repr 0) tint))
+      (Sloop
+        (Ssequence
+          (Sifthenelse (Ebinop Olt (Etempvar ___i tuint)
+                         (Ebinop Odiv (Esizeof (Tstruct _fd_set noattr) tuint)
+                           (Esizeof tint tuint) tuint) tint)
+            Sskip
+            Sbreak)
+          (Sassign
+            (Ederef
+              (Ebinop Oadd
+                (Efield
+                  (Ederef (Etempvar ___arr (tptr (Tstruct _fd_set noattr)))
+                    (Tstruct _fd_set noattr)) ___fds_bits (tarray tint 32))
+                (Etempvar ___i tuint) (tptr tint)) tint)
+            (Econst_int (Int.repr 0) tint)))
+        (Sset ___i
+          (Ebinop Oadd (Etempvar ___i tuint) (Econst_int (Int.repr 1) tint)
+            tuint)))))
+  Sbreak)
+|}.
+
+Definition f_fd_isset_macro := {|
+  fn_return := tint;
+  fn_callconv := cc_default;
+  fn_params := ((_fd, tint) :: (_set, (tptr (Tstruct _fd_set noattr))) :: nil);
+  fn_vars := nil;
+  fn_temps := nil;
+  fn_body :=
+(Sreturn (Some (Ebinop One
+                 (Ebinop Oand
+                   (Ederef
+                     (Ebinop Oadd
+                       (Efield
+                         (Ederef
+                           (Etempvar _set (tptr (Tstruct _fd_set noattr)))
+                           (Tstruct _fd_set noattr)) ___fds_bits
+                         (tarray tint 32))
+                       (Ebinop Odiv (Etempvar _fd tint)
+                         (Ebinop Omul (Econst_int (Int.repr 8) tint)
+                           (Ecast (Esizeof tint tuint) tint) tint) tint)
+                       (tptr tint)) tint)
+                   (Ecast
+                     (Ebinop Oshl (Econst_int (Int.repr 1) tuint)
+                       (Ebinop Omod (Etempvar _fd tint)
+                         (Ebinop Omul (Econst_int (Int.repr 8) tint)
+                           (Ecast (Esizeof tint tuint) tint) tint) tint)
+                       tuint) tint) tint) (Econst_int (Int.repr 0) tint)
+                 tint)))
+|}.
+
+Definition f_fd_clr_macro := {|
+  fn_return := tvoid;
+  fn_callconv := cc_default;
+  fn_params := ((_fd, tint) :: (_set, (tptr (Tstruct _fd_set noattr))) :: nil);
+  fn_vars := nil;
+  fn_temps := ((_t'1, tint) :: nil);
+  fn_body :=
+(Ssequence
+  (Sset _t'1
+    (Ecast
+      (Ebinop Oand
+        (Ederef
+          (Ebinop Oadd
+            (Efield
+              (Ederef (Etempvar _set (tptr (Tstruct _fd_set noattr)))
+                (Tstruct _fd_set noattr)) ___fds_bits (tarray tint 32))
+            (Ebinop Odiv (Etempvar _fd tint)
+              (Ebinop Omul (Econst_int (Int.repr 8) tint)
+                (Ecast (Esizeof tint tuint) tint) tint) tint) (tptr tint))
+          tint)
+        (Eunop Onotint
+          (Ecast
+            (Ebinop Oshl (Econst_int (Int.repr 1) tuint)
+              (Ebinop Omod (Etempvar _fd tint)
+                (Ebinop Omul (Econst_int (Int.repr 8) tint)
+                  (Ecast (Esizeof tint tuint) tint) tint) tint) tuint) tint)
+          tint) tint) tint))
+  (Sassign
+    (Ederef
+      (Ebinop Oadd
+        (Efield
+          (Ederef (Etempvar _set (tptr (Tstruct _fd_set noattr)))
+            (Tstruct _fd_set noattr)) ___fds_bits (tarray tint 32))
+        (Ebinop Odiv (Etempvar _fd tint)
+          (Ebinop Omul (Econst_int (Int.repr 8) tint)
+            (Ecast (Esizeof tint tuint) tint) tint) tint) (tptr tint)) tint)
+    (Etempvar _t'1 tint)))
+|}.
+
+Definition f_fd_set_macro := {|
+  fn_return := tvoid;
+  fn_callconv := cc_default;
+  fn_params := ((_fd, tint) :: (_set, (tptr (Tstruct _fd_set noattr))) :: nil);
+  fn_vars := nil;
+  fn_temps := ((_t'1, tint) :: nil);
+  fn_body :=
+(Ssequence
+  (Sset _t'1
+    (Ecast
+      (Ebinop Oor
+        (Ederef
+          (Ebinop Oadd
+            (Efield
+              (Ederef (Etempvar _set (tptr (Tstruct _fd_set noattr)))
+                (Tstruct _fd_set noattr)) ___fds_bits (tarray tint 32))
+            (Ebinop Odiv (Etempvar _fd tint)
+              (Ebinop Omul (Econst_int (Int.repr 8) tint)
+                (Ecast (Esizeof tint tuint) tint) tint) tint) (tptr tint))
+          tint)
+        (Ecast
+          (Ebinop Oshl (Econst_int (Int.repr 1) tuint)
+            (Ebinop Omod (Etempvar _fd tint)
+              (Ebinop Omul (Econst_int (Int.repr 8) tint)
+                (Ecast (Esizeof tint tuint) tint) tint) tint) tuint) tint)
+        tint) tint))
+  (Sassign
+    (Ederef
+      (Ebinop Oadd
+        (Efield
+          (Ederef (Etempvar _set (tptr (Tstruct _fd_set noattr)))
+            (Tstruct _fd_set noattr)) ___fds_bits (tarray tint 32))
+        (Ebinop Odiv (Etempvar _fd tint)
+          (Ebinop Omul (Econst_int (Int.repr 8) tint)
+            (Ecast (Esizeof tint tuint) tint) tint) tint) (tptr tint)) tint)
+    (Etempvar _t'1 tint)))
+|}.
+
+Definition f_check_if_complete := {|
+  fn_return := tint;
+  fn_callconv := cc_default;
+  fn_params := ((_buffer_ptr, (tptr tuchar)) :: (_len, tuint) :: nil);
+  fn_vars := nil;
+  fn_temps := nil;
+  fn_body :=
+(Ssequence
+  (Sifthenelse (Ebinop Oeq (Econst_int (Int.repr 1024) tint)
+                 (Etempvar _len tuint) tint)
+    (Sreturn (Some (Econst_int (Int.repr 1) tint)))
+    Sskip)
+  (Sreturn (Some (Econst_int (Int.repr 0) tint))))
 |}.
 
 Definition f_new_connection := {|
@@ -1172,6 +1384,7 @@ Definition f_main := {|
   fn_vars := ((_addr, (Tstruct _sockaddr_in noattr)) :: nil);
   fn_temps := ((_addr_len, tint) :: (_fd, tint) :: (_r, tint) ::
                (_last_msg_store, (tptr (Tstruct _store noattr))) ::
+               (_last_msg, (tptr tschar)) ::
                (_t'6, (tptr (Tstruct _store noattr))) :: (_t'5, tint) ::
                (_t'4, tint) :: (_t'3, tint) :: (_t'2, tushort) ::
                (_t'1, tint) :: nil);
@@ -1264,15 +1477,40 @@ Definition f_main := {|
                                          (tptr tvoid)) tint)
                           (Sreturn (Some (Econst_int (Int.repr 0) tint)))
                           Sskip)
-                        (Scall None
-                          (Evar _select_loop (Tfunction
-                                               (Tcons tint
-                                                 (Tcons
-                                                   (tptr (Tstruct _store noattr))
-                                                   Tnil)) tint cc_default))
-                          ((Etempvar _fd tint) ::
-                           (Etempvar _last_msg_store (tptr (Tstruct _store noattr))) ::
-                           nil)))))))))))))
+                        (Ssequence
+                          (Sassign
+                            (Efield
+                              (Ederef
+                                (Etempvar _last_msg_store (tptr (Tstruct _store noattr)))
+                                (Tstruct _store noattr)) _stored_msg_len
+                              tuint) (Econst_int (Int.repr 5) tint))
+                          (Ssequence
+                            (Sset _last_msg
+                              (Ecast
+                                (Efield
+                                  (Ederef
+                                    (Etempvar _last_msg_store (tptr (Tstruct _store noattr)))
+                                    (Tstruct _store noattr)) _stored_msg
+                                  (tarray tuchar 1024)) (tptr tschar)))
+                            (Ssequence
+                              (Scall None
+                                (Evar _strcpy (Tfunction
+                                                (Tcons (tptr tschar)
+                                                  (Tcons (tptr tschar) Tnil))
+                                                (tptr tschar) cc_default))
+                                ((Etempvar _last_msg (tptr tschar)) ::
+                                 (Evar ___stringlit_2 (tarray tschar 5)) ::
+                                 nil))
+                              (Scall None
+                                (Evar _select_loop (Tfunction
+                                                     (Tcons tint
+                                                       (Tcons
+                                                         (tptr (Tstruct _store noattr))
+                                                         Tnil)) tint
+                                                     cc_default))
+                                ((Etempvar _fd tint) ::
+                                 (Etempvar _last_msg_store (tptr (Tstruct _store noattr))) ::
+                                 nil))))))))))))))))
   (Sreturn (Some (Econst_int (Int.repr 0) tint))))
 |}.
 
@@ -1300,7 +1538,8 @@ Definition composites : list composite_definition :=
    noattr :: nil).
 
 Definition global_definitions : list (ident * globdef fundef type) :=
-((___stringlit_1, Gvar v___stringlit_1) ::
+((___stringlit_2, Gvar v___stringlit_2) ::
+ (___stringlit_1, Gvar v___stringlit_1) ::
  (___builtin_bswap,
    Gfun(External (EF_builtin "__builtin_bswap"
                    (mksignature (AST.Tint :: nil) (Some AST.Tint) cc_default))
@@ -1560,6 +1799,12 @@ Definition global_definitions : list (ident * globdef fundef type) :=
                      (Some AST.Tint) cc_default))
      (Tcons (tptr tvoid) (Tcons tint (Tcons tuint Tnil))) (tptr tvoid)
      cc_default)) ::
+ (_strcpy,
+   Gfun(External (EF_external "strcpy"
+                   (mksignature (AST.Tint :: AST.Tint :: nil) (Some AST.Tint)
+                     cc_default))
+     (Tcons (tptr tschar) (Tcons (tptr tschar) Tnil)) (tptr tschar)
+     cc_default)) ::
  (_close,
    Gfun(External (EF_external "close"
                    (mksignature (AST.Tint :: nil) (Some AST.Tint) cc_default))
@@ -1575,6 +1820,20 @@ Definition global_definitions : list (ident * globdef fundef type) :=
                      (Some AST.Tint) cc_default))
      (Tcons tint
        (Tcons (tptr (Tstruct _sockaddr noattr)) (Tcons tuint Tnil))) tint
+     cc_default)) ::
+ (_send,
+   Gfun(External (EF_external "send"
+                   (mksignature
+                     (AST.Tint :: AST.Tint :: AST.Tint :: AST.Tint :: nil)
+                     (Some AST.Tint) cc_default))
+     (Tcons tint (Tcons (tptr tvoid) (Tcons tuint (Tcons tint Tnil)))) tint
+     cc_default)) ::
+ (_recv,
+   Gfun(External (EF_external "recv"
+                   (mksignature
+                     (AST.Tint :: AST.Tint :: AST.Tint :: AST.Tint :: nil)
+                     (Some AST.Tint) cc_default))
+     (Tcons tint (Tcons (tptr tvoid) (Tcons tuint (Tcons tint Tnil)))) tint
      cc_default)) ::
  (_listen,
    Gfun(External (EF_external "listen"
@@ -1607,42 +1866,13 @@ Definition global_definitions : list (ident * globdef fundef type) :=
          (Tcons (tptr (Tstruct _fd_set noattr))
            (Tcons (tptr (Tstruct _fd_set noattr))
              (Tcons (tptr (Tstruct _timeval noattr)) Tnil))))) tint
-     cc_default)) ::
- (_recv_msg,
-   Gfun(External (EF_external "recv_msg"
-                   (mksignature
-                     (AST.Tint :: AST.Tint :: AST.Tint :: AST.Tint :: nil)
-                     (Some AST.Tint) cc_default))
-     (Tcons tint (Tcons (tptr tuchar) (Tcons tuint (Tcons tint Tnil)))) tint
-     cc_default)) ::
- (_send_msg,
-   Gfun(External (EF_external "send_msg"
-                   (mksignature
-                     (AST.Tint :: AST.Tint :: AST.Tint :: AST.Tint :: nil)
-                     (Some AST.Tint) cc_default))
-     (Tcons tint (Tcons (tptr tuchar) (Tcons tuint (Tcons tint Tnil)))) tint
-     cc_default)) ::
- (_fd_zero_macro,
-   Gfun(External (EF_external "fd_zero_macro"
-                   (mksignature (AST.Tint :: nil) None cc_default))
-     (Tcons (tptr (Tstruct _fd_set noattr)) Tnil) tvoid cc_default)) ::
- (_fd_isset_macro,
-   Gfun(External (EF_external "fd_isset_macro"
-                   (mksignature (AST.Tint :: AST.Tint :: nil) (Some AST.Tint)
-                     cc_default))
-     (Tcons tint (Tcons (tptr (Tstruct _fd_set noattr)) Tnil)) tint
-     cc_default)) ::
- (_fd_set_macro,
-   Gfun(External (EF_external "fd_set_macro"
-                   (mksignature (AST.Tint :: AST.Tint :: nil) None
-                     cc_default))
-     (Tcons tint (Tcons (tptr (Tstruct _fd_set noattr)) Tnil)) tvoid
-     cc_default)) ::
- (_check_if_complete,
-   Gfun(External (EF_external "check_if_complete"
-                   (mksignature (AST.Tint :: AST.Tint :: nil) (Some AST.Tint)
-                     cc_default)) (Tcons (tptr tuchar) (Tcons tuint Tnil))
-     tint cc_default)) ::
+     cc_default)) :: (_recv_msg, Gfun(Internal f_recv_msg)) ::
+ (_send_msg, Gfun(Internal f_send_msg)) ::
+ (_fd_zero_macro, Gfun(Internal f_fd_zero_macro)) ::
+ (_fd_isset_macro, Gfun(Internal f_fd_isset_macro)) ::
+ (_fd_clr_macro, Gfun(Internal f_fd_clr_macro)) ::
+ (_fd_set_macro, Gfun(Internal f_fd_set_macro)) ::
+ (_check_if_complete, Gfun(Internal f_check_if_complete)) ::
  (_new_connection, Gfun(Internal f_new_connection)) ::
  (_new_store, Gfun(Internal f_new_store)) ::
  (_populate_response, Gfun(Internal f_populate_response)) ::
@@ -1659,27 +1889,27 @@ Definition global_definitions : list (ident * globdef fundef type) :=
 
 Definition public_idents : list ident :=
 (_main :: _select_loop :: _check_if_complete :: _fd_set_macro ::
- _fd_isset_macro :: _fd_zero_macro :: _send_msg :: _recv_msg :: _select ::
- _htons :: _shutdown :: _accept :: _listen :: _bind :: _socket :: _close ::
- _memset :: _memcpy :: _malloc :: _atoi :: ___builtin_debug ::
- ___builtin_nop :: ___builtin_write32_reversed ::
- ___builtin_write16_reversed :: ___builtin_read32_reversed ::
- ___builtin_read16_reversed :: ___builtin_fnmsub :: ___builtin_fnmadd ::
- ___builtin_fmsub :: ___builtin_fmadd :: ___builtin_fmin ::
- ___builtin_fmax :: ___builtin_ctzll :: ___builtin_ctzl :: ___builtin_ctz ::
- ___builtin_clzll :: ___builtin_clzl :: ___builtin_clz ::
- ___builtin_bswap64 :: ___compcert_i64_umulh :: ___compcert_i64_smulh ::
- ___compcert_i64_sar :: ___compcert_i64_shr :: ___compcert_i64_shl ::
- ___compcert_i64_umod :: ___compcert_i64_smod :: ___compcert_i64_udiv ::
- ___compcert_i64_sdiv :: ___compcert_i64_utof :: ___compcert_i64_stof ::
- ___compcert_i64_utod :: ___compcert_i64_stod :: ___compcert_i64_dtou ::
- ___compcert_i64_dtos :: ___compcert_va_composite ::
- ___compcert_va_float64 :: ___compcert_va_int64 :: ___compcert_va_int32 ::
- ___builtin_va_end :: ___builtin_va_copy :: ___builtin_va_arg ::
- ___builtin_va_start :: ___builtin_membar :: ___builtin_annot_intval ::
- ___builtin_annot :: ___builtin_memcpy_aligned :: ___builtin_fsqrt ::
- ___builtin_fabs :: ___builtin_bswap16 :: ___builtin_bswap32 ::
- ___builtin_bswap :: nil).
+ _fd_clr_macro :: _fd_isset_macro :: _fd_zero_macro :: _send_msg ::
+ _recv_msg :: _select :: _htons :: _shutdown :: _accept :: _listen ::
+ _recv :: _send :: _bind :: _socket :: _close :: _strcpy :: _memset ::
+ _memcpy :: _malloc :: _atoi :: ___builtin_debug :: ___builtin_nop ::
+ ___builtin_write32_reversed :: ___builtin_write16_reversed ::
+ ___builtin_read32_reversed :: ___builtin_read16_reversed ::
+ ___builtin_fnmsub :: ___builtin_fnmadd :: ___builtin_fmsub ::
+ ___builtin_fmadd :: ___builtin_fmin :: ___builtin_fmax ::
+ ___builtin_ctzll :: ___builtin_ctzl :: ___builtin_ctz :: ___builtin_clzll ::
+ ___builtin_clzl :: ___builtin_clz :: ___builtin_bswap64 ::
+ ___compcert_i64_umulh :: ___compcert_i64_smulh :: ___compcert_i64_sar ::
+ ___compcert_i64_shr :: ___compcert_i64_shl :: ___compcert_i64_umod ::
+ ___compcert_i64_smod :: ___compcert_i64_udiv :: ___compcert_i64_sdiv ::
+ ___compcert_i64_utof :: ___compcert_i64_stof :: ___compcert_i64_utod ::
+ ___compcert_i64_stod :: ___compcert_i64_dtou :: ___compcert_i64_dtos ::
+ ___compcert_va_composite :: ___compcert_va_float64 ::
+ ___compcert_va_int64 :: ___compcert_va_int32 :: ___builtin_va_end ::
+ ___builtin_va_copy :: ___builtin_va_arg :: ___builtin_va_start ::
+ ___builtin_membar :: ___builtin_annot_intval :: ___builtin_annot ::
+ ___builtin_memcpy_aligned :: ___builtin_fsqrt :: ___builtin_fabs ::
+ ___builtin_bswap16 :: ___builtin_bswap32 :: ___builtin_bswap :: nil).
 
 Definition prog : Clight.program := 
   mkprogram composites global_definitions public_idents _main Logic.I.

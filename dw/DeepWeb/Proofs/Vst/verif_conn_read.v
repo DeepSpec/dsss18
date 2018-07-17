@@ -2,7 +2,7 @@ Require Import String.
 
 From DeepWeb.Proofs.Vst
      Require Import VstInit VstLib VerifHelpers
-     SocketSpecs SocketTactics ServerSpecs MonadExports
+     SocketSpecs SocketTactics Gprog MonadExports
      Connection conn_read_spec AppLogic.
 
 Require Import DeepWeb.Spec.ITreeSpec.
@@ -18,7 +18,7 @@ Opaque bind.
 Set Bullet Behavior "Strict Subproofs".
 
 Lemma body_conn_read:
-  semax_body Vprog Gprog f_conn_read (conn_read_spec unit).
+  semax_body Vprog Gprog f_conn_read (conn_read_spec unit BUFFER_SIZE).
 Proof.
   start_function.
 
@@ -32,11 +32,12 @@ Proof.
     by entailer!.
 
   match goal with
-  | [H: consistent_state _ _ |- _] =>
+  | [H: context[consistent_state] |- _] =>
     inversion H; subst; try discriminate
   end.
+
   match goal with
-  | [H: consistent_state _ (?c, _) |- _] =>
+  | [H: consistent_state _ _ (?c, _) |- _] =>
     set (conn := c)
   end.
 
@@ -270,9 +271,15 @@ Proof.
                 Zlength (val_of_string (conn_request conn ++ msg)),
                 Tsh).
   { apply prop_right; repeat split; auto.
-    - simpl. autorewrite_sublist; reflexivity.
     - rewrite field_address_offset; [| assumption].
       auto.
+    - simpl. autorewrite_sublist. reflexivity.
+  }
+
+  {
+    split; auto.
+    subst conn; simpl.
+    rep_omega.
   } 
 
   Intro is_complete_ret.
@@ -285,6 +292,30 @@ Proof.
   thaw FR1.
   simpl.
 
+  replace (Zlength _ >? _) with false.
+
+  2 : {
+    unfold BUFFER_SIZE in *.
+    
+    symmetry.
+    rewrite <- not_true_iff_false.
+    unfold not.
+    intros Hcontra.
+    rewrite <- Zgt_is_gt_bool in Hcontra.
+
+    match goal with
+    | [H: Zlength (val_of_string _) <= _ |- _] =>
+      revert H
+    end.
+    
+    rewrite val_of_string_app.
+    rewrite Zlength_app.
+    intros.
+    omega.
+
+  } 
+    
+  
   forward_if.
   {
     (* Have more to receive *)
@@ -383,12 +414,7 @@ Proof.
   { (* impossible branch *)
     omega.
   } 
-    
-  match goal with
-  | [H1: populate_ret = 1, H2: populate_ret = 1 -> _ |- _] =>
-    destruct (H2 H1) as [conn_post_populate_eq last_msg'_eq]
-  end.
-
+  
   unfold rep_connection.
   rewrite connection_list_cell_eq; [| assumption].
 

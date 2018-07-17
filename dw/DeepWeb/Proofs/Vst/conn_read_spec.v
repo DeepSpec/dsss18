@@ -13,7 +13,7 @@ Import TracePred.
 
 (********************************* conn_read **********************************)
 
-Definition conn_read_spec (T : Type) :=
+Definition conn_read_spec (T : Type) (buffer_size : Z) :=
   DECLARE _conn_read
   WITH k : (connection * string) -> SocketMonad T,
        st : SocketMap,
@@ -27,11 +27,11 @@ Definition conn_read_spec (T : Type) :=
       ]
     PROP ( consistent_world st;
            conn_state conn = RECVING ;
-           consistent_state st (conn, fd)
+           consistent_state buffer_size st (conn, fd)
          )
     LOCAL ( temp _conn conn_ptr ; temp _last_msg_store msg_store_ptr )
     SEP ( SOCKAPI st ;
-            TRACE (r <- conn_read conn last_msg ;; k r) ;
+            TRACE (r <- conn_read buffer_size conn last_msg ;; k r) ;
             list_cell LS Tsh (rep_connection conn fd) conn_ptr ;
             field_at Tsh (Tstruct _store noattr) []
                      (rep_store last_msg) msg_store_ptr
@@ -42,7 +42,8 @@ Definition conn_read_spec (T : Type) :=
     EX st' : SocketMap,
     EX r : Z, 
     PROP ( r = YES ;
-           recv_step (conn, fd, st, last_msg) (conn', fd, st', last_msg');
+           recv_step buffer_size
+                     (conn, fd, st, last_msg) (conn', fd, st', last_msg');
            consistent_world st'
          )
     LOCAL ( temp ret_temp (Vint (Int.repr r)) )

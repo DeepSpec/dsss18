@@ -1,6 +1,6 @@
 From DeepWeb.Proofs.Vst
      Require Import VstInit VstLib VerifHelpers
-     SocketSpecs SocketTactics ServerSpecs
+     SocketSpecs SocketTactics Gprog
      Connection monitor_connections_spec AppLogic AppLib.
 
 Require Import DeepWeb.Spec.ITreeSpec.
@@ -133,7 +133,7 @@ Proof.
       simpl fst; simpl snd.
       Intros.
 
-      Exists read_set1; Exists new_max.
+      Exists read_set1 new_max.
       entailer!.
 
       unfold YES, NO in *.
@@ -159,7 +159,7 @@ Proof.
 
     { (* else skip *)
       forward.
-      Exists curr_read_set; Exists max_fd0; entailer!.
+      Exists curr_read_set max_fd0; entailer!.
     }
 
     Intros read_set' max_fd1.
@@ -190,7 +190,7 @@ Proof.
       simpl fst; simpl snd.
       Intros.
 
-      Exists write_set1; Exists new_max.
+      Exists write_set1 new_max.
       entailer!.
 
       unfold YES, NO in *.
@@ -216,7 +216,7 @@ Proof.
 
     { (* else skip *)
       forward.
-      Exists curr_write_set; Exists max_fd1; entailer!.
+      Exists curr_write_set max_fd1; entailer!.
     }
 
     Intro write_set'.
@@ -342,9 +342,7 @@ Proof.
 
   forward.
 
-  Exists curr_read_set.
-  Exists curr_write_set.
-  Exists max_fd0.
+  Exists curr_read_set curr_write_set max_fd0.
   repeat rewrite app_nil_r.
   entailer!.
 

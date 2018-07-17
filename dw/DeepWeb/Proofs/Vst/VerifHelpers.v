@@ -94,17 +94,15 @@ Module Int_Repr.
       match goal with
       | [H: Int.repr x = Int.repr y |- _] =>
         apply repr_inj_signed in H;
-        unfold repable_signed, Int.max_signed, Int.min_signed in *;
-        simpl in *|-;
-                   try omega
+        unfold repable_signed;
+        try rep_omega
       end
     | [|- ?x <> ?y] =>
       match goal with
       | [H: Int.repr x <> Int.repr y |- _] =>
         apply repr_inj_signed' in H;
-        unfold repable_signed, Int.max_signed, Int.min_signed in *;
-        simpl in *|-;
-                   try omega
+        unfold repable_signed;
+        try rep_omega
       end    
     end.
 

@@ -2,7 +2,7 @@ Require Import String.
 
 From DeepWeb.Proofs.Vst
      Require Import VstInit VstLib VerifHelpers SocketTactics
-     Connection accept_connection_spec SocketSpecs ServerSpecs MonadExports.
+     Connection accept_connection_spec SocketSpecs Gprog MonadExports.
 
 Import SockAPIPred.
 Import TracePred.

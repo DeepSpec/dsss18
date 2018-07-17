@@ -2,7 +2,7 @@ Require Import String.
 
 From DeepWeb.Proofs.Vst
      Require Import VstInit VstLib VerifHelpers
-     SocketSpecs SocketTactics ServerSpecs MonadExports
+     SocketSpecs SocketTactics Gprog MonadExports
      Connection conn_write_spec AppLogic.
 
 Require Import DeepWeb.Spec.ITreeSpec.
@@ -19,7 +19,7 @@ Set Bullet Behavior "Strict Subproofs".
 
 
 Lemma body_conn_write:
-  semax_body Vprog Gprog f_conn_write (conn_write_spec unit).
+  semax_body Vprog Gprog f_conn_write (conn_write_spec unit BUFFER_SIZE).
 Proof.
   start_function.
 
@@ -32,11 +32,12 @@ Proof.
     by entailer!.
 
   match goal with
-  | [H: consistent_state _ _ |- _] =>
+  | [H: consistent_state _ _ _ |- _] =>
     inversion H; subst; try discriminate
   end.
+  
   match goal with
-  | [H: consistent_state _ (?c, _) |- _] =>
+  | [H: consistent_state _ _ (?c, _) |- _] =>
     set (conn := c)
   end.
 

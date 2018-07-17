@@ -114,16 +114,23 @@ Module TracePred.
 
   Import TraceIncl.
 
-  Definition SocketMonad := M SocketM.
+  Definition SocketMonad := M SocketE.
 
-  Definition TRACE {T} (t : SocketMonad T) := has_ext t.
+  Definition TRACE {T} (t : SocketMonad T) :=
+    EX t' : SocketMonad T, !!(trace_incl t t') && has_ext t'.
 
-  (** Axioms to be pushed into VST definition of TRACE *)
-  
-  Axiom trace_pred_incl:
+  Lemma trace_pred_incl:
     forall {T : Type} (t1 t2 : SocketMonad T),
       trace_incl t2 t1 ->
       TRACE t1 |-- TRACE t2.
+  Proof.
+    unfold TRACE.
+    intros.
+    Intro t'.
+    Exists t'.
+    entailer!.
+    eapply trace_incl_trans; eassumption.
+  Qed.    
   
   Lemma trace_pred_eq:
     forall {T : Type} (t1 t2 : SocketMonad T),

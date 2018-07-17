@@ -3,7 +3,7 @@ Require Import String.
 From DeepWeb.Proofs.Vst
      Require Import VstInit VstLib VerifHelpers
      Connection process_spec AppLogic
-     SocketSpecs SocketTactics ServerSpecs MonadExports.
+     SocketSpecs SocketTactics Gprog MonadExports.
 
 Require Import DeepWeb.Spec.ITreeSpec.
 
@@ -18,7 +18,7 @@ Opaque bind.
 Set Bullet Behavior "Strict Subproofs".
 
 Lemma body_process:
-  semax_body Vprog Gprog f_process (process_spec unit).
+  semax_body Vprog Gprog f_process (process_spec unit BUFFER_SIZE).
 Proof.
   start_function.
 
