@@ -59,7 +59,7 @@ DeepWeb/Proofs/Vst/process_spec.v
 DeepWeb/Proofs/Vst/monitor_connections_spec.v
 DeepWeb/Proofs/Vst/process_connections_spec.v
 DeepWeb/Proofs/Vst/select_loop_spec.v
-DeepWeb/Proofs/Vst/ServerSpecs.v
+DeepWeb/Proofs/Vst/Gprog.v
 
 DeepWeb/Proofs/Vst/verif_add_to_fd_set.v
 DeepWeb/Proofs/Vst/verif_new_connection.v
