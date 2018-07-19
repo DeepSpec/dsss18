@@ -3,13 +3,13 @@ Lecture material for DeepSpec Summer School 2018
 
 ## Directory Structure
 
-lf - Software Foundations 1: Logical Foundations
-plf - Software Foundations 2: Programming Language Foundations
-vfa - Software Foundations 3: Verified Functional Algorithms
-qc - Software Foundations 4: QuickChick: Property-Based Testing in Coq
-vc - Software Foundations 5: Verifiable C
+    lf - Software Foundations 1: Logical Foundations
+    plf - Software Foundations 2: Programming Language Foundations
+    vfa - Software Foundations 3: Verified Functional Algorithms
+    qc - Software Foundations 4: QuickChick: Property-Based Testing in Coq
+    vc - Software Foundations 5: Verifiable C
 
-dw - DeepWeb web server micro-demo
+    dw - DeepWeb web server micro-demo
 
 ## Download Instructions
 
