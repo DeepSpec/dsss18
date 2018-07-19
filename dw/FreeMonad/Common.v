@@ -252,6 +252,9 @@ Module NonDeterminismBis.
   Example ex_disj : M nondetE nat :=
     (disj "test" ( ret 0 | ret 1 | ret 2 )).
 
+  Definition or {E A} `{nondetE -< E} (t1 t2 : M E A) : M E A :=
+    disj "or" ( t1 | t2 ).
+
   (* Remove an element from a list, also returning the remaining
      elements. *)
 

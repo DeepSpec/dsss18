@@ -1,3 +1,8 @@
+(* Monad type class *)
+
+(* We define our own instead of reusing ext-lib's because
+   of a universe inconsistency when used with itrees and VST. *)
+
 Class Monad (m : Type -> Type) : Type :=
   { ret : forall a, a -> m a;
     bind : forall a b, m a -> (a -> m b) -> m b

@@ -1,5 +1,5 @@
-(* The abstract Monad infrastructure  *)
-(* TODO: Can we describe it a little more detail? *)
+(** * Abstract Monad infrastructure for ITrees. *)
+(* BCP: The file needs a little *)
 
 Set Implicit Arguments.
 Set Contextual Implicit.
@@ -12,19 +12,20 @@ From Custom Require Export
 Import MonadNotations.
 Open Scope monad_scope.
 
-(** An [M E X] is the denotation of a program as coinductive (possibly
-    infinite) tree where the leaves are labeled with [X] and every node
-    is either a [Tau] node with one child, or a branching node [Vis]
-    with a visible event [E Y] that branches on the values of [Y]. *)
+(** ** Basic Definitions *)
+
+(** The core definitionj of ITrees.  An [M E X] is the denotation of a
+    program as coinductive (possibly infinite) tree where the leaves
+    are labeled with [X] and every node is either an "internal" [Tau]
+    node with one child, or a "external" [Vis] node with a visible
+    event [E Y] plus a continuation [k] that receives a [Y] value from
+    the event. *)
 CoInductive M (Event : Type -> Type) X := 
 | Ret (x:X)
 | Vis {Y: Type} (e : Event Y) (k : Y -> M Event X)
 | Tau (k: M Event X).
 
-Definition liftE Event X (e : Event X) : M Event X :=
-  Vis e (fun x => Ret x).
-
-(** Note: One could imagine an alternative definition with an explicit
+(*  Note: One could imagine an alternative definition with an explicit
     Bind constructor (and a Prim constructor), but this might not be
     as nice / might not work at all -- this way makes productivity
     easier to deal with.  (Also, this one can be turned into a real
@@ -32,22 +33,21 @@ Definition liftE Event X (e : Event X) : M Event X :=
 
 (** [M] is known as the "Freer monad".
 
-    "Freer Monads, More Extensible Effects",
-    Oleg Kiselyov, Hiromi Ishii.
+    "Freer Monads, More Extensible Effects", Oleg Kiselyov, Hiromi
+    Ishii.
 
-    The [Vis] constructor corresponds to a free functor construction
-    also called Co-Yoneda or left Kan extension.
+    Abstract nonsense: The [Vis] constructor corresponds to a free
+    functor construction also called Co-Yoneda or left Kan extension.
     Note that [Event] is meant to be an indexed type, and generally
     not a functor, but we have a monad in any case.
 
     Some relevant links to variations of this theme can be found in
-    http://reddit6.com/r/haskell/comments/7q4sku/are_people_using_freer_monads_or_still_mostly/
+    http://reddit6.com/r/haskell/comments/7q4sku/are_people_using_freer_monads_or_still_mostly/ *)
 
-    Another way to derive this is to consider "normal forms"
-    resulting from rewriting [(m >>= k) >>= h] to [m >>= (k >=> h)].
-    *)
+(*  Another way to derive this is to consider "normal forms" resulting
+    from rewriting [(m >>= k) >>= h] to [m >>= (k >=> h)]. *)
 
-(** The existence of [spin] makes this not quite free:
+(*  The existence of [spin] makes this not quite free:
     amounts more or less to an additional [Event Void]
     constructor.
 
@@ -78,6 +78,8 @@ Definition liftE Event X (e : Event X) : M Event X :=
      [M] as a coinductive type also computes: we can [simpl]
      and handle the effects one by one in a proof. *)
 
+(** ** Monad Structure *)
+
 Module Core.
 
 (** [M E] forms a [Monad] *)
@@ -95,8 +97,7 @@ Definition bindM {E X Y} (s: M E X) (t: X -> M E Y) : M E Y :=
   (cofix go (s : M E X) :=
       bind_body s go t) s.
 
-(* This is a Monad, but inserting [Tau] will be
-   more convenient. *)
+(* This is truly a Monad, but inserting [Tau] will be more convenient. *)
 Definition Monad_M E : Monad (M E) :=
   Build_Monad (M E)
               (fun X x => Ret x)
@@ -104,15 +105,19 @@ Definition Monad_M E : Monad (M E) :=
 
 End Core.
 
-(** We insert a Tau in the Ret case to make programs/specifications
-    neater. This makes [M] no longer a monad structurally,
-    but it remains one in a looser sense as long as Tau is
-    interpreted as the identity. *)
+(** We insert a Tau (in the case where the right-hand argument to bind
+    is just a [Ret]) to make programs/specifications neater. This
+    makes [M] no longer a monad structurally, but it remains one in a
+    looser sense as long as [Tau] is interpreted as the identity. *)
+(* BCP: Not sure what it means to "interpret Tau as the identity" *) 
 Definition bindM {E X Y} (s: M E X) (t: X -> M E Y) : M E Y :=
   Core.bindM s (fun x => Tau (t x)).
 
 Instance Monad_M E : Monad (M E) := { ret X x := Ret x; bind := @bindM E }.
 
+(** ** Handy Utilities *)
+
+(** Wrap a function around the results returned from an ITree *)
 Definition mapM {E X Y} (f: X -> Y) (s: M E X) : M E Y :=
 let cofix go (s : M E X) := 
     match s with
@@ -122,6 +127,7 @@ let cofix go (s : M E X) :=
     end
 in go s.
 
+(* BCP: This is a generic monad thing, right?  Belongs elsewhere I guess. *)
 Fixpoint forM {M : Type -> Type} {MM : Monad M} {X Y}
          (xs : list X) (f : X -> M Y)
   : M (list Y) :=
@@ -130,17 +136,46 @@ Fixpoint forM {M : Type -> Type} {MM : Monad M} {X Y}
   | x :: xs => y <- f x;; ys <- forM xs f;; ret (y :: ys)
   end.
 
+(** Ignore the results from an ITree (changing it to have [unit] result type) *)
 Definition ignore {E X} : M E X -> M E unit := mapM (fun _ => tt).
 
+(** An ITree representing an infinite loop *)
 CoFixpoint spin {E} {X} : M E X := Tau spin.
+(** An ITree that does one internal step and then returns. *)
 Definition tick {E} : M E unit := Tau (Ret tt).
 
-(** The void type is useful as a return type to [M] to enforce
-    infinite programs *)
+(** The void type is useful as a return type to [M], to enforce the
+    constraint that a given computation should never terminate. *)
 Inductive void : Type := .
 
+(** For example: *)
+(*
 CoFixpoint forever {E} {X} (x : M E X) : M E void :=
   x ;; forever x.
+*)
+
+(** Lift a single event to an [M] action. *)
+Definition liftE Event X (e : Event X) : M Event X :=
+  Vis e (fun x => Ret x).
+
+(** An infinite loop with a given body. *)
+CoFixpoint loop {E void} (body : M E unit) : M E void :=
+  body;; loop body.
+
+(** A one-sided conditional. *)
+Definition when {E} (b : bool) (body : M E unit)
+  : M E unit :=
+  if b then body else ret tt.
+
+(** An imperative loop over a list. *)
+CoFixpoint for_each {E A} (bs : list A) (body : A -> M E unit)
+  : M E unit :=
+  match bs with
+  | [] => ret tt
+  | b :: bs' => body b;; for_each bs' body
+  end.
+
+(** * More stuff *)
 
 (** If we can interpret the events of one such monad as
     computations in another, we can extend that
@@ -255,17 +290,3 @@ Proof.
   auto.
 Qed.
 
-
-CoFixpoint loop {E void} (body : M E unit) : M E void :=
-  body;; loop body.
-
-Definition when {E} (b : bool) (body : M E unit)
-  : M E unit :=
-  if b then body else ret tt.
-
-CoFixpoint for_each {E A} (bs : list A) (body : A -> M E unit)
-  : M E unit :=
-  match bs with
-  | [] => ret tt
-  | b :: bs' => body b;; for_each bs' body
-  end.

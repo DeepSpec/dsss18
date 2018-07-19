@@ -19,14 +19,14 @@ Require Import DeepWeb.Lib.SocketConstants.
 
 Require Export DeepWeb.Lib.NetworkInterface.
 
-Module SocketAPI. (* <: EventType. *)
+Module SocketAPI.
 
   Open Scope Z.
   
   Parameter is_fd: Z -> Prop.
-  Parameter fd_nonneg: forall i : Z, is_fd i -> i < 0 -> False.
-  Parameter fd_bound: forall i, is_fd i -> 0 <= i <= MAX_FD.
-  Parameter zero_is_fd : is_fd 0.
+  Axiom fd_nonneg: forall i : Z, is_fd i -> i < 0 -> False.
+  Axiom fd_bound: forall i, is_fd i -> 0 <= i <= MAX_FD.
+  Axiom zero_is_fd : is_fd 0.
 
   Record sockfd: Type :=
     { descriptor: Z; is_descriptor: is_fd descriptor }.
@@ -61,7 +61,7 @@ Module SocketAPI. (* <: EventType. *)
   repeat constructor; trivial.
   Defined.
 
-  Instance SocketEonad_failureE: failureE -< SocketE.
+  Instance SocketE_failureE: failureE -< SocketE.
   constructor.
   intros.
   apply inl.

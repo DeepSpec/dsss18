@@ -1,14 +1,16 @@
-Require Arith.
-Require NArith.
-Require Fin.
+(* Instances of [QuickChick.Show]. *)
+
+From Coq Require
+     Arith NArith Fin.
 Require Export QuickChick.Show.
 
 Require Import Custom.String.
 
+(* [Fin.t] *)
 Instance Show_Fin (n : nat) : Show (Fin.t n) :=
   { show i := show (proj1_sig (Fin.to_nat i)) }.
 
-Section NatToString. (* NatFromString too. *)
+Section NatToString. (* Also does NatFromString. *)
 Import Arith.
 Open Scope string_scope.
 Open Scope nat_scope.
@@ -74,3 +76,9 @@ Global Instance Show_n : Show N :=
   {| show := fun n : N => string_of_nat (nat_of_N n) |}.
 
 End NToString.
+
+Definition pretty_char (c : ascii) : string :=
+  if isPrintable c then String c ""
+  else let n := N_of_ascii c in
+       String "\" (if BinNat.N.ltb n 100 then String "0" (show n)
+                   else show n).

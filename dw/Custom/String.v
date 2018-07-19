@@ -1,10 +1,11 @@
-Require Bool.
-Require List.
-Import List.ListNotations.
-Require NArith.
+(* String utilities. *)
 
-Require Export String.
-Require Export Strings.Ascii.
+From Coq Require
+     Bool List NArith.
+Import List.ListNotations.
+
+From Coq Require Export
+     String Ascii.
 
 From QuickChick Require Import QuickChick.
 
@@ -68,6 +69,10 @@ Definition isDigit (c : ascii) : bool :=
   let n := N_of_ascii c in
      andb (48 <=? n) (n <=? 57).
 
+Definition isPrintable (c : ascii) : bool :=
+  let n := N_of_ascii c in
+  andb (32 <=? n) (n <=? 127).
+
 Inductive chartype := white | alpha | digit | other.
 
 Definition classifyChar (c : ascii) : chartype :=
@@ -118,6 +123,22 @@ Fixpoint reverse_string' (s s' : string) : string :=
 
 Definition reverse_string (s : string) : string :=
   reverse_string' s EmptyString.
+
+Fixpoint repeat_string (c : ascii) (n : nat) :=
+  match n with
+  | O => ""
+  | S n => String c (repeat_string c n)
+  end.
+
+Lemma repeat_string_length:
+  forall c n,
+    String.length (repeat_string c n) = n.
+Proof.
+  induction n; auto.
+  simpl.
+  f_equal.
+  assumption.
+Qed.
 
 (* Use n here as the ranking function to show that this terminates.
    Use (length l) should be enough. *)

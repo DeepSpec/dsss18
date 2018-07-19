@@ -1,0 +1,145 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>DeepWeb.Proofs.Vst.verif_reset_connection</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library DeepWeb.Proofs.Vst.verif_reset_connection</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#"><span class="id" title="library">String</span></a>.<br/>
+
+<br/>
+<span class="id" title="var">From</span> <span class="id" title="var">DeepWeb.Proofs.Vst</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="DeepWeb.Proofs.Vst.VstInit.html#"><span class="id" title="library">VstInit</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.VstLib.html#"><span class="id" title="library">VstLib</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.VerifHelpers.html#"><span class="id" title="library">VerifHelpers</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.Connection.html#"><span class="id" title="library">Connection</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Proofs.Vst.reset_connection_spec.html#"><span class="id" title="library">reset_connection_spec</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.Gprog.html#"><span class="id" title="library">Gprog</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="DeepWeb.Spec.ITreeSpec.html#"><span class="id" title="library">DeepWeb.Spec.ITreeSpec</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Set</span> <span class="id" title="var">Bullet</span> <span class="id" title="var">Behavior</span> "Strict Subproofs".<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a name="body_reset_connection"><span class="id" title="lemma">body_reset_connection</span></a>:<br/>
+&nbsp;&nbsp;<span class="id" title="definition">semax_body</span> <a class="idref" href="DeepWeb.Proofs.Vst.VstInit.html#Vprog"><span class="id" title="definition">Vprog</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.Gprog.html#Gprog"><span class="id" title="definition">Gprog</span></a> <a class="idref" href="DeepWeb.Spec.main.html#f_reset_connection"><span class="id" title="definition">f_reset_connection</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.reset_connection_spec.html#reset_connection_spec"><span class="id" title="definition">reset_connection_spec</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">start_function</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="var">assert_PROP</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="definition">field_compatible</span> (<span class="id" title="constructor">Tstruct</span> <a class="idref" href="DeepWeb.Spec.main.html#_connection"><span class="id" title="definition">_connection</span></a> <span class="id" title="definition">noattr</span>) <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#145bedf8a5d4a541831f3f70db03085c"><span class="id" title="notation">[]</span></a> <span class="id" title="var">conn_ptr</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="var">entailer</span>!.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="var">assert_PROP</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="definition">field_compatible</span> (<span class="id" title="constructor">Tstruct</span> <a class="idref" href="DeepWeb.Spec.main.html#_connection"><span class="id" title="definition">_connection</span></a> <span class="id" title="definition">noattr</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#64ee52ab9627fca8d637e2f1207a2990"><span class="id" title="notation">[</span></a><span class="id" title="constructor">StructField</span> <a class="idref" href="DeepWeb.Spec.main.html#_request_buffer"><span class="id" title="definition">_request_buffer</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#64ee52ab9627fca8d637e2f1207a2990"><span class="id" title="notation">]</span></a> <span class="id" title="var">conn_ptr</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="var">entailer</span>!.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="var">assert_PROP</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="definition">field_compatible</span> (<span class="id" title="constructor">Tstruct</span> <a class="idref" href="DeepWeb.Spec.main.html#_connection"><span class="id" title="definition">_connection</span></a> <span class="id" title="definition">noattr</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#64ee52ab9627fca8d637e2f1207a2990"><span class="id" title="notation">[</span></a><span class="id" title="constructor">StructField</span> <a class="idref" href="DeepWeb.Spec.main.html#_response_buffer"><span class="id" title="definition">_response_buffer</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#64ee52ab9627fca8d637e2f1207a2990"><span class="id" title="notation">]</span></a> <span class="id" title="var">conn_ptr</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="var">entailer</span>!.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <a class="idref" href="DeepWeb.Proofs.Vst.Connection.html#rep_connection"><span class="id" title="definition">rep_connection</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <a class="idref" href="DeepWeb.Proofs.Vst.Connection.html#connection_list_cell_eq"><span class="id" title="lemma">connection_list_cell_eq</span></a>; [| <span class="id" title="tactic">assumption</span>].<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="var">Intros</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">do</span> 7 <span class="id" title="var">forward</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span> <span class="id" title="var">offset_val</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="var">freeze</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#f83abbde7679bdbfec6afddd39d41e15"><span class="id" title="notation">[</span></a>0<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#f83abbde7679bdbfec6afddd39d41e15"><span class="id" title="notation">;</span></a> 1<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#f83abbde7679bdbfec6afddd39d41e15"><span class="id" title="notation">;</span></a> 3<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#f83abbde7679bdbfec6afddd39d41e15"><span class="id" title="notation">;</span></a> 4<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#f83abbde7679bdbfec6afddd39d41e15"><span class="id" title="notation">;</span></a> 5<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#f83abbde7679bdbfec6afddd39d41e15"><span class="id" title="notation">;</span></a> 6<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#f83abbde7679bdbfec6afddd39d41e15"><span class="id" title="notation">]</span></a> <span class="id" title="var">FR1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="var">focus_SEP</span> 1.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="lemma">field_at_data_at</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rem_ptr</span> <span class="id" title="var">ptr</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">forward_call</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">(</span></a><span class="id" title="var">ptr</span><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">,</span></a> 0<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">,</span></a> <a class="idref" href="DeepWeb.Spec.ServerDefs.html#BUFFER_SIZE"><span class="id" title="definition">BUFFER_SIZE</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">)</span></a>.<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">subst</span>; <span class="id" title="tactic">apply</span> <span class="id" title="method">prop_right</span>; <span class="id" title="tactic">repeat</span> <span class="id" title="tactic">split</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="lemma">field_address_offset</span>; <span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">auto</span>. }<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">unfold</span> <a class="idref" href="DeepWeb.Spec.ServerDefs.html#BUFFER_SIZE"><span class="id" title="definition">BUFFER_SIZE</span></a>; <span class="id" title="tactic">simpl</span>; <span class="id" title="var">cancel</span>. }<br/>
+<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">subst</span> <span class="id" title="var">ptr</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">remember</span> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.ZArith.BinInt.html#Z.to_nat"><span class="id" title="definition">Z.to_nat</span></a> <a class="idref" href="DeepWeb.Spec.ServerDefs.html#BUFFER_SIZE"><span class="id" title="definition">BUFFER_SIZE</span></a>) <span class="id" title="keyword">as</span> <span class="id" title="var">size</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <a class="idref" href="DeepWeb.Spec.ServerDefs.html#BUFFER_SIZE"><span class="id" title="definition">BUFFER_SIZE</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">erase_data</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">subst</span> <span class="id" title="var">size</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="var">thaw</span> <span class="id" title="var">FR1</span>; <span class="id" title="tactic">simpl</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="var">freeze</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#f83abbde7679bdbfec6afddd39d41e15"><span class="id" title="notation">[</span></a>0<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#f83abbde7679bdbfec6afddd39d41e15"><span class="id" title="notation">;</span></a> 1<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#f83abbde7679bdbfec6afddd39d41e15"><span class="id" title="notation">;</span></a> 2<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#f83abbde7679bdbfec6afddd39d41e15"><span class="id" title="notation">;</span></a> 3<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#f83abbde7679bdbfec6afddd39d41e15"><span class="id" title="notation">;</span></a> 5<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#f83abbde7679bdbfec6afddd39d41e15"><span class="id" title="notation">;</span></a> 6<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#f83abbde7679bdbfec6afddd39d41e15"><span class="id" title="notation">]</span></a> <span class="id" title="var">FR1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="var">focus_SEP</span> 1.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="lemma">field_at_data_at</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rem_ptr</span> <span class="id" title="var">ptr</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">forward_call</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">(</span></a><span class="id" title="var">ptr</span><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">,</span></a> 0<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">,</span></a> <a class="idref" href="DeepWeb.Spec.ServerDefs.html#BUFFER_SIZE"><span class="id" title="definition">BUFFER_SIZE</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">)</span></a>.<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">subst</span>; <span class="id" title="tactic">apply</span> <span class="id" title="method">prop_right</span>; <span class="id" title="tactic">repeat</span> <span class="id" title="tactic">split</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="lemma">field_address_offset</span>; <span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">auto</span>. }<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">unfold</span> <a class="idref" href="DeepWeb.Spec.ServerDefs.html#BUFFER_SIZE"><span class="id" title="definition">BUFFER_SIZE</span></a>; <span class="id" title="tactic">simpl</span>; <span class="id" title="var">cancel</span>. }<br/>
+<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">subst</span> <span class="id" title="var">ptr</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">remember</span> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.ZArith.BinInt.html#Z.to_nat"><span class="id" title="definition">Z.to_nat</span></a> <a class="idref" href="DeepWeb.Spec.ServerDefs.html#BUFFER_SIZE"><span class="id" title="definition">BUFFER_SIZE</span></a>) <span class="id" title="keyword">as</span> <span class="id" title="var">size</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <a class="idref" href="DeepWeb.Spec.ServerDefs.html#BUFFER_SIZE"><span class="id" title="definition">BUFFER_SIZE</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">erase_data</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">subst</span> <span class="id" title="var">size</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="var">thaw</span> <span class="id" title="var">FR1</span>; <span class="id" title="tactic">simpl</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="var">forward</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <a class="idref" href="DeepWeb.Proofs.Vst.Connection.html#rep_connection"><span class="id" title="definition">rep_connection</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">autounfold</span> <span class="id" title="keyword">with</span> <span class="id" title="var">updates</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <a class="idref" href="DeepWeb.Spec.ServerDefs.html#BUFFER_SIZE"><span class="id" title="definition">BUFFER_SIZE</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <a class="idref" href="DeepWeb.Proofs.Vst.Connection.html#connection_list_cell_eq"><span class="id" title="lemma">connection_list_cell_eq</span></a>; [| <span class="id" title="tactic">assumption</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> (<span class="id" title="tactic">rewrite</span> <span class="id" title="lemma">field_at_data_at</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">cancel</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <a class="idref" href="DeepWeb.Proofs.Vst.VstLib.html#rep_empty_string"><span class="id" title="lemma">rep_empty_string</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="var">cancel</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

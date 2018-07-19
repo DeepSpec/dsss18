@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>DeepWeb.Proofs.Vst.select_loop_spec</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library DeepWeb.Proofs.Vst.select_loop_spec</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#"><span class="id" title="library">String</span></a>.<br/>
+
+<br/>
+<span class="id" title="var">From</span> <span class="id" title="var">DeepWeb.Proofs.Vst</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="DeepWeb.Proofs.Vst.VstInit.html#"><span class="id" title="library">VstInit</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.VstLib.html#"><span class="id" title="library">VstLib</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.SocketSpecs.html#"><span class="id" title="library">SocketSpecs</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.MonadExports.html#"><span class="id" title="library">MonadExports</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.Store.html#"><span class="id" title="library">Store</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="DeepWeb.Spec.ITreeSpec.html#"><span class="id" title="library">DeepWeb.Spec.ITreeSpec</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Set</span> <span class="id" title="var">Bullet</span> <span class="id" title="var">Behavior</span> "Strict Subproofs".<br/>
+
+<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">SockAPIPred</span>.<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">TracePred</span>.<br/>
+
+<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="select_loop_spec"><span class="id" title="definition">select_loop_spec</span></a> (<span class="id" title="var">T</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">buffer_size</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Numbers.BinNums.html#Z"><span class="id" title="inductive">Z</span></a>) :=<br/>
+&nbsp;&nbsp;<span class="id" title="notation">DECLARE</span> <a class="idref" href="DeepWeb.Spec.main.html#_select_loop"><span class="id" title="definition">_select_loop</span></a><br/>
+&nbsp;&nbsp;<span class="id" title="notation">WITH</span> <span class="id" title="var">k</span> <span class="id" title="notation">:</span> <a class="idref" href="DeepWeb.Proofs.Vst.SocketSpecs.html#TracePred.SocketMonad"><span class="id" title="definition">SocketMonad</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a><span class="id" title="notation">,</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">st</span> <span class="id" title="notation">:</span> <a class="idref" href="DeepWeb.Lib.SocketInterface.html#SocketAPI.SocketMap"><span class="id" title="record">SocketMap</span></a><span class="id" title="notation">,</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">server_addr</span> <span class="id" title="notation">:</span> <a class="idref" href="DeepWeb.Lib.NetworkInterface.html#endpoint_id"><span class="id" title="definition">endpoint_id</span></a><span class="id" title="notation">,</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">server_fd</span> <span class="id" title="notation">:</span> <a class="idref" href="DeepWeb.Lib.SocketInterface.html#SocketAPI.sockfd"><span class="id" title="record">sockfd</span></a><span class="id" title="notation">,</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">msg_store_ptr</span> <span class="id" title="notation">:</span> <span class="id" title="inductive">val</span><br/>
+&nbsp;&nbsp;<span class="id" title="notation">PRE</span> <span class="id" title="notation">[</span> <a class="idref" href="DeepWeb.Spec.main.html#_server_socket"><span class="id" title="definition">_server_socket</span></a> <span class="id" title="notation">OF</span> <span class="id" title="definition">tint</span><span class="id" title="notation">,</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.main.html#_last_msg_store"><span class="id" title="definition">_last_msg_store</span></a> <span class="id" title="notation">OF</span> <span class="id" title="definition">tptr</span> (<span class="id" title="constructor">Tstruct</span> <a class="idref" href="DeepWeb.Spec.main.html#_store"><span class="id" title="definition">_store</span></a> <span class="id" title="definition">noattr</span>) <span class="id" title="notation">]</span><br/>
+&nbsp;&nbsp;<span class="id" title="notation">PROP</span> <span class="id" title="notation">(</span> <a class="idref" href="DeepWeb.Proofs.Vst.SocketSpecs.html#SockAPIPred.consistent_world"><span class="id" title="definition">consistent_world</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.select_loop_spec.html#st"><span class="id" title="variable">st</span></a><span class="id" title="notation">;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SocketInterface.html#SocketAPI.lookup_socket"><span class="id" title="projection">lookup_socket</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.select_loop_spec.html#st"><span class="id" title="variable">st</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.select_loop_spec.html#server_fd"><span class="id" title="variable">server_fd</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#1c39bf18749e5cc609e83c0a0ba5a372"><span class="id" title="notation">=</span></a> <a class="idref" href="DeepWeb.Lib.SocketInterface.html#SocketAPI.ListeningSocket"><span class="id" title="constructor">ListeningSocket</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.select_loop_spec.html#server_addr"><span class="id" title="variable">server_addr</span></a> <span class="id" title="notation">;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0 <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.ZArith.BinInt.html#cb2fd1306e4fe5d333fd9fb7e2c4a1d2"><span class="id" title="notation">≤</span></a> <a class="idref" href="DeepWeb.Lib.SocketInterface.html#SocketAPI.descriptor"><span class="id" title="projection">descriptor</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.select_loop_spec.html#server_fd"><span class="id" title="variable">server_fd</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.ZArith.BinInt.html#cb2fd1306e4fe5d333fd9fb7e2c4a1d2"><span class="id" title="notation">&lt;</span></a> <a class="idref" href="DeepWeb.Lib.SocketConstants.html#FD_SETSIZE"><span class="id" title="definition">FD_SETSIZE</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;<span class="id" title="notation">LOCAL</span> <span class="id" title="notation">(</span> <span class="id" title="constructor">temp</span> <a class="idref" href="DeepWeb.Spec.main.html#_server_socket"><span class="id" title="definition">_server_socket</span></a> (<span class="id" title="constructor">Vint</span> (<span class="id" title="definition">Int.repr</span> (<a class="idref" href="DeepWeb.Lib.SocketInterface.html#SocketAPI.descriptor"><span class="id" title="projection">descriptor</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.select_loop_spec.html#server_fd"><span class="id" title="variable">server_fd</span></a>))) <span class="id" title="notation">;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="constructor">temp</span> <a class="idref" href="DeepWeb.Spec.main.html#_last_msg_store"><span class="id" title="definition">_last_msg_store</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.select_loop_spec.html#msg_store_ptr"><span class="id" title="variable">msg_store_ptr</span></a> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;<span class="id" title="notation">SEP</span> <span class="id" title="notation">(</span> <a class="idref" href="DeepWeb.Proofs.Vst.SocketSpecs.html#SockAPIPred.SOCKAPI"><span class="id" title="axiom">SOCKAPI</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.select_loop_spec.html#st"><span class="id" title="variable">st</span></a> <span class="id" title="notation">;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Proofs.Vst.SocketSpecs.html#TracePred.TRACE"><span class="id" title="definition">TRACE</span></a> ( <span class="id" title="var">r</span> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">&lt;-</span></a> <a class="idref" href="DeepWeb.Spec.ITreeSpec.html#select_loop"><span class="id" title="definition">select_loop</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Proofs.Vst.select_loop_spec.html#server_addr"><span class="id" title="variable">server_addr</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.select_loop_spec.html#buffer_size"><span class="id" title="variable">buffer_size</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">(</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#true"><span class="id" title="constructor">true</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">,</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">(</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#145bedf8a5d4a541831f3f70db03085c"><span class="id" title="notation">[]</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">,</span></a> ""<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">))</span></a> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">;;</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.select_loop_spec.html#k"><span class="id" title="variable">k</span></a> ) <span class="id" title="notation">;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="definition">field_at</span> <span class="id" title="definition">Tsh</span> (<span class="id" title="constructor">Tstruct</span> <a class="idref" href="DeepWeb.Spec.main.html#_store"><span class="id" title="definition">_store</span></a> <span class="id" title="definition">noattr</span>) <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#145bedf8a5d4a541831f3f70db03085c"><span class="id" title="notation">[]</span></a> (<a class="idref" href="DeepWeb.Proofs.Vst.Store.html#rep_store"><span class="id" title="definition">rep_store</span></a> "")<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Proofs.Vst.select_loop_spec.html#msg_store_ptr"><span class="id" title="variable">msg_store_ptr</span></a>  <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;<span class="id" title="notation">POST</span> <span class="id" title="notation">[</span> <span class="id" title="definition">tint</span> <span class="id" title="notation">]</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">EX</span> <span class="id" title="var">st'</span> <span class="id" title="notation">:</span> <a class="idref" href="DeepWeb.Lib.SocketInterface.html#SocketAPI.SocketMap"><span class="id" title="record">SocketMap</span></a><span class="id" title="notation">,</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">PROP</span> <span class="id" title="notation">(</span> <a class="idref" href="DeepWeb.Proofs.Vst.SocketSpecs.html#SockAPIPred.consistent_world"><span class="id" title="definition">consistent_world</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.select_loop_spec.html#st'"><span class="id" title="variable">st'</span></a> <span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">LOCAL</span> <span class="id" title="notation">(</span> <span class="id" title="constructor">temp</span> <span class="id" title="definition">ret_temp</span> (<span class="id" title="constructor">Vint</span> (<span class="id" title="definition">Int.repr</span> 0)) <span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">SEP</span> <span class="id" title="notation">(</span> <a class="idref" href="DeepWeb.Proofs.Vst.SocketSpecs.html#SockAPIPred.SOCKAPI"><span class="id" title="axiom">SOCKAPI</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.select_loop_spec.html#st'"><span class="id" title="variable">st'</span></a> <span class="id" title="notation">;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Proofs.Vst.SocketSpecs.html#TracePred.TRACE"><span class="id" title="definition">TRACE</span></a> ( <a class="idref" href="DeepWeb.Proofs.Vst.select_loop_spec.html#k"><span class="id" title="variable">k</span></a> ) <span class="id" title="notation">;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="definition">field_at</span> <span class="id" title="definition">Tsh</span> (<span class="id" title="constructor">Tstruct</span> <a class="idref" href="DeepWeb.Spec.main.html#_store"><span class="id" title="definition">_store</span></a> <span class="id" title="definition">noattr</span>) <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#145bedf8a5d4a541831f3f70db03085c"><span class="id" title="notation">[]</span></a> (<a class="idref" href="DeepWeb.Proofs.Vst.Store.html#rep_store"><span class="id" title="definition">rep_store</span></a> "")<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Proofs.Vst.select_loop_spec.html#msg_store_ptr"><span class="id" title="variable">msg_store_ptr</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">)</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

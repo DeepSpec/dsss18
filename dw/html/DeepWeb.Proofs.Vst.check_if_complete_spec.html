@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>DeepWeb.Proofs.Vst.check_if_complete_spec</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library DeepWeb.Proofs.Vst.check_if_complete_spec</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#"><span class="id" title="library">String</span></a>.<br/>
+
+<br/>
+<span class="id" title="var">From</span> <span class="id" title="var">DeepWeb.Proofs.Vst</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="DeepWeb.Proofs.Vst.VstInit.html#"><span class="id" title="library">VstInit</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.VstLib.html#"><span class="id" title="library">VstLib</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Set</span> <span class="id" title="var">Bullet</span> <span class="id" title="var">Behavior</span> "Strict Subproofs".<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="DeepWeb.Spec.ITreeSpec.html#"><span class="id" title="library">DeepWeb.Spec.ITreeSpec</span></a>.<br/>
+
+<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="check_if_complete_spec"><span class="id" title="definition">check_if_complete_spec</span></a> (<span class="id" title="var">buffer_size</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Numbers.BinNums.html#Z"><span class="id" title="inductive">Z</span></a>) :=<br/>
+&nbsp;&nbsp;<span class="id" title="notation">DECLARE</span> <a class="idref" href="DeepWeb.Spec.main.html#_check_if_complete"><span class="id" title="definition">_check_if_complete</span></a><br/>
+&nbsp;&nbsp;<span class="id" title="notation">WITH</span> <span class="id" title="var">msg</span> <span class="id" title="notation">:</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a><span class="id" title="notation">,</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">buf_ptr</span> <span class="id" title="notation">:</span> <span class="id" title="inductive">val</span><span class="id" title="notation">,</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">msg_len</span> <span class="id" title="notation">:</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Numbers.BinNums.html#Z"><span class="id" title="inductive">Z</span></a><span class="id" title="notation">,</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">sh</span> <span class="id" title="notation">:</span> <span class="id" title="definition">share</span><br/>
+&nbsp;&nbsp;<span class="id" title="notation">PRE</span> <span class="id" title="notation">[</span> <a class="idref" href="DeepWeb.Spec.main.html#_buffer_ptr"><span class="id" title="definition">_buffer_ptr</span></a> <span class="id" title="notation">OF</span> <span class="id" title="definition">tptr</span> <span class="id" title="definition">tuchar</span><span class="id" title="notation">,</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.main.html#_len"><span class="id" title="definition">_len</span></a> <span class="id" title="notation">OF</span> <span class="id" title="definition">tuint</span> <span class="id" title="notation">]</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">PROP</span> <span class="id" title="notation">(</span> 0 <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.ZArith.BinInt.html#5dda7752d319ac2ccefb830f12787952"><span class="id" title="notation">≤</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.check_if_complete_spec.html#msg_len"><span class="id" title="variable">msg_len</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.ZArith.BinInt.html#5dda7752d319ac2ccefb830f12787952"><span class="id" title="notation">≤</span></a> <span class="id" title="definition">Int.max_signed</span> <span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">LOCAL</span> <span class="id" title="notation">(</span> <span class="id" title="constructor">temp</span> <a class="idref" href="DeepWeb.Spec.main.html#_buffer_ptr"><span class="id" title="definition">_buffer_ptr</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.check_if_complete_spec.html#buf_ptr"><span class="id" title="variable">buf_ptr</span></a> <span class="id" title="notation">;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="constructor">temp</span> <a class="idref" href="DeepWeb.Spec.main.html#_len"><span class="id" title="definition">_len</span></a> (<span class="id" title="constructor">Vint</span> (<span class="id" title="definition">Int.repr</span> <a class="idref" href="DeepWeb.Proofs.Vst.check_if_complete_spec.html#msg_len"><span class="id" title="variable">msg_len</span></a>))<span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">SEP</span> <span class="id" title="notation">(</span> <span class="id" title="definition">data_at</span> <a class="idref" href="DeepWeb.Proofs.Vst.check_if_complete_spec.html#sh"><span class="id" title="variable">sh</span></a> (<span class="id" title="definition">tarray</span> <span class="id" title="definition">tuchar</span> <a class="idref" href="DeepWeb.Proofs.Vst.check_if_complete_spec.html#msg_len"><span class="id" title="variable">msg_len</span></a>) (<a class="idref" href="DeepWeb.Proofs.Vst.VstLib.html#val_of_string"><span class="id" title="definition">val_of_string</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.check_if_complete_spec.html#msg"><span class="id" title="variable">msg</span></a>) <a class="idref" href="DeepWeb.Proofs.Vst.check_if_complete_spec.html#buf_ptr"><span class="id" title="variable">buf_ptr</span></a> <span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;<span class="id" title="notation">POST</span> <span class="id" title="notation">[</span> <span class="id" title="definition">tint</span> <span class="id" title="notation">]</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">EX</span> <span class="id" title="var">r</span> <span class="id" title="notation">:</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Numbers.BinNums.html#Z"><span class="id" title="inductive">Z</span></a><span class="id" title="notation">,</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">PROP</span> <span class="id" title="notation">(</span> <a class="idref" href="DeepWeb.Proofs.Vst.check_if_complete_spec.html#r"><span class="id" title="variable">r</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#1c39bf18749e5cc609e83c0a0ba5a372"><span class="id" title="notation">=</span></a> 1 <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#7a45dffb109c3069e5c675be68643e60"><span class="id" title="notation">∨</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.check_if_complete_spec.html#r"><span class="id" title="variable">r</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#1c39bf18749e5cc609e83c0a0ba5a372"><span class="id" title="notation">=</span></a> 0<span class="id" title="notation">;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Proofs.Vst.check_if_complete_spec.html#r"><span class="id" title="variable">r</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#1c39bf18749e5cc609e83c0a0ba5a372"><span class="id" title="notation">=</span></a> 1 <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Spec.ITreeSpec.html#is_complete"><span class="id" title="definition">is_complete</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.check_if_complete_spec.html#buffer_size"><span class="id" title="variable">buffer_size</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.check_if_complete_spec.html#msg"><span class="id" title="variable">msg</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#1c39bf18749e5cc609e83c0a0ba5a372"><span class="id" title="notation">=</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#true"><span class="id" title="constructor">true</span></a><span class="id" title="notation">;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Proofs.Vst.check_if_complete_spec.html#r"><span class="id" title="variable">r</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#1c39bf18749e5cc609e83c0a0ba5a372"><span class="id" title="notation">=</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Spec.ITreeSpec.html#is_complete"><span class="id" title="definition">is_complete</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.check_if_complete_spec.html#buffer_size"><span class="id" title="variable">buffer_size</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.check_if_complete_spec.html#msg"><span class="id" title="variable">msg</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#1c39bf18749e5cc609e83c0a0ba5a372"><span class="id" title="notation">=</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#false"><span class="id" title="constructor">false</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">LOCAL</span> <span class="id" title="notation">(</span> <span class="id" title="constructor">temp</span> <span class="id" title="definition">ret_temp</span> (<span class="id" title="constructor">Vint</span> (<span class="id" title="definition">Int.repr</span> <a class="idref" href="DeepWeb.Proofs.Vst.check_if_complete_spec.html#r"><span class="id" title="variable">r</span></a>)) <span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">SEP</span> <span class="id" title="notation">(</span> <span class="id" title="definition">data_at</span> <a class="idref" href="DeepWeb.Proofs.Vst.check_if_complete_spec.html#sh"><span class="id" title="variable">sh</span></a> (<span class="id" title="definition">tarray</span> <span class="id" title="definition">tuchar</span> <a class="idref" href="DeepWeb.Proofs.Vst.check_if_complete_spec.html#msg_len"><span class="id" title="variable">msg_len</span></a>) (<a class="idref" href="DeepWeb.Proofs.Vst.VstLib.html#val_of_string"><span class="id" title="definition">val_of_string</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.check_if_complete_spec.html#msg"><span class="id" title="variable">msg</span></a>) <a class="idref" href="DeepWeb.Proofs.Vst.check_if_complete_spec.html#buf_ptr"><span class="id" title="variable">buf_ptr</span></a> <span class="id" title="notation">)</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -25,5 +25,9 @@ _CoqProject: _CoqConfig
 	echo "$(VSTFLAGS)" > _CoqProject
 	cat _CoqConfig >> _CoqProject
 
+.PHONY: html
+html:
+	$(MAKE) -f Makefile.coq html
+
 clean:
-	# TODO
+# 	TODO

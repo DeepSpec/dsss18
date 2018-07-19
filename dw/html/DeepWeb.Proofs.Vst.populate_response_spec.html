@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>DeepWeb.Proofs.Vst.populate_response_spec</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library DeepWeb.Proofs.Vst.populate_response_spec</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#"><span class="id" title="library">String</span></a>.<br/>
+
+<br/>
+<span class="id" title="var">From</span> <span class="id" title="var">DeepWeb.Proofs.Vst</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="DeepWeb.Proofs.Vst.VstInit.html#"><span class="id" title="library">VstInit</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.VstLib.html#"><span class="id" title="library">VstLib</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.Connection.html#"><span class="id" title="library">Connection</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.Store.html#"><span class="id" title="library">Store</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="DeepWeb.Spec.ITreeSpec.html#"><span class="id" title="library">DeepWeb.Spec.ITreeSpec</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">logic</span>.<br/>
+<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">list</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Set</span> <span class="id" title="var">Bullet</span> <span class="id" title="var">Behavior</span> "Strict Subproofs".<br/>
+
+<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="populate_response_spec"><span class="id" title="definition">populate_response_spec</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="notation">DECLARE</span> <a class="idref" href="DeepWeb.Spec.main.html#_populate_response"><span class="id" title="definition">_populate_response</span></a><br/>
+&nbsp;&nbsp;<span class="id" title="notation">WITH</span> <span class="id" title="var">conn</span> <span class="id" title="notation">:</span> <a class="idref" href="DeepWeb.Spec.ITreeSpec.html#connection"><span class="id" title="record">connection</span></a><span class="id" title="notation">,</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">fd</span> <span class="id" title="notation">:</span> <a class="idref" href="DeepWeb.Lib.SocketInterface.html#SocketAPI.sockfd"><span class="id" title="record">sockfd</span></a><span class="id" title="notation">,</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">last_msg</span> <span class="id" title="notation">:</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a><span class="id" title="notation">,</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">conn_ptr</span> <span class="id" title="notation">:</span> <span class="id" title="inductive">val</span><span class="id" title="notation">,</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">last_msg_store_ptr</span> <span class="id" title="notation">:</span> <span class="id" title="inductive">val</span><br/>
+&nbsp;&nbsp;<span class="id" title="notation">PRE</span> <span class="id" title="notation">[</span> <a class="idref" href="DeepWeb.Spec.main.html#_conn"><span class="id" title="definition">_conn</span></a> <span class="id" title="notation">OF</span> <span class="id" title="definition">tptr</span> (<span class="id" title="constructor">Tstruct</span> <a class="idref" href="DeepWeb.Spec.main.html#_connection"><span class="id" title="definition">_connection</span></a> <span class="id" title="definition">noattr</span>)<span class="id" title="notation">,</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.main.html#_last_msg_store"><span class="id" title="definition">_last_msg_store</span></a> <span class="id" title="notation">OF</span> <span class="id" title="definition">tptr</span> (<span class="id" title="constructor">Tstruct</span> <a class="idref" href="DeepWeb.Spec.main.html#_store"><span class="id" title="definition">_store</span></a> <span class="id" title="definition">noattr</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">]</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">PROP</span> <span class="id" title="notation">(</span> <span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">LOCAL</span> <span class="id" title="notation">(</span> <span class="id" title="constructor">temp</span> <a class="idref" href="DeepWeb.Spec.main.html#_conn"><span class="id" title="definition">_conn</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.populate_response_spec.html#conn_ptr"><span class="id" title="variable">conn_ptr</span></a> <span class="id" title="notation">;</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="constructor">temp</span> <a class="idref" href="DeepWeb.Spec.main.html#_last_msg_store"><span class="id" title="definition">_last_msg_store</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.populate_response_spec.html#last_msg_store_ptr"><span class="id" title="variable">last_msg_store_ptr</span></a> <span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">SEP</span> <span class="id" title="notation">(</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="definition">list_cell</span> <a class="idref" href="DeepWeb.Proofs.Vst.Connection.html#LS"><span class="id" title="instance">LS</span></a> <span class="id" title="definition">Tsh</span> (<a class="idref" href="DeepWeb.Proofs.Vst.Connection.html#rep_connection"><span class="id" title="definition">rep_connection</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.populate_response_spec.html#conn"><span class="id" title="variable">conn</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.populate_response_spec.html#fd"><span class="id" title="variable">fd</span></a>) <a class="idref" href="DeepWeb.Proofs.Vst.populate_response_spec.html#conn_ptr"><span class="id" title="variable">conn_ptr</span></a> <span class="id" title="notation">;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="definition">field_at</span> <span class="id" title="definition">Tsh</span> (<span class="id" title="constructor">Tstruct</span> <a class="idref" href="DeepWeb.Spec.main.html#_store"><span class="id" title="definition">_store</span></a> <span class="id" title="definition">noattr</span>) <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#145bedf8a5d4a541831f3f70db03085c"><span class="id" title="notation">[]</span></a> (<a class="idref" href="DeepWeb.Proofs.Vst.Store.html#rep_store"><span class="id" title="definition">rep_store</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.populate_response_spec.html#last_msg"><span class="id" title="variable">last_msg</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Proofs.Vst.populate_response_spec.html#last_msg_store_ptr"><span class="id" title="variable">last_msg_store_ptr</span></a> <span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;<span class="id" title="notation">POST</span> <span class="id" title="notation">[</span> <span class="id" title="definition">tint</span> <span class="id" title="notation">]</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">EX</span> <span class="id" title="var">r</span> <span class="id" title="notation">:</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Numbers.BinNums.html#Z"><span class="id" title="inductive">Z</span></a><span class="id" title="notation">,</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">EX</span> <span class="id" title="var">conn'</span> <span class="id" title="notation">:</span> <a class="idref" href="DeepWeb.Spec.ITreeSpec.html#connection"><span class="id" title="record">connection</span></a><span class="id" title="notation">,</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">EX</span> <span class="id" title="var">new_msg</span> <span class="id" title="notation">:</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a><span class="id" title="notation">,</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">PROP</span> <span class="id" title="notation">(</span> <a class="idref" href="DeepWeb.Proofs.Vst.populate_response_spec.html#r"><span class="id" title="variable">r</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#1c39bf18749e5cc609e83c0a0ba5a372"><span class="id" title="notation">=</span></a> 1 <span class="id" title="notation">;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Proofs.Vst.populate_response_spec.html#conn'"><span class="id" title="variable">conn'</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#1c39bf18749e5cc609e83c0a0ba5a372"><span class="id" title="notation">=</span></a> <a class="idref" href="DeepWeb.Spec.ITreeSpec.html#upd_conn_response_bytes_sent"><span class="id" title="definition">upd_conn_response_bytes_sent</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="DeepWeb.Spec.ITreeSpec.html#upd_conn_response"><span class="id" title="definition">upd_conn_response</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.populate_response_spec.html#conn"><span class="id" title="variable">conn</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.populate_response_spec.html#last_msg"><span class="id" title="variable">last_msg</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0 <span class="id" title="notation">;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Proofs.Vst.populate_response_spec.html#new_msg"><span class="id" title="variable">new_msg</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#1c39bf18749e5cc609e83c0a0ba5a372"><span class="id" title="notation">=</span></a> <a class="idref" href="DeepWeb.Spec.ITreeSpec.html#conn_request"><span class="id" title="projection">conn_request</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.populate_response_spec.html#conn"><span class="id" title="variable">conn</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">LOCAL</span> <span class="id" title="notation">(</span> <span class="id" title="constructor">temp</span> <span class="id" title="definition">ret_temp</span> (<span class="id" title="constructor">Vint</span> (<span class="id" title="definition">Int.repr</span> <a class="idref" href="DeepWeb.Proofs.Vst.populate_response_spec.html#r"><span class="id" title="variable">r</span></a>)) <span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">SEP</span> <span class="id" title="notation">(</span> <span class="id" title="definition">list_cell</span> <a class="idref" href="DeepWeb.Proofs.Vst.Connection.html#LS"><span class="id" title="instance">LS</span></a> <span class="id" title="definition">Tsh</span> (<a class="idref" href="DeepWeb.Proofs.Vst.Connection.html#rep_connection"><span class="id" title="definition">rep_connection</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.populate_response_spec.html#conn'"><span class="id" title="variable">conn'</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.populate_response_spec.html#fd"><span class="id" title="variable">fd</span></a>) <a class="idref" href="DeepWeb.Proofs.Vst.populate_response_spec.html#conn_ptr"><span class="id" title="variable">conn_ptr</span></a><span class="id" title="notation">;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="definition">field_at</span> <span class="id" title="definition">Tsh</span> (<span class="id" title="constructor">Tstruct</span> <a class="idref" href="DeepWeb.Spec.main.html#_store"><span class="id" title="definition">_store</span></a> <span class="id" title="definition">noattr</span>) <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#145bedf8a5d4a541831f3f70db03085c"><span class="id" title="notation">[]</span></a> (<a class="idref" href="DeepWeb.Proofs.Vst.Store.html#rep_store"><span class="id" title="definition">rep_store</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.populate_response_spec.html#new_msg"><span class="id" title="variable">new_msg</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Proofs.Vst.populate_response_spec.html#last_msg_store_ptr"><span class="id" title="variable">last_msg_store_ptr</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">)</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -5,13 +5,14 @@ Set Implicit Arguments.
 Set Contextual Implicit.
 Generalizable All Variables.
 
-Require Import Equality.
+From Coq Require Import
+     List Equality.
+Import ListNotations.
 
 From QuickChick Require Import QuickChick.
 
 From Custom Require Import
-     String
-     List.
+     String.
 
 Require Export DeepWeb.Free.Monad.Free.
 Require Import DeepWeb.Free.Monad.Common.

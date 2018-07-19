@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>DeepWeb.Util.Fresh</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library DeepWeb.Util.Fresh</h1>
+
+<div class="code">
+<span class="id" title="var">From</span> <span class="id" title="var">Custom</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Custom.Decidability.html#"><span class="id" title="library">Decidability</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="DeepWeb.Util.Common.html#"><span class="id" title="library">DeepWeb.Util.Common</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Inductive</span> <a name="fresh_for"><span class="id" title="inductive">fresh_for</span></a>: <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Prop</span> :=<br/>
+| <a name="nil_fresh"><span class="id" title="constructor">nil_fresh</span></a>: <span class="id" title="keyword">∀</span> <span class="id" title="var">n</span>, <a class="idref" href="DeepWeb.Util.Fresh.html#fresh_for"><span class="id" title="inductive">fresh_for</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nil"><span class="id" title="constructor">nil</span></a> <a class="idref" href="DeepWeb.Util.Fresh.html#n"><span class="id" title="variable">n</span></a><br/>
+| <a name="cons_fresh"><span class="id" title="constructor">cons_fresh</span></a>: <span class="id" title="keyword">∀</span> <span class="id" title="var">n</span> <span class="id" title="var">n'</span> <span class="id" title="var">l</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Util.Fresh.html#fresh_for"><span class="id" title="inductive">fresh_for</span></a> <a class="idref" href="DeepWeb.Util.Fresh.html#l"><span class="id" title="variable">l</span></a> <a class="idref" href="DeepWeb.Util.Fresh.html#n"><span class="id" title="variable">n</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Util.Fresh.html#n"><span class="id" title="variable">n</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#32263a1c8b01baecdff9deb038955bc9"><span class="id" title="notation">≠</span></a> <a class="idref" href="DeepWeb.Util.Fresh.html#n'"><span class="id" title="variable">n'</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Util.Fresh.html#fresh_for"><span class="id" title="inductive">fresh_for</span></a> (<a class="idref" href="DeepWeb.Util.Fresh.html#n'"><span class="id" title="variable">n'</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#0a8150c3c4df34d205c5ed9a427e2ed5"><span class="id" title="notation">::</span></a> <a class="idref" href="DeepWeb.Util.Fresh.html#l"><span class="id" title="variable">l</span></a>) <a class="idref" href="DeepWeb.Util.Fresh.html#n"><span class="id" title="variable">n</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">destruct_eq</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">H</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">a</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Arith.PeanoNat.html#97a8d8c92e88d1d68fb55a13a4fcfc6d"><span class="id" title="notation">=?</span></a> <span class="id" title="var">b</span>) <span class="id" title="var">eqn</span>:<span class="id" title="var">H</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">first</span> [<span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Arith.EqNat.html#beq_nat_true"><span class="id" title="lemma">beq_nat_true</span></a> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>; <span class="id" title="tactic">subst</span> | <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Arith.EqNat.html#beq_nat_false"><span class="id" title="lemma">beq_nat_false</span></a> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>].<br/>
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a name="fresh_for_dec"><span class="id" title="instance">fresh_for_dec</span></a> <span class="id" title="var">l</span> <span class="id" title="var">n</span>: <a class="idref" href="Custom.Decidability.html#Dec"><span class="id" title="class">Dec</span></a> (<a class="idref" href="DeepWeb.Util.Fresh.html#fresh_for"><span class="id" title="inductive">fresh_for</span></a> <a class="idref" href="DeepWeb.Util.Fresh.html#l"><span class="id" title="variable">l</span></a> <a class="idref" href="DeepWeb.Util.Fresh.html#n"><span class="id" title="variable">n</span></a>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>. <span class="id" title="tactic">unfold</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.ssr.ssrbool.html#decidable"><span class="id" title="definition">ssrbool.decidable</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">l</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">repeat</span> <span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">destruct</span> <span class="id" title="var">IHl</span>. <span class="id" title="var">destruct_eq</span> <span class="id" title="var">a</span> <span class="id" title="var">n</span> <span class="id" title="var">Heq</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">right</span>. <span class="id" title="tactic">intro</span>. <span class="id" title="tactic">inversion</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">congruence</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">left</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">right</span>. <span class="id" title="tactic">intro</span>. <span class="id" title="tactic">inversion</span> <span class="id" title="var">H</span>. <span class="id" title="var">contradiction</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a name="fresh_for_inv"><span class="id" title="lemma">fresh_for_inv</span></a>: <span class="id" title="keyword">∀</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">l</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Util.Fresh.html#fresh_for"><span class="id" title="inductive">fresh_for</span></a> (<a class="idref" href="DeepWeb.Util.Fresh.html#a"><span class="id" title="variable">a</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#0a8150c3c4df34d205c5ed9a427e2ed5"><span class="id" title="notation">::</span></a> <a class="idref" href="DeepWeb.Util.Fresh.html#l"><span class="id" title="variable">l</span></a>) <a class="idref" href="DeepWeb.Util.Fresh.html#b"><span class="id" title="variable">b</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Util.Fresh.html#fresh_for"><span class="id" title="inductive">fresh_for</span></a> <a class="idref" href="DeepWeb.Util.Fresh.html#l"><span class="id" title="variable">l</span></a> <a class="idref" href="DeepWeb.Util.Fresh.html#b"><span class="id" title="variable">b</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> 1; <span class="id" title="tactic">auto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">fresh_tac</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| [<span class="id" title="var">H</span>: <a class="idref" href="DeepWeb.Util.Fresh.html#fresh_for"><span class="id" title="inductive">fresh_for</span></a> (?<span class="id" title="var">n</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#0a8150c3c4df34d205c5ed9a427e2ed5"><span class="id" title="notation">::</span></a> <span class="id" title="var">_</span>) ?<span class="id" title="var">n</span> |- <span class="id" title="var">_</span>] ⇒ <span class="id" title="tactic">inversion</span> <span class="id" title="var">H</span>; <span class="id" title="tactic">congruence</span><br/>
+&nbsp;&nbsp;| [<span class="id" title="var">H1</span>: ?<span class="id" title="var">X</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#False"><span class="id" title="inductive">False</span></a> , <span class="id" title="var">H2</span>: ?<span class="id" title="var">X</span> |- <span class="id" title="var">_</span> ] ⇒ <span class="id" title="var">contradiction</span><br/>
+&nbsp;&nbsp;| [<span class="id" title="var">H1</span>: <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#611abc97cba304de784fa909dbdea1fa"><span class="id" title="notation">¬</span></a> ?<span class="id" title="var">X</span> , <span class="id" title="var">H2</span>: ?<span class="id" title="var">X</span> |- <span class="id" title="var">_</span> ] ⇒ <span class="id" title="var">contradiction</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>
