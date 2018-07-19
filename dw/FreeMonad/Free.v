@@ -144,21 +144,20 @@ CoFixpoint spin {E} {X} : M E X := Tau spin.
 (** An ITree that does one internal step and then returns. *)
 Definition tick {E} : M E unit := Tau (Ret tt).
 
-(** The void type is useful as a return type to [M], to enforce the
-    constraint that a given computation should never terminate. *)
-Inductive void : Type := .
-
-(** For example: *)
-(*
-CoFixpoint forever {E} {X} (x : M E X) : M E void :=
-  x ;; forever x.
-*)
-
 (** Lift a single event to an [M] action. *)
 Definition liftE Event X (e : Event X) : M Event X :=
   Vis e (fun x => Ret x).
 
-(** An infinite loop with a given body. *)
+(** The void type is useful as a return type to [M], to enforce the
+    constraint that a given computation should never terminate. *)
+Inductive void : Type := .
+
+(* An infinite loop with a given body. *)
+(* BCP: Why do we need both forever and loop? *)
+CoFixpoint forever {E} {X} (x : M E X) : M E void :=
+  x ;; forever x.
+
+(** An infinite loop with a given body that obviously never returns. *)
 CoFixpoint loop {E void} (body : M E unit) : M E void :=
   body;; loop body.
 
