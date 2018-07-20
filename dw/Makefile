@@ -60,6 +60,7 @@ html:
 	$(MAKE) -f Makefile.coq html
 
 clean:
+	-rm -rf ../_qc_dw.tmp/
 	$(MAKE) -f Makefile.coq clean
 
 .PHONY: html clean coq-qc test coq
