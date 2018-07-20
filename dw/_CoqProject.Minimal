@@ -1,0 +1,40 @@
+-Q Custom/ Custom
+-Q DeepWeb/ DeepWeb
+-R FreeMonad/ DeepWeb.Free.Monad
+
+Custom/List.v
+Custom/Monad.v
+Custom/Show.v
+Custom/String.v
+
+FreeMonad/Free.v
+FreeMonad/Event.v
+FreeMonad/Verif.v
+FreeMonad/Common.v
+FreeMonad/Spec.v
+FreeMonad/Semantics.v
+
+-I DeepWeb/Test
+
+DeepWeb/Lib/Util.v
+DeepWeb/Lib/NetworkAdapter.v
+DeepWeb/Lib/NetworkInterface.v
+DeepWeb/Lib/SocketConstants.v
+DeepWeb/Lib/SocketInterface.v
+DeepWeb/Lib/Socket.v
+DeepWeb/Lib/SimpleSpec.v
+DeepWeb/Lib/SimpleSpec_NetworkInterface.v
+DeepWeb/Lib/SimpleSpec_Observer.v
+DeepWeb/Lib/SimpleSpec_Descramble.v
+DeepWeb/Lib/SimpleSpec_ServerTrace.v
+
+DeepWeb/Spec/ServerDefs.v
+DeepWeb/Spec/Swap_SimpleSpec.v
+DeepWeb/Spec/Swap_CLikeSpec.v
+DeepWeb/Spec/SingleSwap_SimpleSpec.v
+DeepWeb/Spec/SingleSwapSequential_Impl.v
+
+DeepWeb/Test/Client.v
+DeepWeb/Test/Rand.v
+DeepWeb/Test/ExternalTest.v
+DeepWeb/Test/TestCLikeSpec.v

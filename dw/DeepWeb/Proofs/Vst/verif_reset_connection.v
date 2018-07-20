@@ -1,10 +1,15 @@
 Require Import String.
 
-From DeepWeb.Proofs.Vst
-     Require Import VstInit VstLib VerifHelpers Connection
-     reset_connection_spec Gprog.
+Require Import DeepWeb.Spec.Swap_CLikeSpec.
 
-Require Import DeepWeb.Spec.ITreeSpec.
+From DeepWeb.Spec.Vst
+     Require Import MainInit Gprog Representation reset_connection_spec.
+
+From DeepWeb.Lib
+     Require Import VstLib.
+
+From DeepWeb.Proofs.Vst
+     Require Import VerifLib Connection.
 
 Set Bullet Behavior "Strict Subproofs".
 

@@ -9,8 +9,8 @@ From Custom Require Import List.
 Import ListNotations.
 
 Require Import DeepWeb.Spec.ServerDefs.
-
 Require Import DeepWeb.Lib.Socket.
+Require Import DeepWeb.Lib.NetworkInterface.
 
 Require Import String.
 Require Import ZArith.
@@ -137,7 +137,7 @@ Definition is_complete (buffer_size : Z) (msg : string) :=
   Z.eqb (Z.of_nat (String.length msg)) buffer_size.
 
 Definition conn_read (buffer_size : Z)
-           (conn: connection) (last_full_msg : string) 
+           (conn: connection) (last_full_msg : string)
   : M SocketE (connection * string) :=
   let req_len := Z.of_nat (String.length (conn_request conn)) in
   or (r <- recv (conn_id conn) (Z.to_nat (buffer_size - req_len)) ;;
@@ -228,7 +228,7 @@ Definition select_loop_body
                 (fun c =>
                    if (has_conn_state RECVING c
                        || has_conn_state SENDING c)%bool then 
-                     (conn_id c =? conn_id conn')%nat
+                     (conn_id c = conn_id conn' ?)
                    else
                      false 
                 )
@@ -245,9 +245,12 @@ Definition select_loop (server_addr : endpoint_id) (buffer_size : Z)
            select_loop_body server_addr buffer_size server_st).
 
 (* TODO: Don't do [Z.to_nat port], just use the port as a binary constant. *)
-Definition server_ (port : Z) (buffer_size : Z) (ini_msg : string) :=
-  (or (listen (Z.to_nat port) ;;
-       select_loop (Z.to_nat port) buffer_size (true, ([], ini_msg))
+Definition server_
+           (endpoint : endpoint_id)
+           (buffer_size : Z)
+           (ini_msg : string) :=
+  (or (listen endpoint ;;
+       select_loop endpoint buffer_size (true, ([], ini_msg))
        ;; ret tt)
       (ret tt) ).
 
@@ -255,9 +258,9 @@ Definition server := server_ SERVER_PORT BUFFER_SIZE INIT_MSG.
 
 (* Alternative instantiation with smaller constants for testing. *)
 
-Require Import DeepWeb.Lib.TestDefaults.
+Module Def := DeepWeb.Lib.Util.TestDefault.
 
 Definition test_server := server_
-                            (Z.of_nat default_endpoint)
-                            (Z.of_nat default_buffer_size)
-                            default_init_message.
+                            Def.endpoint
+                            (Z.of_nat Def.buffer_size)
+                            Def.init_message.

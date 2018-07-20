@@ -9,6 +9,8 @@ From Coq Require Export
 
 From QuickChick Require Import QuickChick.
 
+Infix ":::" := String (at level 60, right associativity) : string_scope.
+
 Definition ascii_eq (l r : Ascii.ascii) : bool :=
   match l , r with
     | Ascii.Ascii l1 l2 l3 l4 l5 l6 l7 l8 ,
@@ -202,12 +204,12 @@ Global Instance shrinkAscii : Shrink ascii :=
 
 Fixpoint shrinkStringAux (s:string) :=
   match s with
-  | EmptyString => []
-  | String c cs =>
-           [cs]
-        ++ List.map (fun c' => String c' cs) (shrink c)
-        ++ List.map (fun cs' => String c cs') (shrinkStringAux cs)
-  end%list.
+  | "" => nil
+  | c ::: cs =>
+    (  [cs]
+    ++ List.map (fun c' => String c' cs) (shrink c)
+    ++ List.map (fun cs' => String c cs') (shrinkStringAux cs))%list
+  end.
 
 Global Instance shrinkString : Shrink string :=
   {| shrink := shrinkStringAux |}.

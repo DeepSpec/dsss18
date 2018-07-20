@@ -1,11 +1,16 @@
 Require Import String.
 
-From DeepWeb.Proofs.Vst
-     Require Import VstInit VstLib VerifHelpers
-     SocketSpecs SocketTactics Gprog MonadExports
-     Connection conn_read_spec AppLogic.
+Require Import DeepWeb.Spec.Swap_CLikeSpec.
 
-Require Import DeepWeb.Spec.ITreeSpec.
+From DeepWeb.Spec.Vst
+     Require Import MainInit Gprog SocketSpecs MonadExports
+     Representation AppLogic conn_read_spec.
+
+From DeepWeb.Lib
+     Require Import VstLib.
+
+From DeepWeb.Proofs.Vst
+     Require Import VerifLib SocketTactics Connection.
 
 Import SockAPIPred.
 Import TracePred.
@@ -67,9 +72,17 @@ Proof.
   rem_ptr buf_ptr.
     
   unfold conn_read.
+
+  replace (BUFFER_SIZE - Z.of_nat (String.length (conn_request conn)))
+    with (1024 - Zlength (val_of_string (conn_request conn))).
+  2 : {
+    unfold BUFFER_SIZE.
+    autorewrite_sublist.
+    reflexivity.
+  } 
   
   forward_recv fd buf_ptr
-               (1024 - Zlength (val_of_string (conn_request conn))).
+  (1024 - Zlength (val_of_string (conn_request conn))).
   { (* buffer pointer equality *)
     apply prop_right; repeat split; auto.
     subst; simpl.
@@ -271,9 +284,10 @@ Proof.
                 Zlength (val_of_string (conn_request conn ++ msg)),
                 Tsh).
   { apply prop_right; repeat split; auto.
+    - simpl; repeat f_equal.
+      autorewrite_sublist; reflexivity.
     - rewrite field_address_offset; [| assumption].
       auto.
-    - simpl. autorewrite_sublist. reflexivity.
   }
 
   {
@@ -292,6 +306,7 @@ Proof.
   thaw FR1.
   simpl.
 
+  (*
   replace (Zlength _ >? _) with false.
 
   2 : {
@@ -314,7 +329,7 @@ Proof.
     omega.
 
   } 
-    
+  *)
   
   forward_if.
   {

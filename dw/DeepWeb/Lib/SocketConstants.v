@@ -1,8 +1,6 @@
 (* POSIX socket API constants *)
 
 Require Import Coq.ZArith.ZArith.
-From Custom Require Import
-     Decidability.
 
 Definition YES : Z := 0.
 Definition NO : Z := -1.

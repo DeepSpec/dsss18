@@ -19,8 +19,7 @@ Require Import DeepWeb.Free.Monad.Common.
 Import SumNotations.
 Import NonDeterminismBis.
 
-Require Import DeepWeb.Util.ByteType.
-
+Require Import DeepWeb.Lib.Util.
 Require Import DeepWeb.Lib.NetworkInterface.
 Require Import DeepWeb.Lib.SimpleSpec.
 
@@ -39,7 +38,7 @@ CoFixpoint swap_spec_loop
   itree_spec :=
   disj "swap_spec"
     ( (* Accept a new connection. *)
-      c <- ^ ObsConnect;;
+      c <- obs_connect;;
       swap_spec_loop buffer_size (c :: conns) last_msg
     | (* Exchange one pair of messages on a connection. *)
       c <- choose "do swap" conns;;
@@ -53,11 +52,11 @@ Definition swap_spec_
            (init_msg : bytes) : itree_spec :=
   swap_spec_loop buffer_size [] init_msg.
 
-Require Import DeepWeb.Lib.TestDefaults.
+Module Def := Lib.Util.TestDefault.
 
 Definition swap_spec_def : itree_spec :=
-  swap_spec_ default_buffer_size
-             default_init_message.
+  swap_spec_ Def.buffer_size
+             Def.init_message.
 
 Section ExampleTraces.
 

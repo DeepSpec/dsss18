@@ -19,8 +19,7 @@ Require Import DeepWeb.Free.Monad.Common.
 Import SumNotations.
 Import NonDeterminismBis.
 
-Require Import DeepWeb.Util.ByteType.
-
+Require Import DeepWeb.Lib.Util.
 Require Import DeepWeb.Lib.NetworkInterface.
 Require Import DeepWeb.Lib.SimpleSpec.
 
@@ -38,7 +37,7 @@ CoFixpoint swap_spec_loop
            (last_msg : bytes) :
   itree_spec :=
   (* Accept a new connection. *)
-  c <- ^ ObsConnect;;
+  c <- obs_connect;;
   (* Exchange one pair of messages. *)
   msg <- obs_msg_to_server buffer_size c;;
   obs_msg_from_server c last_msg;;
@@ -50,14 +49,16 @@ Definition init_msg (buffer_size : nat) :=
 Definition swap_spec_ buffer_size :=
   swap_spec_loop buffer_size [] (init_msg buffer_size).
 
-Definition swap_spec_def := swap_spec_ 3.
+Module Def := Util.TestDefault.
+
+Definition swap_spec := swap_spec_ Def.buffer_size.
 
 Section ExampleTraces.
 
 Import EventNotations.
 
 Example trace_example :
-  true = is_trace_of 100 swap_spec_def [
+  true = is_trace_of 100 swap_spec [
     0 !;
     0 <-- "a";
     0 <-- "b";
@@ -76,7 +77,7 @@ Example trace_example :
 Proof. reflexivity. Qed.
 
 Example trace_example2 :
-  false = is_trace_of 100 swap_spec_def [
+  false = is_trace_of 100 swap_spec [
     0 !;
     0 <-- "a";
     0 <-- "b";
@@ -87,7 +88,7 @@ Example trace_example2 :
 Proof. reflexivity. Qed.
 
 Example scrambled_trace_example :
-  Found = is_scrambled_trace_of 1000 swap_spec_def [
+  Found = is_scrambled_trace_of 1000 swap_spec [
     0 !;
     1 !;
     0 <-- "a";
@@ -106,7 +107,7 @@ Example scrambled_trace_example :
 Proof. reflexivity. Qed.
 
 Example scrambled_trace_example_2 :
-  Found = is_scrambled_trace_of 1000 swap_spec_def [
+  Found = is_scrambled_trace_of 1000 swap_spec [
     0 !;
     1 !;
     0 <-- "a";
@@ -125,7 +126,7 @@ Example scrambled_trace_example_2 :
 Proof. reflexivity. Qed.
 
 Example scrambled_trace_example_3 :
-  NotFound = is_scrambled_trace_of 1000 swap_spec_def [
+  NotFound = is_scrambled_trace_of 1000 swap_spec [
     0 !;
     1 !;
     0 <-- "a";
@@ -141,7 +142,7 @@ Example scrambled_trace_example_3 :
 Proof. reflexivity. Qed.
 
 Example bad_scrambled_trace_example :
-  NotFound = is_scrambled_trace_of 1000 swap_spec_def [
+  NotFound = is_scrambled_trace_of 1000 swap_spec [
     0 !;
     1 !;
     2 !;

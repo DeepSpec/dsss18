@@ -1,8 +1,14 @@
 Require Import String.
 
+From DeepWeb.Spec.Vst
+     Require Import MainInit Gprog
+     Representation new_store_spec.
+
+From DeepWeb.Lib
+     Require Import VstLib.
+
 From DeepWeb.Proofs.Vst
-     Require Import VstInit VstLib VerifHelpers Gprog
-     Store new_store_spec.
+     Require Import VerifLib Store.
 
 Set Bullet Behavior "Strict Subproofs".
 

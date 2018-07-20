@@ -1,10 +1,16 @@
 Require Import String.
 
-From DeepWeb.Proofs.Vst
-     Require Import VstInit VstLib VerifHelpers Connection Store
-     populate_response_spec SocketSpecs Gprog LibrarySpecs.
+Require Import DeepWeb.Spec.Swap_CLikeSpec.
 
-Require Import DeepWeb.Spec.ITreeSpec.
+From DeepWeb.Spec.Vst
+     Require Import MainInit Gprog Representation
+     populate_response_spec SocketSpecs LibrarySpecs.
+
+From DeepWeb.Lib
+     Require Import VstLib.
+
+From DeepWeb.Proofs.Vst
+     Require Import VerifLib Connection Store.
 
 Open Scope list.
 Open Scope logic.

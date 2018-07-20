@@ -1,9 +1,16 @@
-From DeepWeb.Proofs.Vst
-     Require Import VstInit VstLib VerifHelpers
-     SocketSpecs SocketTactics Gprog
-     Connection monitor_connections_spec AppLogic AppLib.
 
-Require Import DeepWeb.Spec.ITreeSpec.
+Require Import DeepWeb.Spec.Swap_CLikeSpec.
+
+From DeepWeb.Spec.Vst
+     Require Import MainInit Gprog
+     SocketSpecs AppLogic Representation monitor_connections_spec.
+
+From DeepWeb.Lib
+     Require Import VstLib.
+
+From DeepWeb.Proofs.Vst
+     Require Import VerifLib SocketTactics
+     Connection AppLib.
 
 Import FDSetPred.
 
@@ -165,7 +172,7 @@ Proof.
     Intros read_set' max_fd1.
 
     thaw FR2; simpl.
-    freeze [0; 2; 3; 4; 5; 6; 7; 8; 9; 10; 11; 12] FR2; simpl.
+    freeze [0; 2; 3; 4; 5; 6; 7; 8; 9; 10; 11] FR2; simpl.
 
     (* Repeat *)
     match goal with
@@ -288,7 +295,7 @@ Proof.
       ];
       try solve [destruct conn; simpl;
                  unfold has_conn_state in Hstate;
-                 destruct Custom.Decidability.dec; auto; discriminate].
+                 destruct QuickChick.Decidability.dec; auto; discriminate].
      
 
     Local Ltac use_hyp :=

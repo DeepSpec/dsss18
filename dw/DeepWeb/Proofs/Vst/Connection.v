@@ -1,20 +1,21 @@
 Require Import String.
 
-Require Import DeepWeb.Spec.ITreeSpec.
+From DeepWeb.Spec
+     Require Import Vst.MainInit 
+     Vst.Representation Swap_CLikeSpec.
+
+From DeepWeb.Lib
+     Require Import VstLib Socket.
 
 From DeepWeb.Proofs.Vst
-     Require Import VstInit VstLib VerifHelpers.
+     Require Import VerifLib.
 
-Require Export DeepWeb.Lib.Socket.
-Export SocketAPI.
+Import SocketAPI.
 
 Open Scope logic.
 Open Scope list.
 
 Set Bullet Behavior "Strict Subproofs".
-
-Instance LS: listspec _connection _next (fun _ _ => emp).
-Proof. eapply mk_listspec; reflexivity. Defined.
 
 Section Lseg_Lemmas.
 
@@ -47,40 +48,6 @@ Section Lseg_Lemmas.
 End Lseg_Lemmas.
 
 (************************* Representation and Lemmas **************************)
-
-(*
-Check lseg.
-Eval compute in (elemtype LS).
-Eval compute in ((reptype (Tstruct _connection noattr))).
- *)
-
-Definition rep_connection_state (st : connection_state) :
-  reptype (nested_field_type (Tstruct _connection noattr)
-                             [StructField _st]) :=
-  Vint (Int.repr 
-          match st with
-          | RECVING => 0
-          | SENDING => 1
-          | DONE => 2
-          | DELETED => 3
-          end
-       ).
-
-Definition rep_connection (conn : connection) (fd : sockfd)
-  : elemtype LS :=
-  let fd_rep := Vint (Int.repr (descriptor fd)) in
-  let request_len_rep := rep_msg_len (conn_request conn) in
-  let request_rep := rep_msg (conn_request conn) BUFFER_SIZE in
-  let response_len_rep := rep_msg_len (conn_response conn) in
-  let response_rep := rep_msg (conn_response conn) BUFFER_SIZE in
-  let conn_state_rep := rep_connection_state (conn_state conn) in  
-  (fd_rep,
-   (request_len_rep,
-    (request_rep,
-     (response_len_rep,
-      (response_rep,
-       (Vint (Int.repr (conn_response_bytes_sent conn)),
-        conn_state_rep)))))).
 
 Lemma connection_list_cell_eq:
   forall (sh : share) (fd_rep : val)
@@ -122,23 +89,6 @@ Proof.
   repeat (rewrite sepcon_assoc).
   auto.
 Qed.
-
-Definition proj_conn (conn_fd_ptr : connection * sockfd * val) :=
-  let '(conn, fd, ptr) := conn_fd_ptr in conn.
-
-Definition proj_fd (conn_fd_ptr : connection * sockfd * val) :=
-  let '(conn, fd, ptr) := conn_fd_ptr in fd.
-
-Definition proj_ptr (conn_fd_ptr : connection * sockfd * val) :=
-  let '(conn, fd, ptr) := conn_fd_ptr in ptr.
-
-Definition rep_full_conn (conn_fd_ptr : connection * sockfd * val)
-  : val * elemtype LS :=
-  let '(conn, fd, ptr) := conn_fd_ptr in (ptr, rep_connection conn fd).
-
-Instance connection_triple_has_conn_state
-  : HasConnectionState (connection * sockfd * val).
-Proof. constructor. intros [[conn ?] ?]; destruct conn; assumption. Defined.
 
 Lemma filter_proj_commutes {X Y : Type} (proj: X -> Y)
       (p1 : X -> bool) (p2 : Y -> bool) :

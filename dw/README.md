@@ -28,10 +28,9 @@ Then run
 
     make
 
+The proofs are currently not built as they are not compatible with VST 2.2.
+
 Reading
 -------
 
 The top-level spec lives in Spec/TopLevelSpec.v
-
-
-

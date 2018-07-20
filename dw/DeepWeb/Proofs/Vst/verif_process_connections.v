@@ -1,11 +1,19 @@
 Require Import String.
 
-From DeepWeb.Proofs.Vst
-     Require Import VstInit VstLib VerifHelpers
-     SocketSpecs SocketTactics Gprog MonadExports
-     Connection Store process_connections_spec AppLogic AppLib.
+Require Import DeepWeb.Spec.Swap_CLikeSpec.
 
-Require Import DeepWeb.Spec.ITreeSpec.
+From Custom Require Import List.
+
+From DeepWeb.Spec.Vst
+     Require Import MainInit Gprog SocketSpecs MonadExports
+     Representation AppLogic process_connections_spec.
+
+From DeepWeb.Lib
+     Require Import VstLib.
+
+From DeepWeb.Proofs.Vst
+     Require Import VerifLib SocketTactics 
+     Connection Store AppLib.
 
 Import SockAPIPred.
 Import TracePred.
@@ -75,7 +83,7 @@ Definition process_loop_sep_invar
            (curr_ptr : val)
   :=
     [SOCKAPI st ;
-     TRACE ( (select_loop
+     ITREE ( (select_loop
                 server_addr
                 BUFFER_SIZE
                 (true, (map proj_conn (prefix ++ suffix), last_msg)))
@@ -396,7 +404,7 @@ Proof.
          )
        (LOCALx locs
        (SEPx ( SOCKAPI st' ::
-               TRACE (tr (conn', fd, ptr) last_msg') ::
+               ITREE (tr (conn', fd, ptr) last_msg') ::
                list_cell LS Tsh (rep_connection conn' fd) ptr ::
                field_at Tsh (Tstruct _store noattr) []
                         (rep_store last_msg') msg_store_ptr ::
@@ -417,8 +425,8 @@ Proof.
       rewrite while_loop_unfold.
       simpl.
       rewrite trace_bind_assoc.
-      take_branch1 2.
       take_branch2 2.
+      rewrite trace_bind_assoc.
 
       assert (socket_ready = 1) by omega.
 
@@ -531,9 +539,8 @@ Proof.
       }
 
       (* Choose conn in interaction tree. *)
-      rewrite trace_bind_assoc.
       rem_trace_tail process_tr.
-      replace_SEP 2 (TRACE (process_tr conn)).
+      replace_SEP 2 (ITREE (process_tr conn)).
       {
         go_lower.
         apply internal_nondet3.
@@ -565,7 +572,7 @@ Proof.
         destruct conn_recving_sending as [Hconn_st | Hconn_st];
           [left | right];
           unfold has_conn_state in Hconn_st;
-          destruct Custom.Decidability.dec; try discriminate; auto.
+          destruct QuickChick.Decidability.dec; try discriminate; auto.
       }
 
             
@@ -724,16 +731,16 @@ Proof.
       
       - (* discriminator *)
         intros.
-        apply (conditional_id_iff
-                 (fun y => (has_conn_state RECVING y
-                         || has_conn_state SENDING y)%bool)).
+        rewrite conditional_bool.
+        rewrite conditional_dec_true.
+        reflexivity.
         
       - (* conn_id the same and matches filter condition *)
         split; auto.
         apply orb_true_intro.
         destruct conn_RECVING_or_SENDING; [left | right];
           unfold has_conn_state;
-          destruct (Custom.Decidability.dec);
+          destruct (QuickChick.Decidability.dec);
           auto;
           tauto.
 
@@ -758,7 +765,7 @@ Proof.
           destruct conn_RECVING_or_SENDING;
             [left | right];
             unfold has_conn_state;
-            destruct (Custom.Decidability.dec);
+            destruct (QuickChick.Decidability.dec);
             auto;
             tauto.
         }
@@ -817,7 +824,13 @@ Proof.
 
     thaw FR1; simpl.
 
-    forward.
+    forward.    
+
+    gather_SEP 2 7 8.
+    Intros.
+    gather_SEP 0 8 2 1.
+    fold_conn_cell_into_prefix.
+    Intros.    
 
     unfold inv, process_loop_invar.
 
@@ -826,11 +839,6 @@ Proof.
     Exists st'.
     Exists last_msg'.
     Exists tail.
-
-    gather_SEP 2 7 9 8.
-
-    fold_conn_cell_into_prefix.
-    Intros.
         
     go_lower.
     repeat apply andp_right; auto.

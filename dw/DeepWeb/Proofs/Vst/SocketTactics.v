@@ -1,6 +1,11 @@
+From DeepWeb.Spec.Vst
+     Require Import MainInit SocketSpecs MonadExports.
+
+From DeepWeb.Lib
+     Require Import VstLib.
 
 From DeepWeb.Proofs.Vst
-     Require Import VstInit VstLib VerifHelpers SocketSpecs MonadExports.
+     Require Import VerifLib.
 
 Import SockAPIPred.
 Import TracePred.
@@ -32,7 +37,7 @@ Ltac forward_recv fd buf_ptr alloc_len :=
   intro_trace_or_incl HTrace left_tree;
   simpl_trace_incl HTrace;
   match goal with
-  | [H: trace_incl (bind (recv ?client_conn) ?k) ?t |- _] =>
+  | [H: trace_incl (bind (recv ?client_conn _) ?k) ?t |- _] =>
     match goal with
     | [|- context[SOCKAPI ?st]] =>
       match goal with
@@ -92,6 +97,19 @@ Ltac forward_shutdown fd :=
   end;
   clear HTrace.
 
+Ltac forward_listen fd backlog :=
+  let HTrace := fresh "HTrace" in
+  let left_tree := fresh "left_tree" in 
+  intro_trace_or_incl HTrace left_tree;
+  simpl_trace_incl HTrace;
+  match goal with
+  | [H: trace_incl (bind (listen ?addr) (fun _ => ?k)) ?t |- _] =>
+    match goal with
+    | [|- context[SOCKAPI ?st]] =>
+      forward_call (t, k, addr, st, fd, backlog)
+    end
+  end;
+  subst left_tree; clear HTrace.
 
 Ltac init_fd_set fdset ptr idx :=
   let H := fresh "H" in 
