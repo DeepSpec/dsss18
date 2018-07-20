@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>DeepWeb.Test.TestCLikeSpec</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library DeepWeb.Test.TestCLikeSpec</h1>
+
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Type</span><span class="id" title="var">classes</span> <span class="id" title="tactic">eauto</span> := 6.<br/>
+
+<br/>
+<span class="id" title="var">From</span> <span class="id" title="var">QuickChick</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="library">QuickChick</span>.<br/>
+<span class="id" title="var">From</span> <span class="id" title="var">ExtLib</span> <span class="id" title="keyword">Require</span> <span class="id" title="library">Monad</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.Ascii.html#"><span class="id" title="library">Ascii</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#"><span class="id" title="library">String</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#"><span class="id" title="library">List</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.PArith.PArith.html#"><span class="id" title="library">PArith</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Vectors.Fin.html#"><span class="id" title="library">Fin</span></a>.<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">ListNotations</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="DeepWeb.Free.Monad.Free.html#"><span class="id" title="library">DeepWeb.Free.Monad.Free</span></a>.<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">MonadNotations</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="DeepWeb.Free.Monad.Common.html#"><span class="id" title="library">DeepWeb.Free.Monad.Common</span></a>.<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">SumNotations</span>.<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">NonDeterminismBis</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="DeepWeb.Free.Monad.Spec.html#"><span class="id" title="library">DeepWeb.Free.Monad.Spec</span></a>.<br/>
+
+<br/>
+<span class="id" title="var">From</span> <span class="id" title="var">DeepWeb</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec.html#"><span class="id" title="library">Lib.SimpleSpec</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.NetworkAdapter.html#"><span class="id" title="library">Lib.NetworkAdapter</span></a>.<br/>
+
+<br/>
+<span class="id" title="var">From</span> <span class="id" title="var">DeepWeb.Spec</span> <span class="id" title="keyword">Require</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#"><span class="id" title="library">Swap_CLikeSpec</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_SimpleSpec.html#"><span class="id" title="library">Swap_SimpleSpec</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="swap_server"><span class="id" title="definition">swap_server</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkInterface.html#itree_server"><span class="id" title="definition">itree_server</span></a> :=<br/>
+&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.NetworkAdapter.html#simplify_network"><span class="id" title="definition">simplify_network</span></a> <a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#test_server"><span class="id" title="definition">Swap_CLikeSpec.test_server</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="random_trace_server"><span class="id" title="definition">random_trace_server</span></a> :=<br/>
+&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#random_trace"><span class="id" title="definition">random_trace</span></a> 500 10 <a class="idref" href="DeepWeb.Test.TestCLikeSpec.html#swap_server"><span class="id" title="definition">swap_server</span></a>.<br/>
+
+<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="test"><span class="id" title="definition">test</span></a> :=<br/>
+&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#check_trace_incl_def"><span class="id" title="definition">check_trace_incl_def</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_SimpleSpec.html#swap_spec_def"><span class="id" title="definition">Swap_SimpleSpec.swap_spec_def</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Test.TestCLikeSpec.html#swap_server"><span class="id" title="definition">swap_server</span></a>.<br/>
+
+<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <a class="idref" href="DeepWeb.Spec.SingleSwap_SimpleSpec.html#"><span class="id" title="library">DeepWeb.Spec.SingleSwap_SimpleSpec</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <a class="idref" href="DeepWeb.Spec.SingleSwapSequential_Impl.html#"><span class="id" title="library">DeepWeb.Spec.SingleSwapSequential_Impl</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <a name="SingleSwap"><span class="id" title="module">SingleSwap</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="SingleSwap.spec"><span class="id" title="definition">spec</span></a> := <a class="idref" href="DeepWeb.Spec.SingleSwap_SimpleSpec.html#swap_spec"><span class="id" title="definition">SingleSwap_SimpleSpec.swap_spec</span></a>.<br/>
+<span class="id" title="keyword">Definition</span> <a name="SingleSwap.impl"><span class="id" title="definition">impl</span></a> := <a class="idref" href="DeepWeb.Spec.SingleSwapSequential_Impl.html#server"><span class="id" title="definition">SingleSwapSequential_Impl.server</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="SingleSwap.test"><span class="id" title="definition">test</span></a> :=<br/>
+&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#check_trace_incl_def"><span class="id" title="definition">check_trace_incl_def</span></a> <a class="idref" href="DeepWeb.Test.TestCLikeSpec.html#SingleSwap.spec"><span class="id" title="definition">spec</span></a> <a class="idref" href="DeepWeb.Test.TestCLikeSpec.html#SingleSwap.impl"><span class="id" title="definition">impl</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="DeepWeb.Test.TestCLikeSpec.html#SingleSwap"><span class="id" title="module">SingleSwap</span></a>.<br/>
+
+<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>DeepWeb.Test.Client</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library DeepWeb.Test.Client</h1>
+
+<div class="code">
+<span class="id" title="var">From</span> <span class="id" title="var">Coq</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.extraction.Extraction.html#"><span class="id" title="library">Extraction</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#"><span class="id" title="library">String</span></a>.<br/>
+
+<br/>
+<span class="id" title="var">From</span> <span class="id" title="var">DeepWeb</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.Util.html#"><span class="id" title="library">Lib.Util</span></a>.<br/>
+
+<br/>
+
+<br/>
+<span class="id" title="keyword">Parameter</span> <a name="file_descr"><span class="id" title="axiom">file_descr</span></a> : <span class="id" title="keyword">Type</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Parameter</span> <a name="close"><span class="id" title="axiom">close</span></a>  : <a class="idref" href="DeepWeb.Test.Client.html#file_descr"><span class="id" title="axiom">file_descr</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>.<br/>
+<span class="id" title="keyword">Parameter</span> <a name="init"><span class="id" title="axiom">init</span></a>   : <span class="id" title="keyword">∀</span> {<span class="id" title="var">A</span>}, <a class="idref" href="DeepWeb.Test.Client.html#A"><span class="id" title="variable">A</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Test.Client.html#A"><span class="id" title="variable">A</span></a>.<br/>
+<span class="id" title="keyword">Parameter</span> <a name="log"><span class="id" title="axiom">log</span></a>    : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>.<br/>
+<span class="id" title="keyword">Parameter</span> <a name="recvb"><span class="id" title="axiom">recvb</span></a>  : <a class="idref" href="DeepWeb.Test.Client.html#file_descr"><span class="id" title="axiom">file_descr</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#option"><span class="id" title="inductive">option</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a>.<br/>
+<span class="id" title="keyword">Parameter</span> <a name="sendb"><span class="id" title="axiom">sendb</span></a>  : <a class="idref" href="DeepWeb.Test.Client.html#file_descr"><span class="id" title="axiom">file_descr</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>.<br/>
+<span class="id" title="keyword">Parameter</span> <a name="socket"><span class="id" title="axiom">socket</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Test.Client.html#file_descr"><span class="id" title="axiom">file_descr</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Extract</span> <span class="id" title="var">Constant</span> <span class="id" title="var">file_descr</span> ⇒ "Unix.file_descr".<br/>
+
+<br/>
+<span class="id" title="keyword">Extract</span> <span class="id" title="var">Constant</span> <span class="id" title="var">close</span>  ⇒ "fun sock -&gt;
+  Unix.shutdown sock Unix.SHUTDOWN_ALL".<br/>
+<span class="id" title="keyword">Extract</span> <span class="id" title="var">Constant</span> <span class="id" title="var">init</span> ⇒ "fun x -&gt;
+  ignore (Unix.system ""make server"");
+  Unix.sleep 1;
+  x".<br/>
+<span class="id" title="keyword">Extract</span> <span class="id" title="var">Constant</span> <span class="id" title="var">log</span> ⇒ "fun cl -&gt;
+  let str =
+    Bytes.to_string (
+      let s = Bytes.create (List.length cl) in
+      let rec copy i = function
+      | [] -&gt; s
+      | c :: l -&gt; Bytes.set s i c; copy (i+1) l
+      in copy 0 cl) in
+  let out = open_out_gen [Open_wronly; Open_append; Open_creat; Open_text]
+                0o666 ""/tmp/client_log"" in
+  output_string out (str ^ ""\n"");
+  close_out out".<br/>
+<span class="id" title="keyword">Extract</span> <span class="id" title="var">Constant</span> <span class="id" title="var">recvb</span>  ⇒ "fun sock -&gt;
+  let bs = Bytes.create 1 in
+  match Unix.recv sock bs 0 1 [] with
+  | exception Unix.Unix_error(Unix.EAGAIN, _, _) -&gt;
+     None
+  | 0 -&gt; None
+  | k -&gt;
+     if k = 1 then
+       Some (Bytes.get bs 0)
+     else
+       None".<br/>
+<span class="id" title="keyword">Extract</span> <span class="id" title="var">Constant</span> <span class="id" title="var">sendb</span>  ⇒ "fun sock c -&gt;
+  Unix.send sock (Bytes.make 1 c) 0 1 []".<br/>
+<span class="id" title="keyword">Extract</span> <span class="id" title="var">Constant</span> <span class="id" title="var">socket</span> ⇒ "fun _ -&gt;
+  let open Unix in
+  let sock = socket PF_INET SOCK_STREAM 0 in
+  connect sock (ADDR_INET (inet_addr_loopback, 8000));
+  setsockopt_float sock SO_RCVTIMEO 0.;
+  sock".<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>
