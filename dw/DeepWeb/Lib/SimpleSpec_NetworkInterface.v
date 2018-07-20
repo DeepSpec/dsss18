@@ -9,6 +9,7 @@ Import MonadNotations.
 Require Import DeepWeb.Lib.Util.
 
 (* A simple interface of server-side network effects. *)
+(* SHOW *)
 Inductive networkE : Type -> Type :=
 | Accept   : networkE connection_id
 | RecvByte : connection_id -> networkE byte
@@ -18,6 +19,7 @@ Inductive networkE : Type -> Type :=
 (* A server is a program with internal nondeterminism and
    external network effects. *)
 Definition serverE := nondetE +' networkE.
+(* /SHOW *)
 
 (* The server itree type. *)
 Definition itree_server := M (nondetE +' networkE) unit.

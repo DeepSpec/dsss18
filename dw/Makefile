@@ -15,6 +15,13 @@ endif
 VST_DIRS= msl sepcomp veric floyd progs
 VSTFLAGS= -Q $(CC_LOC) compcert $(foreach d, $(VST_DIRS), -Q $(VST_LOC)/$(d) VST.$(d))
 
+SERVER = out/dw-swap-server
+EXCLUDE= Proofs Spec/TopLevelSpec.v Spec/Vst/ Proofs/ Spec/main.v Lib/VstLib.v FreeMonad/
+OCAMLBUILDFLAGS=-libs unix,str
+MINI_CLIENT = Test/mini_client.native
+QC = quickChick -color -top "" -ocamlbuild '$(OCAMLBUILDFLAGS)' \
+	 -cmd 'cp ../dw/CONFIGURE .; $(MAKE) coq-qc' $(QCFLAGS) -exclude $(EXCLUDE)
+
 coq: Makefile.coq $(EXTR_BIN)
 	@$(MAKE) -f $<
 
@@ -28,9 +35,31 @@ _CoqProject: _CoqProject.Minimal _CoqProject.Vst
 _CoqProject.Vst:
 	touch _CoqProject.Vst
 
-.PHONY: html
+test:
+	echo "-Q . ''" > _CoqProject
+	cat ../dw/_CoqProject.Minimal >> _CoqProject
+	touch _CoqProject.Minimal
+	$(QC)
+	$(MAKE) stop
+
+$(SERVER): DeepWeb/Spec/main.c DeepWeb/Spec/macros.h
+	mkdir -p out/
+	$(CC) -IDeepWeb/Spec/ $< -o $@
+
+server: $(SERVER) stop
+	exec $< &
+
+stop:
+	@if [ -n "$$(pgrep $(SERVER))" ]; then pkill $(SERVER); fi
+
+coq-qc: $(SERVER)
+	coq_makefile -f _CoqProject -o Makefile.coq
+	$(MAKE) -f Makefile.coq
+
 html:
 	$(MAKE) -f Makefile.coq html
 
 clean:
-# 	TODO
+	$(MAKE) -f Makefile.coq clean
+
+.PHONY: html clean coq-qc test coq

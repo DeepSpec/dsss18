@@ -288,9 +288,12 @@ Fixpoint to_result (fuel : nat) (m : M emptyE bool) : result :=
     end
   end.
 
+(* SHOW *)
+(* BCP: This will probably move up too. *)
 Definition is_scrambled_trace_of
            (fuel : nat) (s : itree_spec) (t : trace) : result :=
   to_result fuel (find' [intersect_trace s t]).
 
 (* We will then generate traces produced by a server to test them.
    See [Lib/SimpleSpec_ServerTrace.v] *)
+(* /SHOW *)

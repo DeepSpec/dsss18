@@ -145,36 +145,24 @@ Section Failure.
 Inductive failureE : Type -> Type :=
 | Fail : string -> failureE void.
 
-Class HasFailure (E : Type -> Type) :=
-  { Fail_ : string -> E void }.
-
-Global Instance default_HasFailure `{Convertible failureE E}
-  : HasFailure E :=
-  { Fail_ reason := convert (Fail reason) }.
-
-Definition fail `{HasFailure E} {X} (reason : string)
+Definition fail `{failureE -< E} {X} (reason : string)
   : M E X :=
-  Vis (Fail_ reason) (fun v : void => match v with end).
+  Vis (convert (Fail reason)) (fun v : void => match v with end).
 
 End Failure.
 
+Module Export Basic.
 Section NonDeterminism.
 
 Inductive nondetE : Type -> Type :=
 | Or : nondetE bool.
 
-Class HasNondet (E : Type -> Type) := { Or_ : E bool }.
-
-Global Instance default_HasNondet `{Convertible nondetE E}
-  : HasNondet E :=
-  { Or_ := convert Or }.
-
-Definition or `{HasNondet E} {X} (k1 k2 : M E X)
+Definition or `{nondetE -< E} {X} (k1 k2 : M E X)
   : M E X :=
-  Vis Or_ (fun b : bool => if b then k1 else k2).
+  Vis (convert Or) (fun b : bool => if b then k1 else k2).
 
 (* This can fail if the list is empty. *)
-Definition choose `{HasNondet E} `{HasFailure E} {X}
+Definition choose `{nondetE -< E} `{failureE -< E} {X}
   : list X -> M E X := fix choose' xs : M E X :=
   match xs with
   | [] => fail "choose: No choice left"
@@ -196,17 +184,21 @@ Definition select {X} : list X -> list (X * list X) :=
   select' [].
 
 End NonDeterminism.
+End Basic.
 
 (* Another more flexible and informative variant of [nondetE]
    (that also incorporates something like [failureE]). *)
 Module NonDeterminismBis.
   Import List.
 
+  (* Nodes can be of any arity. They are annotated with
+     a string to help debugging. *)
   Inductive nondetE : Type -> Type :=
   | Or : forall (n : nat), string -> nondetE (Fin.t n).
 
   Arguments Or n reason : clear implicits.
 
+  (* [Or] nodes can have no children ([n = 0]), like [failureE]. *)
   Definition fail {E A} `{nondetE -< E}
              (reason : string) : M E A :=
     Vis (convert (Or 0 reason))
@@ -246,6 +238,10 @@ Module NonDeterminismBis.
     (VisOr reason (or_ f1 .. (or_ fn noFinZ) ..))
   (at level 0, reason at next level) : nondet_scope.
 
+  Notation "'disj' ( f1 | .. | fn )" :=
+    (VisOr "" (or_ f1 .. (or_ fn noFinZ) ..))
+  (at level 0) : nondet_scope.
+
   Delimit Scope nondet_scope with nondet.
   Open Scope nondet_scope.
 
@@ -253,7 +249,13 @@ Module NonDeterminismBis.
     (disj "test" ( ret 0 | ret 1 | ret 2 )).
 
   Definition or {E A} `{nondetE -< E} (t1 t2 : M E A) : M E A :=
-    disj "or" ( t1 | t2 ).
+    disj ( t1 | t2 ).
+
+  Definition upgrade_or {E A} `{nondetE -< E}
+             (e : Basic.nondetE A) : M E A :=
+    match e with
+    | Basic.Or => or (ret true) (ret false)
+    end.
 
   (* Remove an element from a list, also returning the remaining
      elements. *)
@@ -303,7 +305,7 @@ Variable (R : Type).
 Inductive readerE : Type -> Type :=
 | Ask : readerE R.
 
-Definition ask {E} `{Convertible readerE E} : M E R :=
+Definition ask {E} `{readerE -< E} : M E R :=
   liftE (convert Ask).
 
 CoFixpoint run_reader {E A} (r : R) (m : M (E +' readerE) A)
@@ -330,20 +332,8 @@ Inductive stateE : Type -> Type :=
 | Get : stateE S
 | Put : S -> stateE unit.
 
-Class HasState (E : Type -> Type) :=
-  { Get_ : E S;
-    Put_ : S -> E unit;
-  }.
-
-Global Instance default_HasState `{Convertible stateE E}
-  : HasState E :=
-  { Get_ := convert Get;
-    Put_ s := convert (Put s);
-  }.
-
-Definition get `{HasState E} : M E S := liftE Get_.
-Definition put `{HasState E} (s : S) : M E unit :=
-  liftE (Put_ s).
+Definition get `{stateE -< E} : M E S := embed Get.
+Definition put `{stateE -< E} : S -> M E unit := embed Put.
 
 (** TODO: Refactorable if we can generalize
     [Free.hom] to arbitrary monads. *)
@@ -396,14 +386,7 @@ Global Instance Countable_nat' T (tag : T)
 Inductive counterE (N : Type) : Type -> Type :=
 | Incr : counterE N N.
 
-Class HasCounter N (E : Type -> Type) :=
-  { Incr_ : E N }.
-
-Global Instance default_HasCounter `{Convertible (counterE N) E}
-  : HasCounter N E :=
-  { Incr_ := convert Incr }.
-
-Definition incr `{HasCounter N E} : M E N := liftE Incr_.
+Definition incr `{counterE N -< E} : M E N := embed Incr.
 
 CoFixpoint run_counter_from' `{Countable N} {E X} (c : N)
            (m : M (E +' counterE N) X)

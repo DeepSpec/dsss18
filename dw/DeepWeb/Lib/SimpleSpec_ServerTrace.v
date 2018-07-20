@@ -55,31 +55,27 @@ Definition new_connection (st : network_state) :
   network_state * connection_id :=
   (S st, Connection (S st)).
 
+Definition traceE := nondetE +' arbitraryE +' note_traceE.
+
 (* Type of trees annotated with traces. *)
-Definition itree_traces :=
-  M (nondetE +' arbitraryE +' note_traceE) unit.
+Definition itree_traces := M traceE unit.
 
 (* We traverse the tree, accumulating a trace and outputing
    it every time a new event gets added. The traces that the
    output tree is annotated with are exactly the set of traces
    of the original tree. *)
 
-(* Main body of [enum_traces] *)
-(* TODO: this is hom_state *)
-CoFixpoint enum_traces'
-           (st : network_state)
-           (cur_trace : trace)  (* reversed current trace *)
-           (t : itree_server) : itree_traces :=
-  match t with
-  | Ret tt => ret tt
-  | Tau t => Tau (enum_traces' st cur_trace t)
-  | Vis X e k =>
+(* Main body of [enum_traces_handler]. *)
+Definition enum_traces_handler :
+  forall X, network_state * trace ->
+            serverE X -> M traceE (_ * X) :=
+  fun X '(st, cur_trace) e =>
     match e with
     | (| e ) =>
       let new_event e x st :=
           let cur_trace := (e :: cur_trace) in
           ^ NoteTrace (rev cur_trace) ;;
-          enum_traces' st cur_trace (k x) in
+          ret ((st, cur_trace), x) in
       match e in networkE X' return (X' -> X) -> _ with
       | Accept => fun id =>
         let '(st, c) := new_connection st in
@@ -92,15 +88,11 @@ CoFixpoint enum_traces'
         (* new_event (Event (ObsFromServer c) (Some "c"%char)) (id tt) st *)
         new_event (Event (ObsFromServer c) (Some b)) (id tt) st
       end (fun x => x)
-    | ( _Or |) =>
-      Vis (convert _Or) (fun x =>
-        enum_traces' st cur_trace (k x))
-    end
-  end.
+    | ( _Or |) => x <- embed _Or;; ret ((st, cur_trace), x)
+    end.
 
-(* Enumerate the traces of a tree representing a server. *)
-Definition enum_traces : itree_server -> itree_traces :=
-  enum_traces' 0 [].
+Definition enum_traces (t : itree_server) : itree_traces :=
+  mapM snd (hom_state enum_traces_handler (0, []) t).
 
 (**)
 

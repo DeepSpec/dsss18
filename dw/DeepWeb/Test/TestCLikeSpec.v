@@ -28,7 +28,8 @@ From DeepWeb.Spec Require
      Swap_CLikeSpec
      Swap_SimpleSpec.
 
-Definition swap_server := simplify_network Swap_CLikeSpec.test_server.
+Definition swap_server : itree_server :=
+  simplify_network Swap_CLikeSpec.test_server.
 
 (* Enumerate the traces of the [server'] itree (swap server). *)
 Definition random_trace_server :=

@@ -14,13 +14,13 @@ Open Scope monad_scope.
 
 (** ** Basic Definitions *)
 
-(** The core definitionj of ITrees.  An [M E X] is the denotation of a
+(** The core definition of ITrees.  An [M E X] is the denotation of a
     program as coinductive (possibly infinite) tree where the leaves
     are labeled with [X] and every node is either an "internal" [Tau]
     node with one child, or a "external" [Vis] node with a visible
-    event [E Y] plus a continuation [k] that receives a [Y] value from
-    the event. *)
-CoInductive M (Event : Type -> Type) X := 
+    event of type [Event Y] plus a continuation [k] that receives a
+    [Y] value from the event. *)
+CoInductive M (Event : Type -> Type) X :=
 | Ret (x:X)
 | Vis {Y: Type} (e : Event Y) (k : Y -> M Event X)
 | Tau (k: M Event X).
@@ -80,9 +80,10 @@ CoInductive M (Event : Type -> Type) X :=
 
 (** ** Monad Structure *)
 
+(** First, we show that [M E] forms a [Monad]. *)
+
 Module Core.
 
-(** [M E] forms a [Monad] *)
 Definition bind_body {E X Y}
            (s : M E X)
            (go : M E X -> M E Y)
@@ -105,11 +106,12 @@ Definition Monad_M E : Monad (M E) :=
 
 End Core.
 
-(** We insert a Tau (in the case where the right-hand argument to bind
-    is just a [Ret]) to make programs/specifications neater. This
+(** Now we slightly change the bind operation to insert a [Tau] in the
+    case where the right-hand argument to bind is just a [Ret], to
+    make programs/specifications neater and easier to write. This
     makes [M] no longer a monad structurally, but it remains one in a
     looser sense as long as [Tau] is interpreted as the identity. *)
-(* BCP: Not sure what it means to "interpret Tau as the identity" *) 
+(* BCP: Not sure what it means to "interpret Tau as the identity" *)
 Definition bindM {E X Y} (s: M E X) (t: X -> M E Y) : M E Y :=
   Core.bindM s (fun x => Tau (t x)).
 
@@ -119,7 +121,7 @@ Instance Monad_M E : Monad (M E) := { ret X x := Ret x; bind := @bindM E }.
 
 (** Wrap a function around the results returned from an ITree *)
 Definition mapM {E X Y} (f: X -> Y) (s: M E X) : M E Y :=
-let cofix go (s : M E X) := 
+let cofix go (s : M E X) :=
     match s with
     | Ret x => Ret (f x)
     | Vis e k => Vis e (fun y => go (k y))
@@ -178,26 +180,31 @@ CoFixpoint for_each {E A} (bs : list A) (body : A -> M E unit)
 
 (** If we can interpret the events of one such monad as
     computations in another, we can extend that
-    interpretation to the whole monad.
-    (Like Haskell foldMap.  Could be extended with a tau in
-    another monad M2...?)  Needed? Looks like so. *)
-(** Generalizing [hom] with an arbitrary monad in the
-    codomain has a problem with termination.
-    Maybe [hom : M E1 X -> t (M E2) X] for a class of
-    monad transformers?
-    Or we could give up typing and define [hom] as a
-    [Notation] (macro). *)
-Section hom.
-  Variable E1 E2 : Type -> Type.
-  Variable f : forall {X}, E1 X -> M E2 X.
-
-  CoFixpoint hom {X} (p : M E1 X) : M E2 X :=
-  match p with
+    interpretation to the whole monad. *)
+Definition hom
+           {E1 E2 : Type -> Type}
+           (f : forall X, E1 X -> M E2 X) :
+  forall R, M E1 R -> M E2 R :=
+  cofix hom_ R (p : M E1 R) : M E2 R :=
+    match p with
     | Ret x => Ret x
-    | Vis e k => x <- f e;; hom (k x)
-    | Tau k => Tau (hom k)
-  end.
-End hom.
+    | Vis e k => bindM (f _ e) (fun x => hom_ _ (k x))
+    | Tau k => Tau (hom_ _ k)
+    end.
+
+Arguments hom {E1 E2} f {R}.
+
+Definition hom_state
+           {E1 E2 : Type -> Type}
+           {S : Type}
+           (f : forall X, S -> E1 X -> M E2 (S * X)) :
+  forall R, S -> M E1 R -> M E2 (S * R) :=
+  cofix hom_ R s (p : M E1 R) : M E2 (S * R) :=
+    match p with
+    | Ret x => Ret (s, x)
+    | Vis e k => bindM (f _ s e) (fun sa => hom_ _ (fst sa) (k (snd sa)))
+    | Tau k => Tau (hom_ _ s k)
+    end.
 
 CoFixpoint hoist {E F X}
            (f : forall Z, E Z -> F Z)
@@ -208,6 +215,21 @@ CoFixpoint hoist {E F X}
   | Vis e k => Vis (f _ e) (fun z => hoist f (k z))
   | Tau n => Tau (hoist f n)
   end.
+
+Definition fold_finite {E X R}
+           (default : R)
+           (ret_ : X -> R)
+           (f : forall X, E X -> (X -> R) -> R) : nat -> M E X -> R :=
+  fix fold_ max_depth t :=
+    match max_depth with
+    | O => default
+    | S max_depth =>
+      match t with
+      | Ret x => ret_ x
+      | Tau t => fold_ max_depth t
+      | Vis e k => f _ e (fun x => fold_ max_depth (k x))
+      end
+    end.
 
 Fixpoint collapse_root {E X} (fuel : nat) (m : M E X) : M E X :=
   match fuel with
@@ -288,4 +310,3 @@ Proof.
   rewrite bind_def_core.
   auto.
 Qed.
-

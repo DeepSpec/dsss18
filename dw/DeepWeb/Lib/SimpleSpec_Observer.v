@@ -29,6 +29,7 @@ Open Scope string_scope.
    This is parameterized by a type of "hints" that
    can be used to help generating test cases. *)
 (* TODO: decide whether to restore hints. *)
+(* SHOW *)
 Inductive observerE : Type -> Type :=
   (* Observe the creation of a new connection *)
 | ObsConnect : observerE connection_id
@@ -59,6 +60,7 @@ Definition obs_to_server {E} `{observerE -< E} :
 Definition obs_from_server {E} `{observerE -< E} :
   connection_id -> M E (option byte) :=
   embed ObsFromServer.
+(* /SHOW *)
 
 (* Equality comparison, return a proof of equality of the
    indices (this could be generalized to a complete decision
@@ -184,6 +186,9 @@ Definition nondet_exists {X : Type}
        end) n
   end%bool (fun x => x).
 
+(* SHOW *)
+(* BCP: But probably this will move up to the top-level interface --
+   no need to show internals *)
 (* Basically, a trace [t] belongs to a tree if there is a path
    through the tree (a list of [E0] effects) such that its
    restriction to [observerE] events is [t].
@@ -192,21 +197,22 @@ Definition nondet_exists {X : Type}
    it is not possible to decide whether a trace matches the tree.
    Thus we add a [fuel] parameter assumed to be "big enough"
    for the result to be reliable. *)
-Fixpoint is_trace_of (fuel : nat) (s : itree_spec) (t : trace) : bool :=
-  match fuel with
+Fixpoint is_trace_of
+         (max_depth : nat) (s : itree_spec) (t : trace) : bool :=
+  match max_depth with
   | O => false
-  | S fuel =>
+  | S max_depth =>
     match s, t with
-    | Tau s, t => is_trace_of fuel s t
+    | Tau s, t => is_trace_of max_depth s t
     | Ret tt, [] => true
     | Ret tt, _ :: _ => false
     | Vis _ (| e1 ) k, Event _ e0 x :: t =>
-      match_obs e0 e1 (fun s => is_trace_of fuel s t)
+      match_obs e0 e1 (fun s => is_trace_of max_depth s t)
                 false x k
     | Vis _ (| e1 ) k, [] => true
     (* The trace belongs to the tree [s] *)
     | Vis _ ( _Or |) k, t =>
-      nondet_exists _Or (fun b => is_trace_of fuel (k b) t)
+      nondet_exists _Or (fun b => is_trace_of max_depth (k b) t)
     end
   end.
 
@@ -245,8 +251,8 @@ End EventNotations.
      differently for performance and other practical reasons;
      here we will consider a server correct if it cannot be
      distinguished over the network from a server that actually
-     produces the same traces as the spec above.
- *)
+     produces the same traces as the spec above. *)
 
 (* The network's behavior is accounted for in
    [Lib/SimpleSpec_Descramble.v] *)
+(* /SHOW *)

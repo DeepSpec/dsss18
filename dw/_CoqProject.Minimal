@@ -1,18 +1,18 @@
 -Q Custom/ Custom
--Q DeepWeb/ DeepWeb
--R FreeMonad/ DeepWeb.Free.Monad
+-R DeepWeb/ DeepWeb
 
 Custom/List.v
 Custom/Monad.v
 Custom/Show.v
 Custom/String.v
 
-FreeMonad/Free.v
-FreeMonad/Event.v
-FreeMonad/Verif.v
-FreeMonad/Common.v
-FreeMonad/Spec.v
-FreeMonad/Semantics.v
+DeepWeb/Free/Monad/Free.v
+DeepWeb/Free/Monad/Event.v
+DeepWeb/Free/Monad/Verif.v
+DeepWeb/Free/Monad/Common.v
+DeepWeb/Free/Monad/Spec.v
+DeepWeb/Free/Monad/Semantics.v
+DeepWeb/Free/Monad/Debug.v
 
 -I DeepWeb/Test
 

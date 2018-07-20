@@ -138,7 +138,7 @@ CoInductive valid_spec : forall A, PureSpec A -> Prop :=
     (forall (v : X), valid_spec (tk v)) ->
     @valid_spec A (Vis Arb_ tk)
 | vt_ret : forall A x, @valid_spec A (Ret x)
-| or_both : forall A tk, (forall b, @valid_spec A (tk b)) -> valid_spec (Vis Or_ tk)
+| or_both : forall A tk, (forall b, @valid_spec A (tk b)) -> valid_spec (Vis (convert Or) tk)
 | alt_l : forall A tk, @valid_spec A (tk true) -> valid_spec (Vis Alt_ tk)
 | alt_r : forall A tk, @valid_spec A (tk false) -> valid_spec (Vis Alt_ tk).
 
@@ -350,7 +350,7 @@ Proof.
   * destruct e; try absurd.
     + (* constructor; intro.
       apply checker_complete; intros. *)
-Abort.     
+Abort.
 (* TODO: *)
 (*       apply (H (S n) (v::l)).
     + admit.

@@ -3,6 +3,7 @@ Open Scope Z.
 
 From Custom Require Import String.
 Require Import DeepWeb.Lib.Util.
+Require Import DeepWeb.Lib.NetworkInterface.
 
 Definition BUFFER_SIZE : Z := 1024.
 Definition SERVER_PORT : endpoint_id := Endpoint 8000.

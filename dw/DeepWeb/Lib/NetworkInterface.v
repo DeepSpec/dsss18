@@ -1,8 +1,11 @@
 Generalizable Variable E.
 Typeclasses eauto := 6.
 
-From Coq Require Import List.
+From Coq Require Import List ZArith.
 Import ListNotations.
+
+From QuickChick Require Import
+     Decidability Show.
 
 From Custom Require Import String.
 
@@ -17,6 +20,20 @@ Require Import DeepWeb.Lib.Util.
 Set Warnings "-extraction-opaque-accessed,-extraction".
 Open Scope string_scope.
 (* end hide *)
+
+Record endpoint_id : Type := Endpoint
+  { port_number : Z;
+  }.
+
+Instance Eq_endpoint_id : Eq endpoint_id := {}.
+Proof. intros; dec_eq. Defined.
+
+Instance Show_endpoint_id : Show endpoint_id :=
+  { show := fun '(Endpoint p) => show p }.
+
+(* Dummy value for the endpoint (ignored). *)
+Definition dummy_endpoint : endpoint_id
+  := Endpoint 0.
 
 Inductive networkE : Type -> Type :=
 | Listen : endpoint_id -> networkE unit

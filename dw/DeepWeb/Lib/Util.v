@@ -63,10 +63,6 @@ Require Import ZArith.
 
 Inductive connection_id : Type := Connection (c : nat).
 
-Record endpoint_id : Type := Endpoint
-  { port_number : Z;
-  }.
-
 Definition eqb_connection_id :
   forall c1 c2 : connection_id, {c1 = c2} + {c1 <> c2}.
 Proof. intros [] []; dec_eq. Defined.
@@ -74,20 +70,10 @@ Proof. intros [] []; dec_eq. Defined.
 Instance Eq_connection_id : Eq connection_id :=
   { dec_eq := eqb_connection_id }.
 
-Instance Eq_endpoint_id : Eq endpoint_id := {}.
-Proof. intros; dec_eq. Defined.
-
 Instance Show_connection_id : Show connection_id :=
   { show := fun '(Connection c) => show c }.
 
-Instance Show_endpoint_id : Show endpoint_id :=
-  { show := fun '(Endpoint p) => show p }.
-
 Module TestDefault.
-
-(* Dummy value for the endpoint (ignored). *)
-Definition endpoint : endpoint_id
-  := Endpoint 0.
 
 (* A short buffer size for easier testing. *)
 Definition buffer_size : nat

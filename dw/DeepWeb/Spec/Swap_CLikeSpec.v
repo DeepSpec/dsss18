@@ -261,6 +261,6 @@ Definition server := server_ SERVER_PORT BUFFER_SIZE INIT_MSG.
 Module Def := DeepWeb.Lib.Util.TestDefault.
 
 Definition test_server := server_
-                            Def.endpoint
+                            dummy_endpoint
                             (Z.of_nat Def.buffer_size)
                             Def.init_message.

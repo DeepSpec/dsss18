@@ -14,7 +14,7 @@ From DeepWeb.Lib Require Import
 Module N0 := NetworkInterface.
 Module N1 := SimpleSpec_NetworkInterface.
 
-Definition E0 := Common.nondetE +' failureE +' N0.networkE.
+Definition E0 := Basic.nondetE +' failureE +' N0.networkE.
 
 Definition simplify_network' {E} `{nondetE -< E} `{N1.networkE -< E} :
   forall X, E0 X -> M E X :=
@@ -29,10 +29,7 @@ Definition simplify_network' {E} `{nondetE -< E} `{N1.networkE -< E} :
       | N0.Shutdown c => fail "not implemented"
       end
     | (| Fail reason |) => fail reason
-    | ( _Or ||) =>
-      match _Or in Common.nondetE X return M E X with
-      | Common.Or => or (ret false) (ret true)
-      end
+    | ( _Or ||) => upgrade_or _Or
     end.
 
 Definition simplify_network {E} `{nondetE -< E} `{N1.networkE -< E} :
