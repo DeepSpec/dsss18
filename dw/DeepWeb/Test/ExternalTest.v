@@ -1,12 +1,13 @@
+Typeclasses eauto := 3.
+
 From Coq Require Import Basics List ZArith.
 From ExtLib Require Import Functor OptionMonad StateMonad.
 From QuickChick Require Import QuickChick.
 From DeepWeb Require Import
-     ByteType
-     Client
-     NetworkInterface
-     Rand
-     SimpleSpec.
+     Test.Client
+     Test.Rand
+     Lib.Util
+     Lib.SimpleSpec.
 
 Import FunctorNotation ListNotations MonadNotation.
 Open Scope program_scope.
@@ -26,8 +27,8 @@ Definition Client := state (list (connection_id * file_descr)).
 
 Definition newConnection : Client (connection_id * file_descr) :=
   connections <- get;;
-  let c := (length connections, socket tt) in
-  put (c::connections);;
+  let c := (Connection (length connections), socket tt) in
+  put (c :: connections);;
   ret c.
 
 Definition sendMessage (b : byte) : Client event :=
@@ -89,7 +90,7 @@ Instance Checkable_result : Checkable result :=
        | OutOfFuel => checker tt
        end |}.
 
-Require Swap_SimpleSpec.
+Require DeepWeb.Spec.Swap_SimpleSpec.
 
 Definition execute_prop (msgs : list byte) : Checker :=
   let tr := evalState (execute msgs) [] in

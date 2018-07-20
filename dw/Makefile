@@ -21,9 +21,12 @@ coq: Makefile.coq $(EXTR_BIN)
 Makefile.coq: _CoqProject
 	coq_makefile -f $< -o $@
 
-_CoqProject: _CoqConfig
+_CoqProject: _CoqProject.Minimal _CoqProject.Vst
 	echo "$(VSTFLAGS)" > _CoqProject
-	cat _CoqConfig >> _CoqProject
+	cat _CoqProject.Minimal _CoqProject.Vst >> _CoqProject
+
+_CoqProject.Vst:
+	touch _CoqProject.Vst
 
 .PHONY: html
 html:

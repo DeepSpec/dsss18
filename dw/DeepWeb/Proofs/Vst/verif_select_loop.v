@@ -1,11 +1,19 @@
 Require Import String.
 
-From DeepWeb.Proofs.Vst
-     Require Import VstInit VstLib VerifHelpers
-     SocketSpecs SocketTactics Gprog MonadExports
-     Connection Store select_loop_spec AppLib AppLogic.
+From Custom Require Import List.
 
-Require Import DeepWeb.Spec.ITreeSpec.
+Require Import DeepWeb.Spec.Swap_CLikeSpec.
+
+From DeepWeb.Spec.Vst
+     Require Import MainInit Gprog SocketSpecs MonadExports
+     Representation AppLogic select_loop_spec.
+
+From DeepWeb.Lib
+     Require Import VstLib.
+
+From DeepWeb.Proofs.Vst
+     Require Import VerifLib SocketTactics 
+     Connection Store AppLib.
 
 Import SockAPIPred.
 Import TracePred.
@@ -77,16 +85,15 @@ Definition main_loop_invar
              (map rep_full_conn connections)
              head_ptr nullval;
         malloc_tokens (Tstruct _connection noattr) (map proj_ptr connections);
-        TRACE (r <- select_loop server_addr BUFFER_SIZE
+        ITREE (r <- select_loop server_addr BUFFER_SIZE
                  (true, (map proj_conn connections, last_msg))
                ;; k);
         field_at Tsh (Tstruct _store noattr) [] (rep_store last_msg)
                  msg_store_ptr
       ).
 
-
 Lemma body_select_loop:
-  semax_body Vprog Gprog f_select_loop (select_loop_spec unit BUFFER_SIZE).
+  semax_body Vprog Gprog f_select_loop (select_loop_spec).
 Proof.
   start_function.
 
@@ -120,16 +127,11 @@ Proof.
 
     unfold main_loop_invar.
     Exists ([] : list (connection * sockfd * val)).
-    Exists "".
-    Exists st.
-    Exists rs.
-    Exists ws.
-    Exists es.
-    Exists (Vint (Int.repr 0)).
+    Exists initial_msg st rs ws es (Vint (Int.repr 0)).
 
     entailer!.
     split; constructor.
-
+    
   }
 
   { (* while loop *)
@@ -330,7 +332,7 @@ Proof.
         match goal with
         | [|- context[lseg _ _ _ _ head_ptr _]] =>
           match goal with
-          | [|- context[TRACE _]] =>
+          | [|- context[ITREE _]] =>
             freeze [0; 2; 3; 5; 6; 10] FR1; simpl
           end
         end
@@ -375,7 +377,7 @@ Proof.
                         v_head) ::
               (malloc_tokens (Tstruct _connection noattr)
                              (map proj_ptr connections')) :: 
-              TRACE (loop_on connections') ::
+              ITREE (loop_on connections') ::
               Frame
             )
          ))
@@ -399,7 +401,6 @@ Proof.
       rewrite while_loop_unfold.
       simpl.
       rewrite trace_bind_assoc.
-      take_branch1 4.
       take_branch1 4.
       rewrite trace_bind_assoc.
 
@@ -462,7 +463,6 @@ Proof.
           exists client_conn; repeat split; auto.
         - apply prop_right; repeat split; auto.
         - cancel.
-          
       }
 
       { (* accept failed *)
@@ -481,8 +481,7 @@ Proof.
         repeat apply andp_right; auto.
         - apply prop_right; repeat split; auto.
         - apply prop_right; repeat split; auto.
-        - cancel.
-
+        - unify_trace; cancel.
       }
     } 
 
@@ -493,6 +492,9 @@ Proof.
       Exists connections.
       Exists st0.
       Exists head_ptr.
+
+      subst tr.
+      unify_trace.
 
       entailer!.
 
@@ -620,10 +622,10 @@ Proof.
         destruct cond as [e | e].
         - left.
           unfold has_conn_state in e.
-          destruct (Custom.Decidability.dec); auto; discriminate.
+          destruct (QuickChick.Decidability.dec); auto; discriminate.
         - right.
           unfold has_conn_state in e.
-          destruct (Custom.Decidability.dec); auto; discriminate.
+          destruct (QuickChick.Decidability.dec); auto; discriminate.
       }
 
       remember (update_socket_state _ _ _) as st1.

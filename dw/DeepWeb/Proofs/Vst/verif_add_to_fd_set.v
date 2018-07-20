@@ -1,8 +1,14 @@
 Require Import String.
 
+From DeepWeb.Spec.Vst
+     Require Import MainInit Gprog
+     add_to_fd_set_spec SocketSpecs.
+
+From DeepWeb.Lib
+     Require Import VstLib.
+
 From DeepWeb.Proofs.Vst
-     Require Import VstInit VstLib VerifHelpers
-     add_to_fd_set_spec SocketSpecs SocketTactics Gprog.
+     Require Import VerifLib SocketTactics.
 
 Import FDSetPred.
 Import SockAPIPred.

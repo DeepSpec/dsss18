@@ -1,35 +1,29 @@
 Generalizable Variable E.
 Typeclasses eauto := 6.
 
-Require Import String.
-Require Import List.
-Require Import PArith.
+From Coq Require Import List.
 Import ListNotations.
+
+From Custom Require Import String.
 
 Require Import DeepWeb.Free.Monad.Free.
 Import MonadNotations.
 Require Import DeepWeb.Free.Monad.Common.
 Import SumNotations.
 
-Require Import DeepWeb.Util.ByteType.
+Require Import DeepWeb.Lib.Util.
 
 (* begin hide *)
 Set Warnings "-extraction-opaque-accessed,-extraction".
 Open Scope string_scope.
 (* end hide *)
 
-Definition connection_id : Type := nat.
-Definition endpoint_id : Type := nat.
-
 Inductive networkE : Type -> Type :=
 | Listen : endpoint_id -> networkE unit
 | Accept : endpoint_id -> networkE connection_id
-| ConnectTo: endpoint_id -> networkE connection_id
 | Shutdown : connection_id -> networkE unit
-| Recv : connection_id -> networkE (option string)
-| Send : connection_id -> string -> networkE unit.
-(* Note: Recv returns [None] if connection is empty AND closed.
-   It blocks if connection is empty and open. *)
+| RecvByte : connection_id -> networkE byte
+| SendByte : connection_id -> byte -> networkE unit.
   
 Definition listen `{networkE -< E}
   : endpoint_id -> M E unit := embed Listen.
@@ -37,18 +31,47 @@ Definition listen `{networkE -< E}
 Definition accept `{networkE -< E}
   : endpoint_id -> M E connection_id := embed Accept.
 
-Definition connect_to `{networkE -< E}
-  : endpoint_id -> M E connection_id := embed ConnectTo.
-
 Definition shutdown `{networkE -< E}
   : connection_id -> M E unit := embed Shutdown.
 
-Definition recv `{networkE -< E}
-  : connection_id -> M E (option string) := embed Recv.
+Definition recv_byte `{networkE -< E}
+  : connection_id -> M E byte := embed RecvByte.
 
-Definition send `{networkE -< E}
-  : connection_id -> string -> M E unit := embed Send.
+Definition send_byte `{networkE -< E}
+  : connection_id -> byte -> M E unit := embed SendByte.
 
+(* Helper for [recv]. *)
+Fixpoint recv' `{networkE -< E} `{nondetE -< E}
+         (c : connection_id) (len : nat) : M E bytes :=
+  match len with
+  | O => ret ""
+  | S len =>
+    b <- recv_byte c ;;
+    or (ret (b ::: ""))
+       (bs <- recv' c len ;;
+        ret (b ::: bs))
+  end%string.
+
+(* Receive a string of length at most [len].
+   The return value [None] signals that a connection was closed,
+   when modelling the [recv()] POSIX syscall. *)
+Definition recv `{networkE -< E} `{nondetE -< E}
+           (c : connection_id) (len : nat) : M E (option bytes) :=
+  or (ret None)
+     (bs <- recv' c len;;
+      ret (Some bs)).
+
+(* Receive a string of length [len] exactly. *)
+Definition recv_full `{networkE -< E}
+           (c : connection_id) (len : nat) : M E bytes :=
+  replicate_bytes len (recv_byte c).
+
+(* Send all bytes in a bytestring. *)
+Fixpoint send `{networkE -< E}
+         (c : connection_id) (bs : bytes) : M E unit :=
+  for_bytes bs (send_byte c).
+
+(* All numbers between 0 and [n-1] included. *)
 Fixpoint range (n : nat) : list nat :=
     match n with
     | O => []

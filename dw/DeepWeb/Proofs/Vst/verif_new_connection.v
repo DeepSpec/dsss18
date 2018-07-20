@@ -1,10 +1,16 @@
 Require Import String.
 
-From DeepWeb.Proofs.Vst
-     Require Import VstInit VstLib VerifHelpers Connection
-     new_connection_spec Gprog.
+Require Import DeepWeb.Spec.Swap_CLikeSpec.
 
-Require Import DeepWeb.Spec.ITreeSpec.
+From DeepWeb.Spec.Vst
+     Require Import MainInit Gprog SocketSpecs Representation
+     new_connection_spec.
+
+From DeepWeb.Lib
+     Require Import VstLib.
+
+From DeepWeb.Proofs
+     Require Import VerifLib Connection.
 
 Set Bullet Behavior "Strict Subproofs".
 
@@ -45,7 +51,7 @@ Proof.
 
   do 6 forward.
 
-  set (new_conn := {| conn_id := 0%nat;
+  set (new_conn := {| conn_id := Connection 0%nat;
                       conn_request := "";
                       conn_response := "";
                       conn_response_bytes_sent := 0;

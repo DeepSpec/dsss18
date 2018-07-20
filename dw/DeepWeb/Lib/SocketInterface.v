@@ -15,8 +15,8 @@ Require Import DeepWeb.Free.Monad.Free.
 Require Import DeepWeb.Free.Monad.Common.
 Require Import DeepWeb.Free.Monad.Verif.
 
+Require Import DeepWeb.Lib.Util.
 Require Import DeepWeb.Lib.SocketConstants.
-
 Require Export DeepWeb.Lib.NetworkInterface.
 
 Module SocketAPI.

@@ -1,11 +1,16 @@
 Require Import String.
 
-From DeepWeb.Proofs.Vst
-     Require Import VstInit VstLib VerifHelpers
-     Connection process_spec AppLogic
-     SocketSpecs SocketTactics Gprog MonadExports.
+Require Import DeepWeb.Spec.Swap_CLikeSpec.
 
-Require Import DeepWeb.Spec.ITreeSpec.
+From DeepWeb.Spec.Vst
+     Require Import MainInit Gprog SocketSpecs MonadExports
+     Representation AppLogic process_spec.
+
+From DeepWeb.Lib
+     Require Import VstLib.
+
+From DeepWeb.Proofs.Vst
+     Require Import VerifLib Connection SocketTactics.
 
 Import SockAPIPred.
 Import TracePred.
@@ -86,7 +91,7 @@ Proof.
 
       (* move to tactic *)
       match goal with
-      | [|- context[TRACE ?tr1 * _ |-- TRACE ?tr2 * _]] =>
+      | [|- context[ITREE ?tr1 * _ |-- ITREE ?tr2 * _]] =>
         replace tr1 with tr2 by reflexivity
       end.
 

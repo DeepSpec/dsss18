@@ -1,13 +1,19 @@
 Require Import String.
 
+From DeepWeb.Spec.Vst
+     Require Import MainInit SocketSpecs Gprog MonadExports
+     Representation accept_connection_spec.
+
+From DeepWeb.Lib
+     Require Import VstLib.
+
 From DeepWeb.Proofs.Vst
-     Require Import VstInit VstLib VerifHelpers SocketTactics
-     Connection accept_connection_spec SocketSpecs Gprog MonadExports.
+     Require Import VerifLib SocketTactics Connection.
 
 Import SockAPIPred.
 Import TracePred.
 
-Require Import DeepWeb.Spec.ITreeSpec.
+Require Import DeepWeb.Spec.Swap_CLikeSpec.
 
 Set Bullet Behavior "Strict Subproofs".
 

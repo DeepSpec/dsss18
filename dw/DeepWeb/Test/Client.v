@@ -1,7 +1,9 @@
 From Coq Require Import
      Extraction
      String.
-From DeepWeb Require Import ByteType.
+
+From DeepWeb Require Import
+     Lib.Util.
 
 (* begin hide *)
 Set Warnings "-extraction-opaque-accessed,-extraction".

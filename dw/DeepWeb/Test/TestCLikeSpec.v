@@ -20,21 +20,19 @@ Import SumNotations.
 Import NonDeterminismBis.
 Require Import DeepWeb.Free.Monad.Spec.
 
-Require Import DeepWeb.Lib.TestDefaults.
-Require Import DeepWeb.Util.ByteType.
-
 From DeepWeb Require Import
-     Lib.NetworkInterface
      Lib.SimpleSpec
-     Lib.SimpleSpecTest.
+     Lib.NetworkAdapter.
 
 From DeepWeb.Spec Require
      Swap_CLikeSpec
      Swap_SimpleSpec.
 
+Definition swap_server := simplify_network Swap_CLikeSpec.test_server.
+
 (* Enumerate the traces of the [server'] itree (swap server). *)
 Definition random_trace_server :=
-  random_trace 500 10 Swap_CLikeSpec.test_server.
+  random_trace 500 10 swap_server.
 
 (*
 Sample random_trace_server.
@@ -43,18 +41,18 @@ Sample random_trace_server.
 Definition test :=
   check_trace_incl_def
     Swap_SimpleSpec.swap_spec_def
-    Swap_CLikeSpec.test_server.
+    swap_server.
 
 (* Takes a few seconds *)
 (*! QuickChick test. *)
 
-Require Import DeepWeb.Spec.SingleSwap_SimpleSpec.
-Require Import DeepWeb.Spec.SingleSwapSequential_Impl.
+Require DeepWeb.Spec.SingleSwap_SimpleSpec.
+Require DeepWeb.Spec.SingleSwapSequential_Impl.
 
 Module SingleSwap.
 
-Definition spec := swap_spec_ default_buffer_size.
-Definition impl := server.
+Definition spec := SingleSwap_SimpleSpec.swap_spec.
+Definition impl := SingleSwapSequential_Impl.server.
 
 Definition test :=
   check_trace_incl_def spec impl.

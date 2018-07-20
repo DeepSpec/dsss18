@@ -1,17 +1,12 @@
 Require Import String.
 
-From DeepWeb.Proofs.Vst
-     Require Import VstInit VstLib.
+From DeepWeb.Spec.Vst
+     Require Import MainInit.
+
+Require Import DeepWeb.Lib.VstLib.
 
 Open Scope logic.
 Open Scope list.
-
-Set Bullet Behavior "Strict Subproofs".
-
-Record store := { stored_msg : string }.
-
-Definition rep_store (s : string) : reptype (Tstruct _store noattr) :=
-  (rep_msg_len s, rep_msg s BUFFER_SIZE).
 
 Lemma field_at_rep_store_eq:
   forall (sh : share) (ptr : val) (msg_rep : list val) (msg_len_rep : val)
