@@ -16,7 +16,7 @@ VST_DIRS= msl sepcomp veric floyd progs
 VSTFLAGS= -Q $(CC_LOC) compcert $(foreach d, $(VST_DIRS), -Q $(VST_LOC)/$(d) VST.$(d))
 
 SERVER = out/dw-swap-server
-EXCLUDE= Proofs Spec/TopLevelSpec.v Spec/Vst/ Proofs/ Spec/main.v Lib/VstLib.v FreeMonad/
+EXCLUDE= Proofs Spec/TopLevelSpec.v Spec/Vst/ Proofs/ Spec/main.v Lib/VstLib.v FreeMonad/ html
 OCAMLBUILDFLAGS=-libs unix,str
 MINI_CLIENT = Test/mini_client.native
 QC = quickChick -color -top "" -ocamlbuild '$(OCAMLBUILDFLAGS)' \

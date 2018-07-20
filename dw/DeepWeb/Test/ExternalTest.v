@@ -134,4 +134,4 @@ Definition execute_prop (msgs : list byte) : Checker :=
   whenFail (show tr)
   (is_scrambled_trace_of 1000 (Swap_SimpleSpec.swap_spec_def) tr).
 
-(*! QuickChick execute_prop. *)
+(* QuickChick execute_prop. *)
