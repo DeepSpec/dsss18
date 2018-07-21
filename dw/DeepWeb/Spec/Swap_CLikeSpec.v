@@ -1,3 +1,5 @@
+(*! Section BaseTest *)
+
 Generalizable Variable E.
 
 From DeepWeb.Free.Monad
@@ -19,6 +21,8 @@ Import SocketAPI.
 
 From Custom Require Monad.
 Import MonadNotations.
+
+(** * Low-level "C-Like" Specification of the Swap Server *)
 
 Inductive connection_state : Type :=
   RECVING | SENDING | DONE | DELETED.
@@ -74,6 +78,7 @@ Definition upd_conn_state (conn : connection) (state : connection_state)
     conn_state := state
   |}.
 
+(* BCP: Belongs in /Lib? *)
 CoFixpoint while {E : Type -> Type} {T : Type}
            (cond : T -> bool)
            (body : T -> M E T) : T -> M E T :=
@@ -85,6 +90,7 @@ CoFixpoint while {E : Type -> Type} {T : Type}
     | false => ret t
     end.
 
+(* BCP: Belongs in /Lib? *)
 Lemma while_loop_unfold :
   forall {E T} (cond : T -> bool) (P : T -> M E T) (t : T), 
     while cond P t = if (cond t) then
@@ -145,7 +151,7 @@ Definition conn_read (buffer_size : Z)
       | None => ret (upd_conn_state conn DELETED, last_full_msg)
       | Some msg =>
         let msg_len := Z.of_nat (String.length msg) in
-        let msg' := (conn_request conn ++ msg)%string in
+        let msg' := (*!*) (conn_request conn ++ msg)%string (*! "BAD" *) in
         if is_complete buffer_size msg' then
           let conn' :=  {| conn_id := conn_id conn ;
                            conn_request := msg';

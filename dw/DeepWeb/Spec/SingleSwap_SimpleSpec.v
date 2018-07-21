@@ -1,3 +1,4 @@
+(*! Section BaseTest *)
 Generalizable Variable E.
 Typeclasses eauto := 6.
 
@@ -31,7 +32,7 @@ Open Scope string_scope.
 (** * Main specification of a "single-swap" server *)
 
 (* SHOW *)
-(** This is the main loop of the swap server.  [conns] maintains the
+(* This is the main loop of the swap server.  [conns] maintains the
     list of open connections (this is used for generating test cases).
     [last_msg] holds the message received from the last client (which
     will be sent back to the next client).  The server first accepts a
@@ -40,14 +41,14 @@ Open Scope string_scope.
 CoFixpoint swap_spec_loop
               (buffer_size : nat)
               (conns : list connection_id)
-              (last_msg : bytes)
+              (last_msg : bytes) 
             : itree_spec :=
   c <- obs_connect;;
   msg <- obs_msg_to_server buffer_size c;;
   obs_msg_from_server c last_msg;;
   swap_spec_loop buffer_size conns msg.
 
-(** The server's initial state (which will be the message sent back to
+(* The server's initial state (which will be the message sent back to
     the first client). *)
 Definition init_msg (buffer_size : nat) :=
   repeat_string "0"%char buffer_size.
@@ -55,209 +56,6 @@ Definition init_msg (buffer_size : nat) :=
 Definition swap_spec_ buffer_size :=
   swap_spec_loop buffer_size [] (init_msg buffer_size).
 
-(** Top-level spec *)
+(* Top-level spec *)
 Definition swap_spec := swap_spec_ Util.TestDefault.buffer_size.
-
-(** * Examples *)
-
-Section ExampleTraces.
-
-Import EventNotations.
-(** Convenient notations for events:
-<<
-       c !        Connection c is open
-       c <-- b    Server receives byte b on connection c
-       c --> b    Server sends byte b on connection c
-       c --> ?    Server sends unknown byte b on connection c
->>
-*)
-(* BCP: The notion of "unknown byte" will need to be explained, either
-   here or pretty soon.  Maybe best to do it later and, here, to just
-   say "see below". *)
-
-(** ** Example traces *)
-
-(** A simple example showing the expected behavior described by the spec: *)
-Example trace_example :
-  true = is_trace_of 100 swap_spec [
-    0 !;
-    0 <-- "a";
-    0 <-- "b";
-    0 <-- "c";
-    0 --> "0";
-    0 --> "0";
-    0 --> "0";
-    1 !;
-    1 <-- "d";
-    1 <-- "e";
-    1 <-- "f";
-    1 --> "a";
-    1 --> "b";
-    1 --> "c"
-  ].
-Proof. reflexivity. Qed.
-
-(** An example of a behavior _not_ described by the spec (the first
-    byte sent back should be ["0"], not ["1"]): *)
-Example trace_example2 :
-  false = is_trace_of 100 swap_spec [
-    0 !;
-    0 <-- "a";
-    0 <-- "b";
-    0 <-- "c";
-    0 --> "1"  (* error: Initial state is 000 *)
-  ].
-Proof. reflexivity. Qed.
-
-(** ** Example scrambled traces *)
-
-(** "Scrambled traces" describe what the clients across the network
-    can observe, given that the server is behaving according to the
-    given sequential specification. *)
-
-(** Every actual trace of the server is also a scrambled trace: *)
-Example scrambled_trace_example_trivial :
-  Found = is_scrambled_trace_of 1000 swap_spec [
-    0 !;
-    0 <-- "a";
-    0 <-- "b";
-    0 <-- "c";
-    0 --> "0";
-    0 --> "0";
-    0 --> "0";
-    1 !;
-    1 <-- "d";
-    1 <-- "e";
-    1 <-- "f";
-    1 --> "a";
-    1 --> "b";
-    1 --> "c"
-  ].
-Proof. reflexivity. Qed.
-
-(** More interestingly, the server can appear (from across the
-    network) to accept two connections at the beginning and then
-    exchange messages on them: *)
-Example scrambled_trace_example_1 :
-  Found = is_scrambled_trace_of 1000 swap_spec [
-    0 !;
-    1 !;
-    0 <-- "a";
-    0 <-- "b";
-    0 <-- "c";
-    0 --> "0";
-    0 --> "0";
-    0 --> "0";
-    1 <-- "d";
-    1 <-- "e";
-    1 <-- "f";
-    1 --> "a";
-    1 --> "b";
-    1 --> "c"
-  ].
-Proof. reflexivity. Qed.
-
-(** Or, with yet more scrambling by the network, the server can appear
-    to accept both connections, then receive messages from both, and
-    then send messages on the second connection before sending on the
-    first: *)
-Example scrambled_trace_example_2 :
-  Found = is_scrambled_trace_of 1000 swap_spec [
-    0 !;
-    1 !;
-    0 <-- "a";
-    0 <-- "b";
-    0 <-- "c";
-    1 <-- "d";
-    1 <-- "e";
-    1 <-- "f";
-    1 --> "a";
-    1 --> "b";
-    1 --> "c";
-    0 --> "0";
-    0 --> "0";
-    0 --> "0"
-  ].
-Proof. reflexivity. Qed.
-
-(* BCP: Not sure I can explain exactly why the following examples come
-   out the way they do... *)
-Example scrambled_trace_example_3 :
-  NotFound = is_scrambled_trace_of 1000 swap_spec [
-    0 !;
-    1 !;
-    0 <-- "a";
-    0 <-- "b";
-    0 <-- "c";
-    1 <-- "d";
-    1 <-- "e";
-    1 <-- "f";
-    0 --> "d";
-    0 --> "e";
-    0 --> "f"
-  ].
-Proof. reflexivity. Qed.
-
-Example scrambled_trace_example_3a :
-  Found = is_scrambled_trace_of 1000 swap_spec [
-    1 !;
-    0 !;
-    1 <-- "d";
-    1 <-- "e";
-    1 <-- "f";
-    0 <-- "a";
-    0 <-- "b";
-    0 <-- "c";
-    0 --> "d";
-    0 --> "e";
-    0 --> "f"
-  ].
-Proof. reflexivity. Qed.
-
-Example scrambled_trace_example_4 :
-  NotFound = is_scrambled_trace_of 1000 swap_spec [
-    0 !;
-    1 !;
-    2 !;
-    0 <-- "a";
-    0 <-- "b";
-    0 <-- "c";
-    1 <-- "d";
-    1 <-- "e";
-    1 <-- "f";
-    2 <-- "g";
-    2 <-- "h";
-    2 <-- "i";
-    1 --> "g";
-    1 --> "h";
-    1 --> "i";
-    2 --> "d";
-    2 --> "e";
-    2 --> "f"
-  ].
-Proof. reflexivity. Qed.
-
-(* BCP: Let's also have some examples showing a descrambled trace with
-   holes.  Here is one kind of random one, but I'm not sure what to say
-   about it... *)
-Example scrambled_trace_example_with_holes_1 :
-  Found = is_scrambled_trace_of 1000 swap_spec [
-    0 !;
-    0 <-- "a";
-    0 <-- "b";
-    0 <-- "c";
-    0 --> ?;
-    0 --> "0";
-    0 --> "0";
-    1 !;
-    1 <-- "d";
-    1 <-- "e";
-    1 <-- "f";
-    1 --> ?;
-    1 --> "b";
-    1 --> ?
-  ].
-Proof. reflexivity. Qed.
-
-End ExampleTraces.
 (* /SHOW *)

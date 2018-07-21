@@ -25,30 +25,26 @@ Set Warnings "-extraction-opaque-accessed,-extraction".
 Open Scope string_scope.
 (* end hide *)
 
-(* The observations that can be made by the spec.
-   This is parameterized by a type of "hints" that
+(** The type of observations that can be made by the spec. *)
+(* The observations are parameterized by a type of "hints" that
    can be used to help generating test cases. *)
 (* TODO: decide whether to restore hints. *)
 (* SHOW *)
 Inductive observerE : Type -> Type :=
-  (* Observe the creation of a new connection *)
-| ObsConnect : observerE connection_id
+| (* Observe the creation of a new connection *)
+  ObsConnect : observerE connection_id
 
-  (* Observe a byte going into the server on a particular
+| (* Observe a byte going into the server on a particular
      connection *)
-| ObsToServer :
-    connection_id -> observerE byte
+  ObsToServer : connection_id -> observerE byte
 
-  (* Observe a byte going out of the server.
-     This action can return [None] "holes" as a way to hypothesize
-     that the server sent some message we haven't yet received,
-     so we can keep testing the rest of the trace.
-     We must be careful that, if a trace with holes is
-     rejected, then it must also be for any substitution
-     of actual values for those holes. *)
-| ObsFromServer :
-    connection_id -> observerE (option byte)
-.
+  (* Observe a byte going out of the server.  This action can return
+     [None], indicating a "hole" as a way to hypothesize that the
+     server sent some message we haven't yet received, so we can keep
+     testing the rest of the trace.  (The spec writer must be careful
+     that, if a trace with holes is rejected, then it must also be for
+     any substitution of actual values for those holes.) *)
+| ObsFromServer : connection_id -> observerE (option byte).
 
 Definition obs_connect {E} `{observerE -< E} : M E connection_id :=
   embed ObsConnect.

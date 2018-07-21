@@ -19,13 +19,7 @@
 <h1 class="libtitle">Library DeepWeb.Free.Monad.Free</h1>
 
 <div class="code">
-</div>
-
-<div class="doc">
-<a name="lab1"></a><h1 class="section">Abstract Monad infrastructure for ITrees.</h1>
-
-</div>
-<div class="code">
+<span class="comment">(*&nbsp;BCP:&nbsp;The&nbsp;file&nbsp;needs&nbsp;a&nbsp;little&nbsp;tidying&nbsp;*)</span><br/>
 
 <br/>
 <span class="id" title="keyword">Set Implicit Arguments</span>.<br/>
@@ -45,53 +39,27 @@
 </div>
 
 <div class="doc">
-<a name="lab2"></a><h2 class="section">Basic Definitions</h2>
+<a name="lab5"></a><h1 class="section">Interaction Trees.</h1>
+<a name="lab6"></a><h2 class="section">Basic Definitions</h2>
 
-<div class="paragraph"> </div>
-
- The core definition of ITrees.  An <span class="inlinecode"><a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a></span> <span class="inlinecode"><a class="idref" href="DeepWeb.Free.Monad.Semantics.html#Sem.E"><span class="id" title="variable">E</span></a></span> <span class="inlinecode"><a class="idref" href="DeepWeb.Free.Monad.Common.html#Zip.X"><span class="id" title="variable">X</span></a></span> is the denotation of a
-    program as coinductive (possibly infinite) tree where the leaves
-    are labeled with <span class="inlinecode"><a class="idref" href="DeepWeb.Free.Monad.Common.html#Zip.X"><span class="id" title="variable">X</span></a></span> and every node is either an "internal" <span class="inlinecode"><a class="idref" href="DeepWeb.Free.Monad.Free.html#Tau"><span class="id" title="constructor">Tau</span></a></span>
-    node with one child, or a "external" <span class="inlinecode"><a class="idref" href="DeepWeb.Free.Monad.Free.html#Vis"><span class="id" title="constructor">Vis</span></a></span> node with a visible
-    event of type <span class="inlinecode"><a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#Event"><span class="id" title="constructor">Event</span></a></span> <span class="inlinecode"><a class="idref" href="DeepWeb.Free.Monad.Common.html#Zip.Y"><span class="id" title="variable">Y</span></a></span> plus a continuation <span class="inlinecode"><a class="idref" href="DeepWeb.Free.Monad.Free.html#k"><span class="id" title="variable">k</span></a></span> that receives a
-    <span class="inlinecode"><a class="idref" href="DeepWeb.Free.Monad.Common.html#Zip.Y"><span class="id" title="variable">Y</span></a></span> value from the event. 
 </div>
 <div class="code">
-<span class="id" title="keyword">CoInductive</span> <a name="M"><span class="id" title="inductive">M</span></a> (<span class="id" title="var">Event</span> : <span class="id" title="keyword">Type</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Type</span>) <span class="id" title="var">X</span> :=<br/>
+
+<br/>
+<span class="comment">(*&nbsp;The&nbsp;core&nbsp;definition&nbsp;of&nbsp;ITrees.&nbsp;&nbsp;An&nbsp;<span class="inlinecode"><span class="id" title="var">M</span></span> <span class="inlinecode"><span class="id" title="var">E</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span>&nbsp;is&nbsp;the&nbsp;denotation&nbsp;of&nbsp;a<br/>
+&nbsp;&nbsp;&nbsp;program&nbsp;as&nbsp;coinductive&nbsp;(possibly&nbsp;infinite)&nbsp;tree&nbsp;where&nbsp;the&nbsp;leaves<br/>
+&nbsp;&nbsp;&nbsp;are&nbsp;<span class="inlinecode"><span class="id" title="var">Ret</span></span>&nbsp;nodes&nbsp;labeled&nbsp;with&nbsp;return&nbsp;values&nbsp;from&nbsp;<span class="inlinecode"><span class="id" title="var">X</span></span>&nbsp;and&nbsp;each<br/>
+&nbsp;&nbsp;&nbsp;internal&nbsp;nodes&nbsp;is&nbsp;either&nbsp;an&nbsp;"internal"&nbsp;<span class="inlinecode"><span class="id" title="var">Tau</span></span>&nbsp;node&nbsp;with&nbsp;one&nbsp;child&nbsp;or<br/>
+&nbsp;&nbsp;&nbsp;else&nbsp;a&nbsp;"external"&nbsp;<span class="inlinecode"><span class="id" title="var">Vis</span></span>&nbsp;node&nbsp;with&nbsp;a&nbsp;visible&nbsp;event&nbsp;of&nbsp;type&nbsp;<span class="inlinecode"><span class="id" title="var">Event</span></span> <span class="inlinecode"><span class="id" title="var">Y</span></span><br/>
+&nbsp;&nbsp;&nbsp;plus&nbsp;a&nbsp;continuation&nbsp;<span class="inlinecode"><span class="id" title="var">k</span></span>&nbsp;that&nbsp;receives&nbsp;a&nbsp;<span class="inlinecode"><span class="id" title="var">Y</span></span>&nbsp;value&nbsp;from&nbsp;the&nbsp;event.&nbsp;*)</span><br/>
+<span class="id" title="keyword">CoInductive</span> <a name="M"><span class="id" title="inductive">M</span></a> (<span class="id" title="var">Event</span> : <span class="id" title="keyword">Type</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Type</span>) <span class="id" title="var">X</span> := <br/>
 | <a name="Ret"><span class="id" title="constructor">Ret</span></a> (<span class="id" title="var">x</span>:<a class="idref" href="DeepWeb.Free.Monad.Free.html#X"><span class="id" title="variable">X</span></a>)<br/>
 | <a name="Vis"><span class="id" title="constructor">Vis</span></a> {<span class="id" title="var">Y</span>: <span class="id" title="keyword">Type</span>} (<span class="id" title="var">e</span> : <a class="idref" href="DeepWeb.Free.Monad.Free.html#Event"><span class="id" title="variable">Event</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#Y"><span class="id" title="variable">Y</span></a>) (<span class="id" title="var">k</span> : <a class="idref" href="DeepWeb.Free.Monad.Free.html#Y"><span class="id" title="variable">Y</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#Event"><span class="id" title="variable">Event</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#X"><span class="id" title="variable">X</span></a>)<br/>
 | <a name="Tau"><span class="id" title="constructor">Tau</span></a> (<span class="id" title="var">k</span>: <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#Event"><span class="id" title="variable">Event</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#X"><span class="id" title="variable">X</span></a>).<br/>
 
 <br/>
-
-<br/>
-</div>
-
-<div class="doc">
-<span class="inlinecode"><a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a></span> is known as the "Freer monad".
-
-<div class="paragraph"> </div>
-
-    "Freer Monads, More Extensible Effects", Oleg Kiselyov, Hiromi
-    Ishii.
-
-<div class="paragraph"> </div>
-
-    Abstract nonsense: The <span class="inlinecode"><a class="idref" href="DeepWeb.Free.Monad.Free.html#Vis"><span class="id" title="constructor">Vis</span></a></span> constructor corresponds to a free
-    functor construction also called Co-Yoneda or left Kan extension.
-    Note that <span class="inlinecode"><a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#Event"><span class="id" title="constructor">Event</span></a></span> is meant to be an indexed type, and generally
-    not a functor, but we have a monad in any case.
-
-<div class="paragraph"> </div>
-
-    Some relevant links to variations of this theme can be found in
-    http://reddit6.com/r/haskell/comments/7q4sku/are_people_using_freer_monads_or_still_mostly/ 
-</div>
-<div class="code">
-
-<br/>
-
-<br/>
+<span class="comment">(*&nbsp;<span class="inlinecode"><span class="id" title="var">M</span></span>&nbsp;is&nbsp;known&nbsp;as&nbsp;the&nbsp;"Freer&nbsp;monad".&nbsp;&nbsp;See&nbsp;_Freer&nbsp;Monads,&nbsp;More<br/>
+&nbsp;&nbsp;&nbsp;Extensible&nbsp;Effects_,&nbsp;by&nbsp;Oleg&nbsp;Kiselyov&nbsp;and&nbsp;Hiromi&nbsp;Ishii.&nbsp;*)</span><br/>
 
 <br/>
 
@@ -99,13 +67,13 @@
 </div>
 
 <div class="doc">
-<a name="lab3"></a><h2 class="section">Monad Structure</h2>
+<a name="lab7"></a><h2 class="section">Monad Structure</h2>
 
-<div class="paragraph"> </div>
-
- First, we show that <span class="inlinecode"><a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a></span> <span class="inlinecode"><a class="idref" href="DeepWeb.Free.Monad.Semantics.html#Sem.E"><span class="id" title="variable">E</span></a></span> forms a <span class="inlinecode"><a class="idref" href="Custom.Monad.html#Monad"><span class="id" title="record">Monad</span></a></span>. 
 </div>
 <div class="code">
+
+<br/>
+<span class="comment">(*&nbsp;First,&nbsp;we&nbsp;show&nbsp;that&nbsp;<span class="inlinecode"><span class="id" title="var">M</span></span> <span class="inlinecode"><span class="id" title="var">E</span></span>&nbsp;forms&nbsp;a&nbsp;<span class="inlinecode"><span class="id" title="var">Monad</span></span>.&nbsp;*)</span><br/>
 
 <br/>
 <span class="id" title="keyword">Module</span> <a name="Core"><span class="id" title="module">Core</span></a>.<br/>
@@ -127,6 +95,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Free.html#Core.bind_body"><span class="id" title="definition">bind_body</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#s"><span class="id" title="variable">s</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#go"><span class="id" title="variable">go</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#t"><span class="id" title="variable">t</span></a>) <a class="idref" href="DeepWeb.Free.Monad.Free.html#s"><span class="id" title="variable">s</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;This&nbsp;is&nbsp;truly&nbsp;a&nbsp;Monad,&nbsp;but&nbsp;inserting&nbsp;<span class="inlinecode"><span class="id" title="var">Tau</span></span>&nbsp;will&nbsp;be&nbsp;more&nbsp;convenient.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="Core.Monad_M"><span class="id" title="definition">Monad_M</span></a> <span class="id" title="var">E</span> : <a class="idref" href="Custom.Monad.html#Monad"><span class="id" title="class">Monad</span></a> (<a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#E"><span class="id" title="variable">E</span></a>) :=<br/>
 &nbsp;&nbsp;<a class="idref" href="Custom.Monad.html#Build_Monad"><span class="id" title="constructor">Build_Monad</span></a> (<a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#E"><span class="id" title="variable">E</span></a>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">X</span> <span class="id" title="var">x</span> ⇒ <a class="idref" href="DeepWeb.Free.Monad.Free.html#Ret"><span class="id" title="constructor">Ret</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#x"><span class="id" title="variable">x</span></a>)<br/>
@@ -136,16 +105,12 @@
 <span class="id" title="keyword">End</span> <a class="idref" href="DeepWeb.Free.Monad.Free.html#Core"><span class="id" title="module">Core</span></a>.<br/>
 
 <br/>
-</div>
-
-<div class="doc">
-Now we slightly change the bind operation to insert a <span class="inlinecode"><a class="idref" href="DeepWeb.Free.Monad.Free.html#Tau"><span class="id" title="constructor">Tau</span></a></span> in the
-    case where the right-hand argument to bind is just a <span class="inlinecode"><a class="idref" href="DeepWeb.Free.Monad.Free.html#Ret"><span class="id" title="constructor">Ret</span></a></span>, to
-    make programs/specifications neater and easier to write. This
-    makes <span class="inlinecode"><a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a></span> no longer a monad structurally, but it remains one in a
-    looser sense as long as <span class="inlinecode"><a class="idref" href="DeepWeb.Free.Monad.Free.html#Tau"><span class="id" title="constructor">Tau</span></a></span> is interpreted as the identity. 
-</div>
-<div class="code">
+<span class="comment">(*&nbsp;Now&nbsp;we&nbsp;slightly&nbsp;change&nbsp;the&nbsp;bind&nbsp;operation&nbsp;to&nbsp;insert&nbsp;a&nbsp;<span class="inlinecode"><span class="id" title="var">Tau</span></span>&nbsp;in&nbsp;the<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;case&nbsp;where&nbsp;the&nbsp;right-hand&nbsp;argument&nbsp;to&nbsp;bind&nbsp;is&nbsp;just&nbsp;a&nbsp;<span class="inlinecode"><span class="id" title="var">Ret</span></span>,&nbsp;to<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;make&nbsp;programs/specifications&nbsp;neater&nbsp;and&nbsp;easier&nbsp;to&nbsp;write.&nbsp;This<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;makes&nbsp;<span class="inlinecode"><span class="id" title="var">M</span></span>&nbsp;no&nbsp;longer&nbsp;a&nbsp;monad&nbsp;structurally,&nbsp;but&nbsp;it&nbsp;remains&nbsp;one&nbsp;in&nbsp;a<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;looser&nbsp;sense&nbsp;as&nbsp;long&nbsp;as&nbsp;<span class="inlinecode"><span class="id" title="var">Tau</span></span>&nbsp;is&nbsp;interpreted&nbsp;as&nbsp;the&nbsp;identity.&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;BCP:&nbsp;Not&nbsp;sure&nbsp;what&nbsp;it&nbsp;means&nbsp;to&nbsp;"interpret&nbsp;Tau&nbsp;as&nbsp;the&nbsp;identity"&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="bindM"><span class="id" title="definition">bindM</span></a> {<span class="id" title="var">E</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span>} (<span class="id" title="var">s</span>: <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#X"><span class="id" title="variable">X</span></a>) (<span class="id" title="var">t</span>: <a class="idref" href="DeepWeb.Free.Monad.Free.html#X"><span class="id" title="variable">X</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#Y"><span class="id" title="variable">Y</span></a>) : <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#Y"><span class="id" title="variable">Y</span></a> :=<br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Free.html#bindM"><span class="id" title="definition">Core.bindM</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#s"><span class="id" title="variable">s</span></a> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> ⇒ <a class="idref" href="DeepWeb.Free.Monad.Free.html#Tau"><span class="id" title="constructor">Tau</span></a> (<a class="idref" href="DeepWeb.Free.Monad.Free.html#t"><span class="id" title="variable">t</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#x"><span class="id" title="variable">x</span></a>)).<br/>
 
@@ -156,15 +121,15 @@ Now we slightly change the bind operation to insert a <span class="inlinecode"><
 </div>
 
 <div class="doc">
-<a name="lab4"></a><h2 class="section">Handy Utilities</h2>
+<a name="lab8"></a><h2 class="section">Handy Utilities</h2>
 
-<div class="paragraph"> </div>
-
- Wrap a function around the results returned from an ITree 
 </div>
 <div class="code">
+
+<br/>
+<span class="comment">(*&nbsp;Wrap&nbsp;a&nbsp;function&nbsp;around&nbsp;the&nbsp;results&nbsp;returned&nbsp;from&nbsp;an&nbsp;ITree&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="mapM"><span class="id" title="definition">mapM</span></a> {<span class="id" title="var">E</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span>} (<span class="id" title="var">f</span>: <a class="idref" href="DeepWeb.Free.Monad.Free.html#X"><span class="id" title="variable">X</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#Y"><span class="id" title="variable">Y</span></a>) (<span class="id" title="var">s</span>: <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#X"><span class="id" title="variable">X</span></a>) : <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#Y"><span class="id" title="variable">Y</span></a> :=<br/>
-<span class="id" title="keyword">let</span> <span class="id" title="keyword">cofix</span> <span class="id" title="var">go</span> (<span class="id" title="var">s</span> : <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#X"><span class="id" title="variable">X</span></a>) :=<br/>
+<span class="id" title="keyword">let</span> <span class="id" title="keyword">cofix</span> <span class="id" title="var">go</span> (<span class="id" title="var">s</span> : <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#X"><span class="id" title="variable">X</span></a>) := <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="DeepWeb.Free.Monad.Free.html#s"><span class="id" title="variable">s</span></a> <span class="id" title="keyword">with</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="DeepWeb.Free.Monad.Free.html#Ret"><span class="id" title="constructor">Ret</span></a> <span class="id" title="var">x</span> ⇒ <a class="idref" href="DeepWeb.Free.Monad.Free.html#Ret"><span class="id" title="constructor">Ret</span></a> (<a class="idref" href="DeepWeb.Free.Monad.Free.html#f"><span class="id" title="variable">f</span></a> <span class="id" title="var">x</span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="DeepWeb.Free.Monad.Free.html#Vis"><span class="id" title="constructor">Vis</span></a> <span class="id" title="var">e</span> <span class="id" title="var">k</span> ⇒ <a class="idref" href="DeepWeb.Free.Monad.Free.html#Vis"><span class="id" title="constructor">Vis</span></a> <span class="id" title="var">e</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">y</span> ⇒ <a class="idref" href="DeepWeb.Free.Monad.Free.html#go"><span class="id" title="variable">go</span></a> (<span class="id" title="var">k</span> <a class="idref" href="DeepWeb.Free.Monad.Free.html#y"><span class="id" title="variable">y</span></a>))<br/>
@@ -173,6 +138,7 @@ Now we slightly change the bind operation to insert a <span class="inlinecode"><
 <span class="id" title="tactic">in</span> <a class="idref" href="DeepWeb.Free.Monad.Free.html#go"><span class="id" title="variable">go</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#s"><span class="id" title="variable">s</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;BCP:&nbsp;This&nbsp;is&nbsp;a&nbsp;generic&nbsp;monad&nbsp;thing,&nbsp;right?&nbsp;&nbsp;Belongs&nbsp;elsewhere&nbsp;I&nbsp;guess.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Fixpoint</span> <a name="forM"><span class="id" title="definition">forM</span></a> {<span class="id" title="var">M</span> : <span class="id" title="keyword">Type</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Type</span>} {<span class="id" title="var">MM</span> : <a class="idref" href="Custom.Monad.html#Monad"><span class="id" title="class">Monad</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="variable">M</span></a>} {<span class="id" title="var">X</span> <span class="id" title="var">Y</span>}<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">xs</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#X"><span class="id" title="variable">X</span></a>) (<span class="id" title="var">f</span> : <a class="idref" href="DeepWeb.Free.Monad.Free.html#X"><span class="id" title="variable">X</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="variable">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#Y"><span class="id" title="variable">Y</span></a>)<br/>
 &nbsp;&nbsp;: <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="variable">M</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#Y"><span class="id" title="variable">Y</span></a>) :=<br/>
@@ -182,82 +148,44 @@ Now we slightly change the bind operation to insert a <span class="inlinecode"><
 &nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
 
 <br/>
-</div>
-
-<div class="doc">
-Ignore the results from an ITree (changing it to have <span class="inlinecode"><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a></span> result type) 
-</div>
-<div class="code">
+<span class="comment">(*&nbsp;Ignore&nbsp;the&nbsp;results&nbsp;from&nbsp;an&nbsp;ITree&nbsp;(changing&nbsp;it&nbsp;to&nbsp;have&nbsp;<span class="inlinecode"><span class="id" title="var">unit</span></span>&nbsp;result&nbsp;type)&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="ignore"><span class="id" title="definition">ignore</span></a> {<span class="id" title="var">E</span> <span class="id" title="var">X</span>} : <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#X"><span class="id" title="variable">X</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> := <a class="idref" href="DeepWeb.Free.Monad.Free.html#mapM"><span class="id" title="definition">mapM</span></a> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> ⇒ <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#tt"><span class="id" title="constructor">tt</span></a>).<br/>
 
 <br/>
-</div>
-
-<div class="doc">
-An ITree representing an infinite loop 
-</div>
-<div class="code">
+<span class="comment">(*&nbsp;An&nbsp;ITree&nbsp;representing&nbsp;an&nbsp;infinite&nbsp;loop&nbsp;*)</span><br/>
 <span class="id" title="keyword">CoFixpoint</span> <a name="spin"><span class="id" title="definition">spin</span></a> {<span class="id" title="var">E</span>} {<span class="id" title="var">X</span>} : <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#X"><span class="id" title="variable">X</span></a> := <a class="idref" href="DeepWeb.Free.Monad.Free.html#Tau"><span class="id" title="constructor">Tau</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#spin"><span class="id" title="definition">spin</span></a>.<br/>
-</div>
-
-<div class="doc">
-An ITree that does one internal step and then returns. 
-</div>
-<div class="code">
+<span class="comment">(*&nbsp;An&nbsp;ITree&nbsp;that&nbsp;does&nbsp;one&nbsp;internal&nbsp;step&nbsp;and&nbsp;then&nbsp;returns.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="tick"><span class="id" title="definition">tick</span></a> {<span class="id" title="var">E</span>} : <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> := <a class="idref" href="DeepWeb.Free.Monad.Free.html#Tau"><span class="id" title="constructor">Tau</span></a> (<a class="idref" href="DeepWeb.Free.Monad.Free.html#Ret"><span class="id" title="constructor">Ret</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#tt"><span class="id" title="constructor">tt</span></a>).<br/>
 
 <br/>
-</div>
-
-<div class="doc">
-Lift a single event to an <span class="inlinecode"><a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a></span> action. 
-</div>
-<div class="code">
+<span class="comment">(*&nbsp;Lift&nbsp;a&nbsp;single&nbsp;event&nbsp;to&nbsp;an&nbsp;<span class="inlinecode"><span class="id" title="var">M</span></span>&nbsp;action.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="liftE"><span class="id" title="definition">liftE</span></a> <span class="id" title="var">Event</span> <span class="id" title="var">X</span> (<span class="id" title="var">e</span> : <a class="idref" href="DeepWeb.Free.Monad.Free.html#Event"><span class="id" title="variable">Event</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#X"><span class="id" title="variable">X</span></a>) : <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#Event"><span class="id" title="variable">Event</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#X"><span class="id" title="variable">X</span></a> :=<br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Free.html#Vis"><span class="id" title="constructor">Vis</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#e"><span class="id" title="variable">e</span></a> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> ⇒ <a class="idref" href="DeepWeb.Free.Monad.Free.html#Ret"><span class="id" title="constructor">Ret</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#x"><span class="id" title="variable">x</span></a>).<br/>
 
 <br/>
-</div>
-
-<div class="doc">
-The void type is useful as a return type to <span class="inlinecode"><a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a></span>, to enforce the
-    constraint that a given computation should never terminate. 
-</div>
-<div class="code">
+<span class="comment">(*&nbsp;The&nbsp;void&nbsp;type&nbsp;is&nbsp;useful&nbsp;as&nbsp;a&nbsp;return&nbsp;type&nbsp;to&nbsp;<span class="inlinecode"><span class="id" title="var">M</span></span>,&nbsp;to&nbsp;enforce&nbsp;the<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;constraint&nbsp;that&nbsp;a&nbsp;given&nbsp;computation&nbsp;should&nbsp;never&nbsp;terminate.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Inductive</span> <a name="void"><span class="id" title="inductive">void</span></a> : <span class="id" title="keyword">Type</span> := .<br/>
 
 <br/>
+<span class="comment">(*&nbsp;An&nbsp;infinite&nbsp;loop&nbsp;with&nbsp;a&nbsp;given&nbsp;body.&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;BCP:&nbsp;Why&nbsp;do&nbsp;we&nbsp;need&nbsp;both&nbsp;forever&nbsp;and&nbsp;loop?&nbsp;*)</span><br/>
 <span class="id" title="keyword">CoFixpoint</span> <a name="forever"><span class="id" title="definition">forever</span></a> {<span class="id" title="var">E</span>} {<span class="id" title="var">X</span>} (<span class="id" title="var">x</span> : <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#X"><span class="id" title="variable">X</span></a>) : <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#void"><span class="id" title="inductive">void</span></a> :=<br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Free.html#x"><span class="id" title="variable">x</span></a> <a class="idref" href="Custom.Monad.html#617d4c2635d7166c8606c5fbf0f2733e"><span class="id" title="notation">;;</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#forever"><span class="id" title="definition">forever</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#x"><span class="id" title="variable">x</span></a>.<br/>
 
 <br/>
-</div>
-
-<div class="doc">
-An infinite loop with a given body that obviously never returns. 
-</div>
-<div class="code">
+<span class="comment">(*&nbsp;An&nbsp;infinite&nbsp;loop&nbsp;with&nbsp;a&nbsp;given&nbsp;body&nbsp;that&nbsp;obviously&nbsp;never&nbsp;returns.&nbsp;*)</span><br/>
 <span class="id" title="keyword">CoFixpoint</span> <a name="loop"><span class="id" title="definition">loop</span></a> {<span class="id" title="var">E</span> <span class="id" title="var">void</span>} (<span class="id" title="var">body</span> : <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>) : <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#void"><span class="id" title="variable">void</span></a> :=<br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Free.html#body"><span class="id" title="variable">body</span></a><a class="idref" href="Custom.Monad.html#617d4c2635d7166c8606c5fbf0f2733e"><span class="id" title="notation">;;</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#loop"><span class="id" title="definition">loop</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#body"><span class="id" title="variable">body</span></a>.<br/>
 
 <br/>
-</div>
-
-<div class="doc">
-A one-sided conditional. 
-</div>
-<div class="code">
+<span class="comment">(*&nbsp;A&nbsp;one-sided&nbsp;conditional.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="when"><span class="id" title="definition">when</span></a> {<span class="id" title="var">E</span>} (<span class="id" title="var">b</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#bool"><span class="id" title="inductive">bool</span></a>) (<span class="id" title="var">body</span> : <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>)<br/>
 &nbsp;&nbsp;: <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">if</span> <a class="idref" href="DeepWeb.Free.Monad.Free.html#b"><span class="id" title="variable">b</span></a> <span class="id" title="keyword">then</span> <a class="idref" href="DeepWeb.Free.Monad.Free.html#body"><span class="id" title="variable">body</span></a> <span class="id" title="keyword">else</span> <a class="idref" href="Custom.Monad.html#ret"><span class="id" title="method">ret</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#tt"><span class="id" title="constructor">tt</span></a>.<br/>
 
 <br/>
-</div>
-
-<div class="doc">
-An imperative loop over a list. 
-</div>
-<div class="code">
+<span class="comment">(*&nbsp;An&nbsp;imperative&nbsp;loop&nbsp;over&nbsp;a&nbsp;list.&nbsp;*)</span><br/>
 <span class="id" title="keyword">CoFixpoint</span> <a name="for_each"><span class="id" title="definition">for_each</span></a> {<span class="id" title="var">E</span> <span class="id" title="var">A</span>} (<span class="id" title="var">bs</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#A"><span class="id" title="variable">A</span></a>) (<span class="id" title="var">body</span> : <a class="idref" href="DeepWeb.Free.Monad.Free.html#A"><span class="id" title="variable">A</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>)<br/>
 &nbsp;&nbsp;: <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="DeepWeb.Free.Monad.Free.html#bs"><span class="id" title="variable">bs</span></a> <span class="id" title="keyword">with</span><br/>
@@ -269,15 +197,15 @@ An imperative loop over a list.
 </div>
 
 <div class="doc">
-<a name="lab5"></a><h1 class="section">More stuff</h1>
+<a name="lab9"></a><h1 class="section">More stuff</h1>
 
-<div class="paragraph"> </div>
-
- If we can interpret the events of one such monad as
-    computations in another, we can extend that
-    interpretation to the whole monad. 
 </div>
 <div class="code">
+
+<br/>
+<span class="comment">(*&nbsp;If&nbsp;we&nbsp;can&nbsp;interpret&nbsp;the&nbsp;events&nbsp;of&nbsp;one&nbsp;such&nbsp;monad&nbsp;as<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;computations&nbsp;in&nbsp;another,&nbsp;we&nbsp;can&nbsp;extend&nbsp;that<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;interpretation&nbsp;to&nbsp;the&nbsp;whole&nbsp;monad.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="hom"><span class="id" title="definition">hom</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">E1</span> <span class="id" title="var">E2</span> : <span class="id" title="keyword">Type</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Type</span>}<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="keyword">∀</span> <span class="id" title="var">X</span>, <a class="idref" href="DeepWeb.Free.Monad.Free.html#E1"><span class="id" title="variable">E1</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#X"><span class="id" title="variable">X</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#E2"><span class="id" title="variable">E2</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#X"><span class="id" title="variable">X</span></a>) :<br/>
@@ -352,33 +280,24 @@ An imperative loop over a list.
 &nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;-------------------------------------------------------------&nbsp;*)</span><br/>
 
 <br/>
 <span class="id" title="keyword">Module</span> <a name="MORE"><span class="id" title="module">MORE</span></a>.<br/>
 
 <br/>
-</div>
-
-<div class="doc">
-Some more interesting algebraic structure.  This is not
-    immediately useful for zipping tests and programs because there
-    are things in tests that we do not want to zip with anything in
-    the program.  Might be useful later for something, though. 
-</div>
-<div class="code">
+<span class="comment">(*&nbsp;Some&nbsp;more&nbsp;interesting&nbsp;algebraic&nbsp;structure.&nbsp;&nbsp;This&nbsp;is&nbsp;not<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;immediately&nbsp;useful&nbsp;for&nbsp;zipping&nbsp;tests&nbsp;and&nbsp;programs&nbsp;because&nbsp;there<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;are&nbsp;things&nbsp;in&nbsp;tests&nbsp;that&nbsp;we&nbsp;do&nbsp;not&nbsp;want&nbsp;to&nbsp;zip&nbsp;with&nbsp;anything&nbsp;in<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;program.&nbsp;&nbsp;Might&nbsp;be&nbsp;useful&nbsp;later&nbsp;for&nbsp;something,&nbsp;though.&nbsp;*)</span><br/>
 
 <br/>
 <span class="id" title="keyword">Inductive</span> <a name="MORE.Pair1"><span class="id" title="inductive">Pair1</span></a> (<span class="id" title="var">E1</span> <span class="id" title="var">E2</span>: <span class="id" title="keyword">Type</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Type</span>) : <span class="id" title="keyword">Type</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Type</span> :=<br/>
 &nbsp;| <a name="MORE.pair1"><span class="id" title="constructor">pair1</span></a> {<span class="id" title="var">X</span>} {<span class="id" title="var">Y</span>} (<span class="id" title="var">e1</span> : <a class="idref" href="DeepWeb.Free.Monad.Free.html#E1"><span class="id" title="variable">E1</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#X"><span class="id" title="variable">X</span></a>) (<span class="id" title="var">e2</span> : <a class="idref" href="DeepWeb.Free.Monad.Free.html#E2"><span class="id" title="variable">E2</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#Y"><span class="id" title="variable">Y</span></a>) : <a class="idref" href="DeepWeb.Free.Monad.Free.html#Pair1"><span class="id" title="inductive">Pair1</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#E1"><span class="id" title="variable">E1</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#E2"><span class="id" title="variable">E2</span></a> (<a class="idref" href="DeepWeb.Free.Monad.Free.html#X"><span class="id" title="variable">X</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#d19c7eafd0e2d195d10df94b392087b5"><span class="id" title="notation">×</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#Y"><span class="id" title="variable">Y</span></a>).<br/>
 
 <br/>
-</div>
-
-<div class="doc">
-If we can interpret two infinite streams with different events as one
-    where we line up the events in lockstep. 
-</div>
-<div class="code">
+<span class="comment">(*&nbsp;If&nbsp;we&nbsp;can&nbsp;interpret&nbsp;two&nbsp;infinite&nbsp;streams&nbsp;with&nbsp;different&nbsp;events&nbsp;as&nbsp;one<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;where&nbsp;we&nbsp;line&nbsp;up&nbsp;the&nbsp;events&nbsp;in&nbsp;lockstep.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="MORE.lockstep"><span class="id" title="definition">lockstep</span></a> {<span class="id" title="var">E1</span> <span class="id" title="var">E2</span> : <span class="id" title="keyword">Type</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Type</span>} {<span class="id" title="var">X</span>} : <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#E1"><span class="id" title="variable">E1</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#X"><span class="id" title="variable">X</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#E2"><span class="id" title="variable">E2</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#X"><span class="id" title="variable">X</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> (<a class="idref" href="DeepWeb.Free.Monad.Free.html#MORE.Pair1"><span class="id" title="inductive">Pair1</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#E1"><span class="id" title="variable">E1</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#E2"><span class="id" title="variable">E2</span></a>) <a class="idref" href="DeepWeb.Free.Monad.Free.html#X"><span class="id" title="variable">X</span></a> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">cofix</span> <span class="id" title="var">go</span> <span class="id" title="var">p1</span> <span class="id" title="var">p2</span> :=<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="DeepWeb.Free.Monad.Free.html#p1"><span class="id" title="variable">p1</span></a>, <a class="idref" href="DeepWeb.Free.Monad.Free.html#p2"><span class="id" title="variable">p2</span></a> <span class="id" title="keyword">with</span><br/>
@@ -389,26 +308,15 @@ If we can interpret two infinite streams with different events as one
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="DeepWeb.Free.Monad.Free.html#Vis"><span class="id" title="constructor">Vis</span></a> <span class="id" title="var">e1</span> <span class="id" title="var">p1k</span>, <a class="idref" href="DeepWeb.Free.Monad.Free.html#Vis"><span class="id" title="constructor">Vis</span></a> <span class="id" title="var">e2</span> <span class="id" title="var">p2k</span> ⇒<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Free.html#Vis"><span class="id" title="constructor">Vis</span></a> (<a class="idref" href="DeepWeb.Free.Monad.Free.html#MORE.pair1"><span class="id" title="constructor">pair1</span></a> <span class="id" title="var">e1</span> <span class="id" title="var">e2</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">p</span> ⇒ <span class="id" title="keyword">match</span> <a class="idref" href="DeepWeb.Free.Monad.Free.html#p"><span class="id" title="variable">p</span></a> <span class="id" title="keyword">with</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">(</span></a><span class="id" title="var">x</span><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">,</span></a> <span class="id" title="var">y</span><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">)</span></a> ⇒ <a class="idref" href="DeepWeb.Free.Monad.Free.html#go"><span class="id" title="variable">go</span></a> (<span class="id" title="var">p1k</span> <span class="id" title="var">x</span>) (<span class="id" title="var">p2k</span> <span class="id" title="var">y</span>) <span class="id" title="keyword">end</span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
-</div>
-
-<div class="doc">
-There are a few variants depending on which return values we want
-    to to force to be void. But this seems to be the most general
-    one.
-</div>
-<div class="code">
+<span class="comment">(*&nbsp;There&nbsp;are&nbsp;a&nbsp;few&nbsp;variants&nbsp;depending&nbsp;on&nbsp;which&nbsp;return&nbsp;values&nbsp;we&nbsp;want<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;to&nbsp;force&nbsp;to&nbsp;be&nbsp;void.&nbsp;But&nbsp;this&nbsp;seems&nbsp;to&nbsp;be&nbsp;the&nbsp;most&nbsp;general<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;one.*)</span><br/>
 
 <br/>
 <span class="id" title="keyword">End</span> <a class="idref" href="DeepWeb.Free.Monad.Free.html#MORE"><span class="id" title="module">MORE</span></a>.<br/>
 
 <br/>
-</div>
-
-<div class="doc">
-In order to unfold a cofixpoint we have to rewrite it with
-    <span class="inlinecode"><a class="idref" href="DeepWeb.Free.Monad.Free.html#matchM"><span class="id" title="lemma">matchM</span></a></span>. 
-</div>
-<div class="code">
+<span class="comment">(*&nbsp;In&nbsp;order&nbsp;to&nbsp;unfold&nbsp;a&nbsp;cofixpoint&nbsp;we&nbsp;have&nbsp;to&nbsp;rewrite&nbsp;it&nbsp;with&nbsp;<span class="inlinecode"><span class="id" title="var">matchM</span></span>.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Notation</span> <a name="idM"><span class="id" title="abbreviation">idM</span></a> <span class="id" title="var">i</span> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">i</span> <span class="id" title="keyword">with</span><br/>
 &nbsp;&nbsp;| <a class="idref" href="DeepWeb.Free.Monad.Free.html#Ret"><span class="id" title="constructor">Ret</span></a> <span class="id" title="var">x</span> ⇒ <a class="idref" href="DeepWeb.Free.Monad.Free.html#Ret"><span class="id" title="constructor">Ret</span></a> <span class="id" title="var">x</span><br/>
@@ -442,6 +350,8 @@ In order to unfold a cofixpoint we have to rewrite it with
 &nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <a class="idref" href="DeepWeb.Free.Monad.Free.html#bind_def_core"><span class="id" title="lemma">bind_def_core</span></a>.<br/>
 &nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
 <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
 </div>
 </div>
 

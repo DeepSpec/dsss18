@@ -19,8 +19,11 @@
 <h1 class="libtitle">Library Custom.Monad</h1>
 
 <div class="code">
+<span class="comment">(*&nbsp;Monad&nbsp;type&nbsp;class&nbsp;*)</span><br/>
 
 <br/>
+<span class="comment">(*&nbsp;We&nbsp;define&nbsp;our&nbsp;own&nbsp;instead&nbsp;of&nbsp;reusing&nbsp;ext-lib's&nbsp;because<br/>
+&nbsp;&nbsp;&nbsp;of&nbsp;a&nbsp;universe&nbsp;inconsistency&nbsp;when&nbsp;used&nbsp;with&nbsp;itrees&nbsp;and&nbsp;VST.&nbsp;*)</span><br/>
 
 <br/>
 <span class="id" title="keyword">Class</span> <a name="Monad"><span class="id" title="record">Monad</span></a> (<span class="id" title="var">m</span> : <span class="id" title="keyword">Type</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Type</span>) : <span class="id" title="keyword">Type</span> :=<br/>
@@ -51,6 +54,10 @@
 (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 100, <span class="id" title="var">c1</span> <span class="id" title="tactic">at</span> <span class="id" title="var">next</span> <span class="id" title="keyword">level</span>, <span class="id" title="tactic">right</span> <span class="id" title="keyword">associativity</span>) : <span class="id" title="var">monad_scope</span>.<br/>
 
 <br/>
+<span class="comment">(*<br/>
+Notation&nbsp;"'&nbsp;pat&nbsp;&lt;-&nbsp;c1&nbsp;;;&nbsp;c2"&nbsp;:=&nbsp;(bind&nbsp;c1&nbsp;(fun&nbsp;pat&nbsp;=&gt;&nbsp;c2))<br/>
+(at&nbsp;level&nbsp;100,&nbsp;pat&nbsp;pattern,&nbsp;c1&nbsp;at&nbsp;next&nbsp;level,&nbsp;right&nbsp;associativity)&nbsp;:&nbsp;monad_scope.<br/>
+*)</span><br/>
 
 <br/>
 <span class="id" title="keyword">Notation</span> <a name="617d4c2635d7166c8606c5fbf0f2733e"><span class="id" title="notation">&quot;</span></a>e1 ;; e2" := (<span class="id" title="var">_</span> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">&lt;-</span></a> <span class="id" title="var">e1</span>%<span class="id" title="var">monad</span> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">;;</span></a> <span class="id" title="var">e2</span>%<span class="id" title="var">monad</span>)%<span class="id" title="var">monad</span><br/>

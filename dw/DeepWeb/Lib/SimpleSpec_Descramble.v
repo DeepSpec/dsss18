@@ -47,8 +47,7 @@ Inductive eventE : Type -> Type :=
 Definition eventE' := nondetE +' eventE.
 
 (* Helper for [pick_event]. *)
-CoFixpoint pick_event' (t_prev t : trace) :
-  M eventE' trace :=
+CoFixpoint pick_event' (t_prev t : trace) : M eventE' trace :=
   match t with
   | [] => fail "empty trace"
   | Event _ e _ as ev :: t =>

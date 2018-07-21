@@ -20,6 +20,11 @@ Import SocketAPI.
 From Custom Require Monad.
 Import MonadNotations.
 
+(** * Simple sequential server implementation *)
+
+(** The simplest implementation of a swap server (essentially the
+    same as the sequential spec): *)
+
 CoFixpoint server_
            (buffer_size : nat)
            (last_msg : bytes) : itree_server :=

@@ -350,7 +350,7 @@ Proof.
   * destruct e; try absurd.
     + (* constructor; intro.
       apply checker_complete; intros. *)
-Abort.
+Abort.     
 (* TODO: *)
 (*       apply (H (S n) (v::l)).
     + admit.

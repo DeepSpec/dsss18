@@ -19,6 +19,7 @@
 <h1 class="libtitle">Library Custom.String</h1>
 
 <div class="code">
+<span class="comment">(*&nbsp;String&nbsp;utilities.&nbsp;*)</span><br/>
 
 <br/>
 <span class="id" title="var">From</span> <span class="id" title="var">Coq</span> <span class="id" title="keyword">Require</span><br/>
@@ -83,10 +84,11 @@
 <br/>
 <span class="id" title="keyword">Definition</span> <a name="isWhite"><span class="id" title="definition">isWhite</span></a> (<span class="id" title="var">c</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.Ascii.html#ascii"><span class="id" title="inductive">ascii</span></a>) : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#bool"><span class="id" title="inductive">bool</span></a> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">n</span> := <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.Ascii.html#N_of_ascii"><span class="id" title="definition">N_of_ascii</span></a> <a class="idref" href="Custom.String.html#c"><span class="id" title="variable">c</span></a> <span class="id" title="tactic">in</span><br/>
-&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#orb"><span class="id" title="definition">orb</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#orb"><span class="id" title="definition">orb</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.NArith.BinNat.html#N.eqb"><span class="id" title="definition">N.eqb</span></a> <a class="idref" href="Custom.String.html#n"><span class="id" title="variable">n</span></a> 32)   <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.NArith.BinNat.html#N.eqb"><span class="id" title="definition">N.eqb</span></a> <a class="idref" href="Custom.String.html#n"><span class="id" title="variable">n</span></a> 9))   <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#orb"><span class="id" title="definition">orb</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.NArith.BinNat.html#N.eqb"><span class="id" title="definition">N.eqb</span></a> <a class="idref" href="Custom.String.html#n"><span class="id" title="variable">n</span></a> 10)   <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.NArith.BinNat.html#N.eqb"><span class="id" title="definition">N.eqb</span></a> <a class="idref" href="Custom.String.html#n"><span class="id" title="variable">n</span></a> 13)). 
+&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#orb"><span class="id" title="definition">orb</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#orb"><span class="id" title="definition">orb</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.NArith.BinNat.html#N.eqb"><span class="id" title="definition">N.eqb</span></a> <a class="idref" href="Custom.String.html#n"><span class="id" title="variable">n</span></a> 32)   <span class="comment">(*&nbsp;space&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.NArith.BinNat.html#N.eqb"><span class="id" title="definition">N.eqb</span></a> <a class="idref" href="Custom.String.html#n"><span class="id" title="variable">n</span></a> 9))   <span class="comment">(*&nbsp;tab&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#orb"><span class="id" title="definition">orb</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.NArith.BinNat.html#N.eqb"><span class="id" title="definition">N.eqb</span></a> <a class="idref" href="Custom.String.html#n"><span class="id" title="variable">n</span></a> 10)   <span class="comment">(*&nbsp;linefeed&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.NArith.BinNat.html#N.eqb"><span class="id" title="definition">N.eqb</span></a> <a class="idref" href="Custom.String.html#n"><span class="id" title="variable">n</span></a> 13)). <span class="comment">(*&nbsp;Carriage&nbsp;return.&nbsp;*)</span><br/>
+
 <br/>
 <span class="id" title="keyword">Definition</span> <a name="isLowerAlpha"><span class="id" title="definition">isLowerAlpha</span></a> (<span class="id" title="var">c</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.Ascii.html#ascii"><span class="id" title="inductive">ascii</span></a>) : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#bool"><span class="id" title="inductive">bool</span></a> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">n</span> := <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.Ascii.html#N_of_ascii"><span class="id" title="definition">N_of_ascii</span></a> <a class="idref" href="Custom.String.html#c"><span class="id" title="variable">c</span></a> <span class="id" title="tactic">in</span><br/>
@@ -189,6 +191,8 @@
 <span class="id" title="keyword">Qed</span>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;Use&nbsp;n&nbsp;here&nbsp;as&nbsp;the&nbsp;ranking&nbsp;function&nbsp;to&nbsp;show&nbsp;that&nbsp;this&nbsp;terminates.<br/>
+&nbsp;&nbsp;&nbsp;Use&nbsp;(length&nbsp;l)&nbsp;should&nbsp;be&nbsp;enough.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Fixpoint</span> <a name="bits_to_string"><span class="id" title="definition">bits_to_string</span></a> (<span class="id" title="var">n</span>: <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) (<span class="id" title="var">l</span>: <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#bool"><span class="id" title="inductive">bool</span></a>) (<span class="id" title="var">s</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a>) : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="Custom.String.html#n"><span class="id" title="variable">n</span></a> <span class="id" title="keyword">with</span><br/>
 &nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#O"><span class="id" title="constructor">O</span></a> ⇒ <a class="idref" href="Custom.String.html#s"><span class="id" title="variable">s</span></a><br/>
@@ -206,6 +210,7 @@
 &nbsp;&nbsp;<a class="idref" href="Custom.String.html#bits_to_string"><span class="id" title="definition">bits_to_string</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#length"><span class="id" title="abbreviation">List.length</span></a> <a class="idref" href="Custom.String.html#l'"><span class="id" title="variable">l'</span></a>) <a class="idref" href="Custom.String.html#l'"><span class="id" title="variable">l'</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#EmptyString"><span class="id" title="constructor">EmptyString</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;More&nbsp;lemmas&nbsp;*)</span><br/>
 
 <br/>
 <span class="id" title="keyword">Lemma</span> <a name="append_nil"><span class="id" title="lemma">append_nil</span></a> :<br/>
@@ -234,6 +239,8 @@
 <span class="id" title="keyword">Qed</span>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;----------------------&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;Ascii&nbsp;and&nbsp;string&nbsp;typeclass&nbsp;instances&nbsp;*)</span><br/>
 
 <br/>
 <span class="id" title="keyword">Instance</span> <a name="gSizedAscii"><span class="id" title="instance">gSizedAscii</span></a> : <span class="id" title="class">GenSized</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.Ascii.html#ascii"><span class="id" title="inductive">ascii</span></a> :=<br/>

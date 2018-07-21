@@ -1,3 +1,5 @@
+(*! Section CLikeTest *)(*! extends BaseTest *)
+
 (* Simulate a server, nondeterministically returning
    the new state of the network. *)
 
@@ -44,7 +46,7 @@ Definition test :=
     Swap_SimpleSpec.swap_spec_def
     swap_server.
 
-(* Takes a few seconds *)
+(* Takes a few seconds: *)
 (*! QuickChick test. *)
 
 Require DeepWeb.Spec.SingleSwap_SimpleSpec.

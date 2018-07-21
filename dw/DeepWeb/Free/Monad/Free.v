@@ -1,5 +1,4 @@
-(** * Abstract Monad infrastructure for ITrees. *)
-(* BCP: The file needs a little *)
+(* BCP: The file needs a little tidying *)
 
 Set Implicit Arguments.
 Set Contextual Implicit.
@@ -12,37 +11,38 @@ From Custom Require Export
 Import MonadNotations.
 Open Scope monad_scope.
 
+(** * Interaction Trees. *)
 (** ** Basic Definitions *)
 
-(** The core definition of ITrees.  An [M E X] is the denotation of a
-    program as coinductive (possibly infinite) tree where the leaves
-    are labeled with [X] and every node is either an "internal" [Tau]
-    node with one child, or a "external" [Vis] node with a visible
-    event of type [Event Y] plus a continuation [k] that receives a
-    [Y] value from the event. *)
-CoInductive M (Event : Type -> Type) X :=
+(* The core definition of ITrees.  An [M E X] is the denotation of a
+   program as coinductive (possibly infinite) tree where the leaves
+   are [Ret] nodes labeled with return values from [X] and each
+   internal nodes is either an "internal" [Tau] node with one child or
+   else a "external" [Vis] node with a visible event of type [Event Y]
+   plus a continuation [k] that receives a [Y] value from the event. *)
+CoInductive M (Event : Type -> Type) X := 
 | Ret (x:X)
 | Vis {Y: Type} (e : Event Y) (k : Y -> M Event X)
 | Tau (k: M Event X).
+
+(* [M] is known as the "Freer monad".  See _Freer Monads, More
+   Extensible Effects_, by Oleg Kiselyov and Hiromi Ishii. *)
+
+(* begin hide *)
+(* Abstract nonsense: The [Vis] constructor corresponds to a free
+   functor construction also called Co-Yoneda or left Kan extension.
+   Note that [Event] is meant to be an indexed type, and generally not
+   a functor, but we have a monad in any case.
+
+   Some relevant links to variations of this theme can be found in
+   http://reddit6.com/r/haskell/comments/7q4sku/are_people_using_freer_monads_or_still_mostly/ 
+*)
 
 (*  Note: One could imagine an alternative definition with an explicit
     Bind constructor (and a Prim constructor), but this might not be
     as nice / might not work at all -- this way makes productivity
     easier to deal with.  (Also, this one can be turned into a real
     monad.)  We should compare at some point. *)
-
-(** [M] is known as the "Freer monad".
-
-    "Freer Monads, More Extensible Effects", Oleg Kiselyov, Hiromi
-    Ishii.
-
-    Abstract nonsense: The [Vis] constructor corresponds to a free
-    functor construction also called Co-Yoneda or left Kan extension.
-    Note that [Event] is meant to be an indexed type, and generally
-    not a functor, but we have a monad in any case.
-
-    Some relevant links to variations of this theme can be found in
-    http://reddit6.com/r/haskell/comments/7q4sku/are_people_using_freer_monads_or_still_mostly/ *)
 
 (*  Another way to derive this is to consider "normal forms" resulting
     from rewriting [(m >>= k) >>= h] to [m >>= (k >=> h)]. *)
@@ -77,10 +77,11 @@ CoInductive M (Event : Type -> Type) X :=
 
      [M] as a coinductive type also computes: we can [simpl]
      and handle the effects one by one in a proof. *)
+(* end hide *)
 
 (** ** Monad Structure *)
 
-(** First, we show that [M E] forms a [Monad]. *)
+(* First, we show that [M E] forms a [Monad]. *)
 
 Module Core.
 
@@ -106,12 +107,12 @@ Definition Monad_M E : Monad (M E) :=
 
 End Core.
 
-(** Now we slightly change the bind operation to insert a [Tau] in the
+(* Now we slightly change the bind operation to insert a [Tau] in the
     case where the right-hand argument to bind is just a [Ret], to
     make programs/specifications neater and easier to write. This
     makes [M] no longer a monad structurally, but it remains one in a
     looser sense as long as [Tau] is interpreted as the identity. *)
-(* BCP: Not sure what it means to "interpret Tau as the identity" *)
+(* BCP: Not sure what it means to "interpret Tau as the identity" *) 
 Definition bindM {E X Y} (s: M E X) (t: X -> M E Y) : M E Y :=
   Core.bindM s (fun x => Tau (t x)).
 
@@ -119,9 +120,9 @@ Instance Monad_M E : Monad (M E) := { ret X x := Ret x; bind := @bindM E }.
 
 (** ** Handy Utilities *)
 
-(** Wrap a function around the results returned from an ITree *)
+(* Wrap a function around the results returned from an ITree *)
 Definition mapM {E X Y} (f: X -> Y) (s: M E X) : M E Y :=
-let cofix go (s : M E X) :=
+let cofix go (s : M E X) := 
     match s with
     | Ret x => Ret (f x)
     | Vis e k => Vis e (fun y => go (k y))
@@ -138,19 +139,19 @@ Fixpoint forM {M : Type -> Type} {MM : Monad M} {X Y}
   | x :: xs => y <- f x;; ys <- forM xs f;; ret (y :: ys)
   end.
 
-(** Ignore the results from an ITree (changing it to have [unit] result type) *)
+(* Ignore the results from an ITree (changing it to have [unit] result type) *)
 Definition ignore {E X} : M E X -> M E unit := mapM (fun _ => tt).
 
-(** An ITree representing an infinite loop *)
+(* An ITree representing an infinite loop *)
 CoFixpoint spin {E} {X} : M E X := Tau spin.
-(** An ITree that does one internal step and then returns. *)
+(* An ITree that does one internal step and then returns. *)
 Definition tick {E} : M E unit := Tau (Ret tt).
 
-(** Lift a single event to an [M] action. *)
+(* Lift a single event to an [M] action. *)
 Definition liftE Event X (e : Event X) : M Event X :=
   Vis e (fun x => Ret x).
 
-(** The void type is useful as a return type to [M], to enforce the
+(* The void type is useful as a return type to [M], to enforce the
     constraint that a given computation should never terminate. *)
 Inductive void : Type := .
 
@@ -159,16 +160,16 @@ Inductive void : Type := .
 CoFixpoint forever {E} {X} (x : M E X) : M E void :=
   x ;; forever x.
 
-(** An infinite loop with a given body that obviously never returns. *)
+(* An infinite loop with a given body that obviously never returns. *)
 CoFixpoint loop {E void} (body : M E unit) : M E void :=
   body;; loop body.
 
-(** A one-sided conditional. *)
+(* A one-sided conditional. *)
 Definition when {E} (b : bool) (body : M E unit)
   : M E unit :=
   if b then body else ret tt.
 
-(** An imperative loop over a list. *)
+(* An imperative loop over a list. *)
 CoFixpoint for_each {E A} (bs : list A) (body : A -> M E unit)
   : M E unit :=
   match bs with
@@ -178,7 +179,7 @@ CoFixpoint for_each {E A} (bs : list A) (body : A -> M E unit)
 
 (** * More stuff *)
 
-(** If we can interpret the events of one such monad as
+(* If we can interpret the events of one such monad as
     computations in another, we can extend that
     interpretation to the whole monad. *)
 Definition hom
@@ -252,7 +253,7 @@ CoFixpoint collapse {E X} (refuel : nat) (m : M E X) : M E X :=
 
 Module MORE.
 
-(** Some more interesting algebraic structure.  This is not
+(* Some more interesting algebraic structure.  This is not
     immediately useful for zipping tests and programs because there
     are things in tests that we do not want to zip with anything in
     the program.  Might be useful later for something, though. *)
@@ -260,7 +261,7 @@ Module MORE.
 Inductive Pair1 (E1 E2: Type -> Type) : Type -> Type :=
  | pair1 {X} {Y} (e1 : E1 X) (e2 : E2 Y) : Pair1 E1 E2 (X * Y).
 
-(** If we can interpret two infinite streams with different events as one
+(* If we can interpret two infinite streams with different events as one
     where we line up the events in lockstep. *)
 Definition lockstep {E1 E2 : Type -> Type} {X} : M E1 X -> M E2 X -> M (Pair1 E1 E2) X :=
   cofix go p1 p2 :=
@@ -272,14 +273,13 @@ Definition lockstep {E1 E2 : Type -> Type} {X} : M E1 X -> M E2 X -> M (Pair1 E1
       | Vis e1 p1k, Vis e2 p2k =>
         Vis (pair1 e1 e2) (fun p => match p with (x, y) => go (p1k x) (p2k y) end)
     end.
-(** There are a few variants depending on which return values we want
+(* There are a few variants depending on which return values we want
     to to force to be void. But this seems to be the most general
     one.*)
 
 End MORE.
 
-(** In order to unfold a cofixpoint we have to rewrite it with
-    [matchM]. *)
+(* In order to unfold a cofixpoint we have to rewrite it with [matchM]. *)
 Notation idM i :=
   match i with
   | Ret x => Ret x
@@ -310,3 +310,4 @@ Proof.
   rewrite bind_def_core.
   auto.
 Qed.
+
