@@ -57,6 +57,7 @@ coq-qc: $(SERVER)
 	$(MAKE) -f Makefile.coq
 
 html:
+	$(MAKE) -f Makefile.coq -j
 	$(MAKE) -f Makefile.coq html
 
 clean:
@@ -64,3 +65,12 @@ clean:
 	$(MAKE) -f Makefile.coq clean
 
 .PHONY: html clean coq-qc test coq
+
+# Just for BCP
+bcp:
+	$(MAKE) -C $(HOME)/dw/src dsss18
+	$(MAKE) -j
+	$(MAKE) -j html COQDOCFLAGS="-interpolate -utf8 --parse-comments"
+	osascript $(HOME)/s/tools/safari-reload.as
+	$(MAKE) -j test
+
