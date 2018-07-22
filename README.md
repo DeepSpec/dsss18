@@ -27,5 +27,4 @@ git submodule update
 
 Then running `make` as usual inside the `kami` subdirectory should work to build the library and examples.
 
-
-
+After updating the `dsss18` repo, it may sometimes be necessary to run `git submodule update` again to update Kami as well.
