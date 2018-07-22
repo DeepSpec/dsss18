@@ -54,10 +54,8 @@
 (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 100, <span class="id" title="var">c1</span> <span class="id" title="tactic">at</span> <span class="id" title="var">next</span> <span class="id" title="keyword">level</span>, <span class="id" title="tactic">right</span> <span class="id" title="keyword">associativity</span>) : <span class="id" title="var">monad_scope</span>.<br/>
 
 <br/>
-<span class="comment">(*<br/>
-Notation&nbsp;"'&nbsp;pat&nbsp;&lt;-&nbsp;c1&nbsp;;;&nbsp;c2"&nbsp;:=&nbsp;(bind&nbsp;c1&nbsp;(fun&nbsp;pat&nbsp;=&gt;&nbsp;c2))<br/>
-(at&nbsp;level&nbsp;100,&nbsp;pat&nbsp;pattern,&nbsp;c1&nbsp;at&nbsp;next&nbsp;level,&nbsp;right&nbsp;associativity)&nbsp;:&nbsp;monad_scope.<br/>
-*)</span><br/>
+<span class="id" title="keyword">Notation</span> <a name="8c58efb00f3e785bda923e6e6ccf3725"><span class="id" title="notation">&quot;</span></a>' pat &lt;- c1 ;; c2" := (<a class="idref" href="Custom.Monad.html#bind"><span class="id" title="method">bind</span></a> <span class="id" title="var">c1</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">pat</span> ⇒ <span class="id" title="var">c2</span>))<br/>
+(<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 100, <span class="id" title="var">pat</span> <span class="id" title="tactic">pattern</span>, <span class="id" title="var">c1</span> <span class="id" title="tactic">at</span> <span class="id" title="var">next</span> <span class="id" title="keyword">level</span>, <span class="id" title="tactic">right</span> <span class="id" title="keyword">associativity</span>) : <span class="id" title="var">monad_scope</span>.<br/>
 
 <br/>
 <span class="id" title="keyword">Notation</span> <a name="617d4c2635d7166c8606c5fbf0f2733e"><span class="id" title="notation">&quot;</span></a>e1 ;; e2" := (<span class="id" title="var">_</span> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">&lt;-</span></a> <span class="id" title="var">e1</span>%<span class="id" title="var">monad</span> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">;;</span></a> <span class="id" title="var">e2</span>%<span class="id" title="var">monad</span>)%<span class="id" title="var">monad</span><br/>

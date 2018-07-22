@@ -32,6 +32,7 @@ DeepWeb/Lib/SimpleSpec_ServerTrace.v
 
 DeepWeb/Spec/ServerDefs.v
 DeepWeb/Spec/Swap_SimpleSpec.v
+DeepWeb/Spec/Swap_SimpleSpec_Examples.v
 
 DeepWeb/Test/Client.v
 DeepWeb/Test/Rand.v
