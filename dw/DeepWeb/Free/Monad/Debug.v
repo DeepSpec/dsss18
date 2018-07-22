@@ -6,4 +6,4 @@ Inductive _M {E R} (n : nat) : M E R -> Prop :=
 
 Ltac simpl_M := rewrite matchM; simpl; try rewrite <- matchM.
 Ltac step_tau := repeat (apply MTau; simpl_M).
-Ltac step y := apply MVis with (x := y); simpl_M; step_tau.
+Tactic Notation "step" uconstr(y) := (eapply MVis with (x := y); simpl_M; step_tau).

@@ -87,7 +87,7 @@ Proof. reflexivity. Qed.
 
 (** Every actual trace of the server is also a scrambled trace: *)
 Example scrambled_trace_example_trivial :
-  Found = is_scrambled_trace_of 1000 swap_spec [
+  is_scrambled_trace_of 1000 swap_spec [
     0 !;
     0 <-- "a";
     0 <-- "b";
@@ -102,14 +102,28 @@ Example scrambled_trace_example_trivial :
     1 --> "a";
     1 --> "b";
     1 --> "c"
-  ].
+  ] = Found [
+    0 !;
+    0 <-- "a";
+    0 <-- "b";
+    0 <-- "c";
+    0 --> "0";
+    0 --> "0";
+    0 --> "0";
+    1 !;
+    1 <-- "d";
+    1 <-- "e";
+    1 <-- "f";
+    1 --> "a";
+    1 --> "b";
+    1 --> "c"].
 Proof. reflexivity. Qed.
 
 (** More interestingly, the server can appear (from across the
     network) to accept two connections at the beginning and then 
     exchange messages on them: *)
 Example scrambled_trace_example_1 :
-  Found = is_scrambled_trace_of 1000 swap_spec [
+  is_scrambled_trace_of 1000 swap_spec [
     0 !;
     1 !;
     0 <-- "a";
@@ -124,7 +138,21 @@ Example scrambled_trace_example_1 :
     1 --> "a";
     1 --> "b";
     1 --> "c"
-  ].
+  ] = Found [
+    0 !;
+    0 <-- "a";
+    0 <-- "b";
+    0 <-- "c";
+    0 --> "0";
+    0 --> "0";
+    0 --> "0";
+    1 !;
+    1 <-- "d";
+    1 <-- "e";
+    1 <-- "f";
+    1 --> "a";
+    1 --> "b";
+    1 --> "c"].
 Proof. reflexivity. Qed.
 
 (** Or, with yet more scrambling by the network, the server can appear
@@ -132,7 +160,7 @@ Proof. reflexivity. Qed.
     then send messages on the second connection before sending on the
     first: *)
 Example scrambled_trace_example_2 :
-  Found = is_scrambled_trace_of 1000 swap_spec [
+  is_scrambled_trace_of 1000 swap_spec [
     0 !;
     1 !;
     0 <-- "a";
@@ -147,13 +175,27 @@ Example scrambled_trace_example_2 :
     0 --> "0";
     0 --> "0";
     0 --> "0"
-  ].
+  ] = Found [
+    0 !;
+    0 <-- "a";
+    0 <-- "b";
+    0 <-- "c";
+    0 --> "0";
+    0 --> "0";
+    0 --> "0";
+    1 !;
+    1 <-- "d";
+    1 <-- "e";
+    1 <-- "f";
+    1 --> "a";
+    1 --> "b";
+    1 --> "c"].
 Proof. reflexivity. Qed.
 
 (** With even more scrambling, the communications on the two
     connections can appear arbitrarily interleaved: *)
 Example scrambled_trace_example_2a :
-  Found = is_scrambled_trace_of 1000 swap_spec [
+  is_scrambled_trace_of 1000 swap_spec [
     0 !;
     1 !;
     0 <-- "a";
@@ -168,13 +210,25 @@ Example scrambled_trace_example_2a :
     1 --> "b";
     1 --> "c";
     0 --> "0"
-  ].
+  ] = Found [
+    0 !;
+    0 <-- "a";
+    0 <-- "b";
+    0 <-- "c";
+    0 --> "0";
+    0 --> "0";
+    0 --> "0";
+    1 !;
+    1 <-- "d";
+    1 <-- "e";
+    1 <-- "f";
+    1 --> "a";
+    1 --> "b";
+    1 --> "c"].
 Proof. reflexivity. Qed.
 
-(* BCP: Not sure I can explain exactly why the following examples come
-   out the way they do... *)
 Example scrambled_trace_example_3 :
-  NotFound = is_scrambled_trace_of 1000 swap_spec [
+  is_scrambled_trace_of 1000 swap_spec [
     0 !;
     1 !;
     0 <-- "a";
@@ -186,11 +240,25 @@ Example scrambled_trace_example_3 :
     0 --> "d";
     0 --> "e";
     0 --> "f"
-  ].
+  ] = Found [
+    1 !;
+    1 <-- "d";
+    1 <-- "e";
+    1 <-- "f";
+    1 --> ?;
+    1 --> ?;
+    1 --> ?;
+    0 !;
+    0 <-- "a";
+    0 <-- "b";
+    0 <-- "c";
+    0 --> "d";
+    0 --> "e";
+    0 --> "f"].
 Proof. reflexivity. Qed.
 
 Example scrambled_trace_example_3a :
-  Found = is_scrambled_trace_of 1000 swap_spec [
+  is_scrambled_trace_of 1000 swap_spec [
     1 !;
     0 !;
     1 <-- "d";
@@ -202,7 +270,21 @@ Example scrambled_trace_example_3a :
     0 --> "d";
     0 --> "e";
     0 --> "f"
-  ].
+  ] = Found [
+    1 !;
+    1 <-- "d";
+    1 <-- "e";
+    1 <-- "f";
+    1 --> ?;
+    1 --> ?;
+    1 --> ?;
+    0 !;
+    0 <-- "a";
+    0 <-- "b";
+    0 <-- "c";
+    0 --> "d";
+    0 --> "e";
+    0 --> "f"].
 Proof. reflexivity. Qed.
 
 Example scrambled_trace_example_4 :
@@ -234,7 +316,7 @@ Proof. reflexivity. Qed.
    concrete value can be observed on a connection _after_ a hole is
    observed on the same connection. *)
 Example scrambled_trace_example_with_holes_1 :
-  Found = is_scrambled_trace_of 1000 swap_spec [
+  is_scrambled_trace_of 1000 swap_spec [
     0 !;
     0 <-- "a";
     0 <-- "b";
@@ -249,6 +331,20 @@ Example scrambled_trace_example_with_holes_1 :
     1 --> ?;
     1 --> "b";
     1 --> ?
-  ].
+  ] = Found [
+    0 !;
+    0 <-- "a";
+    0 <-- "b";
+    0 <-- "c";
+    0 --> ?;
+    0 --> "0";
+    0 --> "0";
+    1 !;
+    1 <-- "d";
+    1 <-- "e";
+    1 <-- "f";
+    1 --> ?;
+    1 --> "b";
+    1 --> ?].
 Proof. reflexivity. Qed.
 

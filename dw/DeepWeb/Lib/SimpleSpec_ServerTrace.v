@@ -226,7 +226,7 @@ Fixpoint forall_traces (max_depth : nat)
         | NoteTrace tr => fun id cont fuel =>
           match check_trace tr with
           | OutOfFuel => ok cont fuel
-          | Found => forall_traces max_depth check_trace (k (id tt)) cont fuel
+          | Found _ => forall_traces max_depth check_trace (k (id tt)) cont fuel
           | NotFound => whenFail' (fun _ => show tr) false
           end
         end id

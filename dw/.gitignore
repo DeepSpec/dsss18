@@ -1,5 +1,4 @@
 CONFIGURE
-_CoqProject
 _CoqProject.Vst
 .coqdeps.d
 Makefile.coq
