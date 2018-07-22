@@ -58,6 +58,45 @@ Definition obs_from_server {E} `{observerE -< E} :
   embed ObsFromServer.
 (* /SHOW *)
 
+(* Make an assertion on a value, if it exists. *)
+Definition assert_on {E A} `{nondetE -< E}
+           (r : string) (oa : option A) (check : A -> bool) :
+  M E unit :=
+  match oa with
+  | None => ret tt
+  | Some a =>
+    if check a then ret tt else fail ("assertion failed: " ++ r)
+  end.
+
+(* Helper for [obs_msg_to_server] *)
+CoFixpoint obs_msg_to_server' `{observerE -< E}
+           (c : connection_id) (n : nat) (k : bytes -> M E bytes) :
+  M E bytes :=
+  match n with
+  | O => k ""
+  | S n =>
+    b <- ^ ObsToServer c;;
+    obs_msg_to_server' c n (fun bs => k (String b bs))
+  end.
+
+(* Observe a complete message sent to the server. *)
+Definition obs_msg_to_server `{observerE -< E}
+           (buffer_size : nat)
+           (c : connection_id) : M E bytes :=
+  obs_msg_to_server' c buffer_size ret.
+
+(* Observe a complete message received from the server. *)
+CoFixpoint obs_msg_from_server `{observerE -< E} `{nondetE -< E}
+           (c : connection_id) (msg : bytes) :
+  M E unit :=
+  match msg with
+  | "" => ret tt
+  | String b0 msg =>
+    ob <- ^ ObsFromServer c;;
+    assert_on "bytes must match" ob (fun b1 => b1 = b0 ?);;
+    obs_msg_from_server c msg
+  end.
+
 (* Equality comparison, return a proof of equality of the
    indices (this could be generalized to a complete decision
    procedure). *)
@@ -80,44 +119,6 @@ Definition coerce {X Y : Type} (p : X = Y) (x : X) : Y :=
 Definition specE := nondetE +' observerE.
 
 Definition itree_spec := M specE unit.
-
-(* Make an assertion on a value, if it exists. *)
-Definition assert_on {A}
-           (r : string) (oa : option A) (check : A -> bool) :
-  M specE unit :=
-  match oa with
-  | None => ret tt
-  | Some a =>
-    if check a then ret tt else fail ("assertion failed: " ++ r)
-  end.
-
-(* Helper for [obs_msg_to_server] *)
-CoFixpoint obs_msg_to_server'
-           (c : connection_id) (n : nat) (k : bytes -> M specE bytes) :
-  M specE bytes :=
-  match n with
-  | O => k ""
-  | S n =>
-    b <- ^ ObsToServer c;;
-    obs_msg_to_server' c n (fun bs => k (String b bs))
-  end.
-
-(* Observe a complete message sent to the server. *)
-Definition obs_msg_to_server (buffer_size : nat)
-           (c : connection_id) : M specE bytes :=
-  obs_msg_to_server' c buffer_size ret.
-
-(* Observe a complete message received from the server. *)
-CoFixpoint obs_msg_from_server
-           (c : connection_id) (msg : bytes) :
-  M specE unit :=
-  match msg with
-  | "" => ret tt
-  | String b0 msg =>
-    ob <- ^ ObsFromServer c;;
-    assert_on "bytes must match" ob (fun b1 => b1 = b0 ?);;
-    obs_msg_from_server c msg
-  end.
 
 (* The spec can be viewed as a set of traces. *)
 

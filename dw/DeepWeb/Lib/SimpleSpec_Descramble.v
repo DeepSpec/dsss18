@@ -10,7 +10,8 @@ Require Import PArith.
 Require Fin.
 Import ListNotations.
 
-From Custom Require Import Show.
+From Custom Require Import
+     List Show.
 
 Require Import DeepWeb.Free.Monad.Free.
 Import MonadNotations.
@@ -99,6 +100,12 @@ CoFixpoint pick_event' (t_prev t : trace) : M eventE' trace :=
 Definition pick_event : trace -> M eventE' trace :=
   pick_event' [].
 
+Definition is_ObsConnect (ev : event) :=
+  match ev with
+  | Event _ ObsConnect _ => true
+  | _ => false
+  end.
+
 Definition is_ObsFromServer (ev : event) :=
   match ev with
   | Event _ (ObsFromServer _) _ => true
@@ -176,46 +183,67 @@ End ListDescramble.
    We will insert them as needed when comparing the tree of
    descramblings with the spec tree. *)
 
-CoFixpoint select_event' {X}
-           (e : observerE X) (t_prev t : trace) :
+Definition select_input_events : trace -> list (event * trace) :=
+  fun tr =>
+    take_while
+      (fun '(ev, _) => negb (is_ObsFromServer ev))
+      (select tr).
+
+Definition select_connect :
+  trace -> list (event * trace * connection_id) :=
+  fun tr =>
+    filter_opt
+      (fun '(ev, tr) =>
+         match ev with
+         | Event _ ObsConnect c => Some (ev, tr, c)
+         | _ => None
+         end)
+      (select_input_events tr).
+
+Definition select_to_server :
+  connection_id -> trace -> option (event * trace * byte) :=
+  fun c tr =>
+    find_opt
+      (fun '(ev, tr) =>
+         match ev with
+         | Event _ (ObsToServer c') b =>
+           if c = c' ? then Some (ev, tr, b) else None
+         | _ => None
+         end)
+      (select_input_events tr).
+
+Definition select_from_server :
+  connection_id -> trace -> option (event * trace * option byte) :=
+  fun c tr =>
+    find_opt (fun '(ev, tr) =>
+      match ev with
+      | Event _ (ObsFromServer c') ob =>
+        if c = c' ? then Some (ev, tr, ob) else None
+      | _ => None
+      end) (select tr ++ [(Event (ObsFromServer c) None, tr)]).
+
+Definition select_event {X} (e : observerE X) (tr : trace) :
   M (nondetE +' eventE) (X * trace) :=
-  match t with
-  | [] =>
-    match e with
-    | ObsFromServer _ as e =>
-      (* If we're expecting a reply from the server, we
-         can temporarily put a hole to see what should happen
-         next. *)
-      ^ Happened (Event e None);;
-      ret (None, rev t_prev)
-    | _ => fail "no event left to pick"
+  match e with
+  | ObsConnect =>
+    '(ev, tr, c) <- choose "select_connect" (select_connect tr);;
+    ^ Happened ev;;
+    ret (c, tr)
+  | ObsToServer c =>
+    match select_to_server c tr with
+    | None => fail "Missing ToServer"
+    | Some (ev, tr, b) =>
+      ^ Happened ev;;
+      ret (b, tr)
     end
-  | Event X' e' x as ev :: t =>
-    match observer_eq e' e with
-    | Some p => (* e' = e *)
-        ^ Happened ev;;
-        ret (coerce p x, rev t_prev ++ t)%list
-    | None => (* e' <> e *)
-      let try_next := Tau (select_event' e (ev :: t_prev) t) in
-      match e, e' with
-
-      | ObsConnect as e, ObsToServer _
-      | ObsToServer _ as e, (ObsConnect | ObsToServer _)
-      | ObsFromServer _ as e, _ =>
-        try_next
-
-        (* We're looking for a [Connect/ToServer] event
-           but there is still a [FromServer] event to explain. *)
-      | (ObsConnect | ObsToServer _), ObsFromServer _ =>
-        fail "inaccessible event"
-
-      | ObsConnect, ObsConnect => fail "should not happen"
-      end
+  | ObsFromServer c =>
+    match select_from_server c tr with
+    | None => fail "Missing FromServer"
+    | Some (ev, tr, ob) =>
+      ^ Happened ev;;
+      ret (ob, tr)
     end
   end.
-
-Definition select_event {X} (e : observerE X) :
-  trace -> M (nondetE +' eventE) (X * trace) := select_event' e [].
 
 (* [s]: tree of acceptable traces (spec)
    [t]: scrambled trace
@@ -245,30 +273,31 @@ CoFixpoint intersect_trace
     end
   end.
 
-CoFixpoint find' (ts : list (M (nondetE +' eventE) unit)) :
-  M emptyE bool :=
+CoFixpoint find' (ts : list (trace * M (nondetE +' eventE) unit)) :
+  M emptyE (option trace) :=
   match ts with
-  | [] => ret false
-  | t :: ts =>
+  | [] => ret None
+  | (tr, t) :: ts =>
     match t with
-    | Tau t => Tau (find' (t :: ts))
-    | Ret tt => ret true
+    | Tau t => Tau (find' ((tr, t) :: ts))
+    | Ret tt => ret (Some (rev tr))
     | Vis X e k =>
       match e with
-      | (| ev ) =>
-        match ev in eventE X' return (X' -> X) -> _ with
-        | Happened _ => fun id => Tau (find' (k (id tt) :: ts))
+      | (| e ) =>
+        match e in eventE X' return (X' -> X) -> _ with
+        | Happened ev => fun id => Tau (find' ((ev :: tr, k (id tt)) :: ts))
         end (fun x => x)
       | ( _Or |) =>
         match _Or in nondetE X' return (X' -> X) -> _ with
         | Or n _ => fun id =>
-          Tau (find' (map (fun n => k (id n)) every_fin ++ ts)%list)
+          Tau (find' (map (fun n => (tr, k (id n))) every_fin ++ ts)%list)
         end (fun x => x)
       end
     end
   end.
 
-Inductive result := Found | NotFound | OutOfFuel.
+Inductive result :=
+| Found (descrambling : trace) | NotFound | OutOfFuel.
 
 Definition option_to_list {A} (o : option A) : list A :=
   match o with
@@ -276,12 +305,14 @@ Definition option_to_list {A} (o : option A) : list A :=
   | Some a => [a]
   end.
 
-Fixpoint to_result (fuel : nat) (m : M emptyE bool) : result :=
+Fixpoint to_result (fuel : nat) (m : M emptyE (option trace)) :
+  result :=
   match fuel with
   | O => OutOfFuel
   | S fuel =>
     match m with
-    | Ret b => if b then Found else NotFound
+    | Ret (Some tr) => Found tr
+    | Ret None => NotFound
     | Tau m => to_result fuel m
     | Vis X e k => match e in emptyE X' with end
     end
@@ -291,7 +322,7 @@ Fixpoint to_result (fuel : nat) (m : M emptyE bool) : result :=
 (* BCP: This will probably move up too. *)
 Definition is_scrambled_trace_of
            (fuel : nat) (s : itree_spec) (t : trace) : result :=
-  to_result fuel (find' [intersect_trace s t]).
+  to_result fuel (find' [([], intersect_trace s t)]).
 
 (* We will then generate traces produced by a server to test them.
    See [Lib/SimpleSpec_ServerTrace.v] *)

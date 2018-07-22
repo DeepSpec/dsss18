@@ -160,7 +160,7 @@ Proof. typeclasses eauto. Defined.
 Definition obs_connect := @obs_connect specE _.
 Definition obs_to_server := @obs_to_server specE _.
 Definition obs_from_server := @obs_from_server specE _.
-Definition assert_on := @assert_on.
-Definition obs_msg_to_server := @obs_msg_to_server.
-Definition obs_msg_from_server := @obs_msg_from_server.
+Definition assert_on A := @assert_on specE A _.
+Definition obs_msg_to_server := @obs_msg_to_server specE _.
+Definition obs_msg_from_server := @obs_msg_from_server specE _ _.
 End Observer.

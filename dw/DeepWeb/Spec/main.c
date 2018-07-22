@@ -10,6 +10,8 @@
   sending a message) are interleaved.
  */
 
+/*! Section ExternalTest */
+
 #include "macros.h"
 #include <stdlib.h>
 #include <string.h>
@@ -131,7 +133,7 @@ populate_response(connection* conn, store* last_msg_store) {
   last_msg_store->stored_msg_len = request_len;
   
   uint8_t* request_buffer = conn->request_buffer;
-  memcpy(last_msg, request_buffer, request_len);
+  memcpy(last_msg, request_buffer, /*!*/ request_len /*! 0 */);
   return 1;
 }
 
@@ -545,10 +547,11 @@ static int bind_socket(socket_fd fd, int port) {
   return 0;
 }
 
-static void init_store(store* last_msg_store) {
+static void init_store (store* last_msg_store) {
   last_msg_store->stored_msg_len = BUFFER_SIZE;
   char* last_msg = (char* )last_msg_store->stored_msg;
-  memset(last_msg, '0', BUFFER_SIZE);
+  memset(last_msg, /*!*/ '0' /*! 'X' */, BUFFER_SIZE);
+  // memset(last_msg, '0', BUFFER_SIZE);
 }
 
 int main(int argc, char** argv) {

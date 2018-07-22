@@ -170,19 +170,6 @@ Definition choose `{nondetE -< E} `{failureE -< E} {X}
     or (Ret x) (choose' xs)
   end.
 
-(* TODO: how about a variant of [choose] that expects
-   a nonempty list so it can't fail? *)
-
-(* All ways of picking one element in a list apart
-   from the others. *)
-Definition select {X} : list X -> list (X * list X) :=
-  let fix select' pre xs :=
-      match xs with
-      | [] => []
-      | x :: xs' => (x, pre ++ xs') :: select' (pre ++ [x]) xs'
-      end in
-  select' [].
-
 End NonDeterminism.
 End Basic.
 
@@ -294,6 +281,14 @@ Module NonDeterminismBis.
     | O, _ => None
     | S n, O => Some Fin.F1
     | S n, S m => option_map Fin.FS (to_fin m)
+    end.
+
+  (* Convert a [nat] to a [Fin.t] with even less care. *)
+  Fixpoint to_fin' {n : nat} (m : nat) : Fin.t (S n) :=
+    match n, m return Fin.t (S n) with
+    | O, _ => Fin.F1
+    | S n, O => Fin.F1
+    | S n, S m => Fin.FS (to_fin' m)
     end.
 
 End NonDeterminismBis.
