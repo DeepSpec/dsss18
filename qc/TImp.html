@@ -178,7 +178,6 @@ To generate identifiers for TImp, we will not just
 <div class="code code-tight">
 <span class="id" type="keyword">Instance</span> <a name="shrinkId"><span class="id" type="instance">shrinkId</span></a> : <span class="id" type="class">Shrink</span> <a class="idref" href="TImp.html#id"><span class="id" type="inductive">id</span></a> :=<br/>
 &nbsp;&nbsp;{ <span class="id" type="method">shrink</span> <span class="id" type="var">x</span> := [] }.<br/>
-<span class="comment">(*&nbsp;/HIDEFROMHTML&nbsp;*)</span><br/>
 </div>
 
 <div class="doc">
@@ -476,12 +475,11 @@ Given a context <span class="inlinecode"><span class="id" type="var">Gamma</span
 </div>
 <div class="code code-tight">
 
-<span class="id" type="keyword">Definition</span> <a name="gen_typed_id_from_context"><span class="id" type="definition">gen_typed_id_from_context</span></a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">Gamma</span> : <a class="idref" href="TImp.html#context"><span class="id" type="definition">context</span></a>) (<span class="id" type="var">T</span> : <a class="idref" href="TImp.html#ty"><span class="id" type="inductive">ty</span></a>)<br/>
+<span class="id" type="keyword">Definition</span> <a name="gen_typed_id_from_context"><span class="id" type="definition">gen_typed_id_from_context</span></a> (<span class="id" type="var">Gamma</span> : <a class="idref" href="TImp.html#context"><span class="id" type="definition">context</span></a>) (<span class="id" type="var">T</span> : <a class="idref" href="TImp.html#ty"><span class="id" type="inductive">ty</span></a>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" type="axiom">G</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="TImp.html#id"><span class="id" type="inductive">id</span></a>) :=<br/>
 &nbsp;&nbsp;<span class="id" type="axiom">oneof</span> (<span class="id" type="method">ret</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#None"><span class="id" type="constructor">None</span></a>) <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#map"><span class="id" type="definition">List.map</span></a> (<span class="id" type="keyword">fun</span> '(<span class="id" type="var">a</span>,<span class="id" type="var">T'</span>) ⇒ <span class="id" type="method">ret</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some"><span class="id" type="constructor">Some</span></a> <a class="idref" href="TImp.html#a"><span class="id" type="variable">a</span></a>))<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#filter"><span class="id" type="definition">List.filter</span></a> (<span class="id" type="keyword">fun</span> '(<span class="id" type="var">a</span>,<span class="id" type="var">T'</span>) ⇒ <a class="idref" href="TImp.html#T"><span class="id" type="variable">T</span></a> = <a class="idref" href="TImp.html#T'"><span class="id" type="variable">T'</span></a>?) <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#map"><span class="id" type="definition">List.map</span></a> (<span class="id" type="keyword">fun</span> '(<span class="id" type="var">x</span>,<span class="id" type="var">T'</span>) ⇒ <span class="id" type="method">ret</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some"><span class="id" type="constructor">Some</span></a> <a class="idref" href="TImp.html#x"><span class="id" type="variable">x</span></a>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#filter"><span class="id" type="definition">List.filter</span></a> (<span class="id" type="keyword">fun</span> '(<span class="id" type="var">x</span>,<span class="id" type="var">T'</span>) ⇒ <a class="idref" href="TImp.html#T"><span class="id" type="variable">T</span></a> = <a class="idref" href="TImp.html#T'"><span class="id" type="variable">T'</span></a>?) <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a>)).<br/>
 </div>
 
 <div class="doc">
@@ -492,16 +490,15 @@ We also need to generate typing contexts.
     we first create its domain, <span class="inlinecode"><span class="id" type="var">n</span></span> fresh identifiers.  We then create <span class="inlinecode"><span class="id" type="var">n</span></span>
     arbitrary types with <span class="inlinecode"><span class="id" type="var">vectorOf</span></span>, using the <span class="inlinecode"><span class="id" type="var">Gen</span></span> instance for <span class="inlinecode"><span class="id" type="var">ty</span></span>
     we derived earlier.  Finally, we zip (<span class="inlinecode"><span class="id" type="var">List.combine</span></span>) the domain
-    with the ranges and fold over the result to insert each binding
-    into a map. 
+    with the ranges which creates the (list-based) map.
+
 </div>
 <div class="code code-tight">
 
 <span class="id" type="keyword">Definition</span> <a name="gen_context"><span class="id" type="definition">gen_context</span></a> (<span class="id" type="var">n</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>) : <span class="id" type="axiom">G</span> <a class="idref" href="TImp.html#context"><span class="id" type="definition">context</span></a> := <br/>
 &nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">domain</span> := <a class="idref" href="TImp.html#get_fresh_ids"><span class="id" type="definition">get_fresh_ids</span></a> <a class="idref" href="TImp.html#n"><span class="id" type="variable">n</span></a> [] <span class="id" type="keyword">in</span><br/>
 &nbsp;&nbsp;<span class="id" type="var">range</span> &lt;- <span class="id" type="axiom">vectorOf</span> <a class="idref" href="TImp.html#n"><span class="id" type="variable">n</span></a> <span class="id" type="method">arbitrary</span> ;;<br/>
-&nbsp;&nbsp;<span class="id" type="method">ret</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#fold_left"><span class="id" type="definition">List.fold_left</span></a> (<span class="id" type="keyword">fun</span> <span class="id" type="var">m</span> '(<span class="id" type="var">k</span>, <span class="id" type="var">v</span>) ⇒ <a class="idref" href="TImp.html#map_set"><span class="id" type="definition">map_set</span></a> <a class="idref" href="TImp.html#m"><span class="id" type="variable">m</span></a> <a class="idref" href="TImp.html#k"><span class="id" type="variable">k</span></a> <a class="idref" href="TImp.html#v"><span class="id" type="variable">v</span></a>) <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#combine"><span class="id" type="definition">List.combine</span></a> <a class="idref" href="TImp.html#domain"><span class="id" type="variable">domain</span></a> <a class="idref" href="TImp.html#range"><span class="id" type="variable">range</span></a>) <a class="idref" href="TImp.html#map_empty"><span class="id" type="definition">map_empty</span></a>).<br/>
+&nbsp;&nbsp;<span class="id" type="method">ret</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#combine"><span class="id" type="definition">List.combine</span></a> <a class="idref" href="TImp.html#domain"><span class="id" type="variable">domain</span></a> <a class="idref" href="TImp.html#range"><span class="id" type="variable">range</span></a>).<br/>
 </div>
 
 <div class="doc">

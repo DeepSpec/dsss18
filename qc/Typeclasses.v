@@ -892,7 +892,7 @@ Proof. intros. eapply trans3; eassumption. Defined.
 (** The [ssreflect] library defines what it means for a proposition
     [P] to be decidable like this... *)
 
-From mathcomp.ssreflect Require Import ssreflect ssrbool.
+Require Import ssreflect ssrbool.
 
 Print decidable.
 (* ==>

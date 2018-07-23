@@ -188,6 +188,9 @@ Proof. dec_eq. Defined.
        - [set] : To update the binding of an element.
        - [dom] : To get the list of keys in the map. *)
 
+
+    
+
 (** The implementation of a map is a simple association list.  If a
     list contains multiple tuples with the same key, then the binding
     of the key in the map is the one that appears first in the list;
@@ -236,6 +239,7 @@ Inductive bound_to {A} : Map A -> id -> A -> Prop :=
     prefer to skip the next few paragraphs (until the start of the
     [Context] subsection), which deal with partially automating the
     proofs for such instances. *)
+
 
 Instance dec_bound_to {A : Type} Gamma x (T : A) 
          `{D : forall (x y : A), Dec (x = y)} 
@@ -317,12 +321,11 @@ Definition context := Map ty.
     we use [ret None] as the default element for [oneof].
  *)
 
-Definition gen_typed_id_from_context
-              (Gamma : context) (T : ty)
+Definition gen_typed_id_from_context (Gamma : context) (T : ty)
             : G (option id) :=
   oneof (ret None) 
-        (List.map (fun '(a,T') => ret (Some a))
-                  (List.filter (fun '(a,T') => T = T'?) Gamma)).
+        (List.map (fun '(x,T') => ret (Some x))
+                  (List.filter (fun '(x,T') => T = T'?) Gamma)).
 
 (** We also need to generate typing contexts. *)
 
@@ -330,14 +333,13 @@ Definition gen_typed_id_from_context
     we first create its domain, [n] fresh identifiers.  We then create [n]
     arbitrary types with [vectorOf], using the [Gen] instance for [ty]
     we derived earlier.  Finally, we zip ([List.combine]) the domain
-    with the ranges and fold over the result to insert each binding
-    into a map. *)
+    with the ranges which creates the (list-based) map.
+*)
 
 Definition gen_context (n : nat) : G context := 
   let domain := get_fresh_ids n [] in
   range <- vectorOf n arbitrary ;;
-  ret (List.fold_left (fun m '(k, v) => map_set m k v) 
-                      (List.combine domain range) map_empty).
+  ret (List.combine domain range).
 
 (* ################################################################# *)
 (** * Expressions *)
