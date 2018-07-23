@@ -33,7 +33,7 @@ server: $(SERVER) stop
 	exec $< &
 
 stop:
-	@if [ -n "$$(pgrep $(SERVER))" ]; then pkill $(SERVER); fi
+	@if [ -n "$$(pgrep "$(notdir $(SERVER))")" ]; then pkill "$(notdir $(SERVER))"; fi
 
 coq-qc: $(SERVER)
 	@perl -i -p0e 's/^(Separate Extraction)(\s+\S+)*?((\s+test\S+)*)\s*\.$$/\1\3./m' QuickChickTop.v

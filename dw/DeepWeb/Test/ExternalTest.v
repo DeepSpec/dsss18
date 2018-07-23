@@ -48,7 +48,7 @@ Definition pick {A} (l : list A) (a0 : A) : IO A :=
 Definition max_connections : nat := 4.
 
 Definition newConnection : Client (option (connection_id * file_descr * trace)) :=
-  lift (log ("new connection"));;
+  lift (log "new connection");;
   connections <- get;;
   match connections with
   | [] =>
@@ -162,9 +162,9 @@ Fixpoint execute' (fuel : nat) (msgs : list byte) : Client trace :=
   end.
 
 Definition execute (msgs : list byte) : Client trace :=
-  ret (log (nl ++ "Execute: "++ show msgs ++ nl));;
+  lift (log (nl ++ "Execute: "++ show msgs ++ nl));;
   tr <- execute' (S (length msgs) * 4) msgs;;
-  ret (log (nl ++ "Trace: " ++ show tr ++ nl));;
+  lift (log (nl ++ "Trace: " ++ show tr ++ nl));;
   ret tr.
 
 Instance Checkable_result : Checkable result :=
