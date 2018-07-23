@@ -1062,7 +1062,7 @@ The failure cases in the <span class="inlinecode"><span class="id" type="var">bo
 
 <div class="doc">
 The interesting case is the <span class="inlinecode"><span class="id" type="var">forAll</span></span> combinator.  Here, we <i>do</i>
-    have some interesting information to record in the failure case &mdash;
+    have some useful information to record in the failure case &mdash;
     namely, the argument that caused the failure. 
 </div>
 <div class="code code-tight">
@@ -1080,9 +1080,9 @@ The interesting case is the <span class="inlinecode"><span class="id" type="var"
 
 <div class="doc">
 Note that, rather than just returning <span class="inlinecode"><span class="id" type="var">Failure</span></span> <span class="inlinecode"><span class="id" type="var">a</span></span>, we package up
-    <span class="inlinecode"><span class="id" type="var">a</span></span> together with <span class="inlinecode"><span class="id" type="var">b</span></span>, which is the "reason" for the failure of <span class="inlinecode"><span class="id" type="var">f</span></span>
-    <span class="inlinecode"><span class="id" type="var">a</span></span>.  This allows us to write several <span class="inlinecode"><span class="id" type="var">forAll</span></span>s in sequence and
-    capture all of their results in a nested tuple. 
+    <span class="inlinecode"><span class="id" type="var">a</span></span> together with <span class="inlinecode"><span class="id" type="var">b</span></span>, which explains the reason for the failure
+    of <span class="inlinecode"><span class="id" type="var">f</span></span> <span class="inlinecode"><span class="id" type="var">a</span></span>.  This allows us to write several <span class="inlinecode"><span class="id" type="var">forAll</span></span>s in sequence
+    and capture all of their results in a nested tuple. 
 </div>
 <div class="code code-tight">
 
@@ -1134,21 +1134,24 @@ QuickChick<br/>
 
 <div class="doc">
 <pre>     ===&gt;
-    QuickChecking (forAll (genTreeSized' 3 (choose (0, 3))) faultyMirrorP)
+     QuickChecking (forAll (genTreeSized' 3 (choose (0, 3))) faultyMirrorP)
 
-    Node (0) (Node (0) (Node (2) (Leaf) (Leaf)) 
-                       (Node (1) (Leaf) (Leaf)))
-             (Node (1) (Node (0) (Leaf) (Leaf)) (Leaf))
+     Node (0) (Node (0) (Node (2) (Leaf) (Leaf)) 
+                        (Node (1) (Leaf) (Leaf)))
+              (Node (1) (Node (0) (Leaf) (Leaf)) (Leaf))
 
-    *** Failed after 1 tests and 0 shrinks. (0 discards) 
+     *** Failed after 1 tests and 0 shrinks. (0 discards) 
 </pre>
 
 <div class="paragraph"> </div>
 
- However, these counterexamples leave something to be desired &mdash;
-    they are all much larger than is really needed to illustrate the
-    bad behavior of <span class="inlinecode"><span class="id" type="var">faultyMirrorP</span></span>.  This is where <i>shrinking</i> comes
-    in. 
+ However, these counterexamples themselves still leave something to
+    be desired: they are all <i>much</i> larger than is really needed to
+    illustrate the bad behavior of <span class="inlinecode"><span class="id" type="var">faultyMirrorP</span></span>.
+
+<div class="paragraph"> </div>
+
+    This is where <i>shrinking</i> comes in. 
 </div>
 
 <div class="doc">
@@ -1166,9 +1169,9 @@ QuickChick<br/>
     <span class="inlinecode"><span class="id" type="var">x</span></span> of type <span class="inlinecode"><span class="id" type="var">A</span></span> that is known to falsify some property <span class="inlinecode"><span class="id" type="var">P</span></span>,
     QuickChick tries <span class="inlinecode"><span class="id" type="var">P</span></span> on all members of <span class="inlinecode"><span class="id" type="var">s</span></span> <span class="inlinecode"><span class="id" type="var">x</span></span> until it finds
     another counterexample.  It repeats this process, starting from
-    this counterexample, until it reaches a point where <span class="inlinecode"><span class="id" type="var">x</span></span> fails
-    property <span class="inlinecode"><span class="id" type="var">P</span></span> but every element of <span class="inlinecode"><span class="id" type="var">s</span></span> <span class="inlinecode"><span class="id" type="var">x</span></span> succeeds.  This <span class="inlinecode"><span class="id" type="var">x</span></span> is
-    a "lkocally minimal"f counterexample. 
+    the new counterexample, until it reaches a point where <span class="inlinecode"><span class="id" type="var">x</span></span> fails
+    property <span class="inlinecode"><span class="id" type="var">P</span></span> but every element of <span class="inlinecode"><span class="id" type="var">s</span></span> <span class="inlinecode"><span class="id" type="var">x</span></span> succeeds.  This <span class="inlinecode"><span class="id" type="var">x</span></span> is a
+    "locally minimal" counterexample. 
 <div class="paragraph"> </div>
 
  Clearly, this greedy algorithm only work if all elements of
@@ -1180,7 +1183,7 @@ QuickChick<br/>
     roll your own shrinkers you need to be careful to maintain it. 
 <div class="paragraph"> </div>
 
- Here is a very simple shrinker for <span class="inlinecode"><span class="id" type="var">color</span></span>s. 
+ Here is a shrinker for <span class="inlinecode"><span class="id" type="var">color</span></span>s. 
 </div>
 <div class="code code-tight">
 
@@ -1256,8 +1259,9 @@ Most of the time, shrinking functions should try to return
 <div class="paragraph"> </div>
 
  Writing a shrinking instance for trees is equally straightforward:
-    we don't shrink <span class="inlinecode"><span class="id" type="var">Leaf</span></span>s, while for <span class="inlinecode"><span class="id" type="var">Node</span></span>s we can return the left
-    or right subtree, shrink the payload, or shrink one of the subtrees. 
+    we don't shrink <span class="inlinecode"><span class="id" type="var">Leaf</span></span>s, while for <span class="inlinecode"><span class="id" type="var">Node</span></span>s we can either return
+    the left or right subtree, or shrink the payload, or shrink one of
+    the subtrees. 
 </div>
 <div class="code code-tight">
 
@@ -1301,9 +1305,9 @@ With <span class="inlinecode"><span class="id" type="var">shrinkTree</span></spa
 
 <div class="paragraph"> </div>
 
- We now get a quite simple counterexample (in fact, this is one of
-    the two truly minimal ones), from which it is easy to see that the
-    bad behavior occurs when the subtrees of a <span class="inlinecode"><span class="id" type="var">Node</span></span> are different. 
+ We now get a quite simple counterexample (in fact, one of two
+    truly minimal ones), from which it is easy to see that the bad
+    behavior occurs when the subtrees of a <span class="inlinecode"><span class="id" type="var">Node</span></span> are different. 
 <div class="paragraph"> </div>
 
 <a name="lab60"></a><h2 class="section">Exercise: Ternary Trees</h2>
@@ -1523,8 +1527,8 @@ For generating a list of paths, we'll use the built-in function
 
  Now we've got pretty much all the basic machinery we need, but the
     way we write properties &mdash; using <span class="inlinecode"><span class="id" type="var">forAllShrink</span></span> and explicitly
-    providing generators and shrinkers &mdash; is a tiny bit heavier than
-    it needs to be.  We can use a bit more typeclass magic to further
+    providing generators and shrinkers &mdash; is still heavier than it
+    needs to be.  We can use a bit more typeclass magic to further
     lighten things.
 
 <div class="paragraph"> </div>
@@ -1543,9 +1547,10 @@ For generating a list of paths, we'll use the built-in function
 </div>
 
 <div class="doc">
-Intuitively, <span class="inlinecode"><span class="id" type="var">Gen</span></span> is a way of packaging up generators for various
-    types so that we do not need to remember their individual names &mdash;
-    we can just call them all <span class="inlinecode"><span class="id" type="var">arbitrary</span></span>. 
+Intuitively, <span class="inlinecode"><span class="id" type="var">Gen</span></span> is a way of uniformly packaging up the
+    generators for various types so that we do not need to remember
+    their individual names &mdash; we can just call them all
+    <span class="inlinecode"><span class="id" type="var">arbitrary</span></span>. 
 </div>
 <div class="code code-tight">
 
@@ -1578,7 +1583,11 @@ Next, for convenience we package <span class="inlinecode"><span class="id" type=
 We can use the top-level <span class="inlinecode"><span class="id" type="var">QuickChick</span></span> command on quantified
     propositions with generatable and decidable conclusions, stating
     just the property and letting the typeclass machinery figure out
-    the rest.  For example, suppose we want to test this: 
+    the rest.  
+
+<div class="paragraph"> </div>
+
+    For example, suppose we want to test this: 
 </div>
 <div class="code code-tight">
 
@@ -1588,7 +1597,7 @@ We can use the top-level <span class="inlinecode"><span class="id" type="var">Qu
 <div class="doc">
 Since we have already defined <span class="inlinecode"><span class="id" type="var">Gen</span></span> and <span class="inlinecode"><span class="id" type="var">Shrink</span></span> instances for
     <span class="inlinecode"><span class="id" type="var">color</span></span>, we automatically get an <span class="inlinecode"><span class="id" type="var">Arbitrary</span></span> instance.  The <span class="inlinecode"><span class="id" type="var">Gen</span></span>
-    part is used by the checker instances for <span class="inlinecode"><span style='font-size:120%;'>&forall;</span></span>propositions to
+    part is used by the checker instance for "forall" propositions to
     generate random <span class="inlinecode"><span class="id" type="var">color</span></span> arguments.
 
 <div class="paragraph"> </div>
@@ -1624,17 +1633,22 @@ Putting it all together:
 
 <div class="paragraph"> </div>
 
- Back to trees...
+ Suppose we want to build an <span class="inlinecode"><span class="id" type="var">Arbitrary</span></span> instance for trees.
 
 <div class="paragraph"> </div>
 
-    To build an <span class="inlinecode"><span class="id" type="var">Arbitrary</span></span> instance for trees, we would like to use
-    <span class="inlinecode"><span class="id" type="var">genTreeSized'</span></span>; however, that generator takes an additional
-    <span class="inlinecode"><span class="id" type="var">size</span></span> argument.  Fortunately, since the <span class="inlinecode"><span class="id" type="var">G</span></span> monad itself includes
-    a size argument, we can "plumb" this argument into generators like
-    <span class="inlinecode"><span class="id" type="var">genTreeSized'</span></span>.  In other words, we can define an operator
-    <span class="inlinecode"><span class="id" type="var">sized</span></span> that takes a sized generator and produces an unsized
-    one. 
+    We would like to use <span class="inlinecode"><span class="id" type="var">genTreeSized'</span></span>; however, that generator
+    takes an additional <span class="inlinecode"><span class="id" type="var">size</span></span> argument.
+
+<div class="paragraph"> </div>
+
+    Fortunately, since the <span class="inlinecode"><span class="id" type="var">G</span></span> monad itself includes a size argument,
+    we can "plumb" this argument into generators like <span class="inlinecode"><span class="id" type="var">genTreeSized'</span></span>.
+
+<div class="paragraph"> </div>
+
+    In other words, we can define an operator <span class="inlinecode"><span class="id" type="var">sized</span></span> that takes a
+]    sized generator and produces an unsized one. 
 </div>
 <div class="code code-tight">
 
@@ -1716,7 +1730,7 @@ Finally, with the <span class="inlinecode"><span class="id" type="var">Arbitrary
  Writing <span class="inlinecode"><span class="id" type="keyword">Show</span></span> and <span class="inlinecode"><span class="id" type="var">Arbitrary</span></span> instances is usually not hard, but
     it can get tedious when we are testing code that involves many new
     <span class="inlinecode"><span class="id" type="keyword">Inductive</span></span> type declarations.  To streamline this process,
-    <span class="inlinecode"><span class="id" type="var">QuickChick</span></span> provides some automation in deriving such instances
+    <span class="inlinecode"><span class="id" type="var">QuickChick</span></span> provides some automation for deriving such instances
     for "plain datatypes" automatically! 
 </div>
 <div class="code code-tight">
@@ -1756,14 +1770,16 @@ Finally, with the <span class="inlinecode"><span class="id" type="var">Arbitrary
 
 <div class="paragraph"> </div>
 
- Earlier in this tutorial we claimed that our first definition of
-    <span class="inlinecode"><span class="id" type="var">genTreeSized</span></span> produced "too many <span class="inlinecode"><span class="id" type="var">Leaf</span></span>s."
+ Earlier in this tutorial we observed that our first definition of
+    <span class="inlinecode"><span class="id" type="var">genTreeSized</span></span> seemed to be producing too many <span class="inlinecode"><span class="id" type="var">Leaf</span></span>
+    constructors.
 
 <div class="paragraph"> </div>
 
-    Just looking at a few results from <span class="inlinecode"><span class="id" type="var">Sample</span></span> gives us an idea that
-    something is going wrong, but it's often useful to collect
-    statistics from larger sets of samples.
+    In that case, just eyeballing at a few results from <span class="inlinecode"><span class="id" type="var">Sample</span></span> gave
+    us an idea that something was wrong with the distribution of test
+    cases, but it's often useful to collect more extensive statistics
+    from larger sets of samples.
 
 <div class="paragraph"> </div>
 
@@ -1787,14 +1803,14 @@ Finally, with the <span class="inlinecode"><span class="id" type="var">Arbitrary
 <div class="paragraph"> </div>
 
  That is, <span class="inlinecode"><span class="id" type="var">collect</span></span> takes a checkable proposition and returns a new
-    <span class="inlinecode"><span class="id" type="var">Checker</span></span> (intuitively, for the same proposition).
+    <span class="inlinecode"><span class="id" type="var">Checker</span></span> (for the same proposition).
 
 <div class="paragraph"> </div>
 
     On the side, it takes a value from some <span class="inlinecode"><span class="id" type="keyword">Show</span></span>able type <span class="inlinecode"><span class="id" type="var">A</span></span>, which
     it remembers internally (in an enriched variant of the <span class="inlinecode"><span class="id" type="var">Result</span></span>
-    structure that we saw above) so that it can be displayed at the
-    end. 
+    structure that we saw above) so that it can be collated and
+    displayed at the end. 
 <div class="paragraph"> </div>
 
  For example, suppose we measure the <span class="inlinecode"><span class="id" type="var">size</span></span> of <span class="inlinecode"><span class="id" type="var">Tree</span></span>s like this: 
@@ -1809,8 +1825,8 @@ Finally, with the <span class="inlinecode"><span class="id" type="var">Arbitrary
 </div>
 
 <div class="doc">
-We can write a dummy property <span class="inlinecode"><span class="id" type="var">treeProp</span></span> to check our generators
-    and measure the size of generated trees. 
+We can write a dummy property <span class="inlinecode"><span class="id" type="var">treeProp</span></span> to collect the sizes of
+    the trees we are generating. 
 </div>
 <div class="code code-tight">
 
@@ -1962,7 +1978,7 @@ We could test <span class="inlinecode"><span class="id" type="var">insert</span>
 <div class="paragraph"> </div>
 
     As we can see, this can lead to many discarded tests (in this
-    case, almost twice as many as successful ones!), which wastes a
+    case, about twice as many as successful ones), which wastes a
     lot of CPU and leads to inefficient testing. 
 <div class="paragraph"> </div>
 
@@ -1990,10 +2006,13 @@ We could test <span class="inlinecode"><span class="id" type="var">insert</span>
    4 : 7 
    +++ Passed 10000 tests (17263 discards) 
 </pre>
- The vast majority of inputs have length 2 or less!  (This actually
-    explains something you might have found suspicious in the previous
-    statistics: that 1/3 of randomly generated lists seemed to be
-    sorted.) 
+ The vast majority of inputs have length 2 or less!
+
+<div class="paragraph"> </div>
+
+    (This explains something you might have found suspicious in the
+    previous statistics: that 1/3 of the randomly generated lists were
+    already sorted!) 
 <div class="paragraph"> </div>
 
  When dealing with properties with preconditions, it is common
@@ -2044,7 +2063,10 @@ Finally, we can use <span class="inlinecode"><span class="id" type="var">forAllS
 <div class="code code-tight">
 
 <span class="id" type="keyword">Definition</span> <a name="insert_spec_sorted"><span class="id" type="definition">insert_spec_sorted</span></a> (<span class="id" type="var">x</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>) :=<br/>
-&nbsp;&nbsp;<span class="id" type="definition">forAllShrink</span> (<a class="idref" href="QC.html#genSortedList"><span class="id" type="definition">genSortedList</span></a> 0 10 10) <span class="id" type="method">shrink</span> (<span class="id" type="keyword">fun</span> <span class="id" type="var">l</span> ⇒ <a class="idref" href="QC.html#insert_spec'"><span class="id" type="definition">insert_spec'</span></a> <a class="idref" href="QC.html#x"><span class="id" type="variable">x</span></a> <a class="idref" href="QC.html#l"><span class="id" type="variable">l</span></a>).<br/>
+&nbsp;&nbsp;<span class="id" type="definition">forAllShrink</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="QC.html#genSortedList"><span class="id" type="definition">genSortedList</span></a> 0 10 10) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="method">shrink</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">l</span> ⇒ <a class="idref" href="QC.html#insert_spec'"><span class="id" type="definition">insert_spec'</span></a> <a class="idref" href="QC.html#x"><span class="id" type="variable">x</span></a> <a class="idref" href="QC.html#l"><span class="id" type="variable">l</span></a>).<br/>
 </div>
 
 <div class="doc">
@@ -2078,13 +2100,13 @@ Now the distribution of lengths looks much better, and we don't
 <a name="lab71"></a><h4 class="section">Exercise: 5 stars, optional (uniform_sorted)</h4>
  Using "collect", find out whether generating a sorted list of
     numbers between 0 and 5 is uniform in the frequencies with which
-    <i>each number</i> is found in the generated lists.
+    different <i>numbers</i> are found in the generated lists.
 
 <div class="paragraph"> </div>
 
     If not, figure out why.  Then write a different generator that
-    achieves a more uniform distribution (preserving uniformity in
-    the lengths). 
+    achieves a more uniform distribution (preserving uniformity in the
+    lengths). 
 </div>
 <div class="code code-tight">
 
@@ -2099,9 +2121,12 @@ Now the distribution of lengths looks much better, and we don't
 
 <div class="paragraph"> </div>
 
- To conclude this chapter, we turn to binary search trees.  The
-    <span class="inlinecode"><span class="id" type="var">isBST</span></span> predicate characterizes trees with elements between <span class="inlinecode"><span class="id" type="var">low</span></span>
-    and <span class="inlinecode"><span class="id" type="var">high</span></span>. 
+ To conclude this chapter, let's look at <i>binary search trees</i>.
+
+<div class="paragraph"> </div>
+
+    The <span class="inlinecode"><span class="id" type="var">isBST</span></span> predicate characterizes trees with elements between
+    <span class="inlinecode"><span class="id" type="var">low</span></span> and <span class="inlinecode"><span class="id" type="var">high</span></span>. 
 </div>
 <div class="code code-tight">
 
@@ -2128,7 +2153,7 @@ Here is a (faulty?) insertion function for binary search trees.
 
 <div class="doc">
 We would expect that if we insert an element that is within 
-    the bounds <span class="inlinecode"><span class="id" type="var">low</span></span> and <span class="inlinecode"><span class="id" type="var">high</span></span> to a binary search tree, then
+    the bounds <span class="inlinecode"><span class="id" type="var">low</span></span> and <span class="inlinecode"><span class="id" type="var">high</span></span> into a binary search tree, then
     the result is also a binary search tree. 
 </div>
 <div class="code code-tight">
@@ -2162,7 +2187,7 @@ We would expect that if we insert an element that is within
     binary search tree, we should not change it. 
 <div class="paragraph"> </div>
 
- However there is too much wasted effort.  Indeed, if we fix the
+ However we are wasting too much testing effort.  Indeed, if we fix the
     bug ... 
 </div>
 <div class="code code-tight">
@@ -2180,7 +2205,7 @@ We would expect that if we insert an element that is within
 </div>
 
 <div class="doc">
-... and try again: 
+... and try again... 
 </div>
 <div class="code code-tight">
 
@@ -2193,7 +2218,7 @@ We would expect that if we insert an element that is within
      *** Gave up! Passed only 1281 tests
      Discarded: 20000 
 </pre>
-
+ ... we see that 90% of tests are being discarded. 
 <div class="paragraph"> </div>
 
 <a name="lab73"></a><h4 class="section">Exercise: 4 stars (gen_bst)</h4>

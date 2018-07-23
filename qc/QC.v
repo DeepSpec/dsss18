@@ -794,7 +794,7 @@ Instance checkableDec `{P : Prop} `{Dec P} : Checkable P :=
   }.
 
 (** The interesting case is the [forAll] combinator.  Here, we _do_
-    have some interesting information to record in the failure case --
+    have some useful information to record in the failure case --
     namely, the argument that caused the failure. *)
 
 Definition forAll {A B : Type} `{Show A} `{Checkable B}
@@ -808,9 +808,9 @@ Definition forAll {A B : Type} `{Show A} `{Checkable B}
   end.
 
 (** Note that, rather than just returning [Failure a], we package up
-    [a] together with [b], which is the "reason" for the failure of [f
-    a].  This allows us to write several [forAll]s in sequence and
-    capture all of their results in a nested tuple. *)
+    [a] together with [b], which explains the reason for the failure
+    of [f a].  This allows us to write several [forAll]s in sequence
+    and capture all of their results in a nested tuple. *)
 
 End CheckerPlayground4.
 
@@ -854,19 +854,20 @@ QuickChick
 (**
 
      ===>
-    QuickChecking (forAll (genTreeSized' 3 (choose (0, 3))) faultyMirrorP)
+     QuickChecking (forAll (genTreeSized' 3 (choose (0, 3))) faultyMirrorP)
 
-    Node (0) (Node (0) (Node (2) (Leaf) (Leaf)) 
-                       (Node (1) (Leaf) (Leaf)))
-             (Node (1) (Node (0) (Leaf) (Leaf)) (Leaf))
+     Node (0) (Node (0) (Node (2) (Leaf) (Leaf)) 
+                        (Node (1) (Leaf) (Leaf)))
+              (Node (1) (Node (0) (Leaf) (Leaf)) (Leaf))
 
-    *** Failed after 1 tests and 0 shrinks. (0 discards) 
+     *** Failed after 1 tests and 0 shrinks. (0 discards) 
 *)
 
-(** However, these counterexamples leave something to be desired --
-    they are all much larger than is really needed to illustrate the
-    bad behavior of [faultyMirrorP].  This is where _shrinking_ comes
-    in. *)
+(** However, these counterexamples themselves still leave something to
+    be desired: they are all _much_ larger than is really needed to
+    illustrate the bad behavior of [faultyMirrorP].
+
+    This is where _shrinking_ comes in. *)
 
 (* ################################################################# *)
 (** * Shrinking *)
@@ -879,9 +880,9 @@ QuickChick
     [x] of type [A] that is known to falsify some property [P],
     QuickChick tries [P] on all members of [s x] until it finds
     another counterexample.  It repeats this process, starting from
-    this counterexample, until it reaches a point where [x] fails
-    property [P] but every element of [s x] succeeds.  This [x] is
-    a "lkocally minimal"f counterexample. *)
+    the new counterexample, until it reaches a point where [x] fails
+    property [P] but every element of [s x] succeeds.  This [x] is a
+    "locally minimal" counterexample. *)
 
 (** Clearly, this greedy algorithm only work if all elements of
     [s x] are strictly "smaller" than [x] for all [x] -- that is,
@@ -891,7 +892,7 @@ QuickChick
     the shrinkers that QuickChick derives automatically, but ifyou
     roll your own shrinkers you need to be careful to maintain it. *)
 
-(** Here is a very simple shrinker for [color]s. *)
+(** Here is a shrinker for [color]s. *)
 
 Instance shrinkColor : Shrink color :=
   {
@@ -951,8 +952,9 @@ Print shrinkListAux.
     [x] greater than [2], we might shrink to [0; x div 2; pred x].) *)
 
 (** Writing a shrinking instance for trees is equally straightforward:
-    we don't shrink [Leaf]s, while for [Node]s we can return the left
-    or right subtree, shrink the payload, or shrink one of the subtrees. *)
+    we don't shrink [Leaf]s, while for [Node]s we can either return
+    the left or right subtree, or shrink the payload, or shrink one of
+    the subtrees. *)
 
 Open Scope list.
 Fixpoint shrinkTreeAux {A} 
@@ -988,9 +990,9 @@ Instance shrinkTree {A} `{Shrink A} : Shrink (Tree A) :=
        *** Failed! After 1 tests and 8 shrinks 
 *)
 
-(** We now get a quite simple counterexample (in fact, this is one of
-    the two truly minimal ones), from which it is easy to see that the
-    bad behavior occurs when the subtrees of a [Node] are different. *)
+(** We now get a quite simple counterexample (in fact, one of two
+    truly minimal ones), from which it is easy to see that the bad
+    behavior occurs when the subtrees of a [Node] are different. *)
 
 (* ================================================================= *)
 (** ** Exercise: Ternary Trees *)
@@ -1142,8 +1144,8 @@ Instance shrinkPath : Shrink path := shrinkList.
 
 (** Now we've got pretty much all the basic machinery we need, but the
     way we write properties -- using [forAllShrink] and explicitly
-    providing generators and shrinkers -- is a tiny bit heavier than
-    it needs to be.  We can use a bit more typeclass magic to further
+    providing generators and shrinkers -- is still heavier than it
+    needs to be.  We can use a bit more typeclass magic to further
     lighten things.
 
     First, we introduce a typeclass [Gen A] with a single operator
@@ -1158,9 +1160,10 @@ Class Gen (A : Type) :=
 
 End DefineGen.
 
-(** Intuitively, [Gen] is a way of packaging up generators for various
-    types so that we do not need to remember their individual names --
-    we can just call them all [arbitrary]. *)
+(** Intuitively, [Gen] is a way of uniformly packaging up the
+    generators for various types so that we do not need to remember
+    their individual names -- we can just call them all
+    [arbitrary]. *)
 
 Instance gen_color : Gen color :=
   {
@@ -1182,13 +1185,15 @@ End DefineArbitrary.
 (** We can use the top-level [QuickChick] command on quantified
     propositions with generatable and decidable conclusions, stating
     just the property and letting the typeclass machinery figure out
-    the rest.  For example, suppose we want to test this: *)
+    the rest.  
+
+    For example, suppose we want to test this: *)
 
 Conjecture every_color_is_red : forall c, c = Red.
 
 (** Since we have already defined [Gen] and [Shrink] instances for
     [color], we automatically get an [Arbitrary] instance.  The [Gen]
-    part is used by the checker instances for [forall] propositions to
+    part is used by the checker instance for "forall" propositions to
     generate random [color] arguments.
 
     To show that the conclusion is decidable, we need to define a
@@ -1211,15 +1216,16 @@ Proof. dec_eq. Defined.
 (* ################################################################# *)
 (** * Sized Generators *)
 
-(** Back to trees...
+(** Suppose we want to build an [Arbitrary] instance for trees.
 
-    To build an [Arbitrary] instance for trees, we would like to use
-    [genTreeSized']; however, that generator takes an additional
-    [size] argument.  Fortunately, since the [G] monad itself includes
-    a size argument, we can "plumb" this argument into generators like
-    [genTreeSized'].  In other words, we can define an operator
-    [sized] that takes a sized generator and produces an unsized
-    one. *)
+    We would like to use [genTreeSized']; however, that generator
+    takes an additional [size] argument.
+
+    Fortunately, since the [G] monad itself includes a size argument,
+    we can "plumb" this argument into generators like [genTreeSized'].
+
+    In other words, we can define an operator [sized] that takes a
+]    sized generator and produces an unsized one. *)
 
 Module DefineSized.
 Import DefineG.
@@ -1279,7 +1285,7 @@ Instance genTree {A} `{Gen A} : GenSized (Tree A) :=
 (** Writing [Show] and [Arbitrary] instances is usually not hard, but
     it can get tedious when we are testing code that involves many new
     [Inductive] type declarations.  To streamline this process,
-    [QuickChick] provides some automation in deriving such instances
+    [QuickChick] provides some automation for deriving such instances
     for "plain datatypes" automatically! *)
 
 Derive Arbitrary for Tree.
@@ -1300,12 +1306,14 @@ Print ShowTree.
 (* ################################################################# *)
 (** * Collecting Statistics *)
 
-(** Earlier in this tutorial we claimed that our first definition of
-    [genTreeSized] produced "too many [Leaf]s."
+(** Earlier in this tutorial we observed that our first definition of
+    [genTreeSized] seemed to be producing too many [Leaf]
+    constructors.
 
-    Just looking at a few results from [Sample] gives us an idea that
-    something is going wrong, but it's often useful to collect
-    statistics from larger sets of samples.
+    In that case, just eyeballing at a few results from [Sample] gave
+    us an idea that something was wrong with the distribution of test
+    cases, but it's often useful to collect more extensive statistics
+    from larger sets of samples.
     
     This is where [collect], another property combinator, comes in. *)
 
@@ -1319,12 +1327,12 @@ Check @collect.
 *)
 
 (** That is, [collect] takes a checkable proposition and returns a new
-    [Checker] (intuitively, for the same proposition).
+    [Checker] (for the same proposition).
 
     On the side, it takes a value from some [Show]able type [A], which
     it remembers internally (in an enriched variant of the [Result]
-    structure that we saw above) so that it can be displayed at the
-    end. *)
+    structure that we saw above) so that it can be collated and
+    displayed at the end. *)
 
 (** For example, suppose we measure the [size] of [Tree]s like this: *)
 
@@ -1334,8 +1342,8 @@ Fixpoint size {A} (t : Tree A) : nat :=
     | Node _ l r => 1 + size l + size r
   end.
 
-(** We can write a dummy property [treeProp] to check our generators
-    and measure the size of generated trees. *)
+(** We can write a dummy property [treeProp] to collect the sizes of
+    the trees we are generating. *)
 
 Definition treeProp (g : nat -> G nat -> G (Tree nat)) n :=
   forAll (g n (choose (0,n))) (fun t => collect (size t) true).
@@ -1465,7 +1473,7 @@ Definition insert_spec (x : nat) (l : list nat) :=
     not, it will discard the generated inputs and try again.
 
     As we can see, this can lead to many discarded tests (in this
-    case, almost twice as many as successful ones!), which wastes a
+    case, about twice as many as successful ones), which wastes a
     lot of CPU and leads to inefficient testing. *)
 
 (** But the wasted effort is the least of our problems! Let's take a
@@ -1490,10 +1498,11 @@ Definition insert_spec' (x : nat) (l : list nat) :=
    4 : 7 
    +++ Passed 10000 tests (17263 discards) 
 *)
-(** The vast majority of inputs have length 2 or less!  (This actually
-    explains something you might have found suspicious in the previous
-    statistics: that 1/3 of randomly generated lists seemed to be
-    sorted.) *)
+(** The vast majority of inputs have length 2 or less!
+
+    (This explains something you might have found suspicious in the
+    previous statistics: that 1/3 of the randomly generated lists were
+    already sorted!) *)
 
 (** When dealing with properties with preconditions, it is common
     practice to write custom generators for well-distributed random
@@ -1531,7 +1540,10 @@ Fixpoint genSortedList (low high : nat) (size : nat)
     new generator: *)
 
 Definition insert_spec_sorted (x : nat) :=
-  forAllShrink (genSortedList 0 10 10) shrink (fun l => insert_spec' x l).
+  forAllShrink 
+    (genSortedList 0 10 10) 
+    shrink 
+    (fun l => insert_spec' x l).
 
 (** Now the distribution of lengths looks much better, and we don't
     discard any tests! *)
@@ -1559,11 +1571,11 @@ QuickChick insert_spec_sorted.
 (** **** Exercise: 5 stars, optional (uniform_sorted)  *)
 (** Using "collect", find out whether generating a sorted list of
     numbers between 0 and 5 is uniform in the frequencies with which
-    _each number_ is found in the generated lists.
+    different _numbers_ are found in the generated lists.
 
     If not, figure out why.  Then write a different generator that
-    achieves a more uniform distribution (preserving uniformity in
-    the lengths). *)
+    achieves a more uniform distribution (preserving uniformity in the
+    lengths). *)
 
 (* FILL IN HERE *)
 (** [] *)
@@ -1571,9 +1583,10 @@ QuickChick insert_spec_sorted.
 (* ================================================================= *)
 (** ** Another Precondition: Binary Search Trees *)
 
-(** To conclude this chapter, we turn to binary search trees.  The
-    [isBST] predicate characterizes trees with elements between [low]
-    and [high]. *)
+(** To conclude this chapter, let's look at _binary search trees_.
+
+    The [isBST] predicate characterizes trees with elements between
+    [low] and [high]. *)
 
 Fixpoint isBST (low high: nat) (t : Tree nat) := 
   match t with 
@@ -1592,7 +1605,7 @@ Fixpoint insertBST (x : nat) (t : Tree nat) :=
   end.
 
 (** We would expect that if we insert an element that is within 
-    the bounds [low] and [high] to a binary search tree, then
+    the bounds [low] and [high] into a binary search tree, then
     the result is also a binary search tree. *)
 
 Definition insertBST_spec (low high : nat) (x : nat) (t : Tree nat) :=
@@ -1617,7 +1630,7 @@ Definition insertBST_spec (low high : nat) (x : nat) (t : Tree nat) :=
     [Node] with the same payload: if the element already exists in the
     binary search tree, we should not change it. *)
   
-(** However there is too much wasted effort.  Indeed, if we fix the
+(** However we are wasting too much testing effort.  Indeed, if we fix the
     bug ... *)
 
 Fixpoint insertBST' (x : nat) (t : Tree nat) :=
@@ -1632,7 +1645,7 @@ Definition insertBST_spec' (low high : nat) (x : nat) (t : Tree nat) :=
   (low <? x) ==> (x <? high) ==> (isBST low high t) ==> 
   isBST low high (insertBST' x t).                         
 
-(** ... and try again: *)
+(** ... and try again... *)
 
 (* QuickChick insertBST_spec'. *)
 (**
@@ -1642,6 +1655,7 @@ Definition insertBST_spec' (low high : nat) (x : nat) (t : Tree nat) :=
      *** Gave up! Passed only 1281 tests
      Discarded: 20000 
 *)
+(** ... we see that 90%% of tests are being discarded. *)
 
 (** **** Exercise: 4 stars (gen_bst)  *)
 (** Write a generator that produces binary search trees directly, so
