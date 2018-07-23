@@ -337,7 +337,7 @@ Proof.
     subst st'0.
     auto. Qed.
 
-(** That was is a bit better, but we really want Coq to discover the
+(** That was a bit better, but we really want Coq to discover the
     relevant hypotheses for us.  We can do this by using the [match
     goal] facility of Ltac. *)
 
