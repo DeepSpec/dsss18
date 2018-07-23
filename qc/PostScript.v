@@ -4,7 +4,6 @@
 (** * Future Directions *)
 
 (** We have lots of plans for future directions:
-       - Mutation testing tool
        - Automatic derivation of generators and shrinkers for data
          satisfying Inductive relations
        - Vellum2 testing
@@ -38,4 +37,7 @@
     - A paper on deriving QuickChick generators for a large class of
       inductive relations. 
       http://www.cis.upenn.edu/~llamp/pdf/GeneratingGoodGenerators.pdf
-*)
+
+    - Leo's PhD dissertation.
+      https://lemonidas.github.io/pdf/Leo-PhD-Thesis.pdf
+ *)

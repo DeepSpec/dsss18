@@ -24,31 +24,32 @@ Fixpoint remove (x : nat) (l : list nat) : list nat :=
 Conjecture removeP : forall x l,  ~ (In x (remove x l)).
 
 (** ...which says that [x] never occurs in the result of [remove x l]
-    for any [x] and [l].
-
-    ([Conjecture foo...] means the same as [Theorem foo... Admitted.]
-    Formally, [foo] is treated as an axiom in what follows.) *)
+    for any [x] and [l].  ([Conjecture foo...] means the same as
+    [Theorem foo... Admitted.]  Formally, [foo] is treated as an
+    axiom.) *)
 
 (** Sadly, this property is false, as we would (eventually) discover
     if we were to try to prove it. *)
 
-(** A different -- possibly much more efficient -- way to discover
+(** A different -- perhaps much more efficient -- way to discover
     the discrepancy between the definition and specification is
     to _test_ it: *)
 
 (* QuickChick removeP. *)
 
-(** The [QuickChick] command takes a property (which must be 
-    "executable" -- we'll see later exactly what this means) and 
-    attempts to falsify it by running it on many randomly 
-    generated inputs, resulting in output like this: 
+(** (Try uncommenting and evaluating the previous line.) *)
 
-    0
-    [0, 0]
-    Failed! After 17 tests and 12 shrinks
+(** The [QuickChick] command takes an "executable" property (we'll see
+    later exactly what this means) and attempts to falsify it by
+    running it on many randomly generated inputs, resulting in output
+    like this:
 
-    This means that, if we run [remove] with [x] being [0] and [l]
-    the two-element list containing two zeros, then the property
+       0 
+       [0, 0] 
+       Failed! After 17 tests and 12 shrinks
+
+    This means that, if we run [remove] with [x] being [0] and [l] 
+    being the two-element list containing two zeros, then the property 
     [removeP] fails. *)
 
 (** With this example in hand, we can see that the [then] branch
@@ -75,12 +76,12 @@ Fixpoint insert x l :=
 (* FILL IN HERE *)
 (** [] *)
 
-(** **** Exercise: 3 stars (insertP2)  *)
-(** Write a property that says "inserting a number [x] into a list [l]
-    yields a list containing every member of [l]."  Make sure
-    QuickChick finds a counterexample. (N.b. There is a way to do this
-    using just what we've seen, though it's arguably not the best
-    way.) *)
+(** **** Exercise: 2 stars (insertP2)  *)
+(** Translate the following claim into a [Conjecture] (using [In] for
+    list membership): "For all numbers [x] and [y] and lists [l], if
+    [y] is in [l] then it is also in the list that results from
+    inserting [x] into [l]" (i.e., [insert] preserves all the elements
+    already in [l]). Make sure QuickChick finds a counterexample. *)
 
 (* FILL IN HERE *)
 (** [] *)
@@ -100,12 +101,21 @@ Fixpoint insert x l :=
 (** We will delve into each of these in detail later on, but first we
     need to make a digression to explain Coq's support for
     _typeclasses_, which QuickChick uses extensively both internally
-    and in its programmatic interface to users.  This is
-    [Typeclasses].
+    and in its programmatic interface to users.  This is the
+    [Typeclasses] chapter.
     
-    Next ([QC]) we'll cover the core concepts and features of
-    QuickChick itself.
+    In the [QC] chapter we'll cover the core concepts and
+    features of QuickChick itself.
 
     The [TImp] chapter develops a small case study around a typed
     variant of the Imp language.
- *)
+
+    The [QuickChickTool] chapter presents a command line tool,
+    _quickChick_, that supports larger-scale projects and mutation
+    testing.
+
+    The [QuickChickInterface] chapter is a complete reference
+    manual for QuickChick.
+
+    Finally, the [Postscript] chapter gives some suggestions for
+    further reading. *)

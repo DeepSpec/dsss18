@@ -23,7 +23,6 @@
 <ul id='menu'>
    <a href='toc.html'><li class='section_name'>Table of Contents</li></a>
    <a href='coqindex.html'><li class='section_name'>Index</li></a>
-   <a href='deps.html'><li class='section_name'>Roadmap</li></a>
 </ul>
 </a></div>
 
@@ -31,25 +30,80 @@
 
 <h1 class="libtitle">QuickChickInterface<span class="subtitle">QuickChick Reference Manual</span></h1>
 
-<div class="code code-space">
-</div>
 
-<div class="code code-space">
+<div class="code code-tight">
 
-<br/>
 <span class="id" type="var">From</span> <span class="id" type="var">QuickChick</span> <span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="library">QuickChick</span>.<br/>
 <span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.ZArith.html#"><span class="id" type="library">ZArith</span></a> <a class="idref" href="http://coq.inria.fr/library/Coq.Strings.Ascii.html#"><span class="id" type="library">Strings.Ascii</span></a> <a class="idref" href="http://coq.inria.fr/library/Coq.Strings.String.html#"><span class="id" type="library">Strings.String</span></a>.<br/><hr class='doublespaceincode'/>
-<span class="id" type="var">From</span> <span class="id" type="var">ExtLib.Structures</span> <span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="library">Functor</span> <span class="id" type="library">Applicative</span>.<br/><hr class='doublespaceincode'/>
-<span class="id" type="keyword">Module</span> <span class="id" type="keyword">Type</span> <a name="QuickChickSig"><span class="id" type="module">QuickChickSig</span></a>.<br/>
+<span class="id" type="var">From</span> <span class="id" type="var">ExtLib.Structures</span> <span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="library">Functor</span> <span class="id" type="library">Applicative</span>.<br/>
 </div>
 
 <div class="doc">
 QuickChick provides a large collection of combinators and
-    notations for writing peoperty-based random tests. 
+    notations for writing property-based random tests.  This file
+    documents the entire public interface (the module type
+    <span class="inlinecode"><span class="id" type="var">QuickChickSig</span></span>). 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Module</span> <span class="id" type="keyword">Type</span> <a name="QuickChickSig"><span class="id" type="module">QuickChickSig</span></a>.<br/>
 </div>
 
 <div class="doc">
-<a name="lab98"></a><h1 class="section">Fundamental Types</h1>
+<a name="lab105"></a><h1 class="section">The <span class="inlinecode"><span class="id" type="keyword">Show</span></span> Typeclass</h1>
+
+<div class="paragraph"> </div>
+
+ <span class="inlinecode"><span class="id" type="keyword">Show</span></span> typeclass allows the test case to be printed as a string.  
+<div class="paragraph"> </div>
+
+<div class="code code-tight">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">Class</span>&nbsp;<span class="id" type="keyword">Show</span>&nbsp;(<span class="id" type="var">A</span>&nbsp;:&nbsp;<span class="id" type="keyword">Type</span>)&nbsp;:&nbsp;<span class="id" type="keyword">Type</span>&nbsp;:=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">show</span>&nbsp;:&nbsp;<span class="id" type="var">A</span>&nbsp;→&nbsp;<span class="id" type="var">string</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}.
+<div class="paragraph"> </div>
+
+</div>
+
+<div class="paragraph"> </div>
+
+ Here are some <span class="inlinecode"><span class="id" type="keyword">Show</span></span> instances for some basic types: 
+</div>
+<div class="code code-tight">
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.showNat"><span class="id" type="instance">showNat</span></a>    : <span class="id" type="keyword">Show</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>.<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.showBool"><span class="id" type="instance">showBool</span></a>   : <span class="id" type="keyword">Show</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#bool"><span class="id" type="inductive">bool</span></a>.<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.showZ"><span class="id" type="instance">showZ</span></a>      : <span class="id" type="keyword">Show</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>.<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.showString"><span class="id" type="instance">showString</span></a> : <span class="id" type="keyword">Show</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Strings.String.html#string"><span class="id" type="inductive">string</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.showList"><span class="id" type="instance">showList</span></a> :<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>} `{<span class="id" type="keyword">Show</span> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>}, <span class="id" type="keyword">Show</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>).<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.showPair"><span class="id" type="instance">showPair</span></a> :<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> <span class="id" type="var">B</span> : <span class="id" type="keyword">Type</span>} `{<span class="id" type="keyword">Show</span> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>} `{<span class="id" type="keyword">Show</span> <a class="idref" href="QuickChickInterface.html#B"><span class="id" type="variable">B</span></a>}, <span class="id" type="keyword">Show</span> (<a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a> * <a class="idref" href="QuickChickInterface.html#B"><span class="id" type="variable">B</span></a>).<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.showOpt"><span class="id" type="instance">showOpt</span></a> :<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>} `{<span class="id" type="keyword">Show</span> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>}, <span class="id" type="keyword">Show</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>).<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.showEx"><span class="id" type="instance">showEx</span></a> :<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span>} `{<span class="id" type="keyword">Show</span> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>} <span class="id" type="var">P</span>, <span class="id" type="keyword">Show</span> ({<span class="id" type="var">x</span> : <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a> | <a class="idref" href="QuickChickInterface.html#P"><span class="id" type="variable">P</span></a> <a class="idref" href="QuickChickInterface.html#x"><span class="id" type="variable">x</span></a>}).<br/>
+</div>
+
+<div class="doc">
+When defining <span class="inlinecode"><span class="id" type="keyword">Show</span></span> instance for your own datatypes, you sometimes need to
+    start a new line for better printing. <span class="inlinecode"><span class="id" type="var">nl</span></span> is a shorthand for it. 
+</div>
+<div class="code code-tight">
+<span class="id" type="keyword">Definition</span> <a name="QuickChickSig.nl"><span class="id" type="definition">nl</span></a> : <a class="idref" href="http://coq.inria.fr/library/Coq.Strings.String.html#string"><span class="id" type="inductive">string</span></a> := <a class="idref" href="http://coq.inria.fr/library/Coq.Strings.String.html#String"><span class="id" type="constructor">String</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Strings.Ascii.html#ascii_of_nat"><span class="id" type="definition">ascii_of_nat</span></a> 10) <a class="idref" href="http://coq.inria.fr/library/Coq.Strings.String.html#EmptyString"><span class="id" type="constructor">EmptyString</span></a>.<br/>
+</div>
+
+<div class="doc">
+<a name="lab106"></a><h1 class="section">Generators</h1>
+
+</div>
+<div class="code code-space">
+
+<br/>
+</div>
+
+<div class="doc">
+<a name="lab107"></a><h2 class="section">Fundamental Types</h2>
 
 <div class="paragraph"> </div>
 
@@ -68,48 +122,6 @@ QuickChick provides a large collection of combinators and
 </div>
 
 <div class="doc">
-In QuickChick, we give semantics to generators using sets of outcomes. 
-</div>
-<div class="code code-tight">
-<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.semGen"><span class="id" type="axiom">semGen</span></a> : <span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>} (<span class="id" type="var">g</span> : <a class="idref" href="QuickChickInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>), <span class="id" type="definition">set</span> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>.<br/>
-<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.semGenSize"><span class="id" type="axiom">semGenSize</span></a> : <span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>} (<span class="id" type="var">g</span> : <a class="idref" href="QuickChickInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>) (<span class="id" type="var">size</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>), <span class="id" type="definition">set</span> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>.<br/>
-</div>
-
-<div class="doc">
-<a name="lab99"></a><h1 class="section">Primitive Generator Combinators</h1>
-
-<div class="paragraph"> </div>
-
- Many generator combinators can be found in <span class="inlinecode"><span class="id" type="var">Functor</span></span>,
-   <span class="inlinecode"><span class="id" type="var">Applicative</span></span>, <span class="inlinecode"><span class="id" type="var">Monad</span></span>, <span class="inlinecode"><span class="id" type="var">Foldable</span></span>, <span class="inlinecode"><span class="id" type="var">Traversable</span></span>
-   from <span class="inlinecode"><span class="id" type="var">ExtLib.Structures</span></span> (coq-ext-lib). 
-</div>
-<div class="code code-tight">
-
-<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.Functor_G"><span class="id" type="instance">Functor_G</span></a> : <span class="id" type="class">Functor</span> <a class="idref" href="QuickChickInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a>.<br/>
-<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.Applicative_G"><span class="id" type="instance">Applicative_G</span></a> : <span class="id" type="class">Applicative</span> <a class="idref" href="QuickChickInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a>.<br/>
-<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.Monad_G"><span class="id" type="instance">Monad_G</span></a> : <span class="id" type="class">Monad</span> <a class="idref" href="QuickChickInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a>.<br/>
-</div>
-
-<div class="doc">
-Version of bind where the continuation also takes a <i>proof</i> that
-    the value received is within the set of outcomes of the generator 
-</div>
-<div class="code code-tight">
-<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.bindGen'"><span class="id" type="axiom">bindGen'</span></a> : <span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> <span class="id" type="var">B</span> : <span class="id" type="keyword">Type</span>} (<span class="id" type="var">g</span> : <a class="idref" href="QuickChickInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>),<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;(<span style='font-size:120%;'>&forall;</span> (<span class="id" type="var">a</span> : <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>), (<a class="idref" href="QuickChickInterface.html#a"><span class="id" type="variable">a</span></a> &#x2208; <a class="idref" href="QuickChickInterface.html#QuickChickSig.semGen"><span class="id" type="axiom">semGen</span></a> <a class="idref" href="QuickChickInterface.html#g"><span class="id" type="variable">g</span></a>) → <a class="idref" href="QuickChickInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="QuickChickInterface.html#B"><span class="id" type="variable">B</span></a>) → <a class="idref" href="QuickChickInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="QuickChickInterface.html#B"><span class="id" type="variable">B</span></a>.<br/>
-</div>
-
-<div class="doc">
-Version of bind for the (G (option .)) monad.
-    Useful for chaining generators that could fail/backtrack. 
-</div>
-<div class="code code-tight">
-<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.bindGenOpt"><span class="id" type="axiom">bindGenOpt</span></a> : <span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> <span class="id" type="var">B</span> : <span class="id" type="keyword">Type</span>},<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="QuickChickInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>) → (<a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="QuickChickInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="QuickChickInterface.html#B"><span class="id" type="variable">B</span></a>)) → <a class="idref" href="QuickChickInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="QuickChickInterface.html#B"><span class="id" type="variable">B</span></a>).<br/>
-</div>
-
-<div class="doc">
 Run a generator with a size parameter (a natural number denoting
     the maximum depth of the generated A) and a random seed. 
 </div>
@@ -118,7 +130,51 @@ Run a generator with a size parameter (a natural number denoting
 </div>
 
 <div class="doc">
-<a name="lab100"></a><h1 class="section">Basic Generator Combinators</h1>
+The semantics of a generator is its set of possible outcomes. 
+</div>
+<div class="code code-tight">
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.semGen"><span class="id" type="axiom">semGen</span></a> : <span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>} (<span class="id" type="var">g</span> : <a class="idref" href="QuickChickInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>), <span class="id" type="definition">set</span> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>.<br/>
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.semGenSize"><span class="id" type="axiom">semGenSize</span></a> : <span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>} (<span class="id" type="var">g</span> : <a class="idref" href="QuickChickInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>) (<span class="id" type="var">size</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>), <span class="id" type="definition">set</span> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>.<br/>
+</div>
+
+<div class="doc">
+<a name="lab108"></a><h2 class="section">Structural Combinators</h2>
+
+<div class="paragraph"> </div>
+
+ Generators are also instances of several generic typeclasses.
+    Many handy generator combinators can be found in the <span class="inlinecode"><span class="id" type="var">Monad</span></span>,
+    <span class="inlinecode"><span class="id" type="var">Functor</span></span>, <span class="inlinecode"><span class="id" type="var">Applicative</span></span>, <span class="inlinecode"><span class="id" type="var">Foldable</span></span>, and <span class="inlinecode"><span class="id" type="var">Traversable</span></span> modules in
+    the <span class="inlinecode"><span class="id" type="var">ExtLib.Structures</span></span> library from <span class="inlinecode"><span class="id" type="var">coq</span>-<span class="id" type="var">ext</span>-<span class="id" type="var">lib</span></span>. 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.Monad_G"><span class="id" type="instance">Monad_G</span></a> : <span class="id" type="class">Monad</span> <a class="idref" href="QuickChickInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a>.<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.Functor_G"><span class="id" type="instance">Functor_G</span></a> : <span class="id" type="class">Functor</span> <a class="idref" href="QuickChickInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a>.<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.Applicative_G"><span class="id" type="instance">Applicative_G</span></a> : <span class="id" type="class">Applicative</span> <a class="idref" href="QuickChickInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a>.<br/>
+</div>
+
+<div class="doc">
+A variant of monadic bind where the continuation also takes a
+    <i>proof</i> that the value received is within the set of outcomes of
+    the first generator. 
+</div>
+<div class="code code-tight">
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.bindGen'"><span class="id" type="axiom">bindGen'</span></a> : <span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> <span class="id" type="var">B</span> : <span class="id" type="keyword">Type</span>} (<span class="id" type="var">g</span> : <a class="idref" href="QuickChickInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span style='font-size:120%;'>&forall;</span> (<span class="id" type="var">a</span> : <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>), (<a class="idref" href="QuickChickInterface.html#a"><span class="id" type="variable">a</span></a> &#x2208; <a class="idref" href="QuickChickInterface.html#QuickChickSig.semGen"><span class="id" type="axiom">semGen</span></a> <a class="idref" href="QuickChickInterface.html#g"><span class="id" type="variable">g</span></a>) → <a class="idref" href="QuickChickInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="QuickChickInterface.html#B"><span class="id" type="variable">B</span></a>) → <a class="idref" href="QuickChickInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="QuickChickInterface.html#B"><span class="id" type="variable">B</span></a>.<br/>
+</div>
+
+<div class="doc">
+A variant of bind for the <span class="inlinecode">(<span class="id" type="var">G</span></span> <span class="inlinecode">(<span class="id" type="var">option</span></span> <span class="inlinecode">--))</span> monad.  Useful for
+    chaining generators that can fail / backtrack. 
+</div>
+<div class="code code-tight">
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.bindGenOpt"><span class="id" type="axiom">bindGenOpt</span></a> : <span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> <span class="id" type="var">B</span> : <span class="id" type="keyword">Type</span>},<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="QuickChickInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>) → (<a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="QuickChickInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="QuickChickInterface.html#B"><span class="id" type="variable">B</span></a>)) → <a class="idref" href="QuickChickInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="QuickChickInterface.html#B"><span class="id" type="variable">B</span></a>).<br/>
+</div>
+
+<div class="doc">
+<a name="lab109"></a><h2 class="section">Basic Generator Combinators</h2>
 
 <div class="paragraph"> </div>
 
@@ -190,67 +246,11 @@ Generate-and-test approach to generate data with preconditions.
 <span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.suchThatMaybe"><span class="id" type="axiom">suchThatMaybe</span></a> :<br/>
 &nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>}, <a class="idref" href="QuickChickInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a> → (<a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#bool"><span class="id" type="inductive">bool</span></a>) → <a class="idref" href="QuickChickInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>).<br/>
 <span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.suchThatMaybeOpt"><span class="id" type="axiom">suchThatMaybeOpt</span></a> :<br/>
-&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>}, <a class="idref" href="QuickChickInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>) → (<a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#bool"><span class="id" type="inductive">bool</span></a>) → <a class="idref" href="QuickChickInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>).<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>}, <a class="idref" href="QuickChickInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>) → (<a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a> → <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#bool"><span class="id" type="inductive">bool</span></a>) → <a class="idref" href="QuickChickInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>).<br/><hr class='doublespaceincode'/>
 </div>
 
 <div class="doc">
-<a name="lab101"></a><h1 class="section">Choosing from intervals (choose)</h1>
-
-<div class="paragraph"> </div>
-
- The combinators above allow us to generate elements by enumeration
-    and lifting. However, for numeric data types, we sometimes hope to
-    choose from an interval without writing down all the possible
-    values.
-
-<div class="paragraph"> </div>
-
-    Such intervals can be defined on ordered data types, namely
-    <span class="inlinecode"><span class="id" type="var">OrdType</span></span>, whose ordering <span class="inlinecode"><span class="id" type="var">leq</span></span> satisfies reflexive, transitive,
-    and antisymmetric predicates. 
-</div>
-<div class="code code-tight">
-
-<span class="id" type="var">Existing</span> <span class="id" type="keyword">Class</span> <span class="id" type="var">OrdType</span>.<br/><hr class='doublespaceincode'/>
-<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.OrdBool"><span class="id" type="instance">OrdBool</span></a> : <span class="id" type="class">OrdType</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#bool"><span class="id" type="inductive">bool</span></a>.<br/>
-<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.OrdNat"><span class="id" type="instance">OrdNat</span></a>  : <span class="id" type="class">OrdType</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>.<br/>
-<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.OrdZ"><span class="id" type="instance">OrdZ</span></a>    : <span class="id" type="class">OrdType</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>.<br/>
-</div>
-
-<div class="doc">
-We also expect the random function to be able to pick every element in any
-    given interval. 
-</div>
-<div class="code code-tight">
-
-<span class="id" type="var">Existing</span> <span class="id" type="keyword">Class</span> <span class="id" type="var">ChoosableFromInterval</span>.<br/>
-</div>
-
-<div class="doc">
-QuickChick has provided some instances for ordered data types that are
-    choosable from intervals, including <span class="inlinecode"><span class="id" type="var">bool</span></span>, <span class="inlinecode"><span class="id" type="var">nat</span></span>, and <span class="inlinecode"><span class="id" type="var">Z</span></span>. 
-</div>
-<div class="code code-tight">
-<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.ChooseBool"><span class="id" type="instance">ChooseBool</span></a> : <span class="id" type="class">ChoosableFromInterval</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#bool"><span class="id" type="inductive">bool</span></a>.<br/>
-<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.ChooseNat"><span class="id" type="instance">ChooseNat</span></a> : <span class="id" type="class">ChoosableFromInterval</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>.<br/>
-<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.ChooseZ"><span class="id" type="instance">ChooseZ</span></a> : <span class="id" type="class">ChoosableFromInterval</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>.<br/>
-</div>
-
-<div class="doc">
-<span class="inlinecode"><span class="id" type="var">choose</span></span> <span class="inlinecode"><span class="id" type="var">l</span></span> <span class="inlinecode"><span class="id" type="var">r</span></span> generates a value between <span class="inlinecode"><span class="id" type="var">l</span></span> and <span class="inlinecode"><span class="id" type="var">r</span></span>, inclusive the two
-    extremes. It causes a runtime error if <span class="inlinecode"><span class="id" type="var">r</span></span> <span class="inlinecode">&lt;</span> <span class="inlinecode"><span class="id" type="var">l</span></span>. 
-</div>
-<div class="code code-tight">
-<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.choose"><span class="id" type="axiom">choose</span></a> :<br/>
-&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>} `{<span class="id" type="class">ChoosableFromInterval</span> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>}, (<a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a> * <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>) → <a class="idref" href="QuickChickInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>.<br/>
-</div>
-
-<div class="doc">
-<a name="lab102"></a><h1 class="section">Notations</h1>
-
-<div class="paragraph"> </div>
-
- The <span class="inlinecode"><span class="id" type="var">elements</span></span>, <span class="inlinecode"><span class="id" type="var">oneof</span></span>, and <span class="inlinecode"><span class="id" type="var">frequency</span></span> combinators all take
+The <span class="inlinecode"><span class="id" type="var">elements</span></span>, <span class="inlinecode"><span class="id" type="var">oneof</span></span>, and <span class="inlinecode"><span class="id" type="var">frequency</span></span> combinators all take
     default values; these are only used if their list arguments are
     empty, which should not normally happen. The <span class="inlinecode"><span class="id" type="var">QcDefaultNotation</span></span>
     sub-module exposes notation to hide this default.
@@ -305,51 +305,59 @@ QuickChick has provided some instances for ordered data types that are
 </div>
 
 <div class="doc">
-<a name="lab103"></a><h1 class="section">Printing</h1>
+<a name="lab110"></a><h2 class="section">Choosing from Intervals</h2>
 
 <div class="paragraph"> </div>
 
- <span class="inlinecode"><span class="id" type="keyword">Show</span></span> typeclass allows the test case to be printed as a string.  
-<div class="paragraph"> </div>
-
-<div class="code code-tight">
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">Class</span>&nbsp;<span class="id" type="keyword">Show</span>&nbsp;(<span class="id" type="var">A</span>&nbsp;:&nbsp;<span class="id" type="keyword">Type</span>)&nbsp;:&nbsp;<span class="id" type="keyword">Type</span>&nbsp;:=<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">show</span>&nbsp;:&nbsp;<span class="id" type="var">A</span>&nbsp;→&nbsp;<span class="id" type="var">string</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}.
-<div class="paragraph"> </div>
-
-</div>
+ The combinators above allow us to generate elements by enumeration
+    and lifting. However, for numeric data types, we sometimes hope to
+    choose from an interval without writing down all the possible
+    values.
 
 <div class="paragraph"> </div>
 
- Here are some <span class="inlinecode"><span class="id" type="keyword">Show</span></span> instances for some basic types: 
+    Such intervals can be defined on ordered data types, instances of
+    <span class="inlinecode"><span class="id" type="var">OrdType</span></span>, whose ordering <span class="inlinecode"><span class="id" type="var">leq</span></span> satisfies reflexive, transitive,
+    and antisymmetric predicates. 
 </div>
 <div class="code code-tight">
-<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.showNat"><span class="id" type="instance">showNat</span></a>    : <span class="id" type="keyword">Show</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>.<br/>
-<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.showBool"><span class="id" type="instance">showBool</span></a>   : <span class="id" type="keyword">Show</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#bool"><span class="id" type="inductive">bool</span></a>.<br/>
-<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.showZ"><span class="id" type="instance">showZ</span></a>      : <span class="id" type="keyword">Show</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>.<br/>
-<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.showString"><span class="id" type="instance">showString</span></a> : <span class="id" type="keyword">Show</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Strings.String.html#string"><span class="id" type="inductive">string</span></a>.<br/><hr class='doublespaceincode'/>
-<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.showList"><span class="id" type="instance">showList</span></a> :<br/>
-&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>} `{<span class="id" type="keyword">Show</span> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>}, <span class="id" type="keyword">Show</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>).<br/>
-<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.showPair"><span class="id" type="instance">showPair</span></a> :<br/>
-&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> <span class="id" type="var">B</span> : <span class="id" type="keyword">Type</span>} `{<span class="id" type="keyword">Show</span> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>} `{<span class="id" type="keyword">Show</span> <a class="idref" href="QuickChickInterface.html#B"><span class="id" type="variable">B</span></a>}, <span class="id" type="keyword">Show</span> (<a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a> * <a class="idref" href="QuickChickInterface.html#B"><span class="id" type="variable">B</span></a>).<br/>
-<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.showOpt"><span class="id" type="instance">showOpt</span></a> :<br/>
-&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>} `{<span class="id" type="keyword">Show</span> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>}, <span class="id" type="keyword">Show</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>).<br/>
-<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.showEx"><span class="id" type="instance">showEx</span></a> :<br/>
-&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span>} `{<span class="id" type="keyword">Show</span> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>} <span class="id" type="var">P</span>, <span class="id" type="keyword">Show</span> ({<span class="id" type="var">x</span> : <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a> | <a class="idref" href="QuickChickInterface.html#P"><span class="id" type="variable">P</span></a> <a class="idref" href="QuickChickInterface.html#x"><span class="id" type="variable">x</span></a>}).<br/>
+
+<span class="id" type="var">Existing</span> <span class="id" type="keyword">Class</span> <span class="id" type="var">OrdType</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.OrdBool"><span class="id" type="instance">OrdBool</span></a> : <span class="id" type="class">OrdType</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#bool"><span class="id" type="inductive">bool</span></a>.<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.OrdNat"><span class="id" type="instance">OrdNat</span></a>  : <span class="id" type="class">OrdType</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>.<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.OrdZ"><span class="id" type="instance">OrdZ</span></a>    : <span class="id" type="class">OrdType</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>.<br/>
 </div>
 
 <div class="doc">
-When defining <span class="inlinecode"><span class="id" type="keyword">Show</span></span> instance for your own datatypes, you sometimes need to
-    start a new line for better printing. <span class="inlinecode"><span class="id" type="var">nl</span></span> is a shorthand for it. 
+We also expect the random function to be able to pick every element in any
+    given interval. 
 </div>
 <div class="code code-tight">
-<span class="id" type="keyword">Definition</span> <a name="QuickChickSig.nl"><span class="id" type="definition">nl</span></a> : <a class="idref" href="http://coq.inria.fr/library/Coq.Strings.String.html#string"><span class="id" type="inductive">string</span></a> := <a class="idref" href="http://coq.inria.fr/library/Coq.Strings.String.html#String"><span class="id" type="constructor">String</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Strings.Ascii.html#ascii_of_nat"><span class="id" type="definition">ascii_of_nat</span></a> 10) <a class="idref" href="http://coq.inria.fr/library/Coq.Strings.String.html#EmptyString"><span class="id" type="constructor">EmptyString</span></a>.<br/>
+
+<span class="id" type="var">Existing</span> <span class="id" type="keyword">Class</span> <span class="id" type="var">ChoosableFromInterval</span>.<br/>
 </div>
 
 <div class="doc">
-<a name="lab104"></a><h1 class="section">Generation typeclasses and instances</h1>
+QuickChick has provided some instances for ordered data types that are
+    choosable from intervals, including <span class="inlinecode"><span class="id" type="var">bool</span></span>, <span class="inlinecode"><span class="id" type="var">nat</span></span>, and <span class="inlinecode"><span class="id" type="var">Z</span></span>. 
+</div>
+<div class="code code-tight">
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.ChooseBool"><span class="id" type="instance">ChooseBool</span></a> : <span class="id" type="class">ChoosableFromInterval</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#bool"><span class="id" type="inductive">bool</span></a>.<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.ChooseNat"><span class="id" type="instance">ChooseNat</span></a> : <span class="id" type="class">ChoosableFromInterval</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>.<br/>
+<span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.ChooseZ"><span class="id" type="instance">ChooseZ</span></a> : <span class="id" type="class">ChoosableFromInterval</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a>.<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" type="var">choose</span></span> <span class="inlinecode"><span class="id" type="var">l</span></span> <span class="inlinecode"><span class="id" type="var">r</span></span> generates a value between <span class="inlinecode"><span class="id" type="var">l</span></span> and <span class="inlinecode"><span class="id" type="var">r</span></span>, inclusive the two
+    extremes. It causes a runtime error if <span class="inlinecode"><span class="id" type="var">r</span></span> <span class="inlinecode">&lt;</span> <span class="inlinecode"><span class="id" type="var">l</span></span>. 
+</div>
+<div class="code code-tight">
+<span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.choose"><span class="id" type="axiom">choose</span></a> :<br/>
+&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> {<span class="id" type="var">A</span> : <span class="id" type="keyword">Type</span>} `{<span class="id" type="class">ChoosableFromInterval</span> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>}, (<a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a> * <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>) → <a class="idref" href="QuickChickInterface.html#QuickChickSig.G"><span class="id" type="axiom">G</span></a> <a class="idref" href="QuickChickInterface.html#A"><span class="id" type="variable">A</span></a>.<br/>
+</div>
+
+<div class="doc">
+<a name="lab111"></a><h2 class="section">The <span class="inlinecode"><span class="id" type="var">Gen</span></span> and <span class="inlinecode"><span class="id" type="var">GenSized</span></span> Typeclasses</h2>
 
 <div class="paragraph"> </div>
 
@@ -394,12 +402,77 @@ Here are some basic instances for generators:
 </div>
 
 <div class="doc">
-<a name="lab105"></a><h1 class="section">Shrinking typeclass and instances</h1>
+<a name="lab112"></a><h2 class="section">Generators for Data Satisfying Inductive Predicates</h2>
 
 <div class="paragraph"> </div>
 
- <span class="inlinecode"><span class="id" type="var">Shrink</span></span> is a typeclass whose instances can be shrunk to smaller ones,
-    allowing QuickChick to find a minimal counter example when errors occur.  
+ Just as QuickChick provides the <span class="inlinecode"><span class="id" type="var">GenSized</span></span> and <span class="inlinecode"><span class="id" type="var">Gen</span></span> typeclasses
+    for generators of type <span class="inlinecode"><span class="id" type="var">A</span></span>, it provides constrained variants for
+    generators of type <span class="inlinecode"><span class="id" type="var">A</span></span> such that <span class="inlinecode"><span class="id" type="var">P</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" type="var">A</span></span> <span class="inlinecode">→</span> <span class="inlinecode"><span class="id" type="keyword">Prop</span></span> holds of all
+    generated values.  Since it is not guaranteed that any such <span class="inlinecode"><span class="id" type="var">A</span></span>
+    exist, these generators are partial.   
+<div class="paragraph"> </div>
+
+<div class="code code-tight">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">Class</span>&nbsp;<span class="id" type="var">GenSizedSuchThat</span>&nbsp;(<span class="id" type="var">A</span>&nbsp;:&nbsp;<span class="id" type="keyword">Type</span>)&nbsp;(<span class="id" type="var">P</span>&nbsp;:&nbsp;<span class="id" type="var">A</span>&nbsp;→&nbsp;<span class="id" type="keyword">Prop</span>)&nbsp;:=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">arbitrarySizeST</span>&nbsp;:&nbsp;<span class="id" type="var">nat</span>&nbsp;→&nbsp;<span class="id" type="var">G</span>&nbsp;(<span class="id" type="var">option</span>&nbsp;<span class="id" type="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}.<br/>
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">Class</span>&nbsp;<span class="id" type="var">GenSuchThat</span>&nbsp;(<span class="id" type="var">A</span>&nbsp;:&nbsp;<span class="id" type="keyword">Type</span>)&nbsp;(<span class="id" type="var">P</span>&nbsp;:&nbsp;<span class="id" type="var">A</span>&nbsp;→&nbsp;<span class="id" type="keyword">Prop</span>)&nbsp;:=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">arbitraryST</span>&nbsp;:&nbsp;<span class="id" type="var">G</span>&nbsp;(<span class="id" type="var">option</span>&nbsp;<span class="id" type="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}.
+<div class="paragraph"> </div>
+
+</div>
+ 
+<div class="paragraph"> </div>
+
+ So, for example, if you have a typing relation 
+    <span class="inlinecode"><span class="id" type="var">has_type</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" type="var">exp</span></span> <span class="inlinecode">→</span> <span class="inlinecode"><span class="id" type="var">type</span></span> <span class="inlinecode">→</span> <span class="inlinecode"><span class="id" type="keyword">Prop</span></span> for some language, you could, 
+    given some type <span class="inlinecode"><span class="id" type="var">T</span></span> as input, write (or derive as we will see later on) 
+    an instance of <span class="inlinecode"><span class="id" type="var">GenSizedSuchThat</span></span> <span class="inlinecode">(<span class="id" type="keyword">fun</span></span> <span class="inlinecode"><span class="id" type="var">e</span></span> <span class="inlinecode">⇒</span> <span class="inlinecode"><span class="id" type="var">has_type</span></span> <span class="inlinecode"><span class="id" type="var">e</span></span> <span class="inlinecode"><span class="id" type="var">T</span>)</span>, that produces 
+    an expression of with type <span class="inlinecode"><span class="id" type="var">T</span></span>. 
+
+<div class="paragraph"> </div>
+
+    Calling <span class="inlinecode"><span class="id" type="var">arbitraryST</span></span> through such an instance would require 
+    making an explicit application to <span class="inlinecode">@<span class="id" type="var">arbitraryST</span></span> as follows:
+
+<div class="paragraph"> </div>
+
+<div class="code code-tight">
+&nbsp;&nbsp;&nbsp;&nbsp;@<span class="id" type="var">arbitraryST</span>&nbsp;<span class="id" type="var">_</span>&nbsp;(<span class="id" type="keyword">fun</span>&nbsp;<span class="id" type="var">e</span>&nbsp;⇒&nbsp;<span class="id" type="var">has_type</span>&nbsp;<span class="id" type="var">e</span>&nbsp;<span class="id" type="var">T</span>)&nbsp;<span class="id" type="var">_</span>
+<div class="paragraph"> </div>
+
+</div>
+    where the first placeholder is the type of expressions <span class="inlinecode"><span class="id" type="var">exp</span></span> 
+    and the second placeholder is the actual instance to be inferred.
+
+<div class="paragraph"> </div>
+
+    To avoid this, QuickChick also provides convenient notation to call 
+    by providing only the predicate <span class="inlinecode"><span class="id" type="var">P</span></span> that constraints the generation.
+    The typeclass constraint is inferred. 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Notation</span> "'genST' x" := (@<span class="id" type="method">arbitraryST</span> <span class="id" type="var">_</span> <span class="id" type="var">x</span> <span class="id" type="var">_</span>) (<span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 70).<br/>
+</div>
+
+<div class="doc">
+<a name="lab113"></a><h1 class="section">Shrinking</h1>
+
+<div class="paragraph"> </div>
+
+<a name="lab114"></a><h2 class="section">The <span class="inlinecode"><span class="id" type="var">Shrink</span></span> Typeclass</h2>
+
+<div class="paragraph"> </div>
+
+ <span class="inlinecode"><span class="id" type="var">Shrink</span></span> is a typeclass whose instances have an operation for
+    shrinking larger elements to smaller ones, allowing QuickChick to
+    search for a minimal counter example when errors occur.  
 <div class="paragraph"> </div>
 
 <div class="code code-tight">
@@ -413,7 +486,7 @@ Here are some basic instances for generators:
 
 <div class="paragraph"> </div>
 
- QuickChick provides default shrinking for some basic datatypes: 
+ Default shrinkers for some basic datatypes: 
 </div>
 <div class="code code-tight">
 <span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.shrinkBool"><span class="id" type="instance">shrinkBool</span></a> : <span class="id" type="class">Shrink</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#bool"><span class="id" type="inductive">bool</span></a>.<br/>
@@ -425,7 +498,7 @@ Here are some basic instances for generators:
 </div>
 
 <div class="doc">
-<a name="lab106"></a><h1 class="section">Arbitrary and typeclass hierarchy</h1>
+<a name="lab115"></a><h2 class="section">The <span class="inlinecode"><span class="id" type="var">Arbitrary</span></span> Typeclass</h2>
 
 <div class="paragraph"> </div>
 
@@ -437,6 +510,11 @@ Here are some basic instances for generators:
 <div class="paragraph"> </div>
 
 </div>
+
+</div>
+
+<div class="doc">
+<a name="lab116"></a><h2 class="section">The Generator Typeclass Hierarchy</h2>
 
 <div class="paragraph"> </div>
 
@@ -458,8 +536,7 @@ Here are some basic instances for generators:
 <div class="paragraph"> </div>
 
  If a type has a <span class="inlinecode"><span class="id" type="var">Gen</span></span> and a <span class="inlinecode"><span class="id" type="var">Shrink</span></span> instance, it automatically gets
-    an <span class="inlinecode"><span class="id" type="var">Arbitrary</span></span> one.
-
+    an <span class="inlinecode"><span class="id" type="var">Arbitrary</span></span> one. 
 </div>
 <div class="code code-tight">
 <span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.ArbitraryOfGenShrink"><span class="id" type="instance">ArbitraryOfGenShrink</span></a> :<br/>
@@ -467,7 +544,11 @@ Here are some basic instances for generators:
 </div>
 
 <div class="doc">
-<a name="lab107"></a><h1 class="section">Properties - Checkers</h1>
+<a name="lab117"></a><h1 class="section">Checkers</h1>
+
+<div class="paragraph"> </div>
+
+<a name="lab118"></a><h2 class="section">Basic Definitions</h2>
 
 <div class="paragraph"> </div>
 
@@ -492,21 +573,23 @@ The <span class="inlinecode"><span class="id" type="var">Checkable</span></span>
 
 <div class="paragraph"> </div>
 
- Bools signify pass/fail. 
+ Boolean checkers always pass or always fail. 
 </div>
 <div class="code code-tight">
 <span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.testBool"><span class="id" type="instance">testBool</span></a> : <span class="id" type="class">Checkable</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#bool"><span class="id" type="inductive">bool</span></a>.<br/>
 </div>
 
 <div class="doc">
-Units signify discarded tests. 
+The unit checker is always discarded (that is, it represents a
+    useless test).  It is used, for example, in the implementation of
+    the "implication <span class="inlinecode"><span class="id" type="var">Checker</span></span>" combinator <span class="inlinecode">==&gt;</span>. 
 </div>
 <div class="code code-tight">
 <span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.testUnit"><span class="id" type="instance">testUnit</span></a> : <span class="id" type="class">Checkable</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#unit"><span class="id" type="inductive">unit</span></a>.<br/>
 </div>
 
 <div class="doc">
-Given a generator for showable As, construct a Checker. 
+Given a generator for showable <span class="inlinecode"><span class="id" type="var">A</span></span>s, construct a <span class="inlinecode"><span class="id" type="var">Checker</span></span>. 
 </div>
 <div class="code code-tight">
 <span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.forAll"><span class="id" type="axiom">forAll</span></a> :<br/>
@@ -515,7 +598,10 @@ Given a generator for showable As, construct a Checker.
 </div>
 
 <div class="doc">
-Variant of forAll that uses evidence for the generated value. 
+A variant of <span class="inlinecode"><span class="id" type="var">forAll</span></span> that provides evidence that the generated
+    values are members of the semantics of the generator. (Such evidence
+    can be useful when constructing dependently typed data, such as 
+    bounded integers.) 
 </div>
 <div class="code code-tight">
 <span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.forAllProof"><span class="id" type="axiom">forAllProof</span></a> :<br/>
@@ -524,7 +610,8 @@ Variant of forAll that uses evidence for the generated value.
 </div>
 
 <div class="doc">
-Given a generator and a shrinker for showable As, construct a Checker 
+Given a generator and a shrinker for showable <span class="inlinecode"><span class="id" type="var">A</span></span>s, construct a
+    <span class="inlinecode"><span class="id" type="var">Checker</span></span>. 
 </div>
 <div class="code code-tight">
 <span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.forAllShrink"><span class="id" type="axiom">forAllShrink</span></a> :<br/>
@@ -533,8 +620,11 @@ Given a generator and a shrinker for showable As, construct a Checker
 </div>
 
 <div class="doc">
-Typeclass magic: Lift (Show, Gen, Shrink) instances for A
-   to a Checker for functions A -&gt; prop. 
+Lift (<span class="inlinecode"><span class="id" type="keyword">Show</span></span>, <span class="inlinecode"><span class="id" type="var">Gen</span></span>, <span class="inlinecode"><span class="id" type="var">Shrink</span></span>) instances for <span class="inlinecode"><span class="id" type="var">A</span></span>
+    to a <span class="inlinecode"><span class="id" type="var">Checker</span></span> for functions <span class="inlinecode"><span class="id" type="var">A</span></span> -&gt; prop.  This is what makes it
+    possible to write (for some example property <span class="inlinecode"><span class="id" type="var">foo</span></span> <span class="inlinecode">:=</span> <span class="inlinecode"><span class="id" type="keyword">fun</span></span> <span class="inlinecode"><span class="id" type="var">x</span></span> <span class="inlinecode">⇒</span> <span class="inlinecode"><span class="id" type="var">x</span></span> <span class="inlinecode">&gt;?</span>
+    <span class="inlinecode">0</span>, say) <span class="inlinecode"><span class="id" type="var">QuickChick</span></span> <span class="inlinecode"><span class="id" type="var">foo</span></span> instead of <span class="inlinecode"><span class="id" type="var">QuickChick</span></span> <span class="inlinecode">(<span class="id" type="var">forAllShrink</span></span>
+    <span class="inlinecode"><span class="id" type="var">arbitrary</span></span> <span class="inlinecode"><span class="id" type="var">shrink</span></span> <span class="inlinecode"><span class="id" type="var">foo</span>)</span>. 
 </div>
 <div class="code code-tight">
 <span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.testFun"><span class="id" type="instance">testFun</span></a> :<br/>
@@ -543,7 +633,7 @@ Typeclass magic: Lift (Show, Gen, Shrink) instances for A
 </div>
 
 <div class="doc">
-Typeclass magic revisited: Similar thing for products. 
+Lift products similarly. 
 </div>
 <div class="code code-tight">
 <span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.testProd"><span class="id" type="instance">testProd</span></a> :<br/>
@@ -553,7 +643,7 @@ Typeclass magic revisited: Similar thing for products.
 </div>
 
 <div class="doc">
-Test polymorphic functions by instantiating to 'nat'. :-) 
+Lift polymorphic functions by instantiating to 'nat'. :-) 
 </div>
 <div class="code code-tight">
 <span class="id" type="var">Declare</span> <span class="id" type="keyword">Instance</span> <a name="QuickChickSig.testPolyFun"><span class="id" type="instance">testPolyFun</span></a> :<br/>
@@ -562,7 +652,7 @@ Test polymorphic functions by instantiating to 'nat'. :-)
 </div>
 
 <div class="doc">
-<a name="lab108"></a><h1 class="section">Checker combinators</h1>
+<a name="lab119"></a><h2 class="section">Checker Combinators</h2>
 
 <div class="paragraph"> </div>
 
@@ -574,7 +664,8 @@ Test polymorphic functions by instantiating to 'nat'. :-)
 </div>
 
 <div class="doc">
-Signify that the property is expected to fail. 
+Record an expectation that a property should fail, i.e. 
+    the property will fail if all the tests succeed. 
 </div>
 <div class="code code-tight">
 <span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.expectFailure"><span class="id" type="axiom">expectFailure</span></a> :<br/>
@@ -591,8 +682,8 @@ Collect statistics across all tests.
 </div>
 
 <div class="doc">
-Set the reason for failure.
-    Will only count shrinks as valid if they preserve the tag. 
+Set the reason for failure.  Will only count shrinks as valid if
+    they preserve the tag. 
 </div>
 <div class="code code-tight">
 <span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.tag"><span class="id" type="axiom">tag</span></a> :<br/>
@@ -600,7 +691,7 @@ Set the reason for failure.
 </div>
 
 <div class="doc">
-Take the conjunction/disjunction of all the checkers. 
+Form the conjunction / disjunction of a list of checkers. 
 </div>
 <div class="code code-tight">
 <span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.conjoin"><span class="id" type="axiom">conjoin</span></a> : <span style='font-size:120%;'>&forall;</span> (<span class="id" type="var">l</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="QuickChickInterface.html#QuickChickSig.Checker"><span class="id" type="axiom">Checker</span></a>), <a class="idref" href="QuickChickInterface.html#QuickChickSig.Checker"><span class="id" type="axiom">Checker</span></a>.<br/>
@@ -608,7 +699,8 @@ Take the conjunction/disjunction of all the checkers.
 </div>
 
 <div class="doc">
-Conditional properties. Invalid generated inputs are discarded. 
+Define a checker for a conditional property. Invalid generated
+    inputs (ones for which the antecedent fails) are discarded. 
 </div>
 <div class="code code-tight">
 <span class="id" type="keyword">Parameter</span> <a name="QuickChickSig.implication"><span class="id" type="axiom">implication</span></a> :<br/>
@@ -616,38 +708,32 @@ Conditional properties. Invalid generated inputs are discarded.
 </div>
 
 <div class="doc">
-Notation for implication. Clashes a lot, so it gets its own module. 
+Notation for implication. Clashes with many other notations in
+    other libraries, so it lives in its own module. Note that this
+    includes the notations for the generator combinators above
+    to avoid needing to import two modules.
+ 
 </div>
 <div class="code code-tight">
 <span class="id" type="keyword">Module</span> <a name="QuickChickSig.QcNotation"><span class="id" type="module">QcNotation</span></a>.<br/>
 &nbsp;&nbsp;<span class="id" type="keyword">Export</span> <span class="id" type="var">QcDefaultNotation</span>.<br/><hr class='doublespaceincode'/>
 &nbsp;&nbsp;<span class="id" type="keyword">Notation</span> "x ==&gt; y" :=<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="QuickChickInterface.html#QuickChickSig.implication"><span class="id" type="axiom">implication</span></a> <span class="id" type="var">x</span> <span class="id" type="var">y</span>) (<span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 55, <span class="id" type="var">right</span> <span class="id" type="var">associativity</span>)<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" type="var">Checker_scope</span>.<br/><hr class='doublespaceincode'/>
-&nbsp;&nbsp;<span class="id" type="keyword">Notation</span> "'FORALL' x : T , c" :=<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="QuickChickInterface.html#QuickChickSig.forAllShrink"><span class="id" type="axiom">forAllShrink</span></a> (@<span class="id" type="method">arbitrary</span> <span class="id" type="var">T</span> <span class="id" type="var">_</span>) <span class="id" type="method">shrink</span> (<span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> ⇒ <span class="id" type="var">c</span>))<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 200, <span class="id" type="var">x</span> <span class="id" type="var">ident</span>, <span class="id" type="var">T</span> <span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 200, <span class="id" type="var">c</span> <span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 200, <span class="id" type="var">right</span> <span class="id" type="var">associativity</span>)<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" type="var">type_scope</span>.<br/><hr class='doublespaceincode'/>
-&nbsp;&nbsp;<span class="id" type="keyword">Notation</span> "'FORALL' x | P , c" :=<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="QuickChickInterface.html#QuickChickSig.forAllShrink"><span class="id" type="axiom">forAllShrink</span></a> (<span class="id" type="notation">genST</span> (<span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> ⇒ <span class="id" type="var">P</span>)) <span class="id" type="method">shrink</span> (<span class="id" type="keyword">fun</span> <span class="id" type="var">y</span> ⇒ <span class="id" type="keyword">match</span> <a class="idref" href="QuickChickInterface.html#y"><span class="id" type="variable">y</span></a> <span class="id" type="keyword">with</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some"><span class="id" type="constructor">Some</span></a> <span class="id" type="var">x</span> ⇒ <span class="id" type="var">c</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" type="var">_</span> ⇒ <span class="id" type="method">checker</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#tt"><span class="id" type="constructor">tt</span></a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">end</span>))<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 200, <span class="id" type="var">x</span> <span class="id" type="var">ident</span>, <span class="id" type="var">P</span> <span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 200, <span class="id" type="var">c</span> <span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 200, <span class="id" type="var">right</span> <span class="id" type="var">associativity</span>)<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" type="var">type_scope</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" type="var">Checker_scope</span>.<br/>
 <span class="id" type="keyword">End</span> <a class="idref" href="QuickChickInterface.html#QuickChickSig.QcNotation"><span class="id" type="module">QcNotation</span></a>.<br/>
 </div>
 
 <div class="doc">
-<a name="lab109"></a><h1 class="section">Decidability</h1>
+<a name="lab120"></a><h1 class="section">Decidability</h1>
 
 <div class="paragraph"> </div>
 
+<a name="lab121"></a><h2 class="section">The <span class="inlinecode"><span class="id" type="var">Dec</span></span> Typeclass</h2>
  Decidability typeclass using ssreflect's 'decidable'.  
 <div class="paragraph"> </div>
 
 <div class="code code-tight">
-<span class="id" type="keyword">Class</span>&nbsp;<span class="id" type="var">Dec</span>&nbsp;(<span class="id" type="var">P</span>&nbsp;:&nbsp;<span class="id" type="keyword">Prop</span>)&nbsp;:&nbsp;<span class="id" type="keyword">Type</span>&nbsp;:=&nbsp;{&nbsp;<span class="id" type="var">dec</span>&nbsp;:&nbsp;<span class="id" type="var">decidable</span>&nbsp;<span class="id" type="var">P</span>&nbsp;}.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">Class</span>&nbsp;<span class="id" type="var">Dec</span>&nbsp;(<span class="id" type="var">P</span>&nbsp;:&nbsp;<span class="id" type="keyword">Prop</span>)&nbsp;:&nbsp;<span class="id" type="keyword">Type</span>&nbsp;:=&nbsp;{&nbsp;<span class="id" type="var">dec</span>&nbsp;:&nbsp;<span class="id" type="var">decidable</span>&nbsp;<span class="id" type="var">P</span>&nbsp;}.
 <div class="paragraph"> </div>
 
 </div>
@@ -670,7 +756,7 @@ Logic Combinator instances.
 </div>
 
 <div class="doc">
-Convenient notation. 
+A convenient notation for coercing a decidable proposition to a <span class="inlinecode"><span class="id" type="var">bool</span></span>. 
 </div>
 <div class="code code-tight">
 <span class="id" type="keyword">Notation</span> "P '?'" := (<span class="id" type="keyword">match</span> (@<span class="id" type="method">dec</span> <span class="id" type="var">P</span> <span class="id" type="var">_</span>) <span class="id" type="keyword">with</span><br/>
@@ -680,7 +766,7 @@ Convenient notation.
 </div>
 
 <div class="doc">
-<a name="lab110"></a><h1 class="section">Decidable Equality</h1>
+<a name="lab122"></a><h2 class="section">The <span class="inlinecode"><span class="id" type="var">Eq</span></span> Typeclass</h2>
 
 <div class="paragraph"> </div>
 
@@ -688,10 +774,10 @@ Convenient notation.
 <div class="paragraph"> </div>
 
 <div class="code code-tight">
-<span class="id" type="keyword">Class</span>&nbsp;<span class="id" type="var">Eq</span>&nbsp;(<span class="id" type="var">A</span>&nbsp;:&nbsp;<span class="id" type="keyword">Type</span>)&nbsp;:=<br/>
-&nbsp;&nbsp;{<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">dec_eq</span>&nbsp;:&nbsp;<span style='font-size:120%;'>&forall;</span>&nbsp;(<span class="id" type="var">x</span>&nbsp;<span class="id" type="var">y</span>&nbsp;:&nbsp;<span class="id" type="var">A</span>),&nbsp;<span class="id" type="var">decidable</span>&nbsp;(<span class="id" type="var">x</span>&nbsp;=&nbsp;<span class="id" type="var">y</span>)<br/>
-&nbsp;&nbsp;}.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">Class</span>&nbsp;<span class="id" type="var">Eq</span>&nbsp;(<span class="id" type="var">A</span>&nbsp;:&nbsp;<span class="id" type="keyword">Type</span>)&nbsp;:=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">dec_eq</span>&nbsp;:&nbsp;<span style='font-size:120%;'>&forall;</span>&nbsp;(<span class="id" type="var">x</span>&nbsp;<span class="id" type="var">y</span>&nbsp;:&nbsp;<span class="id" type="var">A</span>),&nbsp;<span class="id" type="var">decidable</span>&nbsp;(<span class="id" type="var">x</span>&nbsp;=&nbsp;<span class="id" type="var">y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}.
 <div class="paragraph"> </div>
 
 </div>
@@ -712,7 +798,7 @@ Since deciding equalities is a very common requirement in testing,
 <div class="paragraph"> </div>
 
 <div class="code code-tight">
-&nbsp;<span class="id" type="keyword">Ltac</span>&nbsp;<span class="id" type="var">dec_eq</span>.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">Ltac</span>&nbsp;<span class="id" type="var">dec_eq</span>.
 <div class="paragraph"> </div>
 
 </div>
@@ -737,16 +823,97 @@ Since deciding equalities is a very common requirement in testing,
 </div>
 
 <div class="doc">
-<a name="lab111"></a><h1 class="section">QuickChick top-level commands and arguments</h1>
+<a name="lab123"></a><h1 class="section">Automatic Instance Derivation</h1>
 
 <div class="paragraph"> </div>
 
- QuickChick provides a series of toplevel commands to 
-    sample generators, test properties, and derive useful typeclass instances.
+ QuickChick allows the automatic derivation of typeclass instances
+    for simple types:
 
 <div class="paragraph"> </div>
 
- The <span class="inlinecode"><span class="id" type="var">Sample</span></span> command samples a generator. 'g' needs to have type 'G A' for showable 'A'.  
+<div class="code code-tight">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">Derive</span>&nbsp;&lt;<span class="id" type="var">class</span>&gt;&nbsp;<span class="id" type="keyword">for</span>&nbsp;<span class="id" type="var">T</span>.
+<div class="paragraph"> </div>
+
+</div>
+    Here <span class="inlinecode">&lt;<span class="id" type="var">class</span>&gt;</span> must be one of <span class="inlinecode"><span class="id" type="var">GenSized</span></span>, <span class="inlinecode"><span class="id" type="var">Shrink</span></span>, <span class="inlinecode"><span class="id" type="var">Arbitrary</span></span>,
+    or <span class="inlinecode"><span class="id" type="keyword">Show</span></span>, and <span class="inlinecode"><span class="id" type="var">T</span></span> must be an inductive defined datatype (think
+    Haskell/OCaml).
+
+<div class="paragraph"> </div>
+
+    To derive multiple classes at once, write:
+
+<div class="paragraph"> </div>
+
+<div class="code code-tight">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">Derive</span>&nbsp;(&lt;<span class="id" type="var">class</span>&gt;,...,&lt;<span class="id" type="var">class</span>&gt;)&nbsp;<span class="id" type="keyword">for</span>&nbsp;<span class="id" type="var">T</span>.
+<div class="paragraph"> </div>
+
+</div>
+
+<div class="paragraph"> </div>
+
+ QuickChick also allows for the automatic derivation of generators
+    satisfying preconditions in the form of inductive relations:
+
+<div class="paragraph"> </div>
+
+     Derive ArbitrarySizedSuchThat for (fun x =&gt; P x<sub>1</sub> ... x .... xn).
+
+<div class="paragraph"> </div>
+
+    &lt;P&gt; must be an inductively defined relation.
+    &lt;x&gt; is the function to be generated.
+    &lt;x<sub>1</sub>...xn&gt; are (implicitly universally quantified) variable names.
+
+<div class="paragraph"> </div>
+
+ QuickChick also allows automatic derivations of proofs of
+    correctness of its derived generators! For more, look
+    at:
+
+<div class="paragraph"> </div>
+
+<ul class="doclist">
+<li> A paper on deriving QuickChick generators for a large class of
+      inductive relations. 
+      <a href="http://www.cis.upenn.edu/~llamp/pdf/GeneratingGoodGenerators.pdf"><span class="inlineref">http://www.cis.upenn.edu/~llamp/pdf/GeneratingGoodGenerators.pdf</span></a>
+
+<div class="paragraph"> </div>
+
+
+</li>
+<li> Leo's PhD dissertation.
+      <a href="https://lemonidas.github.io/pdf/Leo-PhD-Thesis.pdf"><span class="inlineref">https://lemonidas.github.io/pdf/Leo-PhD-Thesis.pdf</span></a>
+
+<div class="paragraph"> </div>
+
+
+</li>
+<li> examples/DependentTest.v
+
+</li>
+</ul>
+
+<div class="paragraph"> </div>
+
+
+</div>
+
+<div class="doc">
+<a name="lab124"></a><h1 class="section">Top-level Commands and Settings</h1>
+
+<div class="paragraph"> </div>
+
+ QuickChick provides a series of toplevel commands to sample
+    generators, test properties, and derive useful typeclass
+    instances. 
+<div class="paragraph"> </div>
+
+ The <span class="inlinecode"><span class="id" type="var">Sample</span></span> command samples a generator. The argument <span class="inlinecode"><span class="id" type="var">g</span></span> needs
+    to have type <span class="inlinecode"><span class="id" type="var">G</span></span> <span class="inlinecode"><span class="id" type="var">A</span></span> for some showable type <span class="inlinecode"><span class="id" type="var">A</span></span>.  
 <div class="paragraph"> </div>
 
 <div class="code code-tight">
@@ -757,8 +924,8 @@ Since deciding equalities is a very common requirement in testing,
 
 <div class="paragraph"> </div>
 
- The main command of QuickChick, <span class="inlinecode"><span class="id" type="var">QuickChick</span></span>, runs a test. 'prop' must be 'Checkable'. 
- 
+ The main testing command, <span class="inlinecode"><span class="id" type="var">QuickChick</span></span>, runs a test. The argument
+    <span class="inlinecode"><span class="id" type="var">prop</span></span> must belong to a type that is an instance of <span class="inlinecode"><span class="id" type="var">Checkable</span></span>.  
 <div class="paragraph"> </div>
 
 <div class="code code-tight">
@@ -812,100 +979,169 @@ Instead of record updates, you should overwrite extraction constants.
 </div>
 
 <div class="doc">
-<a name="lab112"></a><h1 class="section">Generators for data satisfying inductive invariants</h1>
+<a name="lab125"></a><h1 class="section">The <span class="inlinecode"><span class="id" type="var">quickChick</span></span> Command-Line Tool</h1>
 
 <div class="paragraph"> </div>
 
- Just like QuickChick provides the <span class="inlinecode"><span class="id" type="var">GenSized</span></span> and <span class="inlinecode"><span class="id" type="var">Gen</span></span> typeclasses 
-    for generators of type <span class="inlinecode"><span class="id" type="var">A</span></span>, it provides constrained variants for 
-    generators of type <span class="inlinecode"><span class="id" type="var">A</span></span> where <span class="inlinecode"><span class="id" type="var">P</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" type="var">A</span></span> <span class="inlinecode">→</span> <span class="inlinecode"><span class="id" type="keyword">Prop</span></span> holds. Since it is not
-    guaranteed that such <span class="inlinecode"><span class="id" type="var">A</span></span> exist, these generators are partial.
- 
-<div class="paragraph"> </div>
-
-<div class="code code-tight">
-<span class="id" type="keyword">Class</span>&nbsp;<span class="id" type="var">GenSizedSuchThat</span>&nbsp;(<span class="id" type="var">A</span>&nbsp;:&nbsp;<span class="id" type="keyword">Type</span>)&nbsp;(<span class="id" type="var">P</span>&nbsp;:&nbsp;<span class="id" type="var">A</span>&nbsp;→&nbsp;<span class="id" type="keyword">Prop</span>)&nbsp;:=<br/>
-&nbsp;&nbsp;{<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">arbitrarySizeST</span>&nbsp;:&nbsp;<span class="id" type="var">nat</span>&nbsp;→&nbsp;<span class="id" type="var">G</span>&nbsp;(<span class="id" type="var">option</span>&nbsp;<span class="id" type="var">A</span>)<br/>
-&nbsp;&nbsp;}.<br/>
-<br/>
-<span class="id" type="keyword">Class</span>&nbsp;<span class="id" type="var">GenSuchThat</span>&nbsp;(<span class="id" type="var">A</span>&nbsp;:&nbsp;<span class="id" type="keyword">Type</span>)&nbsp;(<span class="id" type="var">P</span>&nbsp;:&nbsp;<span class="id" type="var">A</span>&nbsp;→&nbsp;<span class="id" type="keyword">Prop</span>)&nbsp;:=<br/>
-&nbsp;&nbsp;{<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">arbitraryST</span>&nbsp;:&nbsp;<span class="id" type="var">G</span>&nbsp;(<span class="id" type="var">option</span>&nbsp;<span class="id" type="var">A</span>)<br/>
-&nbsp;&nbsp;}.
-<div class="paragraph"> </div>
-
-</div>
-
-<div class="paragraph"> </div>
-
- QuickChick also provides convenient notation to call <span class="inlinecode"><span class="id" type="var">arbitraryST</span></span>
-    by providing only the predicate <span class="inlinecode"><span class="id" type="var">P</span></span> that constraints the generation.
-    The typeclass constraint is inferred. 
-</div>
-<div class="code code-tight">
-<span class="id" type="keyword">Notation</span> "'genST' x" := (@<span class="id" type="method">arbitraryST</span> <span class="id" type="var">_</span> <span class="id" type="var">x</span> <span class="id" type="var">_</span>) (<span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 70).<br/>
-</div>
-
-<div class="doc">
-<a name="lab113"></a><h1 class="section">Automatic instance derivation</h1>
-
-<div class="paragraph"> </div>
-
- QuickChick allows the automatic derivation of typeclass instances
-    for simple types:
-
-<div class="paragraph"> </div>
-
-     Derive &lt;class&gt; for &lt;T&gt;.
-
-<div class="paragraph"> </div>
-
-    &lt;class&gt; must be one of: GenSized , Shrink , Arbitrary , Show
-    &lt;T&gt; must be an inductive defined datatype (think Haskell/OCaml).
-
-<div class="paragraph"> </div>
-
- QuickChick also allows for the automatic derivation of generators
-    satisfying preconditions in the form of inductive relations:
-
-<div class="paragraph"> </div>
-
-     Derive ArbitrarySizedSuchThat for (fun x =&gt; P x<sub>1</sub> ... x .... xn).
-
-<div class="paragraph"> </div>
-
-    &lt;P&gt; must be an inductively defined relation.
-    &lt;x&gt; is the function to be generated.
-    &lt;x<sub>1</sub>...xn&gt; are (implicitly universally quantified) variable names.
-
-<div class="paragraph"> </div>
-
- QuickChick also allows automatic derivations of proofs of
-    correctness of its derived generators! For more, look
-    at:
+ QuickChick comes with a command-line tool that supports:
 
 <div class="paragraph"> </div>
 
 <ul class="doclist">
-<li> our ITP paper
+<li> Batch processing, compilation and execution of tests
 
 </li>
-<li> our POPL paper
+<li> Mutation testing
 
 </li>
-<li> examples/DependentTest.v
+<li> Sectioning of tests and mutants
 
 </li>
 </ul>
 
 <div class="paragraph"> </div>
 
+    Comments that begin with an exclamation mark are special to the
+    QuickChick command-line tool parser and signify a test, a section,
+    or a mutant. 
+<div class="paragraph"> </div>
+
+<a name="lab126"></a><h2 class="section">Test Annotations</h2>
+
+<div class="paragraph"> </div>
+
+ A test annotation is just a <span class="inlinecode"><span class="id" type="var">QuickChick</span></span> command wrapped inside 
+    a comment with an exclamation mark. 
+
+<div class="paragraph"> </div>
+
+<div class="code code-tight">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*!&nbsp;QuickChick&nbsp;prop.&nbsp;*)</span><br/>
+
+<div class="paragraph"> </div>
+
+</div>
+   Only tests that are annotated this way will be processed. Only property
+   names are allowed. 
+<div class="paragraph"> </div>
+
+<a name="lab127"></a><h2 class="section">Mutant Annotations</h2>
+
+<div class="paragraph"> </div>
+
+ A mutant annotation consists of 4 components. First an anottation 
+    that signifies the beginning of the mutant <span class="inlinecode">!&nbsp;*)</span></span>. That is followed
+    by the actual code. Then, we can include an optional annotation 
+    (in a comment with double exclamation marks) that corresponds to 
+    the mutant names. Finally, we can add a list of mutations inside
+    normal annotated comments. Each mutant should be able to be 
+    syntactically substituted in for the normal code. 
+
+<div class="paragraph"> </div>
+
+
+<div class="paragraph"> </div>
+
+<div class="code code-tight">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*!&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">Normal</span>&nbsp;<span class="id" type="var">code</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*!!&nbsp;mutant-name&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*!&nbsp;mutant&nbsp;1&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*!&nbsp;mutant&nbsp;2&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;... <span class="id" type="var">etc</span>&nbsp;...
+<div class="paragraph"> </div>
+
+</div>
+
+<div class="paragraph"> </div>
+
+<a name="lab128"></a><h2 class="section">Section Annotations</h2>
+
+<div class="paragraph"> </div>
+
+ To organize larger developments better, we can group together 
+    different tests and mutants in sections. A section annotation is 
+    a single annotation that defines the beginning of the section 
+    (which lasts until the next section or the end of the file).
+
+<div class="paragraph"> </div>
+
+<div class="code code-tight">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*!&nbsp;Section&nbsp;section-name&nbsp;*)</span><br/>
+
+<div class="paragraph"> </div>
+
+</div>
+    Optionally, one can include an extends clause
+
+<div class="paragraph"> </div>
+
+<div class="code code-tight">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*!&nbsp;Section&nbsp;section-name&nbsp;*)</span><span class="comment">(*!&nbsp;extends&nbsp;other-section-name&nbsp;*)</span><br/>
+
+<div class="paragraph"> </div>
+
+</div>
+   This signifies that the section being defined also 
+   contains all tests and mutants from <span class="inlinecode"><span class="id" type="var">other</span>-<span class="id" type="var">section</span>-<span class="id" type="var">name</span></span>.
+
+<div class="paragraph"> </div>
+
+<a name="lab129"></a><h2 class="section">Command-Line Tool Flags</h2>
+
+<div class="paragraph"> </div>
+
+ The QuickChick command line tool can be passed the following options:
+
+<div class="paragraph"> </div>
+
+<ul class="doclist">
+<li> <span class="inlinecode">-<span class="id" type="var">s</span></span> <span class="inlinecode">&lt;<span class="id" type="var">section</span>&gt;</span>: Specify which sections properties and mutants to test
+
+</li>
+<li> <span class="inlinecode">-<span class="id" type="var">v</span></span>: Verbose mode for debugging
+
+</li>
+<li> <span class="inlinecode">-<span class="id" type="var">failfast</span></span>: Stop as soon as a problem is detected
+
+</li>
+<li> <span class="inlinecode">-<span class="id" type="var">color</span></span>: Use colors on an ANSI-compatible terminal
+
+</li>
+<li> <span class="inlinecode">-<span class="id" type="var">cmd</span></span> <span class="inlinecode">&lt;<span class="id" type="var">command</span>&gt;</span>: What compile command is used to compile the current directory
+      if it is not <span class="inlinecode"><span class="id" type="var">make</span></span>
+
+</li>
+<li> <span class="inlinecode">-<span class="id" type="var">top</span></span> <span class="inlinecode">&lt;<span class="id" type="var">name</span>&gt;</span>: Specify the name of the top-level logical module. That should
+      be the same as the <span class="inlinecode">-<span class="id" type="var">Q</span></span> or <span class="inlinecode">-<span class="id" type="var">R</span></span> directive in <span class="inlinecode"><span class="id" type="var">_CoqProject</span></span> or <span class="inlinecode"><span class="id" type="var">Top</span></span>
+      which is the default
+
+</li>
+<li> <span class="inlinecode">-<span class="id" type="var">ocamlbuild</span></span> <span class="inlinecode">&lt;<span class="id" type="var">args</span>&gt;</span>: Any arguments necessary to pass to ocamlbuild when
+      compiling the extracted code (e.g. linked libraries)
+
+</li>
+<li> <span class="inlinecode">-<span class="id" type="var">nobase</span></span>: Pass this option to not test the base mutant
+
+</li>
+<li> <span class="inlinecode">-<span class="id" type="var">m</span></span> <span class="inlinecode">&lt;<span class="id" type="var">number</span>&gt;</span>: Pass this to only test a mutant with a specific id number
+
+</li>
+<li> <span class="inlinecode">-<span class="id" type="var">tag</span></span> <span class="inlinecode">&lt;<span class="id" type="var">name</span>&gt;</span>: Pass this to only test a mutant with a specific tag
+
+</li>
+<li> <span class="inlinecode">-<span class="id" type="var">include</span></span> <span class="inlinecode">&lt;<span class="id" type="var">name</span>&gt;</span>: Specify a to include in the compilation
+
+</li>
+<li> <span class="inlinecode">-<span class="id" type="var">exclude</span></span> <span class="inlinecode">&lt;<span class="id" type="var">names</span>&gt;</span>: Specify files to be excluded from compilation. Must be the last argument passed.
+
+</li>
+</ul>
 
 </div>
 
 <div class="doc">
-<a name="lab114"></a><h1 class="section">Deprecated Features</h1>
+<a name="lab130"></a><h1 class="section">Deprecated Features</h1>
 
 <div class="paragraph"> </div>
 
@@ -917,7 +1153,7 @@ Instead of record updates, you should overwrite extraction constants.
     <span class="inlinecode"><span class="id" type="var">QcDoNotation</span></span> sub-module: 
 </div>
 <div class="code code-tight">
-<span class="id" type="keyword">Module</span> <a name="QuickChickSig.QcDoNotation"><span class="id" type="module">QcDoNotation</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Module</span> <a name="QuickChickSig.QcDoNotation"><span class="id" type="module">QcDoNotation</span></a>.<br/>
 &nbsp;&nbsp;<span class="id" type="keyword">Notation</span> "'do!' X &lt;- A ; B" :=<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="axiom">bindGen</span> <span class="id" type="var">A</span> (<span class="id" type="keyword">fun</span> <span class="id" type="var">X</span> ⇒ <span class="id" type="var">B</span>))<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 200, <span class="id" type="var">X</span> <span class="id" type="var">ident</span>, <span class="id" type="var">A</span> <span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 100, <span class="id" type="var">B</span> <span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 200).<br/>
@@ -926,7 +1162,7 @@ Instead of record updates, you should overwrite extraction constants.
 &nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 200, <span class="id" type="var">X</span> <span class="id" type="var">ident</span>, <span class="id" type="var">A</span> <span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 100, <span class="id" type="var">B</span> <span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 200).<br/>
 &nbsp;&nbsp;<span class="id" type="keyword">Notation</span> "'doM!' X &lt;- A ; B" :=<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="QuickChickInterface.html#QuickChickSig.bindGenOpt"><span class="id" type="axiom">bindGenOpt</span></a> <span class="id" type="var">A</span> (<span class="id" type="keyword">fun</span> <span class="id" type="var">X</span> ⇒ <span class="id" type="var">B</span>))<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 200, <span class="id" type="var">X</span> <span class="id" type="var">ident</span>, <span class="id" type="var">A</span> <span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 100, <span class="id" type="var">B</span> <span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 200).<br/><hr class='doublespaceincode'/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 200, <span class="id" type="var">X</span> <span class="id" type="var">ident</span>, <span class="id" type="var">A</span> <span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 100, <span class="id" type="var">B</span> <span class="id" type="tactic">at</span> <span class="id" type="var">level</span> 200).<br/>
 <span class="id" type="keyword">End</span> <a class="idref" href="QuickChickInterface.html#QuickChickSig.QcDoNotation"><span class="id" type="module">QcDoNotation</span></a>.<br/><hr class='doublespaceincode'/>
 <span class="id" type="keyword">End</span> <a class="idref" href="QuickChickInterface.html#QuickChickSig"><span class="id" type="module">QuickChickSig</span></a>.<br/>
 </div>

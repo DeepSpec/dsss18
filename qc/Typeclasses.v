@@ -7,11 +7,11 @@ Require Import Omega.
 Require Import List. Import ListNotations.
 Local Open Scope string.
 
-(** Motivation: In real-world programming, it is often necessary to
-    convert various kinds of data structures into strings so that they
-    can be printed out, written to files, marshalled for sending over
-    the network, or whatever.  This can be accomplished by writing
-    string converters for each basic type
+(** In real-world programming, it is often necessary to convert
+    various kinds of data structures into strings so that they can be
+    printed out, written to files, marshalled for sending over the
+    network, or whatever.  This can be accomplished by writing string
+    converters for each basic type
 
        - [showBool : bool -> string]
        - [showNat : nat -> string]
@@ -19,9 +19,10 @@ Local Open Scope string.
     
     plus combinators for structured types like [list] and pairs
  
-       - [showList : {A : Type} (A -> string) -> (list A) -> string]
-       - [showPair : {A B : Type} (A -> string) -> (B -> string) -> 
-         A * B -> string]
+       - [showList : {A : Type} 
+                     (A -> string) -> (list A) -> string]
+       - [showPair : {A B : Type} 
+                     (A -> string) -> (B -> string) -> A * B -> string]
 
     that take string converters for their element types as arguments.
     Once we've done this, we can build string converters for more
@@ -30,23 +31,22 @@ Local Open Scope string.
        - [showListOfPairsOfNats = showList (showPair showNat showNat)]
  *)
 
-(** While this idiom gets the job done, it feels a bit clunky in at
-    least two ways.  First, it demands that we give names to all these
-    string converters (which must then later be remembered!) whereas
+(** While this idiom gets the job done, it feels a bit clunky in
+    at least two ways.  First, it demands that we give names to all
+    these string converters (which must later be remembered!) whereas
     it seems the names could really just be generated in a uniform way
-    from the types involved.  Moreover, even the _definitions_ of
-    converters like [showListOfPairsOfNats] are always derived in a
-    quite mechanical way from their types, together with a small
-    collection of primitive converters and converter
-    combinators.
+    from the types involved.  Moreover, the definitions of converters
+    like [showListOfPairsOfNats] are always derived in a quite
+    mechanical way from their types, together with a small collection
+    of primitive converters and converter combinators.
 
     The designers of Haskell addressed this clunkiness through
     _typeclasses_, a mechanism by which the typechecker is instructed
-    to automatically construct "type-driven" functions [Wadler
-    and Blott 1989] (in Bib.v).  (Readers not already familiar with typeclasses
-    should note that, although the word sounds a bit like "classes"
-    from object-oriented programming, this apparent connection is
-    rather misleading.  A better analogy is actually with _interfaces_
+    to automatically construct "type-driven" functions 
+    [Wadler and Blott 1989] (in Bib.v). (Readers not already familiar with 
+    typeclasses should note that, although the word sounds a bit like 
+    "classes" from object-oriented programming, this apparent connection 
+    is rather misleading.  A better analogy is actually with _interfaces_
     from languages like Java.  But best of all is to set aside
     object-oriented preconceptions and try to approach typeclasses
     with an empty mind!)
@@ -56,8 +56,8 @@ Local Open Scope string.
     much richer than that of Haskell, and because typeclasses in Coq
     are used to automatically construct not only programs but also
     proofs, Coq's presentation of typeclasses is quite a bit less
-    "transparent": using typeclasses effectively requires a fairly
-    detailed understanding of how they are implemented.  Coq
+    "transparent": to use typeclasses effectively, one must have a 
+    fairly detailed understanding of how they are implemented.  Coq
     typeclasses are a power tool: they can make complex developments
     much more elegant and easy to manage when used properly, and they
     can cause a great deal of trouble when things go wrong!
@@ -99,12 +99,12 @@ Compute (show true).
 (** Other types can similarly be equipped with [Show] instances --
     including, of course, new types that we define. *)
 
-Inductive color := Red | Green | Blue.
+Inductive primary := Red | Green | Blue.
 
-Instance showColor : Show color :=
+Instance showPrimary : Show primary :=
   {
     show :=
-      fun c:color =>
+      fun c:primary =>
         match c with
         | Red => "Red"
         | Green => "Green"
@@ -114,10 +114,10 @@ Instance showColor : Show color :=
 
 Compute (show Green).
 
-(** (The [show] function is sometimes said to be _overloaded_, since it
+(** The [show] function is sometimes said to be _overloaded_, since it
     can be applied to arguments of many types, with potentially
     radically different behavior depending on the type of its
-    argument.) *)
+    argument. *)
 
 (** Converting natural numbers to strings is conceptually similar,
     though it requires a tiny bit of programming: *)
@@ -153,8 +153,8 @@ Compute (show 42).
 (* FILL IN HERE *)
 (** [] *)
 
-(** Now, given the class [Show], we can define functions that use the
-    overloaded function [show] like this: *)
+(** Next, we can define functions that use the overloaded function
+    [show] like this: *)
 
 Definition showOne {A : Type} `{Show A} (a : A) : string :=
   "The value is " ++ show a.
@@ -196,10 +196,10 @@ Compute (showTwo Red Green).
     are many other situations where it is useful to be able to
     choose (and construct) specific functions depending on the type of
     an argument that is supplied to a generic function like [show].
-    Another typical example is boolean equality checkers. *)
+    Another typical example is equality checkers. *)
 
-(** Here is a declaration for a class [Eq] describing types whose
-    elements can be tested for equality. *)
+(** Here is another basic example of typeclasses: a class [Eq]
+    describing types with a (boolean) test for equality. *)
 
 Class Eq A :=
   {
@@ -305,7 +305,7 @@ Instance showList {A : Type} `{Show A} : Show (list A) :=
     example, we might want a typeclass [Ord] for "ordered types" that
     support both equality and a less-or-equal comparison operator. *)
 
-(** A possible, but bad, way to do this is to define a new class with
+(** A possible (but bad) way to do this is to define a new class with
     two associated functions: *)
 
 Class OrdBad A :=
@@ -377,7 +377,7 @@ Definition max {A: Type} `{Eq A} `{Ord A} (x y : A) : A :=
 
     As a result, using Coq's typeclasses effectively -- and figuring
     out what is wrong when things don't work -- requires a clear
-    understanding of the underlying mechanisms at work. *)
+    understanding of the underlying mechanisms. *)
 
 (* ================================================================= *)
 (** ** Implicit Generalization *)
@@ -450,8 +450,8 @@ Definition showOne3 `{H : Show A} (a : A) : string :=
 (** The advantage of the latter form is that it gives a name that can
     be used, in the body, to explicitly refer to the supplied evidence
     for [Show A].  This can be useful when things get complicated and
-    you want to make your code more explicit and less automatic so you
-    can better understand and control what's happening. *)
+    you want to make your code more explicit so you can better
+    understand and control what's happening. *)
 
 (** We can actually go one bit further and omit [A] altogether, with
     no change in meaning (though, again, this may be more confusing
@@ -512,12 +512,12 @@ Check Ord.
 
 Unset Printing Implicit.
 
-(** For completeness, we should mention a couple of final points about
-    implicit generalization.  First, it can be used in situations
-    where no typeclasses at all are involved.  For example, we can use
-    it to write quantified propositions mentioning free variables,
-    following the common informal convention that these are to be
-    quantified implicitly. *)
+(** For completeness, a couple of final points about implicit
+    generalization.  First, it can be used in situations where no
+    typeclasses at all are involved.  For example, we can use it to
+    write quantified propositions mentioning free variables, following
+    the common informal convention that these are to be quantified
+    implicitly. *)
 
 Generalizable Variables x y.
 
@@ -527,18 +527,18 @@ Proof. intros. omega. Qed.
 Check commutativity_property.
 
 (** The previous examples have all shown implicit generalization being
-    used to fill in [forall] binders.  It will also create [fun]
+    used to fill in forall binders.  It will also create [fun]
     binders, when this makes sense: *)
 
 Definition implicit_fun := `{x + y}.
 
 (** Defining a function in this way is not very natural, however.  In
-    particular, because the arguments are all implicit and maximally
+    particular, the arguments are all implicit and maximally
     inserted (as can be seen if we print out its definition)... *)
 
 Print implicit_fun.
 
-(** ... we will need to use @ to actually apply the function: *)
+(** ... so we will need to use @ to actually apply the function: *)
 
 (* Compute (implicit_fun 2 3). *)
 (* ==> 
@@ -561,9 +561,8 @@ Compute (implicit_fun1 2 3).
 (* ================================================================= *)
 (** ** Records are Products *)
 
-(** Although records are not part of Coq's logical foundation, it does
-    provide some simple syntactic sugar for defining and using
-    records. *)
+(** Although records are not part of its core, Coq does provide some
+    simple syntactic sugar for defining and using records. *)
 
 (** Record types must be declared before they are used.  For example:*)
 
@@ -662,7 +661,7 @@ Print showNat.
     are written here with just curly braces.  (To be precise, both
     forms of braces are actually allowed for [Instance] declarations,
     and either will work in most situations; however, type inference
-    sometimes works a bit better with simple curly braces.) *)
+    sometimes works a bit better with bare curly braces.) *)
 
 (** Similarly, overloaded functions like [show] are really just record
     projections, which in turn are just functions that select a
@@ -687,7 +686,7 @@ Unset Printing All.
 (** So far, all the mechanisms we've seen have been pretty simple
     syntactic sugar and binding munging.  The real "special sauce" of
     typeclasses is the way appropriate instances are automatically
-    inferred (and constructed!) during typechecking. *)
+    inferred (and/or constructed!) during typechecking. *)
 
 (** For example, if we write [show 42], what we actually get is 
     [@show nat showNat 42]: *)
@@ -706,9 +705,9 @@ Unset Printing Implicit.
 
     By ordinary type inference, Coq knows that, to make the whole
     expression well typed, the second argument to [@show] must be a
-    value of type [Show nat].  It now attempts to find or construct
-    such a value using a variant of the [eauto] proof search procedure
-    that refers to a "hint database" called [typeclass_instances]. *)
+    value of type [Show nat].  It attempts to find or construct such a
+    value using a variant of the [eauto] proof search procedure that
+    refers to a "hint database" called [typeclass_instances]. *)
 
 (** **** Exercise: 1 star (HintDb)  *)
 (** Uncomment and execute the following command.  Search for "For
@@ -734,7 +733,7 @@ Check (show 42).
     of appropriate type using both functions and constants from the
     hint database.  (This is very like what happens when proof search
     is used as a tactic to automatically assemble compound proofs by
-    assembling combinations of theorems from the environment.) *)
+    combining theorems from the environment.) *)
 
 Check (show (true,42)).
 (* ==>
@@ -767,14 +766,17 @@ Unset Typeclasses Debug.
     @show nat showNat 42
 *)
 
+
 (* ################################################################# *)
 (** * Typeclasses and Proofs *)
 
 (** Since programs and proofs in Coq are fundamentally made from the
     same stuff, the mechanisms of typeclasses extend smoothly to
     situations where classes contain not only data and functions but
-    also proofs.  This is a big topic, but let's take a quick look at
-    a few things. *)
+    also proofs.
+
+    This is a big topic -- too big for a basic tutorial -- but let's
+    take a quick look at a few things. *)
 
 (* ================================================================= *)
 (** ** Propositional Typeclass Members *)
@@ -784,7 +786,7 @@ Unset Typeclasses Debug.
     this to a subclass that also comes with a proof that the given
     equality tester is correct, in the sense that, whenever it returns
     [true], the two values are actully equal in the propositional
-    sense.
+    sense (and vice versa).
 *)
 
 Class EqDec (A : Type) {H : Eq A} := 
@@ -801,9 +803,9 @@ Instance eqdecNat : EqDec nat :=
   }.
 
 (** If we do not happen to have an appropriate proof already in the
-    environment, we can simply omit it.  Then, if the [Instance]
-    declaration does not give values for all the class members, Coq
-    will enter proof mode and ask the user to use tactics to construct
+    environment, we can simply omit it.  If the [Instance] declaration
+    does not give values for all the class members, Coq will enter
+    proof mode and ask the user to use tactics to construct
     inhabitants for the remaining fields. *)
 
 Instance eqdecBool' : EqDec bool := 
@@ -1006,8 +1008,8 @@ Definition silly_fun2 (x y z : nat) :=
        - etc. *)
 
 (** There are many good tutorials on the web about monadic programming
-    in Haskell.  (Readers who have never seen monads before may want to
-    refer to one of these to fully understand the examples here.) *)
+    in Haskell.  Readers who have never seen monads before may want to
+    refer to one of these to fully understand the examples here. *)
 
 (** In Coq, monads are also heavily used, but the fact that
     typeclasses are a relatively recent addition to Coq, together with
@@ -1018,7 +1020,7 @@ Definition silly_fun2 (x y z : nat) :=
     monads and monadic notations -- sometimes typeclass-based, often
     not -- while newer projects use one of several generic libraries
     for monads.  Our current favorite (as of Summer 2017) is the monad
-    typeclasses in in Gregory Malecha's [ext-lib] package:
+    typeclasses in Gregory Malecha's [ext-lib] package:
 
     https://github.com/coq-ext-lib/coq-ext-lib/blob/v8.5/theories/Structures/Monad.v
 
@@ -1036,13 +1038,12 @@ Open Scope monad_scope.
          bind : forall {T U : Type}, M T -> (T -> M U) -> M U
        }.
 *)
+(** That is, a type family [M] is an instance of the [Monad] class if
+    we can define functions [ret] and [bind] of the appropriate types. *)
 (** (If you [Print] the actual definition, you'll see something more
-    complicated, involving [Polymorphic Record bla bla...  The
+    complicated, involving [Polymorphic Record bla bla]...  The
     [Polymorphic] part refers to Coq's "universe polymorphism," which
     does not concern us here.) *)
-
-(** That is, a type family [m] is an instance of the [Monad] class if
-    we can define functions [ret] and [bind] of the appropriate types. *)
 
 (** For example, we can define a monad instance for [option] like
     this: *)
@@ -1059,15 +1060,29 @@ Instance optionMonad : Monad option :=
   }.
 
 (** The other nice thing we get from the [Monad] library is
-    lightweight notation for bind: Instead of [bind m1 (fun x => m2)],
-    we can write [x <- m1 ;; m2].  Or, if the result from [m1] is not
-    needed in [m2], then instead of [bind m1 (fun _ => m2)], we can
-    write [m1 ;; m2].  This allows us to write functions involving
-    "option plumbing" very compactly. *)
+    lightweight notation for bind: Instead of
 
-(** For example, suppose we have a function that looks up the
-    [n]th element of a list, returning [None] if the list contains
-    less than [n] elements. *)
+      bind m1 (fun x => m2),
+
+    we can write
+
+      x <- m1 ;; m2.
+]]  
+    Or, if the result from [m1] is not needed in [m2], then instead of
+
+      bind m1 (fun _ => m2),
+
+we can write
+
+      m1 ;; m2.
+*)
+
+(** This allows us to write functions involving "option plumbing" very
+    compactly.
+
+    For example, suppose we have a function that looks up the [n]th
+    element of a list, returning [None] if the list contains less than
+    [n] elements. *)
 
 Fixpoint nth_opt {A : Type} (n : nat) (l : list A) : option A :=
   match l with
@@ -1087,7 +1102,7 @@ Definition sum3 (l : list nat) : option nat :=
 (** One final convenience for programming with monads is a collection
     of operators for "lifting" functions on ordinary values to
     functions on monadic computations.  [ExtLib] defines three -- one
-    for unary functions, one for binary, and one for ternary.  Their
+    for unary functions, one for binary, and one for ternary.  The
     definitions (slightly simplified) look like this: *)
 
 Definition liftM
@@ -1120,7 +1135,7 @@ Definition sum3opt (n1 n2 : option nat) :=
   x2 <- n2 ;;
   ret (x1 + x2).
 
-(** ...we can use [liftM2] we can write it more compactly: *)
+(** ...we can use [liftM2] to write it more compactly: *)
 
 Definition sum3opt' (n1 n2 : option nat) :=
   liftM2 plus n1 n2.
@@ -1168,11 +1183,11 @@ Definition foo x := if eqb x x then "Of course" else "Impossible".
 
     Right? *)
 
-Fail Check (foo bool).
+Fail Check (foo true).
 (* ==>
      The command has indeed failed with message:
-     The term "bool" has type "Set" while it is expected 
-     to have type "bool -> bool".    *)
+     The term "true" has type "bool" while it is expected 
+       to have type "bool -> bool". *)
 
 (** Huh?! *)
 
@@ -1183,9 +1198,9 @@ Fail Check (foo bool).
         instance mechanism was asked to search for a type-correct
         instance of [Eq], i.e., an expression of type [Eq ?A].
       - This search immediately succeeded because the first thing it
-        tried, which happened to be the constant [eqBoolBool :
-        Eq (bool->bool)], worked.  In the process, [?A] got
-        instantiated to [bool->bool].
+        tried worked; this happened to be the constant [eqBoolBool :
+        Eq (bool->bool)].  In the process, [?A] got instantiated to
+        [bool->bool].
       - The type calculated for [foo] was therefore
         [(bool->bool)->(bool->bool)->bool].
 
@@ -1231,15 +1246,14 @@ Compute (show (Baz 42)).
 
 (** When this happens, it is unpredictable which instance will be
     found first by the instance search process; here it just happened
-    to be the second.
+    to be the second. The reason Coq doesn't do the overlapping
+    instances check is because its type system is much more complex
+    than Haskell's -- so much so that it is very challenging in
+    general to decide whether two given instances overlap.
 
-    The problem is that, in more complex situations, it may not be
-    obvious when there are overlapping instances.
-
-    (The reason Coq doesn't do the overlapping instances check is
-    because its type system is much more complex than Haskell's -- so
-    much so that it is very challenging in general to decide whether
-    two given instances overlap.) *)
+    The reason this is unfortunate is that, in more complex
+    situations, it may not be obvious when there are overlapping
+    instances. *)
 
 (** One way to deal with overlapping instances is to "curate" the hint
     database by explicitly adding and removing specific instances.  
@@ -1249,8 +1263,8 @@ Compute (show (Baz 42)).
 Remove Hints baz1 baz2 : typeclass_instances.
 
 (** To add them back (or to add arbitrary constants that have the
-    right type to be intances (i.e., their type ends with an applied
-    typeclass) but that were not created by [Instance] declarations),
+    right type to be intances -- i.e., their type ends with an applied
+    typeclass -- but that were not created by [Instance] declarations),
     use [Existing Instance]: *)
 
 Existing Instance baz1.
@@ -1268,7 +1282,7 @@ Instance baz3 : Show baz | 2 :=
   {
     show b :=
       match b with
-        Baz n => "{{{ Use me first!  " ++ show n ++ "}}}"
+        Baz n => "Use me first!  " ++ show n
       end
   }.
 
@@ -1276,17 +1290,21 @@ Instance baz4 : Show baz | 3 :=
   {
     show b :=
       match b with
-        Baz n => "{{{ Use me second!  " ++ show n ++ "}}}"
+        Baz n => "Use me second!  " ++ show n
       end
   }.
 
 Compute (show (Baz 42)).
 (* ==> 
-     = "{{{ Use me first!  42}}}"
+     = "Use me first!  42"
      : string  *)
 
-(** 0 is the highest priority. If the priority is not specified, it
-    defaults to n, the number of binders of the instance. *)
+(** 0 is the highest priority.
+
+    If the priority is not specified, it defaults to the number of
+    binders of the instance.  (This means that more specific -- less
+    polymorphic -- instances will be chosen over less specific
+    ones.) *)
 
 (** [Existing Instance] declarations can also be given explicit
     priorities. *)
@@ -1305,8 +1323,9 @@ Compute (show (Baz 42)).
 (** ** Instantiation Failures *)
 
 (** One downside of using typeclasses, especially many typeclasses at
-    the same time, is that error messages can become puzzling.  Here
-    is an easy one. *)
+    the same time, is that error messages can become puzzling.
+
+    Here are some relatively easy ones. *)
 
 Inductive bar :=
   Bar : nat -> bar.
@@ -1317,20 +1336,25 @@ Fail Definition eqBar :=
 (* ===> 
     The command has indeed failed with message:
     Unable to satisfy the following constraints:
-
-    ?Eq : "Eq bar"  *)
+       ?Eq : "Eq bar"  *)
 
 Fail Definition ordBarList :=
   le [Bar 42] [Bar 43].
 
-(** In this case, it's pretty clear what the problem is.  To fix
-    it, we just have to define a new instance.  But in more complex
+(* ===>
+    The command has indeed failed with message:
+    Unable to satisfy the following constraints:
+      ?H : "Eq (list bar)"
+      ?Ord : "Ord (list bar)" *)
+
+(** In these cases, it's pretty clear what the problem is.  To fix it,
+    we just have to define a new instance.  But in more complex
     situations it can be trickier. *)
 
 (** A few simple tricks can be very helpful:
-      - Do [Set Printing Implicit] and then use [Check ...] and [Print
-        ...] to investigate the types of the things in the expression
-        where the error is being reported.
+      - Do [Set Printing Implicit] and then use [Check] and [Print] to
+        investigate the types of the things in the expression where
+        the error is being reported.
       - Add some [@] annotations and explicitly fill in some of the
         arguments that should be getting instantiated automatically,
         to check your understanding of what they should be getting
@@ -1362,8 +1386,9 @@ Fail Definition max {A: Type} {Ord A} (x y : A) : A :=
 (* ================================================================= *)
 (** ** Nontermination *)
 
-(** One annoying way that typeclass instantiation can go wrong is by
-    simply diverging.  Here is a small example of how this can happen. *)
+(** An even more annoying way that typeclass instantiation can go
+    wrong is by simply diverging.  Here is a small example of how this
+    can happen. *)
 
 (** Declare a typeclass involving two types parameters [A] and [B] --
     say, a silly typeclass that can be inhabited by arbitrary
@@ -1385,7 +1410,8 @@ Instance MyMap1 : MyMap bool nat :=
 
 Instance MyMap2 : MyMap nat string :=
   {
-    mymap := fun n : nat => if le n 20 then "Pretty small" else "Pretty big"
+    mymap := fun n : nat => 
+      if le n 20 then "Pretty small" else "Pretty big"
   }.
 
 Definition e1 := mymap true.
@@ -1399,7 +1425,7 @@ Compute e2.
 
 Fail Definition e3 : string := mymap false.
 
-(** Now we can try to fix this by defining a generic instance that
+(** We can try to fix this by defining a generic instance that
     combines an instance from [A] to [B] and an instance from [B] to
     [C]: *)
 
@@ -1423,7 +1449,7 @@ Definition e4 : list nat := mymap false.
 (** Why, exactly, did the search diverge?  Enable typeclass debugging,
     uncomment the above [Definition], and see what gets printed.  (You
     may want to do this from the command line rather than from inside
-    an IDE.) *)
+    an IDE, to make it easier to kill.) *)
 
 (* ################################################################# *)
 (** * Alternative Structuring Mechanisms *)
@@ -1434,15 +1460,21 @@ Definition e4 : list nat := mymap false.
       - bare dependent records
       - modules and functors *)
 
-(** In particular, an introduction to canonical structures and a
-    comparison between canonical structures and typeclasses can be
+(** An introduction to canonical structures and 
+    comparisons between canonical structures and typeclasses can be
     found here:
 
-    Assia Mahboubi and Enrico Tassi. Canonical Structures for the
-    working Coq user. In Sandrine Blazy, Christine Paulin, and David
-    Pichardie, editors, ITP 2013, 4th Conference on Interactive
-    Theorem Proving, volume 7998 of LNCS, pages 19–34, Rennes, France,
-    2013. Springer.  https://hal.inria.fr/hal-00816703v1/document
+       - Assia Mahboubi and Enrico Tassi. Canonical Structures for the
+         working Coq user. In Sandrine Blazy, Christine Paulin, and
+         David Pichardie, editors, ITP 2013, 4th Conference on
+         Interactive Theorem Proving, volume 7998 of LNCS, pages
+         19–34, Rennes, France, 2013. Springer.
+         https://hal.inria.fr/hal-00816703v1/document
+
+       - Gonthier et al., "How to make ad hoc proof automation less ad
+         hoc", JFP 23 (4): 357–401, 2013.  (This explains some
+         weaknesses of typeclasses and why canonical structures are
+         used in in the [mathcomp] libraries.)
 
     A useful discussion of typeclasses vs. dependent records is:
     https://stackoverflow.com/questions/29872260/coq-typeclasses-vs-dependent-records
@@ -1451,14 +1483,14 @@ Definition e4 : list nat := mymap false.
 (* ################################################################# *)
 (** * Advice from Experts *)
 
-(** In the process of preparing this tutorial, I asked people on the
-    coq-club mailing list for their best tips on preventing and
+(** In the process of preparing this chapter, we asked people on the
+    [coq-club] mailing list for their best tips on preventing and
     debugging typeclass confusions, and on best practices for choosing
     between typeclasses and other large-scale structuring mechanisms
-    such as modules and canonical structures.  I received a number of
-    generous replies, which I should eventually digest and incorporate
-    into the material above.  For the moment, they are recorded here
-    essentially as posted (with light editing by me for ease of
+    such as modules and canonical structures.  We received a number of
+    generous replies, which we should eventually digest and
+    incorporate into the material above.  For the moment, they are
+    recorded here essentially as posted (lightly edited for ease of
     reading). *)
 
 (* ================================================================= *)
@@ -1708,7 +1740,7 @@ Definition e4 : list nat := mymap false.
      - Sozeau's slides from a talk at Penn:
        https://www.cis.upenn.edu/~bcpierce/courses/670Fall12/slides.pdf
 
-    Some tutorials on typeclasses in Haskell:
+    Some of the many tutorials on typeclasses in Haskell:
      - https://en.wikibooks.org/wiki/Haskell/Classes_and_types
      - http://learnyouahaskell.com/types-and-typeclasses and
        http://learnyouahaskell.com/making-our-own-types-and-typeclasses

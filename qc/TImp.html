@@ -23,7 +23,6 @@
 <ul id='menu'>
    <a href='toc.html'><li class='section_name'>Table of Contents</li></a>
    <a href='coqindex.html'><li class='section_name'>Index</li></a>
-   <a href='deps.html'><li class='section_name'>Roadmap</li></a>
 </ul>
 </a></div>
 
@@ -34,26 +33,26 @@
 
 
 <div class="doc">
-Having seen a basic overview of QuickChick in the previous
-    chapter, we can now dive into a more realistic case study: a typed
-    variant of Imp, the simple imperative language introduced in
-    <i>Logical Foundations</i>.  The original Imp variant presented in the
-    first volume of Software Foundations enforces a syntactic
-    separation between boolean and arithmetic expressions: <span class="inlinecode"><span class="id" type="var">bexp</span></span> just
-    ranges over boolean expressions, while <span class="inlinecode"><span class="id" type="var">aexp</span></span> ranges over
-    arithmetic ones.  Moreover, variables are only allowed in <span class="inlinecode"><span class="id" type="var">aexp</span></span>
-    and hence only take numeric values.
+Having covered the basics of QuickChick in the previous
+    chapter, we are ready to dive into a more realistic case study: a
+    typed variant of Imp, the simple imperative language introduced in
+    <i>Logical Foundations</i>.
 
 <div class="paragraph"> </div>
 
-    In <i>Typed Imp</i> (TImp) we collapse the expression syntax and allow
-    variables to range over both numbers and booleans. With the
-    unified syntax, we introduce the notion of <i>well-typed</i> Imp
-    expressions and programs (where every variable only ranges over
-    values of a single type throughout the whole program).  We then
-    give an operational semantics to TImp in the form of a (partial)
-    evaluation function &mdash; partial since, in the unified syntax, we
-    can write nonsensical expressions such as <span class="inlinecode">0</span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" type="var">True</span></span>.
+    The version of Imp presented there enforces a syntactic separation
+    between boolean and arithmetic expressions: <span class="inlinecode"><span class="id" type="var">bexp</span></span> just ranges
+    over boolean expressions, while <span class="inlinecode"><span class="id" type="var">aexp</span></span> ranges over arithmetic
+    ones.  Moreover, variables are only allowed in <span class="inlinecode"><span class="id" type="var">aexp</span></span> and hence
+    only take numeric values.  By contrast, in <i>Typed Imp</i> (TImp) we
+    collapse the expression syntax and allow variables to range over
+    both numbers and booleans. With the unified syntax, we introduce
+    the notion of <i>well-typed</i> Imp expressions and programs (where
+    every variable only ranges over values of a single type throughout
+    the whole program).  We then give an operational semantics to TImp
+    in the form of a (partial) evaluation function &mdash; partial since,
+    in the unified syntax, we can write nonsensical expressions such
+    as <span class="inlinecode">0</span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" type="var">True</span></span>.
 
 <div class="paragraph"> </div>
 
@@ -74,108 +73,92 @@ Having seen a basic overview of QuickChick in the previous
     problem dual to that of custom generators. 
 <div class="paragraph"> </div>
 
-<a name="lab72"></a><h1 class="section">Atoms, Types and Contexts</h1>
+ Acknowledgement: We are grateful to Nicolas Koh for important
+    contributions to an early version of this chapter. 
+<div class="paragraph"> </div>
+
+<a name="lab74"></a><h1 class="section">Identifiers, Types and Contexts</h1>
 
 <div class="paragraph"> </div>
 
-<a name="lab73"></a><h2 class="section">Atoms</h2>
+<a name="lab75"></a><h2 class="section">Identifiers</h2>
 
 <div class="paragraph"> </div>
 
- For the type of identifiers of TImp we are going to borrow (a
-    cut-down version of) the <span class="inlinecode"><span class="id" type="var">Atom</span></span> type from Penn's Metatheory
-    library. <span class="inlinecode"><span class="id" type="var">Atom</span></span> is essentially a wrapper around <span class="inlinecode"><span class="id" type="var">nat</span></span> that
-    supports decidable equality plus an operator <span class="inlinecode"><span class="id" type="tactic">fresh</span></span>: given any
-    finite set of atoms, one can produce one that is distinct from all
-    of the atoms in the set. 
+ For the type of identifiers of TImp we will use a wrapper around 
+    plain natural numbers. 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Inductive</span> <a name="id"><span class="id" type="inductive">id</span></a> :=<br/>
+|  <a name="Id"><span class="id" type="constructor">Id</span></a> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a> → <a class="idref" href="TImp.html#id"><span class="id" type="inductive">id</span></a>.<br/>
+</div>
+
+<div class="doc">
+We will need one identifier-specific operation, <span class="inlinecode"><span class="id" type="tactic">fresh</span></span>: given any
+    finite set of identifiers, we can produce one that is distinct from
+    all other identifiers in the set. 
+
 <div class="paragraph"> </div>
 
- The signature (<span class="inlinecode"><span class="id" type="keyword">Module</span></span> <span class="inlinecode"><span class="id" type="keyword">Type</span></span>) of atoms extends the signature
-    <span class="inlinecode"><span class="id" type="var">UsualDecidableType</span></span>.  The force of this is that the standard Coq
-    equality <span class="inlinecode">(=)</span> is decidable for atoms. 
-</div>
-<div class="code code-tight">
-
-<span class="id" type="keyword">Module</span> <span class="id" type="keyword">Type</span> <a name="ATOM"><span class="id" type="module">ATOM</span></a> &lt;: <a class="idref" href="http://coq.inria.fr/library/Coq.Structures.Equalities.html#UsualDecidableType"><span class="id" type="module">UsualDecidableType</span></a>.<br/><hr class='doublespaceincode'/>
-&nbsp;&nbsp;<span class="id" type="keyword">Parameter</span> <a name="ATOM.t"><span class="id" type="axiom">t</span></a> : <span class="id" type="keyword">Set</span>.<br/>
-&nbsp;&nbsp;<span class="id" type="keyword">Parameter</span> <a name="ATOM.eq_dec"><span class="id" type="axiom">eq_dec</span></a> : <span style='font-size:120%;'>&forall;</span> (<span class="id" type="var">x</span> <span class="id" type="var">y</span>:<a class="idref" href="TImp.html#ATOM.t"><span class="id" type="axiom">t</span></a>), {<a class="idref" href="TImp.html#x"><span class="id" type="variable">x</span></a> = <a class="idref" href="TImp.html#y"><span class="id" type="variable">y</span></a>} + {<a class="idref" href="TImp.html#x"><span class="id" type="variable">x</span></a> ≠ <a class="idref" href="TImp.html#y"><span class="id" type="variable">y</span></a>}.<br/>
-&nbsp;&nbsp;<span class="id" type="keyword">Parameter</span> <a name="ATOM.fresh"><span class="id" type="axiom">fresh</span></a> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="TImp.html#ATOM.t"><span class="id" type="axiom">t</span></a> → <a class="idref" href="TImp.html#ATOM.t"><span class="id" type="axiom">t</span></a>.<br/>
-&nbsp;&nbsp;<span class="id" type="keyword">Parameter</span> <a name="ATOM.nat_of"><span class="id" type="axiom">nat_of</span></a>: <a class="idref" href="TImp.html#ATOM.t"><span class="id" type="axiom">t</span></a> → <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>.<br/><hr class='doublespaceincode'/>
-<span class="id" type="keyword">End</span> <a class="idref" href="TImp.html#ATOM"><span class="id" type="module">ATOM</span></a>.<br/><hr class='doublespaceincode'/>
-<span class="id" type="keyword">Module</span> <a name="Atom"><span class="id" type="module">Atom</span></a> : <a class="idref" href="TImp.html#ATOM"><span class="id" type="module">ATOM</span></a>.<br/>
-</div>
-
-<div class="doc">
-Internally, an <span class="inlinecode"><span class="id" type="var">Atom</span></span> is just a natural number... 
-</div>
-<div class="code code-tight">
-
-&nbsp;&nbsp;<span class="id" type="keyword">Definition</span> <a name="Atom.t"><span class="id" type="definition">t</span></a> := <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>.<br/>
-</div>
-
-<div class="doc">
-...which means decidable equality comes for free from the standard
-    library: 
-</div>
-<div class="code code-tight">
-
-&nbsp;&nbsp;<span class="id" type="keyword">Definition</span> <a name="Atom.eq_dec"><span class="id" type="definition">eq_dec</span></a> := <a class="idref" href="http://coq.inria.fr/library/Coq.Arith.Peano_dec.html#eq_nat_dec"><span class="id" type="abbreviation">eq_nat_dec</span></a>.<br/>
-</div>
-
-<div class="doc">
-To compute a fresh natural number given a list of natural numbers,
+    To compute a fresh <span class="inlinecode"><span class="id" type="var">id</span></span> given a list of <span class="inlinecode"><span class="id" type="var">id</span></span>s
     we can just produce the number that is 1 larger than the maximum
     element: 
 </div>
 <div class="code code-tight">
 
-&nbsp;&nbsp;<span class="id" type="keyword">Fixpoint</span> <a name="Atom.max_elt"><span class="id" type="definition">max_elt</span></a> (<span class="id" type="var">al</span>:<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="TImp.html#Atom.t"><span class="id" type="definition">t</span></a>) : <a class="idref" href="TImp.html#Atom.t"><span class="id" type="definition">t</span></a> :=<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">match</span> <a class="idref" href="TImp.html#al"><span class="id" type="variable">al</span></a> <span class="id" type="keyword">with</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil"><span class="id" type="constructor">nil</span></a> ⇒ 0<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" type="var">n'</span>::<span class="id" type="var">al'</span> ⇒ <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Peano.html#max"><span class="id" type="abbreviation">max</span></a> <span class="id" type="var">n'</span> (<a class="idref" href="TImp.html#max_elt"><span class="id" type="definition">max_elt</span></a> <span class="id" type="var">al'</span>)<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">end</span>.<br/><hr class='doublespaceincode'/>
-&nbsp;&nbsp;<span class="id" type="keyword">Definition</span> <a name="Atom.fresh"><span class="id" type="definition">fresh</span></a> (<span class="id" type="var">al</span>:<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="TImp.html#Atom.t"><span class="id" type="definition">t</span></a>) : <a class="idref" href="TImp.html#Atom.t"><span class="id" type="definition">t</span></a> :=<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#S"><span class="id" type="constructor">S</span></a> (<a class="idref" href="TImp.html#Atom.max_elt"><span class="id" type="definition">max_elt</span></a> <a class="idref" href="TImp.html#al"><span class="id" type="variable">al</span></a>).<br/><hr class='doublespaceincode'/>
-&nbsp;&nbsp;<span class="id" type="keyword">Include</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Structures.Equalities.html#HasUsualEq"><span class="id" type="module">HasUsualEq</span></a> &lt;+ <a class="idref" href="http://coq.inria.fr/library/Coq.Structures.Equalities.html#UsualIsEq"><span class="id" type="module">UsualIsEq</span></a>.<br/>
+<span class="id" type="keyword">Fixpoint</span> <a name="max_elt"><span class="id" type="definition">max_elt</span></a> (<span class="id" type="var">al</span>:<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="TImp.html#id"><span class="id" type="inductive">id</span></a>) : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">match</span> <a class="idref" href="TImp.html#al"><span class="id" type="variable">al</span></a> <span class="id" type="keyword">with</span><br/>
+&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil"><span class="id" type="constructor">nil</span></a> ⇒ 0 <br/>
+&nbsp;&nbsp;| (<a class="idref" href="TImp.html#Id"><span class="id" type="constructor">Id</span></a> <span class="id" type="var">n'</span>)::<span class="id" type="var">al'</span> ⇒ <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Peano.html#max"><span class="id" type="abbreviation">max</span></a> <span class="id" type="var">n'</span> (<a class="idref" href="TImp.html#max_elt"><span class="id" type="definition">max_elt</span></a> <span class="id" type="var">al'</span>)<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">end</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Definition</span> <a name="fresh"><span class="id" type="definition">fresh</span></a> (<span class="id" type="var">al</span>:<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="TImp.html#id"><span class="id" type="inductive">id</span></a>) : <a class="idref" href="TImp.html#id"><span class="id" type="inductive">id</span></a> :=<br/>
+&nbsp;&nbsp;<a class="idref" href="TImp.html#Id"><span class="id" type="constructor">Id</span></a> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#S"><span class="id" type="constructor">S</span></a> (<a class="idref" href="TImp.html#max_elt"><span class="id" type="definition">max_elt</span></a> <a class="idref" href="TImp.html#al"><span class="id" type="variable">al</span></a>)).<br/>
 </div>
 
 <div class="doc">
-We also need a way of printing atoms. To support that, we include a 
-    <span class="inlinecode"><span class="id" type="var">nat_of</span></span> function that exposes the internal natural number. 
+We will also need a way of testing for equality, which we can 
+    derive with the standard <span class="inlinecode"><span class="id" type="var">dec_eq</span></span> tactic. 
 </div>
 <div class="code code-tight">
-
-&nbsp;&nbsp;<span class="id" type="keyword">Definition</span> <a name="Atom.nat_of"><span class="id" type="definition">nat_of</span></a> (<span class="id" type="var">a</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>) := <a class="idref" href="TImp.html#a"><span class="id" type="variable">a</span></a>.<br/><hr class='doublespaceincode'/>
-<span class="id" type="keyword">End</span> <a class="idref" href="TImp.html#Atom"><span class="id" type="module">Atom</span></a>.<br/>
+<span class="id" type="keyword">Instance</span> <a name="eq_id_dec"><span class="id" type="instance">eq_id_dec</span></a> (<span class="id" type="var">x<sub>1</sub></span> <span class="id" type="var">x<sub>2</sub></span> : <a class="idref" href="TImp.html#id"><span class="id" type="inductive">id</span></a>) : <span class="id" type="class">Dec</span> (<a class="idref" href="TImp.html#x<sub>1</sub>"><span class="id" type="variable">x<sub>1</sub></span></a> = <a class="idref" href="TImp.html#x<sub>2</sub>"><span class="id" type="variable">x<sub>2</sub></span></a>).<br/>
+<span class="id" type="keyword">Proof</span>. <span class="id" type="var">dec_eq</span>. <span class="id" type="keyword">Defined</span>.<br/>
 </div>
 
 <div class="doc">
-We can take advantage of the <span class="inlinecode"><span class="id" type="var">nat_of</span></span> function of <span class="inlinecode"><span class="id" type="var">Atom</span></span>s, as well
-    as the <span class="inlinecode"><span class="id" type="keyword">Show</span></span> instance of <span class="inlinecode"><span class="id" type="var">nat</span></span> to print <span class="inlinecode"><span class="id" type="var">Atom</span></span>s. 
+One advantage of using natural numbers as identifiers is that 
+    we can take advantage of the <span class="inlinecode"><span class="id" type="keyword">Show</span></span> instance of <span class="inlinecode"><span class="id" type="var">nat</span></span> to print 
+    them. 
 </div>
 <div class="code code-tight">
 
-<span class="id" type="keyword">Instance</span> <a name="show_atom"><span class="id" type="instance">show_atom</span></a> : <span class="id" type="keyword">Show</span> <a class="idref" href="TImp.html#t"><span class="id" type="axiom">Atom.t</span></a> :=<br/>
-&nbsp;&nbsp;{| <span class="id" type="constructor">show</span> <span class="id" type="var">x</span> := <span class="id" type="method">show</span> (<a class="idref" href="TImp.html#nat_of"><span class="id" type="axiom">Atom.nat_of</span></a> <a class="idref" href="TImp.html#x"><span class="id" type="variable">x</span></a>) |}.<br/>
+<span class="id" type="keyword">Instance</span> <a name="show_id"><span class="id" type="instance">show_id</span></a> : <span class="id" type="keyword">Show</span> <a class="idref" href="TImp.html#id"><span class="id" type="inductive">id</span></a> :=<br/>
+&nbsp;&nbsp;{ <span class="id" type="method">show</span> <span class="id" type="var">x</span> := <span class="id" type="keyword">let</span> '(<a class="idref" href="TImp.html#Id"><span class="id" type="constructor">Id</span></a> <span class="id" type="var">n</span>) := <a class="idref" href="TImp.html#x"><span class="id" type="variable">x</span></a> <span class="id" type="keyword">in</span> <span class="id" type="method">show</span> <span class="id" type="var">n</span> }.<br/>
 </div>
 
 <div class="doc">
-To generate identifiers for TImp, we will use a recursive function
-    that generates <span class="inlinecode"><span class="id" type="var">n</span></span> fresh <span class="inlinecode"><span class="id" type="var">Atom</span></span>s starting from the empty list. 
+To generate identifiers for TImp, we will not just 
+    generate arbitrary natural numbers. More often than not, 
+    we will need to generate a set of identifiers, or pick 
+    an identifier from such a set. If we represent a set as 
+    a list, we can do the former with a recursive function
+    that generates <span class="inlinecode"><span class="id" type="var">n</span></span> fresh <span class="inlinecode"><span class="id" type="var">nat</span></span>s starting from the empty 
+    list. For the latter, we have QuickChick's <span class="inlinecode"><span class="id" type="var">elements</span></span> 
+    combinator. 
 </div>
 <div class="code code-tight">
 
-<span class="id" type="keyword">Fixpoint</span> <a name="get_fresh_atoms"><span class="id" type="definition">get_fresh_atoms</span></a> <span class="id" type="var">n</span> <span class="id" type="var">l</span> :=<br/>
+<span class="id" type="keyword">Fixpoint</span> <a name="get_fresh_ids"><span class="id" type="definition">get_fresh_ids</span></a> <span class="id" type="var">n</span> <span class="id" type="var">l</span> :=<br/>
 &nbsp;&nbsp;<span class="id" type="keyword">match</span> <a class="idref" href="TImp.html#n"><span class="id" type="variable">n</span></a> <span class="id" type="keyword">with</span><br/>
 &nbsp;&nbsp;| 0 ⇒ <a class="idref" href="TImp.html#l"><span class="id" type="variable">l</span></a><br/>
-&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#S"><span class="id" type="constructor">S</span></a> <span class="id" type="var">n'</span> ⇒ <a class="idref" href="TImp.html#get_fresh_atoms"><span class="id" type="definition">get_fresh_atoms</span></a> <span class="id" type="var">n'</span> ((<a class="idref" href="TImp.html#fresh"><span class="id" type="axiom">Atom.fresh</span></a> <a class="idref" href="TImp.html#l"><span class="id" type="variable">l</span></a>) :: <a class="idref" href="TImp.html#l"><span class="id" type="variable">l</span></a>)<br/>
+&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#S"><span class="id" type="constructor">S</span></a> <span class="id" type="var">n'</span> ⇒ <a class="idref" href="TImp.html#get_fresh_ids"><span class="id" type="definition">get_fresh_ids</span></a> <span class="id" type="var">n'</span> ((<a class="idref" href="TImp.html#fresh"><span class="id" type="definition">fresh</span></a> <a class="idref" href="TImp.html#l"><span class="id" type="variable">l</span></a>) :: <a class="idref" href="TImp.html#l"><span class="id" type="variable">l</span></a>)<br/>
 &nbsp;&nbsp;<span class="id" type="keyword">end</span>.<br/>
 </div>
 
 <div class="doc">
-<a name="lab74"></a><h4 class="section">Exercise: 2 stars (genAtom)</h4>
- Write a <span class="inlinecode"><span class="id" type="var">Gen</span></span> instance for <span class="inlinecode"><span class="id" type="var">Atom.t</span></span>, using the <span class="inlinecode"><span class="id" type="var">elements</span></span>
-    combinator and <span class="inlinecode"><span class="id" type="var">get_fresh_atoms</span></span>.  
+<a name="lab76"></a><h4 class="section">Exercise: 2 stars (genId)</h4>
+ Write a <span class="inlinecode"><span class="id" type="var">Gen</span></span> instance for <span class="inlinecode"><span class="id" type="var">id</span></span> using the <span class="inlinecode"><span class="id" type="var">elements</span></span>
+    combinator and <span class="inlinecode"><span class="id" type="var">get_fresh_ids</span></span>.  
 </div>
 <div class="code code-tight">
 
@@ -186,7 +169,20 @@ To generate identifiers for TImp, we will use a recursive function
 <div class="doc less-space">
 <div class="paragraph"> </div>
 
-<a name="lab75"></a><h2 class="section">Types</h2>
+ There remains the question of how to <span class="inlinecode"><span class="id" type="var">shrink</span></span> <span class="inlinecode"><span class="id" type="var">id</span></span>s. 
+    We will answer that question when <span class="inlinecode"><span class="id" type="var">id</span></span>s are used later 
+    in the chapter. For now, let's leave the <span class="inlinecode"><span class="id" type="var">Shrink</span></span> instance
+    as a no-op.
+ 
+</div>
+<div class="code code-tight">
+<span class="id" type="keyword">Instance</span> <a name="shrinkId"><span class="id" type="instance">shrinkId</span></a> : <span class="id" type="class">Shrink</span> <a class="idref" href="TImp.html#id"><span class="id" type="inductive">id</span></a> :=<br/>
+&nbsp;&nbsp;{ <span class="id" type="method">shrink</span> <span class="id" type="var">x</span> := [] }.<br/>
+<span class="comment">(*&nbsp;/HIDEFROMHTML&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+<a name="lab77"></a><h2 class="section">Types</h2>
 
 <div class="paragraph"> </div>
 
@@ -202,15 +198,15 @@ That is, TImp has two kinds of values: booleans and natural
     numbers. 
 <div class="paragraph"> </div>
 
- To use <span class="inlinecode"><span class="id" type="var">ty</span></span> in testing, we will need <span class="inlinecode"><span class="id" type="var">Arbitrary</span></span>, <span class="inlinecode"><span class="id" type="keyword">Show</span></span> and an
-    equality <span class="inlinecode"><span class="id" type="var">Dec</span></span> instance. 
+ To use <span class="inlinecode"><span class="id" type="var">ty</span></span> in testing, we will need <span class="inlinecode"><span class="id" type="var">Arbitrary</span></span>, <span class="inlinecode"><span class="id" type="keyword">Show</span></span>, and
+    <span class="inlinecode"><span class="id" type="var">Dec</span></span> instances. 
 <div class="paragraph"> </div>
 
- In QC.v, we saw how one can go about writing such generators
-    by hand.  However, that process can largely be automated,
-    especially for simple inductive types (like <span class="inlinecode"><span class="id" type="var">ty</span></span>, <span class="inlinecode"><span class="id" type="var">nat</span></span>, <span class="inlinecode"><span class="id" type="var">list</span></span>,
-    <span class="inlinecode"><span class="id" type="var">tree</span></span>, etc.).  QuickChick provides a top-level vernacular command
-    to derive such instances. 
+ In QC.v, we saw how to write such generators by hand.
+    We also saw, however, that this process can largely be automated
+    for simple inductive types (like <span class="inlinecode"><span class="id" type="var">ty</span></span>, <span class="inlinecode"><span class="id" type="var">nat</span></span>, <span class="inlinecode"><span class="id" type="var">list</span></span>, <span class="inlinecode"><span class="id" type="var">tree</span></span>, etc.).
+    QuickChick provides a top-level vernacular command to derive such
+    instances. 
 </div>
 <div class="code code-tight">
 
@@ -243,18 +239,17 @@ Decidable equality instances are not yet derived fully
 </div>
 
 <div class="doc">
-<a name="lab76"></a><h2 class="section">List Map with Decidable Equality</h2>
+<a name="lab78"></a><h2 class="section">List-Based Maps</h2>
 
 <div class="paragraph"> </div>
 
  To encode typing environments (and, later on, states), we will
-    need maps from atoms to values. However, the function-based
+    need maps from identifiers to values. However, the function-based
     representation in the <i>Software Foundations</i> version of Imp is not
-    well suited for testing: we will need to be able to access the
-    domain of the map, fold over it and test for equality; these are
-    all awkward to define for (Coq) functions. Therefore, we introduce
-    a simple list-based map representation that takes usual decidable
-    types (like <span class="inlinecode"><span class="id" type="var">Atom</span></span>) as input.
+    well suited for testing: we need to be able to access the domain
+    of the map, fold over it, and test for equality; these are all
+    awkward to define for Coq functions. Therefore, we introduce a
+    simple list-based map representation that uses <span class="inlinecode"><span class="id" type="var">id</span></span>s as the keys.
 
 <div class="paragraph"> </div>
 
@@ -276,71 +271,77 @@ Decidable equality instances are not yet derived fully
 </li>
 </ul>
 
-</div>
-<div class="code code-tight">
+<div class="paragraph"> </div>
 
-<span class="id" type="keyword">Module</span> <span class="id" type="keyword">Type</span> <a name="Map"><span class="id" type="module">Map</span></a> (<span class="id" type="var">K</span>:<a class="idref" href="http://coq.inria.fr/library/Coq.Structures.Equalities.html#UsualDecidableType"><span class="id" type="module">UsualDecidableType</span></a>).<br/><hr class='doublespaceincode'/>
-&nbsp;<span class="id" type="keyword">Section</span> <a name="Map.withv"><span class="id" type="section">withv</span></a>.<br/>
-&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">Variable</span> <a name="Map.withv.V"><span class="id" type="variable">V</span></a> : <span class="id" type="keyword">Type</span>.<br/><hr class='doublespaceincode'/>
-&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">Parameter</span> <a name="Map.t"><span class="id" type="axiom">t</span></a> : <span class="id" type="keyword">Type</span> → <span class="id" type="keyword">Type</span>.<br/>
-&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">Parameter</span> <a name="Map.empty"><span class="id" type="axiom">empty</span></a> : <a class="idref" href="TImp.html#Map.t"><span class="id" type="axiom">t</span></a> <a class="idref" href="TImp.html#Map.withv.V"><span class="id" type="variable">V</span></a>.<br/>
-&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">Parameter</span> <a name="Map.get"><span class="id" type="axiom">get</span></a> : <a class="idref" href="TImp.html#Map.t"><span class="id" type="axiom">t</span></a> <a class="idref" href="TImp.html#Map.withv.V"><span class="id" type="variable">V</span></a> → <a class="idref" href="TImp.html#K.t"><span class="id" type="axiom">K.t</span></a> → <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="TImp.html#Map.withv.V"><span class="id" type="variable">V</span></a>.<br/>
-&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">Parameter</span> <a name="Map.set"><span class="id" type="axiom">set</span></a> : <a class="idref" href="TImp.html#Map.t"><span class="id" type="axiom">t</span></a> <a class="idref" href="TImp.html#Map.withv.V"><span class="id" type="variable">V</span></a> → <a class="idref" href="TImp.html#K.t"><span class="id" type="axiom">K.t</span></a> → <a class="idref" href="TImp.html#Map.withv.V"><span class="id" type="variable">V</span></a> → <a class="idref" href="TImp.html#Map.t"><span class="id" type="axiom">t</span></a> <a class="idref" href="TImp.html#Map.withv.V"><span class="id" type="variable">V</span></a>.<br/>
-&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">Parameter</span> <a name="Map.dom"><span class="id" type="axiom">dom</span></a> : <a class="idref" href="TImp.html#Map.t"><span class="id" type="axiom">t</span></a> <a class="idref" href="TImp.html#Map.withv.V"><span class="id" type="variable">V</span></a> → <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="TImp.html#K.t"><span class="id" type="axiom">K.t</span></a>.<br/>
-&nbsp;<span class="id" type="keyword">End</span> <a class="idref" href="TImp.html#Map.withv"><span class="id" type="section">withv</span></a>.<br/><hr class='doublespaceincode'/>
-<span class="id" type="keyword">End</span> <a class="idref" href="TImp.html#Map"><span class="id" type="module">Map</span></a>.<br/>
-</div>
-
-<div class="doc">
-The implementation of the map is a simple association list.  If a
+ The implementation of a map is a simple association list.  If a
     list contains multiple tuples with the same key, then the binding
     of the key in the map is the one that appears first in the list;
     that is, later bindings can be shadowed. 
 </div>
 <div class="code code-tight">
 
-<span class="id" type="keyword">Module</span> <a name="ListMap"><span class="id" type="module">ListMap</span></a> (<span class="id" type="var">K</span>:<a class="idref" href="http://coq.inria.fr/library/Coq.Structures.Equalities.html#UsualDecidableType"><span class="id" type="module">UsualDecidableType</span></a>) &lt;: <a class="idref" href="TImp.html#Map"><span class="id" type="module">Map</span></a> <a class="idref" href="TImp.html#K"><span class="id" type="module">K</span></a>.<br/><hr class='doublespaceincode'/>
-&nbsp;<span class="id" type="keyword">Section</span> <a name="ListMap.withv"><span class="id" type="section">withv</span></a>.<br/>
-&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">Context</span> {<span class="id" type="var">V</span> : <span class="id" type="keyword">Type</span>}.<br/><hr class='doublespaceincode'/>
-&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">Definition</span> <a name="ListMap.t"><span class="id" type="definition">t</span></a> := <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> (<a class="idref" href="TImp.html#K.t"><span class="id" type="axiom">K.t</span></a> * <a class="idref" href="TImp.html#ListMap.withv.V"><span class="id" type="variable">V</span></a>).<br/><hr class='doublespaceincode'/>
-&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">Definition</span> <a name="ListMap.empty"><span class="id" type="definition">empty</span></a> : <a class="idref" href="TImp.html#ListMap.t"><span class="id" type="definition">t</span></a> := [].<br/><hr class='doublespaceincode'/>
-&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">Fixpoint</span> <a name="ListMap.get"><span class="id" type="definition">get</span></a> <span class="id" type="var">m</span> <span class="id" type="var">k</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="TImp.html#ListMap.withv.V"><span class="id" type="variable">V</span></a> := <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">match</span> <a class="idref" href="TImp.html#m"><span class="id" type="variable">m</span></a> <span class="id" type="keyword">with</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [] ⇒ <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#None"><span class="id" type="constructor">None</span></a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| (<span class="id" type="var">k'</span>, <span class="id" type="var">v</span>) :: <span class="id" type="var">m'</span> ⇒ <span class="id" type="keyword">if</span> <a class="idref" href="TImp.html#K.eq_dec"><span class="id" type="axiom">K.eq_dec</span></a> <a class="idref" href="TImp.html#k"><span class="id" type="variable">k</span></a> <span class="id" type="var">k'</span> <span class="id" type="keyword">then</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some"><span class="id" type="constructor">Some</span></a> <span class="id" type="var">v</span> <span class="id" type="keyword">else</span> <a class="idref" href="TImp.html#get"><span class="id" type="definition">get</span></a> <span class="id" type="var">m'</span> <a class="idref" href="TImp.html#k"><span class="id" type="variable">k</span></a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">end</span>.<br/><hr class='doublespaceincode'/>
-&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">Definition</span> <a name="ListMap.set"><span class="id" type="definition">set</span></a> (<span class="id" type="var">m</span>:<a class="idref" href="TImp.html#ListMap.t"><span class="id" type="definition">t</span></a>) (<span class="id" type="var">k</span>:<a class="idref" href="TImp.html#K.t"><span class="id" type="axiom">K.t</span></a>) (<span class="id" type="var">v</span>:<a class="idref" href="TImp.html#ListMap.withv.V"><span class="id" type="variable">V</span></a>) : <a class="idref" href="TImp.html#ListMap.t"><span class="id" type="definition">t</span></a> := (<a class="idref" href="TImp.html#k"><span class="id" type="variable">k</span></a>, <a class="idref" href="TImp.html#v"><span class="id" type="variable">v</span></a>) :: <a class="idref" href="TImp.html#m"><span class="id" type="variable">m</span></a>.<br/><hr class='doublespaceincode'/>
-&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">Fixpoint</span> <a name="ListMap.dom"><span class="id" type="definition">dom</span></a> (<span class="id" type="var">m</span>:<a class="idref" href="TImp.html#ListMap.t"><span class="id" type="definition">t</span></a>) : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="TImp.html#K.t"><span class="id" type="axiom">K.t</span></a> :=<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">match</span> <a class="idref" href="TImp.html#m"><span class="id" type="variable">m</span></a> <span class="id" type="keyword">with</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [] ⇒ []<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| (<span class="id" type="var">k'</span>, <span class="id" type="var">v</span>) :: <span class="id" type="var">m'</span> ⇒ <span class="id" type="var">k'</span> :: <a class="idref" href="TImp.html#dom"><span class="id" type="definition">dom</span></a> <span class="id" type="var">m'</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">end</span>.<br/><hr class='doublespaceincode'/>
-&nbsp;<span class="id" type="keyword">End</span> <a class="idref" href="TImp.html#ListMap.withv"><span class="id" type="section">withv</span></a>.<br/><hr class='doublespaceincode'/>
-<span class="id" type="keyword">End</span> <a class="idref" href="TImp.html#ListMap"><span class="id" type="module">ListMap</span></a>.<br/>
+<span class="id" type="keyword">Definition</span> <a name="Map"><span class="id" type="definition">Map</span></a> <span class="id" type="var">A</span> := <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> (<a class="idref" href="TImp.html#id"><span class="id" type="inductive">id</span></a> * <a class="idref" href="TImp.html#A"><span class="id" type="variable">A</span></a>).<br/>
 </div>
 
 <div class="doc">
-We then instantiate the <span class="inlinecode"><span class="id" type="var">ListMap</span></span> functor with <span class="inlinecode"><span class="id" type="var">Atom</span></span>, yielding
-    <span class="inlinecode"><span class="id" type="var">AtomMap</span></span>, our desired map with <span class="inlinecode"><span class="id" type="var">Atom</span></span> as the key type. 
+The <span class="inlinecode"><span class="id" type="var">empty</span></span> map is the empty list. 
 </div>
 <div class="code code-tight">
 
-<span class="id" type="keyword">Module</span> <a name="AtomMap"><span class="id" type="module">AtomMap</span></a> := <a class="idref" href="TImp.html#ListMap"><span class="id" type="module">ListMap</span></a> (<a class="idref" href="TImp.html#Atom"><span class="id" type="module">Atom</span></a>).<br/>
+<span class="id" type="keyword">Definition</span> <a name="map_empty"><span class="id" type="definition">map_empty</span></a> {<span class="id" type="var">A</span>} : <a class="idref" href="TImp.html#Map"><span class="id" type="definition">Map</span></a> <a class="idref" href="TImp.html#A"><span class="id" type="variable">A</span></a> := [].<br/>
+</div>
+
+<div class="doc">
+To <span class="inlinecode"><span class="id" type="var">get</span></span> the binding of an identifier <span class="inlinecode"><span class="id" type="var">x</span></span>, we just need to walk 
+    through the list and find the first <span class="inlinecode"><span class="id" type="var">cons</span></span> cell where the key 
+    is equal to <span class="inlinecode"><span class="id" type="var">x</span></span>, if any. 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Fixpoint</span> <a name="map_get"><span class="id" type="definition">map_get</span></a> {<span class="id" type="var">A</span>} (<span class="id" type="var">m</span> : <a class="idref" href="TImp.html#Map"><span class="id" type="definition">Map</span></a> <a class="idref" href="TImp.html#A"><span class="id" type="variable">A</span></a>) <span class="id" type="var">x</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="TImp.html#A"><span class="id" type="variable">A</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">match</span> <a class="idref" href="TImp.html#m"><span class="id" type="variable">m</span></a> <span class="id" type="keyword">with</span><br/>
+&nbsp;&nbsp;| [] ⇒ <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#None"><span class="id" type="constructor">None</span></a><br/>
+&nbsp;&nbsp;| (<span class="id" type="var">k</span>, <span class="id" type="var">v</span>) :: <span class="id" type="var">m'</span> ⇒ <span class="id" type="keyword">if</span> <a class="idref" href="TImp.html#x"><span class="id" type="variable">x</span></a> = <span class="id" type="var">k</span> ? <span class="id" type="keyword">then</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some"><span class="id" type="constructor">Some</span></a> <span class="id" type="var">v</span> <span class="id" type="keyword">else</span> <a class="idref" href="TImp.html#map_get"><span class="id" type="definition">map_get</span></a> <span class="id" type="var">m'</span> <a class="idref" href="TImp.html#x"><span class="id" type="variable">x</span></a><br/>
+&nbsp;&nbsp;<span class="id" type="keyword">end</span>.<br/>
+</div>
+
+<div class="doc">
+To <span class="inlinecode"><span class="id" type="tactic">set</span></span> the binding of an identifier, we just need to <span class="inlinecode"><span class="id" type="var">cons</span></span> 
+    it at the front of the list. 
+</div>
+<div class="code code-tight">
+
+<span class="id" type="keyword">Definition</span> <a name="map_set"><span class="id" type="definition">map_set</span></a> {<span class="id" type="var">A</span>} (<span class="id" type="var">m</span>:<a class="idref" href="TImp.html#Map"><span class="id" type="definition">Map</span></a> <a class="idref" href="TImp.html#A"><span class="id" type="variable">A</span></a>) (<span class="id" type="var">x</span>:<a class="idref" href="TImp.html#id"><span class="id" type="inductive">id</span></a>) (<span class="id" type="var">v</span>:<a class="idref" href="TImp.html#A"><span class="id" type="variable">A</span></a>) : <a class="idref" href="TImp.html#Map"><span class="id" type="definition">Map</span></a> <a class="idref" href="TImp.html#A"><span class="id" type="variable">A</span></a> := (<a class="idref" href="TImp.html#x"><span class="id" type="variable">x</span></a>, <a class="idref" href="TImp.html#v"><span class="id" type="variable">v</span></a>) :: <a class="idref" href="TImp.html#m"><span class="id" type="variable">m</span></a>.<br/>
+</div>
+
+<div class="doc">
+Finally, the domain of a map is just the set of its keys. 
+</div>
+<div class="code code-tight">
+<span class="id" type="keyword">Fixpoint</span> <a name="map_dom"><span class="id" type="definition">map_dom</span></a> {<span class="id" type="var">A</span>} (<span class="id" type="var">m</span>:<a class="idref" href="TImp.html#Map"><span class="id" type="definition">Map</span></a> <a class="idref" href="TImp.html#A"><span class="id" type="variable">A</span></a>) : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="TImp.html#id"><span class="id" type="inductive">id</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">match</span> <a class="idref" href="TImp.html#m"><span class="id" type="variable">m</span></a> <span class="id" type="keyword">with</span><br/>
+&nbsp;&nbsp;| [] ⇒ []<br/>
+&nbsp;&nbsp;| (<span class="id" type="var">k'</span>, <span class="id" type="var">v</span>) :: <span class="id" type="var">m'</span> ⇒ <span class="id" type="var">k'</span> :: <a class="idref" href="TImp.html#map_dom"><span class="id" type="definition">map_dom</span></a> <span class="id" type="var">m'</span><br/>
+&nbsp;&nbsp;<span class="id" type="keyword">end</span>.<br/>
 </div>
 
 <div class="doc">
 We next introduce a simple inductive relation, <span class="inlinecode"><span class="id" type="var">bound_to</span></span> <span class="inlinecode"><span class="id" type="var">m</span></span> <span class="inlinecode"><span class="id" type="var">x</span></span> <span class="inlinecode"><span class="id" type="var">a</span></span>, that 
-    holds precisely when the binding of some <span class="inlinecode"><span class="id" type="var">Atom</span></span> <span class="inlinecode"><span class="id" type="var">x</span></span> is equal to <span class="inlinecode"><span class="id" type="var">a</span></span> in 
+    holds precisely when the binding of some identifier <span class="inlinecode"><span class="id" type="var">x</span></span> is equal to <span class="inlinecode"><span class="id" type="var">a</span></span> in 
     <span class="inlinecode"><span class="id" type="var">m</span></span> 
 </div>
 <div class="code code-tight">
 
-<span class="id" type="keyword">Inductive</span> <a name="bound_to"><span class="id" type="inductive">bound_to</span></a> {<span class="id" type="var">A</span>} : @<a class="idref" href="TImp.html#t"><span class="id" type="definition">AtomMap.t</span></a> <span class="id" type="var">A</span> → <a class="idref" href="TImp.html#t"><span class="id" type="axiom">Atom.t</span></a> → <span class="id" type="var">A</span> → <span class="id" type="keyword">Prop</span> :=<br/>
-&nbsp;&nbsp;| <span class="id" type="keyword">Bind</span> : <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">x</span> <span class="id" type="var">m</span> <span class="id" type="var">a</span>, <a class="idref" href="TImp.html#get"><span class="id" type="definition">AtomMap.get</span></a> <a class="idref" href="TImp.html#m"><span class="id" type="variable">m</span></a> <a class="idref" href="TImp.html#x"><span class="id" type="variable">x</span></a> = <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some"><span class="id" type="constructor">Some</span></a> <a class="idref" href="TImp.html#a"><span class="id" type="variable">a</span></a> → <a class="idref" href="TImp.html#bound_to"><span class="id" type="inductive">bound_to</span></a> <a class="idref" href="TImp.html#m"><span class="id" type="variable">m</span></a> <a class="idref" href="TImp.html#x"><span class="id" type="variable">x</span></a> <a class="idref" href="TImp.html#a"><span class="id" type="variable">a</span></a>.<br/>
+<span class="id" type="keyword">Inductive</span> <a name="bound_to"><span class="id" type="inductive">bound_to</span></a> {<span class="id" type="var">A</span>} : <a class="idref" href="TImp.html#Map"><span class="id" type="definition">Map</span></a> <span class="id" type="var">A</span> → <a class="idref" href="TImp.html#id"><span class="id" type="inductive">id</span></a> → <span class="id" type="var">A</span> → <span class="id" type="keyword">Prop</span> :=<br/>
+&nbsp;&nbsp;| <span class="id" type="keyword">Bind</span> : <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">x</span> <span class="id" type="var">m</span> <span class="id" type="var">a</span>, <a class="idref" href="TImp.html#map_get"><span class="id" type="definition">map_get</span></a> <a class="idref" href="TImp.html#m"><span class="id" type="variable">m</span></a> <a class="idref" href="TImp.html#x"><span class="id" type="variable">x</span></a> = <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some"><span class="id" type="constructor">Some</span></a> <a class="idref" href="TImp.html#a"><span class="id" type="variable">a</span></a> → <a class="idref" href="TImp.html#bound_to"><span class="id" type="inductive">bound_to</span></a> <a class="idref" href="TImp.html#m"><span class="id" type="variable">m</span></a> <a class="idref" href="TImp.html#x"><span class="id" type="variable">x</span></a> <a class="idref" href="TImp.html#a"><span class="id" type="variable">a</span></a>.<br/>
 </div>
 
 <div class="doc">
-We can now decide whether <span class="inlinecode"><span class="id" type="var">bound_to</span></span> <span class="inlinecode"><span class="id" type="var">m</span></span> <span class="inlinecode"><span class="id" type="var">x</span></span> <span class="inlinecode"><span class="id" type="var">a</span></span> holds for a given
+<a name="lab79"></a><h2 class="section">Deciding <span class="inlinecode"><span class="id" type="var">bound_to</span></span> (optional)</h2>
+
+<div class="paragraph"> </div>
+
+ We can now decide whether <span class="inlinecode"><span class="id" type="var">bound_to</span></span> <span class="inlinecode"><span class="id" type="var">m</span></span> <span class="inlinecode"><span class="id" type="var">x</span></span> <span class="inlinecode"><span class="id" type="var">a</span></span> holds for a given
     arrangement of <span class="inlinecode"><span class="id" type="var">m</span></span>, <span class="inlinecode"><span class="id" type="var">x</span></span> and <span class="inlinecode"><span class="id" type="var">a</span></span>.  On a first reading, you may
     prefer to skip the next few paragraphs (until the start of the
     <span class="inlinecode"><span class="id" type="keyword">Context</span></span> subsection), which deal with partially automating the
@@ -353,13 +354,13 @@ We can now decide whether <span class="inlinecode"><span class="id" type="var">b
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" type="class">Dec</span> (<a class="idref" href="TImp.html#bound_to"><span class="id" type="inductive">bound_to</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#x"><span class="id" type="variable">x</span></a> <a class="idref" href="TImp.html#T"><span class="id" type="variable">T</span></a>).<br/>
 <span class="id" type="keyword">Proof</span>.<br/>
 &nbsp;&nbsp;<span class="id" type="var">constructor</span>. <span class="id" type="tactic">unfold</span> <a class="idref" href="http://coq.inria.fr/library/Coq.ssr.ssrbool.html#decidable"><span class="id" type="definition">ssrbool.decidable</span></a>.<br/>
-&nbsp;&nbsp;<span class="id" type="tactic">destruct</span> (<a class="idref" href="TImp.html#get"><span class="id" type="definition">AtomMap.get</span></a> <span class="id" type="var">Gamma</span> <span class="id" type="var">x</span>) <span class="id" type="var">eqn</span>:<span class="id" type="var">Get</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">destruct</span> (<a class="idref" href="TImp.html#map_get"><span class="id" type="definition">map_get</span></a> <span class="id" type="var">Gamma</span> <span class="id" type="var">x</span>) <span class="id" type="var">eqn</span>:<span class="id" type="var">Get</span>.<br/>
 </div>
 
 <div class="doc">
-After unfolding <span class="inlinecode"><span class="id" type="var">decidable</span></span> and destructing <span class="inlinecode"><span class="id" type="var">AtomMap.get</span></span> <span class="inlinecode"><span class="id" type="var">Gamma</span></span> <span class="inlinecode"><span class="id" type="var">x</span></span>, we are
-    left with two subgoals. In the first, we know that <span class="inlinecode"><span class="id" type="var">AtomMap.get</span></span> <span class="inlinecode"><span class="id" type="var">Gamma</span></span> <span class="inlinecode"><span class="id" type="var">x</span></span> <span class="inlinecode">=</span>
-    <span class="inlinecode"><span class="id" type="var">Some</span></span> <span class="inlinecode"><span class="id" type="var">a</span></span> and effectively want to decide whether <span class="inlinecode"><span class="id" type="var">AtomMap.get</span></span> <span class="inlinecode"><span class="id" type="var">Gamma</span></span> <span class="inlinecode"><span class="id" type="var">x</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" type="var">Some</span></span>
+After unfolding <span class="inlinecode"><span class="id" type="var">decidable</span></span> and destructing <span class="inlinecode"><span class="id" type="var">map_get</span></span> <span class="inlinecode"><span class="id" type="var">Gamma</span></span> <span class="inlinecode"><span class="id" type="var">x</span></span>, we are
+    left with two subgoals. In the first, we know that <span class="inlinecode"><span class="id" type="var">map_get</span></span> <span class="inlinecode"><span class="id" type="var">Gamma</span></span> <span class="inlinecode"><span class="id" type="var">x</span></span> <span class="inlinecode">=</span>
+    <span class="inlinecode"><span class="id" type="var">Some</span></span> <span class="inlinecode"><span class="id" type="var">a</span></span> and effectively want to decide whether <span class="inlinecode"><span class="id" type="var">map_get</span></span> <span class="inlinecode"><span class="id" type="var">Gamma</span></span> <span class="inlinecode"><span class="id" type="var">x</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" type="var">Some</span></span>
     <span class="inlinecode"><span class="id" type="var">T</span></span> or not. Which means we need to decide whether <span class="inlinecode"><span class="id" type="var">a</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" type="var">T</span></span>. Thankfully,
     we can decide that using our hypothesis <span class="inlinecode"><span class="id" type="var">D</span></span>. 
 </div>
@@ -413,8 +414,8 @@ Much of the time, we can also immediately decide that a property
 
 <span class="id" type="keyword">Ltac</span> <span class="id" type="var">solve_right</span> := <br/>
 &nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">Contra</span> := <span class="id" type="tactic">fresh</span> "Contra" <span class="id" type="keyword">in</span><br/>
-&nbsp;&nbsp;<span class="id" type="tactic">try</span> <span class="id" type="var">solve</span> [<span class="id" type="var">right</span>; <span class="id" type="tactic">intro</span> <span class="id" type="var">Contra</span>; <span class="id" type="tactic">inversion</span> <span class="id" type="var">Contra</span>; <span class="id" type="tactic">subst</span>; <span class="id" type="tactic">clear</span> <span class="id" type="var">Contra</span>; <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">eauto</span>; <span class="id" type="tactic">congruence</span>].<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">try</span> <span class="id" type="var">solve</span> [<span class="id" type="var">right</span>; <span class="id" type="tactic">intro</span> <span class="id" type="var">Contra</span>; <span class="id" type="tactic">inversion</span> <span class="id" type="var">Contra</span>; <span class="id" type="tactic">subst</span>; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">clear</span> <span class="id" type="var">Contra</span>; <span class="id" type="tactic">eauto</span>; <span class="id" type="tactic">congruence</span>].<br/>
 </div>
 
 <div class="doc">
@@ -438,27 +439,27 @@ We can now prove the <span class="inlinecode"><span class="id" type="var">Dec</s
 <div class="proofscript" id="proof1" onclick="toggleDisplay('proof1');toggleDisplay('proofcontrol1')">
 <span class="id" type="keyword">Proof</span>.<br/>
 &nbsp;&nbsp;<span class="id" type="var">constructor</span>. <span class="id" type="tactic">unfold</span> <a class="idref" href="http://coq.inria.fr/library/Coq.ssr.ssrbool.html#decidable"><span class="id" type="definition">ssrbool.decidable</span></a>.<br/>
-&nbsp;&nbsp;<span class="id" type="tactic">destruct</span> (<a class="idref" href="TImp.html#get"><span class="id" type="definition">AtomMap.get</span></a> <span class="id" type="var">Gamma</span> <span class="id" type="var">x</span>) <span class="id" type="var">eqn</span>:<span class="id" type="var">Get</span>; <span class="id" type="var">solve_sum</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">destruct</span> (<a class="idref" href="TImp.html#map_get"><span class="id" type="definition">map_get</span></a> <span class="id" type="var">Gamma</span> <span class="id" type="var">x</span>) <span class="id" type="var">eqn</span>:<span class="id" type="var">Get</span>; <span class="id" type="var">solve_sum</span>.<br/>
 &nbsp;&nbsp;<span class="id" type="tactic">destruct</span> (<span class="id" type="var">D</span> <span class="id" type="var">a</span> <span class="id" type="var">T</span>) <span class="id" type="keyword">as</span> [[<span class="id" type="var">Eq</span> | <span class="id" type="var">NEq</span>]]; <span class="id" type="tactic">subst</span>; <span class="id" type="var">solve_sum</span>.<br/>
 <span class="id" type="keyword">Defined</span>.<br/>
 </div>
 </div>
 
 <div class="doc">
-<a name="lab77"></a><h2 class="section">Contexts</h2>
+<a name="lab80"></a><h2 class="section">Contexts</h2>
 
 <div class="paragraph"> </div>
 
- Typing contexts in TImp are just maps from atoms to types. 
+ Typing contexts in TImp are just maps from identifiers to types. 
 </div>
 <div class="code code-tight">
 
-<span class="id" type="keyword">Definition</span> <a name="context"><span class="id" type="definition">context</span></a> := @<a class="idref" href="TImp.html#t"><span class="id" type="definition">AtomMap.t</span></a> <a class="idref" href="TImp.html#ty"><span class="id" type="inductive">ty</span></a>.<br/>
+<span class="id" type="keyword">Definition</span> <a name="context"><span class="id" type="definition">context</span></a> := <a class="idref" href="TImp.html#Map"><span class="id" type="definition">Map</span></a> <a class="idref" href="TImp.html#ty"><span class="id" type="inductive">ty</span></a>.<br/>
 </div>
 
 <div class="doc">
 Given a context <span class="inlinecode"><span class="id" type="var">Gamma</span></span> and a type <span class="inlinecode"><span class="id" type="var">T</span></span>, we can try to generate a
-    random <span class="inlinecode"><span class="id" type="var">Atom</span></span> whose binding in <span class="inlinecode"><span class="id" type="var">Gamma</span></span> is <span class="inlinecode"><span class="id" type="var">T</span></span>.
+    random <span class="inlinecode"><span class="id" type="var">identifier</span></span> whose binding in <span class="inlinecode"><span class="id" type="var">Gamma</span></span> is <span class="inlinecode"><span class="id" type="var">T</span></span>.
 
 <div class="paragraph"> </div>
 
@@ -470,46 +471,41 @@ Given a context <span class="inlinecode"><span class="id" type="var">Gamma</span
 <div class="paragraph"> </div>
 
     Since the filtered list might be empty we return an <span class="inlinecode"><span class="id" type="var">option</span></span>,
-    using <span class="inlinecode"><span class="id" type="var">ret</span></span> <span class="inlinecode"><span class="id" type="var">None</span></span> as the default element for <span class="inlinecode"><span class="id" type="var">oneof</span></span>.
+    we use <span class="inlinecode"><span class="id" type="var">ret</span></span> <span class="inlinecode"><span class="id" type="var">None</span></span> as the default element for <span class="inlinecode"><span class="id" type="var">oneof</span></span>.
  
 </div>
 <div class="code code-tight">
 
-<span class="id" type="keyword">Definition</span> <a name="gen_typed_atom_from_context"><span class="id" type="definition">gen_typed_atom_from_context</span></a> (<span class="id" type="var">Gamma</span> : <a class="idref" href="TImp.html#context"><span class="id" type="definition">context</span></a>) (<span class="id" type="var">T</span> : <a class="idref" href="TImp.html#ty"><span class="id" type="inductive">ty</span></a>)<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" type="axiom">G</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="TImp.html#t"><span class="id" type="axiom">Atom.t</span></a>) :=<br/>
+<span class="id" type="keyword">Definition</span> <a name="gen_typed_id_from_context"><span class="id" type="definition">gen_typed_id_from_context</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">Gamma</span> : <a class="idref" href="TImp.html#context"><span class="id" type="definition">context</span></a>) (<span class="id" type="var">T</span> : <a class="idref" href="TImp.html#ty"><span class="id" type="inductive">ty</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" type="axiom">G</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="TImp.html#id"><span class="id" type="inductive">id</span></a>) :=<br/>
 &nbsp;&nbsp;<span class="id" type="axiom">oneof</span> (<span class="id" type="method">ret</span> <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#None"><span class="id" type="constructor">None</span></a>) <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#map"><span class="id" type="definition">List.map</span></a> (<span class="id" type="keyword">fun</span> '(<span class="id" type="var">a</span>,<span class="id" type="var">T'</span>) ⇒ <span class="id" type="method">ret</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some"><span class="id" type="constructor">Some</span></a> <a class="idref" href="TImp.html#a"><span class="id" type="variable">a</span></a>))<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#filter"><span class="id" type="definition">List.filter</span></a> (<span class="id" type="keyword">fun</span> '(<span class="id" type="var">a</span>,<span class="id" type="var">T'</span>) ⇒ <a class="idref" href="TImp.html#T"><span class="id" type="variable">T</span></a> = <a class="idref" href="TImp.html#T'"><span class="id" type="variable">T'</span></a>?) <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a>)).<br/>
 </div>
 
 <div class="doc">
-We also need to generate typing contexts.
-
+We also need to generate typing contexts. 
 <div class="paragraph"> </div>
 
-    Given some natural number <span class="inlinecode"><span class="id" type="var">n</span></span> to serve as the size of the context,
-    we first create its domain, <span class="inlinecode"><span class="id" type="var">n</span></span> fresh atoms. 
+ Given some natural number <span class="inlinecode"><span class="id" type="var">n</span></span> to serve as the size of the context,
+    we first create its domain, <span class="inlinecode"><span class="id" type="var">n</span></span> fresh identifiers.  We then create <span class="inlinecode"><span class="id" type="var">n</span></span>
+    arbitrary types with <span class="inlinecode"><span class="id" type="var">vectorOf</span></span>, using the <span class="inlinecode"><span class="id" type="var">Gen</span></span> instance for <span class="inlinecode"><span class="id" type="var">ty</span></span>
+    we derived earlier.  Finally, we zip (<span class="inlinecode"><span class="id" type="var">List.combine</span></span>) the domain
+    with the ranges and fold over the result to insert each binding
+    into a map. 
 </div>
 <div class="code code-tight">
 
 <span class="id" type="keyword">Definition</span> <a name="gen_context"><span class="id" type="definition">gen_context</span></a> (<span class="id" type="var">n</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>) : <span class="id" type="axiom">G</span> <a class="idref" href="TImp.html#context"><span class="id" type="definition">context</span></a> := <br/>
-&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">domain</span> := <a class="idref" href="TImp.html#get_fresh_atoms"><span class="id" type="definition">get_fresh_atoms</span></a> <a class="idref" href="TImp.html#n"><span class="id" type="variable">n</span></a> [] <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">domain</span> := <a class="idref" href="TImp.html#get_fresh_ids"><span class="id" type="definition">get_fresh_ids</span></a> <a class="idref" href="TImp.html#n"><span class="id" type="variable">n</span></a> [] <span class="id" type="keyword">in</span><br/>
 &nbsp;&nbsp;<span class="id" type="var">range</span> &lt;- <span class="id" type="axiom">vectorOf</span> <a class="idref" href="TImp.html#n"><span class="id" type="variable">n</span></a> <span class="id" type="method">arbitrary</span> ;;<br/>
-&nbsp;&nbsp;<span class="id" type="method">ret</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#fold_left"><span class="id" type="definition">List.fold_left</span></a> (<span class="id" type="keyword">fun</span> <span class="id" type="var">m</span> '(<span class="id" type="var">k</span>, <span class="id" type="var">v</span>) ⇒ <a class="idref" href="TImp.html#set"><span class="id" type="definition">AtomMap.set</span></a> <a class="idref" href="TImp.html#m"><span class="id" type="variable">m</span></a> <a class="idref" href="TImp.html#k"><span class="id" type="variable">k</span></a> <a class="idref" href="TImp.html#v"><span class="id" type="variable">v</span></a>) <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#combine"><span class="id" type="definition">List.combine</span></a> <a class="idref" href="TImp.html#domain"><span class="id" type="variable">domain</span></a> <a class="idref" href="TImp.html#range"><span class="id" type="variable">range</span></a>) <a class="idref" href="TImp.html#empty"><span class="id" type="definition">AtomMap.empty</span></a>).<br/>
+&nbsp;&nbsp;<span class="id" type="method">ret</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#fold_left"><span class="id" type="definition">List.fold_left</span></a> (<span class="id" type="keyword">fun</span> <span class="id" type="var">m</span> '(<span class="id" type="var">k</span>, <span class="id" type="var">v</span>) ⇒ <a class="idref" href="TImp.html#map_set"><span class="id" type="definition">map_set</span></a> <a class="idref" href="TImp.html#m"><span class="id" type="variable">m</span></a> <a class="idref" href="TImp.html#k"><span class="id" type="variable">k</span></a> <a class="idref" href="TImp.html#v"><span class="id" type="variable">v</span></a>) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#combine"><span class="id" type="definition">List.combine</span></a> <a class="idref" href="TImp.html#domain"><span class="id" type="variable">domain</span></a> <a class="idref" href="TImp.html#range"><span class="id" type="variable">range</span></a>) <a class="idref" href="TImp.html#map_empty"><span class="id" type="definition">map_empty</span></a>).<br/>
 </div>
 
 <div class="doc">
-We then create <span class="inlinecode"><span class="id" type="var">n</span></span> arbitrary types with <span class="inlinecode"><span class="id" type="var">vectorOf</span></span>, using the
-    <span class="inlinecode"><span class="id" type="var">Gen</span></span> instance for <span class="inlinecode"><span class="id" type="var">ty</span></span> we derived earlier.
-
-<div class="paragraph"> </div>
-
-    Finally, we zip (<span class="inlinecode"><span class="id" type="var">List.combine</span></span>) the domain with the ranges and
-    fold over the result to insert each binding into a map. 
-<div class="paragraph"> </div>
-
-<a name="lab78"></a><h1 class="section">Expressions</h1>
+<a name="lab81"></a><h1 class="section">Expressions</h1>
 
 <div class="paragraph"> </div>
 
@@ -523,7 +519,7 @@ We then create <span class="inlinecode"><span class="id" type="var">n</span></sp
 <div class="code code-tight">
 
 <span class="id" type="keyword">Inductive</span> <a name="exp"><span class="id" type="inductive">exp</span></a> : <span class="id" type="keyword">Type</span> :=<br/>
-&nbsp;&nbsp;| <a name="EVar"><span class="id" type="constructor">EVar</span></a> : <a class="idref" href="TImp.html#t"><span class="id" type="axiom">Atom.t</span></a> → <a class="idref" href="TImp.html#exp"><span class="id" type="inductive">exp</span></a><br/>
+&nbsp;&nbsp;| <a name="EVar"><span class="id" type="constructor">EVar</span></a> : <a class="idref" href="TImp.html#id"><span class="id" type="inductive">id</span></a> → <a class="idref" href="TImp.html#exp"><span class="id" type="inductive">exp</span></a><br/>
 &nbsp;&nbsp;| <a name="ENum"><span class="id" type="constructor">ENum</span></a> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a> → <a class="idref" href="TImp.html#exp"><span class="id" type="inductive">exp</span></a><br/>
 &nbsp;&nbsp;| <a name="EPlus"><span class="id" type="constructor">EPlus</span></a> : <a class="idref" href="TImp.html#exp"><span class="id" type="inductive">exp</span></a> → <a class="idref" href="TImp.html#exp"><span class="id" type="inductive">exp</span></a> → <a class="idref" href="TImp.html#exp"><span class="id" type="inductive">exp</span></a><br/>
 &nbsp;&nbsp;| <a name="EMinus"><span class="id" type="constructor">EMinus</span></a> : <a class="idref" href="TImp.html#exp"><span class="id" type="inductive">exp</span></a> → <a class="idref" href="TImp.html#exp"><span class="id" type="inductive">exp</span></a> → <a class="idref" href="TImp.html#exp"><span class="id" type="inductive">exp</span></a><br/>
@@ -545,7 +541,7 @@ To print expressions we derive a <span class="inlinecode"><span class="id" type=
 </div>
 
 <div class="doc">
-<a name="lab79"></a><h2 class="section">Typed Expressions</h2>
+<a name="lab82"></a><h2 class="section">Typed Expressions</h2>
 
 <div class="paragraph"> </div>
 
@@ -651,16 +647,18 @@ Typing in TImp is decidable: given an expression <span class="inlinecode"><span 
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">try</span> <span class="id" type="var">solve</span> [<span class="id" type="tactic">destruct</span> <span class="id" type="var">T</span>; <span class="id" type="var">solve_sum</span>];<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">try</span> <span class="id" type="var">solve</span> [<span class="id" type="tactic">destruct</span> <span class="id" type="var">T</span>; <span class="id" type="var">solve_inductives</span> <span class="id" type="var">Gamma</span>].<br/>
 &nbsp;&nbsp;<span class="comment">(*&nbsp;bound_to&nbsp;case:&nbsp;*)</span><br/>
-&nbsp;&nbsp;<span class="id" type="tactic">destruct</span> (<a class="idref" href="TImp.html#dec_bound_to"><span class="id" type="instance">dec_bound_to</span></a> <span class="id" type="var">Gamma</span> <span class="id" type="var">t</span> <span class="id" type="var">T</span>); <span class="id" type="tactic">destruct</span> <span class="id" type="var">dec</span>; <span class="id" type="var">solve_sum</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">destruct</span> (<a class="idref" href="TImp.html#dec_bound_to"><span class="id" type="instance">dec_bound_to</span></a> <span class="id" type="var">Gamma</span> <span class="id" type="var">i</span> <span class="id" type="var">T</span>); <span class="id" type="tactic">destruct</span> <span class="id" type="var">dec</span>; <span class="id" type="var">solve_sum</span>.<br/>
 <span class="id" type="keyword">Defined</span>.<br/>
 </div>
 </div>
 
 <div class="doc">
-<a name="lab80"></a><h4 class="section">Exercise: 3 stars (arbitraryExp)</h4>
+<a name="lab83"></a><h4 class="section">Exercise: 3 stars (arbitraryExp)</h4>
  Derive <span class="inlinecode"><span class="id" type="var">Arbitrary</span></span> for expressions.  To see how good it is at
-    generating <i>well-typed</i> expressions, write a conditional property <span class="inlinecode"><span class="id" type="var">cond_prop</span></span> that is (trivially) always true, with the precondition that some
-    expression is well-typed. Try to check that property like this:
+    generating <i>well-typed</i> expressions, write a conditional property 
+    <span class="inlinecode"><span class="id" type="var">cond_prop</span></span> that is (trivially) always true, with the precondition 
+    that some expression is well-typed. Try to check that property like 
+    this:
 
 <div class="paragraph"> </div>
 
@@ -673,7 +671,7 @@ Typing in TImp is decidable: given an expression <span class="inlinecode"><span 
     <span class="inlinecode">3</span>, rather the default, which is something larger like 10.  When
     generating examples, QuickChick will start with size 0, gradually
     increase the size until the maximum size is reached, and then
-    start over.)  What happens when you vary the size bound? 
+    start over.  What happens when you vary the size bound? 
 </div>
 <div class="code code-tight">
 
@@ -684,7 +682,7 @@ Typing in TImp is decidable: given an expression <span class="inlinecode"><span 
 <div class="doc less-space">
 <div class="paragraph"> </div>
 
-<a name="lab81"></a><h2 class="section">Generating Typed Expressions</h2>
+<a name="lab84"></a><h2 class="section">Generating Typed Expressions</h2>
 
 <div class="paragraph"> </div>
 
@@ -694,12 +692,12 @@ Typing in TImp is decidable: given an expression <span class="inlinecode"><span 
 
 <div class="paragraph"> </div>
 
-    It is common for conditional generators to return <span class="inlinecode"><span class="id" type="var">option</span></span>s of the
-    underlying type, allowing the possibility of failure if a wrong
-    choice is made internally. For example, if we wanted to generate
-    an expression of type <span class="inlinecode"><span class="id" type="var">TNat</span></span> and chose to try to do so by
-    generating a variable, then we might not be able to finish (if the
-    context is empty or only binds booleans). 
+    It is common for conditional generators to return <span class="inlinecode"><span class="id" type="var">option</span></span>s,
+    allowing the possibility of failure if a wrong choice is made
+    internally. For example, if we wanted to generate an expression of
+    type <span class="inlinecode"><span class="id" type="var">TNat</span></span> and chose to try to do so by generating a variable,
+    then we might not be able to finish (if the context is empty or
+    only binds booleans). 
 <div class="paragraph"> </div>
 
  To chain together two generators with types of the form 
@@ -719,22 +717,36 @@ Typing in TImp is decidable: given an expression <span class="inlinecode"><span 
 </div>
 
 <div class="doc">
-This pattern is common enough that it's worth using explicit monadic 
+This pattern is common enough that QuickChick introduces explicit monadic 
     notations. 
 </div>
 <div class="code code-tight">
 
-<span class="id" type="keyword">Definition</span> <a name="GOpt"><span class="id" type="definition">GOpt</span></a> <span class="id" type="var">A</span> := <span class="id" type="axiom">G</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="TImp.html#A"><span class="id" type="variable">A</span></a>).<br/><hr class='doublespaceincode'/>
-<span class="id" type="keyword">Instance</span> <a name="gOptMonad"><span class="id" type="instance">gOptMonad</span></a> : `{<span class="id" type="class">Monad</span> <a class="idref" href="TImp.html#GOpt"><span class="id" type="definition">GOpt</span></a>} :=<br/>
-&nbsp;&nbsp;{<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="method">ret</span> <span class="id" type="var">A</span> <span class="id" type="var">x</span> := <span class="id" type="axiom">returnGen</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some"><span class="id" type="constructor">Some</span></a> <a class="idref" href="TImp.html#x"><span class="id" type="variable">x</span></a>);<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="method">bind</span> <span class="id" type="var">A</span> <span class="id" type="var">B</span> <span class="id" type="var">m</span> <span class="id" type="var">k</span> := <a class="idref" href="TImp.html#bindGenOpt"><span class="id" type="definition">bindGenOpt</span></a> <a class="idref" href="TImp.html#m"><span class="id" type="variable">m</span></a> <a class="idref" href="TImp.html#k"><span class="id" type="variable">k</span></a><br/>
-&nbsp;&nbsp;}.<br/>
+<span class="id" type="keyword">Print</span> <span class="id" type="definition">GOpt</span>.<br/>
 </div>
 
 <div class="doc">
-This brings us to our first interesting generator &mdash; one for typed
-    expressions.  We asumme that <span class="inlinecode"><span class="id" type="var">Gamma</span></span> and <span class="inlinecode"><span class="id" type="var">T</span></span> are inputs to the
+<pre>
+    GOpt = fun A : Type =&gt; G (option A)
+         : Type -&gt; Type
+</pre>
+
+</div>
+<div class="code code-tight">
+
+<span class="comment">(*&nbsp;Check&nbsp;Monad_GOpt.&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+<pre>
+    Monad_GOpt
+         : Monad GOpt
+</pre>
+
+<div class="paragraph"> </div>
+
+ This brings us to our first interesting generator &mdash; one for typed
+    expressions.  We assume that <span class="inlinecode"><span class="id" type="var">Gamma</span></span> and <span class="inlinecode"><span class="id" type="var">T</span></span> are inputs to the
     generation process.  We also use a <span class="inlinecode"><span class="id" type="var">size</span></span> parameter to control the
     depth of generated expressions (i.e., we'll define a sized
     generator). 
@@ -753,17 +765,17 @@ This brings us to our first interesting generator &mdash; one for typed
 </div>
 
 <div class="doc">
-To generate <span class="inlinecode"><span class="id" type="var">e</span></span> such that for <span class="inlinecode"><span class="id" type="var">has_type_1</span></span> <span class="inlinecode"><span class="id" type="var">Gamma</span></span> <span class="inlinecode"><span class="id" type="var">e</span></span> <span class="inlinecode"><span class="id" type="var">T</span></span> holds, we
-    need to pick one of its constructors (there is only one choice,
-    here) and then try to satisfy its preconditions by generating more
-    things.  To satisfy <span class="inlinecode"><span class="id" type="var">Ty_Var1</span></span> (given <span class="inlinecode"><span class="id" type="var">Gamma</span></span> and <span class="inlinecode"><span class="id" type="var">T</span></span>), we need to
-    generate <span class="inlinecode"><span class="id" type="var">x</span></span> such that <span class="inlinecode"><span class="id" type="var">bound_to</span></span> <span class="inlinecode"><span class="id" type="var">Gamma</span></span> <span class="inlinecode"><span class="id" type="var">x</span></span> <span class="inlinecode"><span class="id" type="var">T</span></span>. But we already have
-    such a generator!  We just need to wrap it in an <span class="inlinecode"><span class="id" type="var">EVar</span></span>.  
+To generate <span class="inlinecode"><span class="id" type="var">e</span></span> such that <span class="inlinecode"><span class="id" type="var">has_type_1</span></span> <span class="inlinecode"><span class="id" type="var">Gamma</span></span> <span class="inlinecode"><span class="id" type="var">e</span></span> <span class="inlinecode"><span class="id" type="var">T</span></span> holds, we need to
+    pick one of its constructors (there is only one choice, here) and
+    then try to satisfy its preconditions by generating more things.
+    To satisfy <span class="inlinecode"><span class="id" type="var">Ty_Var1</span></span> (given <span class="inlinecode"><span class="id" type="var">Gamma</span></span> and <span class="inlinecode"><span class="id" type="var">T</span></span>), we need to generate
+    <span class="inlinecode"><span class="id" type="var">x</span></span> such that <span class="inlinecode"><span class="id" type="var">bound_to</span></span> <span class="inlinecode"><span class="id" type="var">Gamma</span></span> <span class="inlinecode"><span class="id" type="var">x</span></span> <span class="inlinecode"><span class="id" type="var">T</span></span>. But we already have such a
+    generator!  We just need to wrap it in an <span class="inlinecode"><span class="id" type="var">EVar</span></span>.  
 </div>
 <div class="code code-tight">
 
-<span class="id" type="keyword">Definition</span> <a name="gen_typed_evar"><span class="id" type="definition">gen_typed_evar</span></a> (<span class="id" type="var">Gamma</span> : <a class="idref" href="TImp.html#context"><span class="id" type="definition">context</span></a>) (<span class="id" type="var">T</span> : <a class="idref" href="TImp.html#ty"><span class="id" type="inductive">ty</span></a>) : <a class="idref" href="TImp.html#GOpt"><span class="id" type="definition">GOpt</span></a> <a class="idref" href="TImp.html#exp"><span class="id" type="inductive">exp</span></a> :=<br/>
-&nbsp;&nbsp;<span class="id" type="var">x</span> &lt;- <a class="idref" href="TImp.html#gen_typed_atom_from_context"><span class="id" type="definition">gen_typed_atom_from_context</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#T"><span class="id" type="variable">T</span></a>;;<br/>
+<span class="id" type="keyword">Definition</span> <a name="gen_typed_evar"><span class="id" type="definition">gen_typed_evar</span></a> (<span class="id" type="var">Gamma</span> : <a class="idref" href="TImp.html#context"><span class="id" type="definition">context</span></a>) (<span class="id" type="var">T</span> : <a class="idref" href="TImp.html#ty"><span class="id" type="inductive">ty</span></a>) : <span class="id" type="definition">GOpt</span> <a class="idref" href="TImp.html#exp"><span class="id" type="inductive">exp</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" type="var">x</span> &lt;- <a class="idref" href="TImp.html#gen_typed_id_from_context"><span class="id" type="definition">gen_typed_id_from_context</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#T"><span class="id" type="variable">T</span></a>;;<br/>
 &nbsp;&nbsp;<span class="id" type="method">ret</span> (<a class="idref" href="TImp.html#EVar"><span class="id" type="constructor">EVar</span></a> <a class="idref" href="TImp.html#x"><span class="id" type="variable">x</span></a>).<br/>
 </div>
 
@@ -796,7 +808,7 @@ We can already generate values satisfying <span class="inlinecode"><span class="
 </div>
 <div class="code code-tight">
 
-<span class="id" type="keyword">Definition</span> <a name="base'"><span class="id" type="definition">base'</span></a> <span class="id" type="var">Gamma</span> <span class="id" type="var">T</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> (<a class="idref" href="TImp.html#GOpt"><span class="id" type="definition">GOpt</span></a> <a class="idref" href="TImp.html#exp"><span class="id" type="inductive">exp</span></a>) := <br/>
+<span class="id" type="keyword">Definition</span> <a name="base'"><span class="id" type="definition">base'</span></a> <span class="id" type="var">Gamma</span> <span class="id" type="var">T</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> (<span class="id" type="definition">GOpt</span> <a class="idref" href="TImp.html#exp"><span class="id" type="inductive">exp</span></a>) := <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="TImp.html#gen_typed_evar"><span class="id" type="definition">gen_typed_evar</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#T"><span class="id" type="variable">T</span></a> ::<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">match</span> <a class="idref" href="TImp.html#T"><span class="id" type="variable">T</span></a> <span class="id" type="keyword">with</span> <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a>  ⇒ [ <span class="id" type="var">n</span> &lt;- <span class="id" type="method">arbitrary</span>;; <span class="id" type="method">ret</span> (<a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some"><span class="id" type="constructor">Some</span></a> (<a class="idref" href="TImp.html#ENum"><span class="id" type="constructor">ENum</span></a> <a class="idref" href="TImp.html#n"><span class="id" type="variable">n</span></a>))]<br/>
@@ -826,9 +838,9 @@ We now need to go from a list of (optional) generators to a
  Just like <span class="inlinecode"><span class="id" type="var">frequency</span></span>, <span class="inlinecode"><span class="id" type="var">backtrack</span></span> selects one of the generators
     according to the input weights. Unlike frequency, if the chosen
     generator fails (i.e. produces <span class="inlinecode"><span class="id" type="var">None</span></span>), <span class="inlinecode"><span class="id" type="var">backtrack</span></span> will discard
-    it, choose another and keep going until one succeeds or all
-    options are exhausted. Our base case generator could then be like
-    this: 
+    it, choose another, and keep going until one succeeds or all
+    possibilities are exhausted. Our base-case generator could then be
+    like this: 
 </div>
 <div class="code code-tight">
 
@@ -867,18 +879,19 @@ Typing derivations involving <span class="inlinecode"><span class="id" type="var
 </div>
 <div class="code code-tight">
 
-<span class="id" type="keyword">Fixpoint</span> <a name="gen_has_type_3"><span class="id" type="definition">gen_has_type_3</span></a> <span class="id" type="var">size</span> <span class="id" type="var">Gamma</span> <span class="id" type="var">T</span> : <a class="idref" href="TImp.html#GOpt"><span class="id" type="definition">GOpt</span></a> <a class="idref" href="TImp.html#exp"><span class="id" type="inductive">exp</span></a> := <br/>
+<span class="id" type="keyword">Fixpoint</span> <a name="gen_has_type_3"><span class="id" type="definition">gen_has_type_3</span></a> <span class="id" type="var">size</span> <span class="id" type="var">Gamma</span> <span class="id" type="var">T</span> : <span class="id" type="definition">GOpt</span> <a class="idref" href="TImp.html#exp"><span class="id" type="inductive">exp</span></a> := <br/>
 &nbsp;&nbsp;<span class="id" type="keyword">match</span> <a class="idref" href="TImp.html#size"><span class="id" type="variable">size</span></a> <span class="id" type="keyword">with</span> <br/>
 &nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#O"><span class="id" type="constructor">O</span></a> ⇒ <a class="idref" href="TImp.html#gen_typed_evar"><span class="id" type="definition">gen_typed_evar</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#T"><span class="id" type="variable">T</span></a><br/>
 &nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#S"><span class="id" type="constructor">S</span></a> <span class="id" type="var">size'</span> ⇒ <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="axiom">backtrack</span> ([ (1, <a class="idref" href="TImp.html#gen_typed_evar"><span class="id" type="definition">gen_typed_evar</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#T"><span class="id" type="variable">T</span></a>) ] <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;++ <span class="id" type="keyword">match</span> <a class="idref" href="TImp.html#T"><span class="id" type="variable">T</span></a> <span class="id" type="keyword">with</span> <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a> ⇒ <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[ (<a class="idref" href="TImp.html#size"><span class="id" type="variable">size</span></a>, <span class="id" type="var">e<sub>1</sub></span> &lt;- <a class="idref" href="TImp.html#gen_has_type_3"><span class="id" type="definition">gen_has_type_3</span></a> <span class="id" type="var">size'</span> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a>;;<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">e<sub>2</sub></span> &lt;- <a class="idref" href="TImp.html#gen_has_type_3"><span class="id" type="definition">gen_has_type_3</span></a> <span class="id" type="var">size'</span> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a>;;<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="method">ret</span> (<a class="idref" href="TImp.html#EPlus"><span class="id" type="constructor">EPlus</span></a> <a class="idref" href="TImp.html#e<sub>1</sub>"><span class="id" type="variable">e<sub>1</sub></span></a> <a class="idref" href="TImp.html#e<sub>2</sub>"><span class="id" type="variable">e<sub>2</sub></span></a>)) ]<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" type="var">_</span> ⇒ []<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">end</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="axiom">backtrack</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;([ (1, <a class="idref" href="TImp.html#gen_typed_evar"><span class="id" type="definition">gen_typed_evar</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#T"><span class="id" type="variable">T</span></a>) ] <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;++ <span class="id" type="keyword">match</span> <a class="idref" href="TImp.html#T"><span class="id" type="variable">T</span></a> <span class="id" type="keyword">with</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a> ⇒ <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[ (<a class="idref" href="TImp.html#size"><span class="id" type="variable">size</span></a>, <span class="id" type="var">e<sub>1</sub></span> &lt;- <a class="idref" href="TImp.html#gen_has_type_3"><span class="id" type="definition">gen_has_type_3</span></a> <span class="id" type="var">size'</span> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a>;;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">e<sub>2</sub></span> &lt;- <a class="idref" href="TImp.html#gen_has_type_3"><span class="id" type="definition">gen_has_type_3</span></a> <span class="id" type="var">size'</span> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a>;;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="method">ret</span> (<a class="idref" href="TImp.html#EPlus"><span class="id" type="constructor">EPlus</span></a> <a class="idref" href="TImp.html#e<sub>1</sub>"><span class="id" type="variable">e<sub>1</sub></span></a> <a class="idref" href="TImp.html#e<sub>2</sub>"><span class="id" type="variable">e<sub>2</sub></span></a>)) ]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" type="var">_</span> ⇒ []<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">end</span>)<br/>
 &nbsp;&nbsp;<span class="id" type="keyword">end</span>.<br/>
 </div>
 
@@ -890,31 +903,33 @@ Putting all this together, we get the full generator for
 
 <span class="id" type="keyword">Fixpoint</span> <a name="gen_exp_typed_sized"><span class="id" type="definition">gen_exp_typed_sized</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">size</span> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat"><span class="id" type="inductive">nat</span></a>) (<span class="id" type="var">Gamma</span> : <a class="idref" href="TImp.html#context"><span class="id" type="definition">context</span></a>) (<span class="id" type="var">T</span> : <a class="idref" href="TImp.html#ty"><span class="id" type="inductive">ty</span></a>) <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <a class="idref" href="TImp.html#GOpt"><span class="id" type="definition">GOpt</span></a> <a class="idref" href="TImp.html#exp"><span class="id" type="inductive">exp</span></a> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" type="definition">GOpt</span> <a class="idref" href="TImp.html#exp"><span class="id" type="inductive">exp</span></a> :=<br/>
 &nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">base</span> := <a class="idref" href="TImp.html#base"><span class="id" type="definition">base</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#T"><span class="id" type="variable">T</span></a> <span class="id" type="keyword">in</span><br/>
 &nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">recs</span> <span class="id" type="var">size'</span> := <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">match</span> <a class="idref" href="TImp.html#T"><span class="id" type="variable">T</span></a> <span class="id" type="keyword">with</span> <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a> ⇒ [ (<a class="idref" href="TImp.html#size"><span class="id" type="variable">size</span></a>, <span class="id" type="var">e<sub>1</sub></span> &lt;- <a class="idref" href="TImp.html#gen_exp_typed_sized"><span class="id" type="definition">gen_exp_typed_sized</span></a> <a class="idref" href="TImp.html#size'"><span class="id" type="variable">size'</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a> ;; <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">e<sub>2</sub></span> &lt;- <a class="idref" href="TImp.html#gen_exp_typed_sized"><span class="id" type="definition">gen_exp_typed_sized</span></a> <a class="idref" href="TImp.html#size'"><span class="id" type="variable">size'</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a> ;; <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="method">ret</span> (<a class="idref" href="TImp.html#EPlus"><span class="id" type="constructor">EPlus</span></a> <a class="idref" href="TImp.html#e<sub>1</sub>"><span class="id" type="variable">e<sub>1</sub></span></a> <a class="idref" href="TImp.html#e<sub>2</sub>"><span class="id" type="variable">e<sub>2</sub></span></a>)) <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;; (<a class="idref" href="TImp.html#size"><span class="id" type="variable">size</span></a>, <span class="id" type="var">e<sub>1</sub></span> &lt;- <a class="idref" href="TImp.html#gen_exp_typed_sized"><span class="id" type="definition">gen_exp_typed_sized</span></a> <a class="idref" href="TImp.html#size'"><span class="id" type="variable">size'</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a> ;; <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">e<sub>2</sub></span> &lt;- <a class="idref" href="TImp.html#gen_exp_typed_sized"><span class="id" type="definition">gen_exp_typed_sized</span></a> <a class="idref" href="TImp.html#size'"><span class="id" type="variable">size'</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a> ;; <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="method">ret</span> (<a class="idref" href="TImp.html#EMinus"><span class="id" type="constructor">EMinus</span></a> <a class="idref" href="TImp.html#e<sub>1</sub>"><span class="id" type="variable">e<sub>1</sub></span></a> <a class="idref" href="TImp.html#e<sub>2</sub>"><span class="id" type="variable">e<sub>2</sub></span></a>)) <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;; (<a class="idref" href="TImp.html#size"><span class="id" type="variable">size</span></a>, <span class="id" type="var">e<sub>1</sub></span> &lt;- <a class="idref" href="TImp.html#gen_exp_typed_sized"><span class="id" type="definition">gen_exp_typed_sized</span></a> <a class="idref" href="TImp.html#size'"><span class="id" type="variable">size'</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a> ;; <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">e<sub>2</sub></span> &lt;- <a class="idref" href="TImp.html#gen_exp_typed_sized"><span class="id" type="definition">gen_exp_typed_sized</span></a> <a class="idref" href="TImp.html#size'"><span class="id" type="variable">size'</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a> ;; <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="method">ret</span> (<a class="idref" href="TImp.html#EMult"><span class="id" type="constructor">EMult</span></a> <a class="idref" href="TImp.html#e<sub>1</sub>"><span class="id" type="variable">e<sub>1</sub></span></a> <a class="idref" href="TImp.html#e<sub>2</sub>"><span class="id" type="variable">e<sub>2</sub></span></a>)) ]<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="TImp.html#TBool"><span class="id" type="constructor">TBool</span></a> ⇒ [ (<a class="idref" href="TImp.html#size"><span class="id" type="variable">size</span></a>, <span class="id" type="var">e<sub>1</sub></span> &lt;- <a class="idref" href="TImp.html#gen_exp_typed_sized"><span class="id" type="definition">gen_exp_typed_sized</span></a> <a class="idref" href="TImp.html#size'"><span class="id" type="variable">size'</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a> ;; <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">e<sub>2</sub></span> &lt;- <a class="idref" href="TImp.html#gen_exp_typed_sized"><span class="id" type="definition">gen_exp_typed_sized</span></a> <a class="idref" href="TImp.html#size'"><span class="id" type="variable">size'</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a> ;; <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="method">ret</span> (<a class="idref" href="TImp.html#EEq"><span class="id" type="constructor">EEq</span></a> <a class="idref" href="TImp.html#e<sub>1</sub>"><span class="id" type="variable">e<sub>1</sub></span></a> <a class="idref" href="TImp.html#e<sub>2</sub>"><span class="id" type="variable">e<sub>2</sub></span></a>)) <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;; (<a class="idref" href="TImp.html#size"><span class="id" type="variable">size</span></a>, <span class="id" type="var">e<sub>1</sub></span> &lt;- <a class="idref" href="TImp.html#gen_exp_typed_sized"><span class="id" type="definition">gen_exp_typed_sized</span></a> <a class="idref" href="TImp.html#size'"><span class="id" type="variable">size'</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a> ;; <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">e<sub>2</sub></span> &lt;- <a class="idref" href="TImp.html#gen_exp_typed_sized"><span class="id" type="definition">gen_exp_typed_sized</span></a> <a class="idref" href="TImp.html#size'"><span class="id" type="variable">size'</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a> ;; <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="method">ret</span> (<a class="idref" href="TImp.html#ELe"><span class="id" type="constructor">ELe</span></a> <a class="idref" href="TImp.html#e<sub>1</sub>"><span class="id" type="variable">e<sub>1</sub></span></a> <a class="idref" href="TImp.html#e<sub>2</sub>"><span class="id" type="variable">e<sub>2</sub></span></a>)) <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;; (<a class="idref" href="TImp.html#size"><span class="id" type="variable">size</span></a>, <span class="id" type="var">e<sub>1</sub></span> &lt;- <a class="idref" href="TImp.html#gen_exp_typed_sized"><span class="id" type="definition">gen_exp_typed_sized</span></a> <a class="idref" href="TImp.html#size'"><span class="id" type="variable">size'</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#TBool"><span class="id" type="constructor">TBool</span></a> ;; <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="method">ret</span> (<a class="idref" href="TImp.html#ENot"><span class="id" type="constructor">ENot</span></a> <a class="idref" href="TImp.html#e<sub>1</sub>"><span class="id" type="variable">e<sub>1</sub></span></a>))<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;; (<a class="idref" href="TImp.html#size"><span class="id" type="variable">size</span></a>, <span class="id" type="var">e<sub>1</sub></span> &lt;- <a class="idref" href="TImp.html#gen_exp_typed_sized"><span class="id" type="definition">gen_exp_typed_sized</span></a> <a class="idref" href="TImp.html#size'"><span class="id" type="variable">size'</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#TBool"><span class="id" type="constructor">TBool</span></a> ;; <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">e<sub>2</sub></span> &lt;- <a class="idref" href="TImp.html#gen_exp_typed_sized"><span class="id" type="definition">gen_exp_typed_sized</span></a> <a class="idref" href="TImp.html#size'"><span class="id" type="variable">size'</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#TBool"><span class="id" type="constructor">TBool</span></a> ;; <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="method">ret</span> (<a class="idref" href="TImp.html#EAnd"><span class="id" type="constructor">EAnd</span></a> <a class="idref" href="TImp.html#e<sub>1</sub>"><span class="id" type="variable">e<sub>1</sub></span></a> <a class="idref" href="TImp.html#e<sub>2</sub>"><span class="id" type="variable">e<sub>2</sub></span></a>)) ]<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">end</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">match</span> <a class="idref" href="TImp.html#T"><span class="id" type="variable">T</span></a> <span class="id" type="keyword">with</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a> ⇒<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[ (<a class="idref" href="TImp.html#size"><span class="id" type="variable">size</span></a>, <span class="id" type="var">e<sub>1</sub></span> &lt;- <a class="idref" href="TImp.html#gen_exp_typed_sized"><span class="id" type="definition">gen_exp_typed_sized</span></a> <a class="idref" href="TImp.html#size'"><span class="id" type="variable">size'</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a> ;; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">e<sub>2</sub></span> &lt;- <a class="idref" href="TImp.html#gen_exp_typed_sized"><span class="id" type="definition">gen_exp_typed_sized</span></a> <a class="idref" href="TImp.html#size'"><span class="id" type="variable">size'</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a> ;; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="method">ret</span> (<a class="idref" href="TImp.html#EPlus"><span class="id" type="constructor">EPlus</span></a> <a class="idref" href="TImp.html#e<sub>1</sub>"><span class="id" type="variable">e<sub>1</sub></span></a> <a class="idref" href="TImp.html#e<sub>2</sub>"><span class="id" type="variable">e<sub>2</sub></span></a>)) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;; (<a class="idref" href="TImp.html#size"><span class="id" type="variable">size</span></a>, <span class="id" type="var">e<sub>1</sub></span> &lt;- <a class="idref" href="TImp.html#gen_exp_typed_sized"><span class="id" type="definition">gen_exp_typed_sized</span></a> <a class="idref" href="TImp.html#size'"><span class="id" type="variable">size'</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a> ;; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">e<sub>2</sub></span> &lt;- <a class="idref" href="TImp.html#gen_exp_typed_sized"><span class="id" type="definition">gen_exp_typed_sized</span></a> <a class="idref" href="TImp.html#size'"><span class="id" type="variable">size'</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a> ;; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="method">ret</span> (<a class="idref" href="TImp.html#EMinus"><span class="id" type="constructor">EMinus</span></a> <a class="idref" href="TImp.html#e<sub>1</sub>"><span class="id" type="variable">e<sub>1</sub></span></a> <a class="idref" href="TImp.html#e<sub>2</sub>"><span class="id" type="variable">e<sub>2</sub></span></a>)) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;; (<a class="idref" href="TImp.html#size"><span class="id" type="variable">size</span></a>, <span class="id" type="var">e<sub>1</sub></span> &lt;- <a class="idref" href="TImp.html#gen_exp_typed_sized"><span class="id" type="definition">gen_exp_typed_sized</span></a> <a class="idref" href="TImp.html#size'"><span class="id" type="variable">size'</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a> ;; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">e<sub>2</sub></span> &lt;- <a class="idref" href="TImp.html#gen_exp_typed_sized"><span class="id" type="definition">gen_exp_typed_sized</span></a> <a class="idref" href="TImp.html#size'"><span class="id" type="variable">size'</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a> ;; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="method">ret</span> (<a class="idref" href="TImp.html#EMult"><span class="id" type="constructor">EMult</span></a> <a class="idref" href="TImp.html#e<sub>1</sub>"><span class="id" type="variable">e<sub>1</sub></span></a> <a class="idref" href="TImp.html#e<sub>2</sub>"><span class="id" type="variable">e<sub>2</sub></span></a>)) ]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="TImp.html#TBool"><span class="id" type="constructor">TBool</span></a> ⇒ <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;[ (<a class="idref" href="TImp.html#size"><span class="id" type="variable">size</span></a>, <span class="id" type="var">e<sub>1</sub></span> &lt;- <a class="idref" href="TImp.html#gen_exp_typed_sized"><span class="id" type="definition">gen_exp_typed_sized</span></a> <a class="idref" href="TImp.html#size'"><span class="id" type="variable">size'</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a> ;; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">e<sub>2</sub></span> &lt;- <a class="idref" href="TImp.html#gen_exp_typed_sized"><span class="id" type="definition">gen_exp_typed_sized</span></a> <a class="idref" href="TImp.html#size'"><span class="id" type="variable">size'</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a> ;; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="method">ret</span> (<a class="idref" href="TImp.html#EEq"><span class="id" type="constructor">EEq</span></a> <a class="idref" href="TImp.html#e<sub>1</sub>"><span class="id" type="variable">e<sub>1</sub></span></a> <a class="idref" href="TImp.html#e<sub>2</sub>"><span class="id" type="variable">e<sub>2</sub></span></a>)) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;; (<a class="idref" href="TImp.html#size"><span class="id" type="variable">size</span></a>, <span class="id" type="var">e<sub>1</sub></span> &lt;- <a class="idref" href="TImp.html#gen_exp_typed_sized"><span class="id" type="definition">gen_exp_typed_sized</span></a> <a class="idref" href="TImp.html#size'"><span class="id" type="variable">size'</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a> ;; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">e<sub>2</sub></span> &lt;- <a class="idref" href="TImp.html#gen_exp_typed_sized"><span class="id" type="definition">gen_exp_typed_sized</span></a> <a class="idref" href="TImp.html#size'"><span class="id" type="variable">size'</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a> ;; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="method">ret</span> (<a class="idref" href="TImp.html#ELe"><span class="id" type="constructor">ELe</span></a> <a class="idref" href="TImp.html#e<sub>1</sub>"><span class="id" type="variable">e<sub>1</sub></span></a> <a class="idref" href="TImp.html#e<sub>2</sub>"><span class="id" type="variable">e<sub>2</sub></span></a>)) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;; (<a class="idref" href="TImp.html#size"><span class="id" type="variable">size</span></a>, <span class="id" type="var">e<sub>1</sub></span> &lt;- <a class="idref" href="TImp.html#gen_exp_typed_sized"><span class="id" type="definition">gen_exp_typed_sized</span></a> <a class="idref" href="TImp.html#size'"><span class="id" type="variable">size'</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#TBool"><span class="id" type="constructor">TBool</span></a> ;; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="method">ret</span> (<a class="idref" href="TImp.html#ENot"><span class="id" type="constructor">ENot</span></a> <a class="idref" href="TImp.html#e<sub>1</sub>"><span class="id" type="variable">e<sub>1</sub></span></a>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;; (<a class="idref" href="TImp.html#size"><span class="id" type="variable">size</span></a>, <span class="id" type="var">e<sub>1</sub></span> &lt;- <a class="idref" href="TImp.html#gen_exp_typed_sized"><span class="id" type="definition">gen_exp_typed_sized</span></a> <a class="idref" href="TImp.html#size'"><span class="id" type="variable">size'</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#TBool"><span class="id" type="constructor">TBool</span></a> ;; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">e<sub>2</sub></span> &lt;- <a class="idref" href="TImp.html#gen_exp_typed_sized"><span class="id" type="definition">gen_exp_typed_sized</span></a> <a class="idref" href="TImp.html#size'"><span class="id" type="variable">size'</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#TBool"><span class="id" type="constructor">TBool</span></a> ;; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="method">ret</span> (<a class="idref" href="TImp.html#EAnd"><span class="id" type="constructor">EAnd</span></a> <a class="idref" href="TImp.html#e<sub>1</sub>"><span class="id" type="variable">e<sub>1</sub></span></a> <a class="idref" href="TImp.html#e<sub>2</sub>"><span class="id" type="variable">e<sub>2</sub></span></a>)) ]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">end</span> <span class="id" type="keyword">in</span><br/>
 &nbsp;&nbsp;<span class="id" type="keyword">match</span> <a class="idref" href="TImp.html#size"><span class="id" type="variable">size</span></a> <span class="id" type="keyword">with</span> <br/>
 &nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#O"><span class="id" type="constructor">O</span></a> ⇒ <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="axiom">backtrack</span> <a class="idref" href="TImp.html#base"><span class="id" type="variable">base</span></a> <br/>
@@ -949,17 +964,19 @@ When writing such complex generators, it's good to have some tests
 </div>
 
 <div class="doc">
-<a name="lab82"></a><h1 class="section">Values and States</h1>
+<a name="lab85"></a><h1 class="section">Values and States</h1>
 
 <div class="paragraph"> </div>
 
-<a name="lab83"></a><h2 class="section">Values</h2>
+<a name="lab86"></a><h2 class="section">Values</h2>
 
 <div class="paragraph"> </div>
 
- In original Imp, variables range over natural numbers, so states were just
-    maps from identifiers to <span class="inlinecode"><span class="id" type="var">nat</span></span>. Since we wanted to extend this to also 
-    include booleans, we need a type of <span class="inlinecode"><span class="id" type="var">value</span></span>s that includes both. 
+ In the original Imp language from <i>Logical Foundations</i>, variables
+    ranged over natural numbers, so states were just maps from
+    identifiers to <span class="inlinecode"><span class="id" type="var">nat</span></span>.  Since we now want to extend this to also
+    include booleans, we need a type of <span class="inlinecode"><span class="id" type="var">value</span></span>s that includes
+    both. 
 </div>
 <div class="code code-tight">
 
@@ -993,33 +1010,34 @@ We can also quickly define a typing relation for values, a Dec instance
 </div>
 
 <div class="doc">
-<a name="lab84"></a><h2 class="section">States</h2>
+<a name="lab87"></a><h2 class="section">States</h2>
 
 <div class="paragraph"> </div>
 
- <i>States</i> in TImp are just maps from atoms to values 
+ <i>States</i> in TImp are just maps from identifiers to values 
 </div>
 <div class="code code-tight">
 
-<span class="id" type="keyword">Definition</span> <a name="state"><span class="id" type="definition">state</span></a> := @<a class="idref" href="TImp.html#t"><span class="id" type="definition">AtomMap.t</span></a> <a class="idref" href="TImp.html#value"><span class="id" type="inductive">value</span></a>.<br/>
+<span class="id" type="keyword">Definition</span> <a name="state"><span class="id" type="definition">state</span></a> := <a class="idref" href="TImp.html#Map"><span class="id" type="definition">Map</span></a> <a class="idref" href="TImp.html#value"><span class="id" type="inductive">value</span></a>.<br/>
 </div>
 
 <div class="doc">
 We introduce an inductive relation that specifies when a state is
-    welltyped in a context (that is, when all of its variables are
+    well typed in a context (that is, when all of its variables are
     mapped to values of appropriate types).
 
 <div class="paragraph"> </div>
 
     We encode this in an element-by-element style inductive relation:
-    empty states are only well typed in respect to an empty context,
-    while non-empty states need to map their head atom to a value of
-    the appropriate type and their tails must also be well typed. 
+    empty states are only well typed with respect to an empty context,
+    while non-empty states need to map their head identifier to a value of
+    the appropriate type (and their tail must similarly be well
+    typed). 
 </div>
 <div class="code code-tight">
 
 <span class="id" type="keyword">Inductive</span> <a name="well_typed_state"><span class="id" type="inductive">well_typed_state</span></a> : <a class="idref" href="TImp.html#context"><span class="id" type="definition">context</span></a> → <a class="idref" href="TImp.html#state"><span class="id" type="definition">state</span></a> → <span class="id" type="keyword">Prop</span> :=<br/>
-| <a name="TS_Empty"><span class="id" type="constructor">TS_Empty</span></a> : <a class="idref" href="TImp.html#well_typed_state"><span class="id" type="inductive">well_typed_state</span></a> <a class="idref" href="TImp.html#empty"><span class="id" type="definition">AtomMap.empty</span></a> <a class="idref" href="TImp.html#empty"><span class="id" type="definition">AtomMap.empty</span></a><br/>
+| <a name="TS_Empty"><span class="id" type="constructor">TS_Empty</span></a> : <a class="idref" href="TImp.html#well_typed_state"><span class="id" type="inductive">well_typed_state</span></a> <a class="idref" href="TImp.html#map_empty"><span class="id" type="definition">map_empty</span></a> <a class="idref" href="TImp.html#map_empty"><span class="id" type="definition">map_empty</span></a><br/>
 | <a name="TS_Elem"><span class="id" type="constructor">TS_Elem</span></a>  : <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">x</span> <span class="id" type="var">v</span> <span class="id" type="var">T</span> <span class="id" type="var">st</span> <span class="id" type="var">Gamma</span>, <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="TImp.html#has_type_value"><span class="id" type="inductive">has_type_value</span></a> <a class="idref" href="TImp.html#v"><span class="id" type="variable">v</span></a> <a class="idref" href="TImp.html#T"><span class="id" type="variable">T</span></a> → <a class="idref" href="TImp.html#well_typed_state"><span class="id" type="inductive">well_typed_state</span></a> <a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a> <a class="idref" href="TImp.html#st"><span class="id" type="variable">st</span></a> →<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="TImp.html#well_typed_state"><span class="id" type="inductive">well_typed_state</span></a> ((<a class="idref" href="TImp.html#x"><span class="id" type="variable">x</span></a>,<a class="idref" href="TImp.html#T"><span class="id" type="variable">T</span></a>)::<a class="idref" href="TImp.html#Gamma"><span class="id" type="variable">Gamma</span></a>) ((<a class="idref" href="TImp.html#x"><span class="id" type="variable">x</span></a>,<a class="idref" href="TImp.html#v"><span class="id" type="variable">v</span></a>)::<a class="idref" href="TImp.html#st"><span class="id" type="variable">st</span></a>).<br/><hr class='doublespaceincode'/>
@@ -1031,7 +1049,7 @@ We introduce an inductive relation that specifies when a state is
 <span class="id" type="tactic">generalize</span> <span class="id" type="tactic">dependent</span> <span class="id" type="var">Gamma</span>.<br/>
 <span class="id" type="tactic">induction</span> <span class="id" type="var">st</span>; <span class="id" type="tactic">intros</span>; <span class="id" type="tactic">destruct</span> <span class="id" type="var">Gamma</span>; <span class="id" type="var">solve_sum</span>.<br/>
 <span class="id" type="tactic">destruct</span> <span class="id" type="var">a</span> <span class="id" type="keyword">as</span> [<span class="id" type="var">a</span> <span class="id" type="var">v</span>]; <span class="id" type="tactic">destruct</span> <span class="id" type="var">p</span> <span class="id" type="keyword">as</span> [<span class="id" type="var">a'</span> <span class="id" type="var">T</span>].<br/>
-<span class="id" type="tactic">destruct</span> (<a class="idref" href="TImp.html#eq_dec"><span class="id" type="axiom">Atom.eq_dec</span></a> <span class="id" type="var">a</span> <span class="id" type="var">a'</span>); <span class="id" type="var">solve_sum</span>.<br/>
+<span class="id" type="tactic">destruct</span> (@<span class="id" type="method">dec</span> (<span class="id" type="var">a</span> = <span class="id" type="var">a'</span>) <span class="id" type="var">_</span> ); <span class="id" type="var">solve_sum</span>.<br/>
 <span class="id" type="tactic">subst</span>; <span class="id" type="var">specialize</span> (<span class="id" type="var">IHst</span> <span class="id" type="var">Gamma</span>); <span class="id" type="tactic">destruct</span> <span class="id" type="var">IHst</span>; <span class="id" type="var">solve_sum</span>.<br/>
 <span class="id" type="tactic">destruct</span> (<a class="idref" href="TImp.html#dec_has_type_value"><span class="id" type="instance">dec_has_type_value</span></a> <span class="id" type="var">v</span> <span class="id" type="var">T</span>); <span class="id" type="tactic">destruct</span> <span class="id" type="var">dec</span>; <span class="id" type="var">solve_sum</span>.<br/>
 <span class="id" type="keyword">Defined</span>.<br/>
@@ -1039,15 +1057,16 @@ We introduce an inductive relation that specifies when a state is
 </div>
 
 <div class="doc">
-To write a generator for well-typed states given a context <span class="inlinecode"><span class="id" type="var">Gamma</span></span>, 
-    we use the combinator <span class="inlinecode"><span class="id" type="var">sequenceGen</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" type="var">list</span></span> <span class="inlinecode">(<span class="id" type="var">G</span></span> <span class="inlinecode"><span class="id" type="var">A</span>)</span> <span class="inlinecode">→</span> <span class="inlinecode"><span class="id" type="var">G</span></span> <span class="inlinecode">(<span class="id" type="var">list</span></span> <span class="inlinecode"><span class="id" type="var">A</span>)</span>, which
-    receives a list of generators and produces a generator of lists. 
+To write a generator for well-typed states given a context
+    <span class="inlinecode"><span class="id" type="var">Gamma</span></span>, we use the QuickChick combinator 
+    <span class="inlinecode"><span class="id" type="var">sequenceGen</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" type="var">list</span></span> <span class="inlinecode">(<span class="id" type="var">G</span></span> <span class="inlinecode"><span class="id" type="var">A</span>)</span> <span class="inlinecode">→</span> <span class="inlinecode"><span class="id" type="var">G</span></span> <span class="inlinecode">(<span class="id" type="var">list</span></span> <span class="inlinecode"><span class="id" type="var">A</span>)</span>, which takes a list of
+    generators and produces a generator for lists.
 
 <div class="paragraph"> </div>
 
-    We just need to iterate (<span class="inlinecode"><span class="id" type="var">map</span></span>) through the context, producing
-    an arbitrary value of the appropriate type for each pair <span class="inlinecode">(<span class="id" type="var">x</span>,<span class="id" type="var">T</span>)</span>. The 
-    <span class="inlinecode"><span class="id" type="var">sequenceGen</span></span> combinator will then chain all those generators in 
+    We just need to iterate (<span class="inlinecode"><span class="id" type="var">map</span></span>) through the context, producing an
+    arbitrary value of the appropriate type for each pair <span class="inlinecode">(<span class="id" type="var">x</span>,<span class="id" type="var">T</span>)</span>. The
+    <span class="inlinecode"><span class="id" type="var">sequenceGen</span></span> combinator will then chain all those generators in
     sequence, producing a generator for well-typed states 
 </div>
 <div class="code code-tight">
@@ -1059,19 +1078,20 @@ To write a generator for well-typed states given a context <span class="inlineco
 </div>
 
 <div class="doc">
-<a name="lab85"></a><h1 class="section">Evaluation</h1>
+<a name="lab88"></a><h1 class="section">Evaluation</h1>
 
 <div class="paragraph"> </div>
 
  The evaluation function takes a state and an expression and
     returns an optional value, which can be <span class="inlinecode"><span class="id" type="var">None</span></span> if the expression
-    encounters a dynamic type error. 
+    encounters a dynamic type error like trying to perform addition on
+    a boolean. 
 </div>
 <div class="code code-tight">
 
 <span class="id" type="keyword">Fixpoint</span> <a name="eval"><span class="id" type="definition">eval</span></a> (<span class="id" type="var">st</span> : <a class="idref" href="TImp.html#state"><span class="id" type="definition">state</span></a>) (<span class="id" type="var">e</span> : <a class="idref" href="TImp.html#exp"><span class="id" type="inductive">exp</span></a>) : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option"><span class="id" type="inductive">option</span></a> <a class="idref" href="TImp.html#value"><span class="id" type="inductive">value</span></a> :=<br/>
 &nbsp;&nbsp;<span class="id" type="keyword">match</span> <a class="idref" href="TImp.html#e"><span class="id" type="variable">e</span></a> <span class="id" type="keyword">with</span><br/>
-&nbsp;&nbsp;| <a class="idref" href="TImp.html#EVar"><span class="id" type="constructor">EVar</span></a> <span class="id" type="var">x</span> ⇒ <a class="idref" href="TImp.html#get"><span class="id" type="definition">AtomMap.get</span></a> <a class="idref" href="TImp.html#st"><span class="id" type="variable">st</span></a> <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;| <a class="idref" href="TImp.html#EVar"><span class="id" type="constructor">EVar</span></a> <span class="id" type="var">x</span> ⇒ <a class="idref" href="TImp.html#map_get"><span class="id" type="definition">map_get</span></a> <a class="idref" href="TImp.html#st"><span class="id" type="variable">st</span></a> <span class="id" type="var">x</span><br/>
 &nbsp;&nbsp;| <a class="idref" href="TImp.html#ENum"><span class="id" type="constructor">ENum</span></a> <span class="id" type="var">n</span> ⇒ <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some"><span class="id" type="constructor">Some</span></a> (<a class="idref" href="TImp.html#VNat"><span class="id" type="constructor">VNat</span></a> <span class="id" type="var">n</span>)<br/>
 &nbsp;&nbsp;| <a class="idref" href="TImp.html#EPlus"><span class="id" type="constructor">EPlus</span></a> <span class="id" type="var">e<sub>1</sub></span> <span class="id" type="var">e<sub>2</sub></span> ⇒ <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">match</span> <a class="idref" href="TImp.html#eval"><span class="id" type="definition">eval</span></a> <a class="idref" href="TImp.html#st"><span class="id" type="variable">st</span></a> <span class="id" type="var">e<sub>1</sub></span>, <a class="idref" href="TImp.html#eval"><span class="id" type="definition">eval</span></a> <a class="idref" href="TImp.html#st"><span class="id" type="variable">st</span></a> <span class="id" type="var">e<sub>2</sub></span> <span class="id" type="keyword">with</span> <br/>
@@ -1116,7 +1136,12 @@ To write a generator for well-typed states given a context <span class="inlineco
 </div>
 
 <div class="doc">
-<i>Type soundness</i> states that, if we have an expression <span class="inlinecode"><span class="id" type="var">e</span></span> of a
+We will see in a different chapter (<a href="QuickChickTool.html"><span class="inlineref">QuickChickTool</span></a>) how 
+    we can use QuickChick to introduce such <i>mutations</i> and have them
+    automatically checked! 
+<div class="paragraph"> </div>
+
+ <i>Type soundness</i> states that, if we have an expression <span class="inlinecode"><span class="id" type="var">e</span></span> of a
     given type <span class="inlinecode"><span class="id" type="var">T</span></span> as well as a well-typed state <span class="inlinecode"><span class="id" type="var">st</span></span>, then evaluating
     <span class="inlinecode"><span class="id" type="var">e</span></span> in <span class="inlinecode"><span class="id" type="var">st</span></span> will never fail.
 </div>
@@ -1155,8 +1180,7 @@ To test this property, we construct an appropriate checker:
 
 <div class="paragraph"> </div>
 
-<pre>
-===&gt;
+<pre>     ===&gt;
        QuickChecking expression_soundness_exec
        [(1,TNat), (2,TNat), (3,TBool), (4,TNat)]
        [(1,VNat 0), (2,VNat 0), (3,VBool true), (4,VNat 0)]
@@ -1164,10 +1188,10 @@ To test this property, we construct an appropriate checker:
        Some EAnd (EAnd (EEq (EVar 4) (EVar 1)) (EEq (ENum 0) (EVar 4))) EFalse
        *** Failed after 8 tests and 0 shrinks. (0 discards)
 </pre>
- But where is the bug?  This is why we need shrinking! 
+ Where is the bug??  Looks like we need some shrinking! 
 <div class="paragraph"> </div>
 
-<a name="lab86"></a><h2 class="section">Shrinking for Expressions</h2>
+<a name="lab89"></a><h2 class="section">Shrinking for Expressions</h2>
 
 <div class="paragraph"> </div>
 
@@ -1195,14 +1219,13 @@ To test this property, we construct an appropriate checker:
 
 <div class="paragraph"> </div>
 
-<pre>
-===&gt; 
-  QuickChecking expression_soundness_exec_firsttry
-  [(1,TBool), (2,TNat), (3,TBool), (4,TBool)]
-  [(1,VBool false), (2,VNat 0), (3,VBool true), (4,VBool false)]
-  TBool
-  Some EAnd (ENum 0) ETrue
-  *** Failed after 28 tests and 7 shrinks. (0 discards)
+<pre>     ===&gt; 
+       QuickChecking expression_soundness_exec_firsttry
+       [(1,TBool), (2,TNat), (3,TBool), (4,TBool)]
+       [(1,VBool false), (2,VNat 0), (3,VBool true), (4,VBool false)]
+       TBool
+       Some EAnd (ENum 0) ETrue
+       *** Failed after 28 tests and 7 shrinks. (0 discards)
 </pre>
 
 <div class="paragraph"> </div>
@@ -1256,9 +1279,9 @@ To test this property, we construct an appropriate checker:
 <div class="doc">
 The next case, <span class="inlinecode"><span class="id" type="var">EVar</span></span>, must take the type <span class="inlinecode"><span class="id" type="var">T</span></span> to be preserved into
     account. To shrink an <span class="inlinecode"><span class="id" type="var">EVar</span></span> we could try shrinking the inner
-    atom, but the shrinking instance we have for atoms is a no-op, so
-    that does nothing.  Or, better, we can try to shrink the <span class="inlinecode"><span class="id" type="var">EVar</span></span> to
-    a constant of the appropriate type. 
+    identifier, but shrinking an identifier by shrinking its natural
+    number representation makes little sense. Better, we can try to 
+    shrink the <span class="inlinecode"><span class="id" type="var">EVar</span></span> to a constant of the appropriate type. 
 </div>
 <div class="code code-tight">
 
@@ -1391,7 +1414,7 @@ As we saw for generators, we can also perform sanity checks on our
 </div>
 
 <div class="doc">
-<a name="lab87"></a><h2 class="section">Back to Soundness</h2>
+<a name="lab90"></a><h2 class="section">Back to Soundness</h2>
  To lift the shrinker to optional expressions, QuickChick provides
     the following function. 
 </div>
@@ -1432,8 +1455,7 @@ Armed with shrinking, we can pinpoint the bug in the <span class="inlinecode"><s
 
 <div class="paragraph"> </div>
 
-<pre>
-===&gt;
+<pre>     ===&gt;
         QuickChecking expression_soundness_exec'
         [(1,TNat), (2,TNat), (3,TNat), (4,TBool)]
         [(1,VNat 0), (2,VNat 0), (3,VNat 0), (4,VBool false)]
@@ -1444,7 +1466,7 @@ Armed with shrinking, we can pinpoint the bug in the <span class="inlinecode"><s
 
 <div class="paragraph"> </div>
 
-<a name="lab88"></a><h1 class="section">Well-Typed Programs</h1>
+<a name="lab91"></a><h1 class="section">Well-Typed Programs</h1>
 
 <div class="paragraph"> </div>
 
@@ -1455,10 +1477,10 @@ Armed with shrinking, we can pinpoint the bug in the <span class="inlinecode"><s
 
 <span class="id" type="keyword">Inductive</span> <a name="com"><span class="id" type="inductive">com</span></a> : <span class="id" type="keyword">Type</span> :=<br/>
 &nbsp;&nbsp;| <a name="CSkip"><span class="id" type="constructor">CSkip</span></a>  : <a class="idref" href="TImp.html#com"><span class="id" type="inductive">com</span></a><br/>
-&nbsp;&nbsp;| <a name="CAss"><span class="id" type="constructor">CAss</span></a>   : <a class="idref" href="TImp.html#t"><span class="id" type="axiom">Atom.t</span></a> → <a class="idref" href="TImp.html#exp"><span class="id" type="inductive">exp</span></a> → <a class="idref" href="TImp.html#com"><span class="id" type="inductive">com</span></a><br/>
-&nbsp;&nbsp;| <a name="CSeq"><span class="id" type="constructor">CSeq</span></a>   : <a class="idref" href="TImp.html#com"><span class="id" type="inductive">com</span></a>    → <a class="idref" href="TImp.html#com"><span class="id" type="inductive">com</span></a> → <a class="idref" href="TImp.html#com"><span class="id" type="inductive">com</span></a><br/>
-&nbsp;&nbsp;| <a name="CIf"><span class="id" type="constructor">CIf</span></a>    : <a class="idref" href="TImp.html#exp"><span class="id" type="inductive">exp</span></a>    → <a class="idref" href="TImp.html#com"><span class="id" type="inductive">com</span></a> → <a class="idref" href="TImp.html#com"><span class="id" type="inductive">com</span></a> → <a class="idref" href="TImp.html#com"><span class="id" type="inductive">com</span></a><br/>
-&nbsp;&nbsp;| <a name="CWhile"><span class="id" type="constructor">CWhile</span></a> : <a class="idref" href="TImp.html#exp"><span class="id" type="inductive">exp</span></a>    → <a class="idref" href="TImp.html#com"><span class="id" type="inductive">com</span></a> → <a class="idref" href="TImp.html#com"><span class="id" type="inductive">com</span></a>.<br/><hr class='doublespaceincode'/>
+&nbsp;&nbsp;| <a name="CAss"><span class="id" type="constructor">CAss</span></a>   : <a class="idref" href="TImp.html#id"><span class="id" type="inductive">id</span></a>  → <a class="idref" href="TImp.html#exp"><span class="id" type="inductive">exp</span></a> → <a class="idref" href="TImp.html#com"><span class="id" type="inductive">com</span></a><br/>
+&nbsp;&nbsp;| <a name="CSeq"><span class="id" type="constructor">CSeq</span></a>   : <a class="idref" href="TImp.html#com"><span class="id" type="inductive">com</span></a> → <a class="idref" href="TImp.html#com"><span class="id" type="inductive">com</span></a> → <a class="idref" href="TImp.html#com"><span class="id" type="inductive">com</span></a><br/>
+&nbsp;&nbsp;| <a name="CIf"><span class="id" type="constructor">CIf</span></a>    : <a class="idref" href="TImp.html#exp"><span class="id" type="inductive">exp</span></a> → <a class="idref" href="TImp.html#com"><span class="id" type="inductive">com</span></a> → <a class="idref" href="TImp.html#com"><span class="id" type="inductive">com</span></a> → <a class="idref" href="TImp.html#com"><span class="id" type="inductive">com</span></a><br/>
+&nbsp;&nbsp;| <a name="CWhile"><span class="id" type="constructor">CWhile</span></a> : <a class="idref" href="TImp.html#exp"><span class="id" type="inductive">exp</span></a> → <a class="idref" href="TImp.html#com"><span class="id" type="inductive">com</span></a> → <a class="idref" href="TImp.html#com"><span class="id" type="inductive">com</span></a>.<br/><hr class='doublespaceincode'/>
 <span class="id" type="keyword">Notation</span> "'SKIP'" :=<br/>
 &nbsp;&nbsp;<a class="idref" href="TImp.html#CSkip"><span class="id" type="constructor">CSkip</span></a>.<br/>
 <span class="id" type="keyword">Notation</span> "x '<span style='font-size:85%;'><span style='vertical-align:5%;'><span style='letter-spacing:-.2em;'>:</span>:</span>=</span>' a" :=<br/>
@@ -1505,7 +1527,7 @@ Armed with shrinking, we can pinpoint the bug in the <span class="inlinecode"><s
 </div>
 
 <div class="doc">
-<a name="lab89"></a><h2 class="section">Decidable instance for well-typed.</h2>
+<a name="lab92"></a><h2 class="section">Decidable instance for well-typed.</h2>
 
 <div class="paragraph"> </div>
 
@@ -1553,7 +1575,7 @@ Armed with shrinking, we can pinpoint the bug in the <span class="inlinecode"><s
 
 <div class="doc">
 Now, here is a brute-force decision procedure for the typing
-    relation (which amounts to a simple, but naive, typechecker). 
+    relation (which amounts to a simple typechecker). 
 </div>
 <div class="code code-tight">
 
@@ -1564,9 +1586,9 @@ Now, here is a brute-force decision procedure for the typing
 <span class="id" type="keyword">Proof</span> <span class="id" type="keyword">with</span> <span class="id" type="tactic">eauto</span>.<br/>
 &nbsp;&nbsp;<span class="id" type="var">constructor</span>. <span class="id" type="tactic">unfold</span> <a class="idref" href="http://coq.inria.fr/library/Coq.ssr.ssrbool.html#decidable"><span class="id" type="definition">ssrbool.decidable</span></a>.<br/>
 &nbsp;&nbsp;<span class="id" type="tactic">induction</span> <span class="id" type="var">c</span>; <span class="id" type="var">solve_sum</span>.<br/>
-&nbsp;&nbsp;- <span class="id" type="tactic">destruct</span> (<a class="idref" href="TImp.html#dec_bound_to"><span class="id" type="instance">dec_bound_to</span></a> <span class="id" type="var">Gamma</span> <span class="id" type="var">t</span> <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a>); <span class="id" type="tactic">destruct</span> <span class="id" type="var">dec</span>;<br/>
+&nbsp;&nbsp;- <span class="id" type="tactic">destruct</span> (<a class="idref" href="TImp.html#dec_bound_to"><span class="id" type="instance">dec_bound_to</span></a> <span class="id" type="var">Gamma</span> <span class="id" type="var">i</span> <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a>); <span class="id" type="tactic">destruct</span> <span class="id" type="var">dec</span>;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">destruct</span> (<a class="idref" href="TImp.html#dec_has_type"><span class="id" type="instance">dec_has_type</span></a> <span class="id" type="var">e</span> <span class="id" type="var">Gamma</span> <a class="idref" href="TImp.html#TNat"><span class="id" type="constructor">TNat</span></a>); <span class="id" type="tactic">destruct</span> <span class="id" type="var">dec</span>; <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">destruct</span> (<a class="idref" href="TImp.html#dec_bound_to"><span class="id" type="instance">dec_bound_to</span></a> <span class="id" type="var">Gamma</span> <span class="id" type="var">t</span> <a class="idref" href="TImp.html#TBool"><span class="id" type="constructor">TBool</span></a>); <span class="id" type="tactic">destruct</span> <span class="id" type="var">dec</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">destruct</span> (<a class="idref" href="TImp.html#dec_bound_to"><span class="id" type="instance">dec_bound_to</span></a> <span class="id" type="var">Gamma</span> <span class="id" type="var">i</span> <a class="idref" href="TImp.html#TBool"><span class="id" type="constructor">TBool</span></a>); <span class="id" type="tactic">destruct</span> <span class="id" type="var">dec</span>;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">destruct</span> (<a class="idref" href="TImp.html#dec_has_type"><span class="id" type="instance">dec_has_type</span></a> <span class="id" type="var">e</span> <span class="id" type="var">Gamma</span> <a class="idref" href="TImp.html#TBool"><span class="id" type="constructor">TBool</span></a>); <span class="id" type="tactic">destruct</span> <span class="id" type="var">dec</span>; <span class="id" type="var">solve_sum</span>;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">try</span> <span class="id" type="var">solve_det</span>; <span class="id" type="tactic">try</span> <span class="id" type="tactic">congruence</span>;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">right</span>; <span class="id" type="tactic">intro</span> <span class="id" type="var">Contra</span>; <span class="id" type="tactic">inversion</span> <span class="id" type="var">Contra</span>; <span class="id" type="tactic">subst</span>; <span class="id" type="tactic">clear</span> <span class="id" type="var">Contra</span>;<br/>
@@ -1582,7 +1604,7 @@ Now, here is a brute-force decision procedure for the typing
 </div>
 
 <div class="doc">
-<a name="lab90"></a><h4 class="section">Exercise: 4 stars (arbitrary_well_typed_com)</h4>
+<a name="lab93"></a><h4 class="section">Exercise: 4 stars (arbitrary_well_typed_com)</h4>
  Write a generator and a shrinker for well_typed programs given
     some context <span class="inlinecode"><span class="id" type="var">Gamma</span></span>.  Write some appropriate sanity checks and
     make sure they give expected results. 
@@ -1618,7 +1640,7 @@ Now, here is a brute-force decision procedure for the typing
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="TImp.html#Success"><span class="id" type="constructor">Success</span></a> <a class="idref" href="TImp.html#st"><span class="id" type="variable">st</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" type="var">x</span> <span style='font-size:85%;'><span style='vertical-align:5%;'><span style='letter-spacing:-.2em;'>:</span>:</span>=</span> <span class="id" type="var">e</span> ⇒<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">match</span> <a class="idref" href="TImp.html#eval"><span class="id" type="definition">eval</span></a> <a class="idref" href="TImp.html#st"><span class="id" type="variable">st</span></a> <span class="id" type="var">e</span> <span class="id" type="keyword">with</span> <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some"><span class="id" type="constructor">Some</span></a> <span class="id" type="var">v</span> ⇒ <a class="idref" href="TImp.html#Success"><span class="id" type="constructor">Success</span></a> (<a class="idref" href="TImp.html#set"><span class="id" type="definition">AtomMap.set</span></a> <a class="idref" href="TImp.html#st"><span class="id" type="variable">st</span></a> <span class="id" type="var">x</span> <span class="id" type="var">v</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some"><span class="id" type="constructor">Some</span></a> <span class="id" type="var">v</span> ⇒ <a class="idref" href="TImp.html#Success"><span class="id" type="constructor">Success</span></a> (<a class="idref" href="TImp.html#map_set"><span class="id" type="definition">map_set</span></a> <a class="idref" href="TImp.html#st"><span class="id" type="variable">st</span></a> <span class="id" type="var">x</span> <span class="id" type="var">v</span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" type="var">_</span> ⇒ <a class="idref" href="TImp.html#Fail"><span class="id" type="constructor">Fail</span></a> <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">end</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" type="var">c<sub>1</sub></span> ;;; <span class="id" type="var">c<sub>2</sub></span> ⇒<br/>
@@ -1635,7 +1657,9 @@ Now, here is a brute-force decision procedure for the typing
 &nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="TImp.html#::'WHILE'_x_'DO'_x_'END'"><span class="id" type="notation">WHILE</span></a> <span class="id" type="var">b</span> <span class="id" type="var">DO</span> <span class="id" type="var">c</span> <span class="id" type="var">END</span> ⇒<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">match</span> <a class="idref" href="TImp.html#eval"><span class="id" type="definition">eval</span></a> <a class="idref" href="TImp.html#st"><span class="id" type="variable">st</span></a> <span class="id" type="var">b</span> <span class="id" type="keyword">with</span> <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some"><span class="id" type="constructor">Some</span></a> (<a class="idref" href="TImp.html#VBool"><span class="id" type="constructor">VBool</span></a> <span class="id" type="var">b'</span>) ⇒<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">if</span> <span class="id" type="var">b'</span> <span class="id" type="keyword">then</span> <a class="idref" href="TImp.html#ceval"><span class="id" type="definition">ceval</span></a> <span class="id" type="var">fuel'</span> <a class="idref" href="TImp.html#st"><span class="id" type="variable">st</span></a> (<a class="idref" href="TImp.html#c"><span class="id" type="variable">c</span></a> ;;; <a class="idref" href="TImp.html#::'WHILE'_x_'DO'_x_'END'"><span class="id" type="notation">WHILE</span></a> <span class="id" type="var">b</span> <span class="id" type="var">DO</span> <a class="idref" href="TImp.html#c"><span class="id" type="variable">c</span></a> <span class="id" type="var">END</span>) <span class="id" type="keyword">else</span> <a class="idref" href="TImp.html#Success"><span class="id" type="constructor">Success</span></a> <a class="idref" href="TImp.html#st"><span class="id" type="variable">st</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">if</span> <span class="id" type="var">b'</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">then</span> <a class="idref" href="TImp.html#ceval"><span class="id" type="definition">ceval</span></a> <span class="id" type="var">fuel'</span> <a class="idref" href="TImp.html#st"><span class="id" type="variable">st</span></a> (<a class="idref" href="TImp.html#c"><span class="id" type="variable">c</span></a> ;;; <a class="idref" href="TImp.html#::'WHILE'_x_'DO'_x_'END'"><span class="id" type="notation">WHILE</span></a> <span class="id" type="var">b</span> <span class="id" type="var">DO</span> <a class="idref" href="TImp.html#c"><span class="id" type="variable">c</span></a> <span class="id" type="var">END</span>) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">else</span> <a class="idref" href="TImp.html#Success"><span class="id" type="constructor">Success</span></a> <a class="idref" href="TImp.html#st"><span class="id" type="variable">st</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" type="var">_</span> ⇒ <a class="idref" href="TImp.html#Fail"><span class="id" type="constructor">Fail</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">end</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">end</span><br/>
@@ -1659,7 +1683,7 @@ Now, here is a brute-force decision procedure for the typing
 </div>
 
 <div class="doc">
-<a name="lab91"></a><h4 class="section">Exercise: 4 stars (well_typed_state_never_stuck)</h4>
+<a name="lab94"></a><h4 class="section">Exercise: 4 stars (well_typed_state_never_stuck)</h4>
  Write a checker for the above property, find any bugs, and fix them. 
 </div>
 <div class="code code-tight">
@@ -1668,7 +1692,7 @@ Now, here is a brute-force decision procedure for the typing
 </div>
 
 <div class="doc">
-<a name="lab92"></a><h1 class="section">Automation (Revisited)</h1>
+<a name="lab95"></a><h1 class="section">Automation (Revisited)</h1>
 
 <div class="paragraph"> </div>
 
@@ -1722,39 +1746,38 @@ Now, here is a brute-force decision procedure for the typing
 </div>
 
 <div class="doc">
-<pre>
-===&gt;
-  GenSizedSuchThathas_type_value = fun T : ty =&gt;
-  {| arbitrarySizeST := 
-     let fix aux_arb (size0 : nat) (T : ty) {struct size0} 
-           : G (option value) :=
-       match size0 with
-       | 0 =&gt; backtrack [(1, match T with
-                             | TBool =&gt; ret None
-                             | TNat =&gt; n &lt;- arbitrary;;
-                                       ret (Some (VNat n))
-                             end)
-                        ;(1, match T with
-                             | TBool =&gt; b &lt;- arbitrary;;
-                                        ret (Some (VBool b)))
-                             | TNat =&gt; ret None
-                             end)]
-       | S _ =&gt; backtrack [(1, match T with
-                               | TBool =&gt; ret None
-                               | TNat =&gt; n &lt;- arbitrary;;
-                                         ret (Some (VNat n))
-                               end)
-                          ;(1, match T with
-                               | TBool =&gt; b &lt;- arbitrary;;
-                                          ret (Some (VBool b)))
-                               | TNat =&gt; ret None
-                               end)]
-       end in
-       fun size0 : nat =&gt; aux_arb size0 T |}
+<pre>     ===&gt;
+       GenSizedSuchThathas_type_value = fun T : ty =&gt;
+       {| arbitrarySizeST := 
+          let fix aux_arb (size0 : nat) (T : ty) {struct size0} 
+                : G (option value) :=
+            match size0 with
+            | 0 =&gt; backtrack [(1, match T with
+                                  | TBool =&gt; ret None
+                                  | TNat =&gt; n &lt;- arbitrary;;
+                                            ret (Some (VNat n))
+                                  end)
+                             ;(1, match T with
+                                  | TBool =&gt; b &lt;- arbitrary;;
+                                             ret (Some (VBool b)))
+                                  | TNat =&gt; ret None
+                                  end)]
+            | S _ =&gt; backtrack [(1, match T with
+                                    | TBool =&gt; ret None
+                                    | TNat =&gt; n &lt;- arbitrary;;
+                                              ret (Some (VNat n))
+                                    end)
+                               ;(1, match T with
+                                    | TBool =&gt; b &lt;- arbitrary;;
+                                               ret (Some (VBool b)))
+                                    | TNat =&gt; ret None
+                                    end)]
+            end in
+            fun size0 : nat =&gt; aux_arb size0 T |}
 
-  : forall T : ty,
-      GenSizedSuchThat value 
-          (fun v =&gt; has_type_value v T)
+       : forall T : ty,
+           GenSizedSuchThat value 
+               (fun v =&gt; has_type_value v T)
 </pre>
 
 <div class="paragraph"> </div>
@@ -1764,7 +1787,7 @@ Now, here is a brute-force decision procedure for the typing
     distribution! 
 <div class="paragraph"> </div>
 
-<a name="lab93"></a><h2 class="section">(More) Typeclasses for Generation</h2>
+<a name="lab96"></a><h2 class="section">(More) Typeclasses for Generation</h2>
 
 <div class="paragraph"> </div>
 
@@ -1815,7 +1838,7 @@ A variant that takes a size,...
 </div>
 
 <div class="doc">
-<a name="lab94"></a><h2 class="section">Using "SuchThat" Typeclasses</h2>
+<a name="lab97"></a><h2 class="section">Using "SuchThat" Typeclasses</h2>
 
 <div class="paragraph"> </div>
 
