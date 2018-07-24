@@ -5,6 +5,7 @@ EXCLUDE= Proofs Spec/TopLevelSpec.v Spec/Vst Spec/main.v \
 OCAMLBUILDFLAGS=-libs unix,str
 QC = quickChick -color -top "" -ocamlbuild '$(OCAMLBUILDFLAGS)' \
 	 -cmd '$(MAKE) coq-qc' $(QCFLAGS)
+CFLAGS=-DBUFFER_SIZE=3
 
 coq: Makefile.coq $(EXTR_BIN)
 	@$(MAKE) -f $<
@@ -28,11 +29,12 @@ testcoq:
 	$(QC) -s CLikeTest -exclude $(EXCLUDE)
 
 testexternal: $(SERVER)
+	$V$(RM) /tmp/server_log /tmp/client_log /tmp/server_error /tmp/client_error
 	$(QC) -s ExternalTest -N 100 -exclude $(EXCLUDE)
 
 $(SERVER): DeepWeb/Spec/main.c DeepWeb/Spec/macros.h
 	mkdir -p out/
-	$(CC) -IDeepWeb/Spec/ $< -o $@
+	$(CC) $(CFLAGS) -IDeepWeb/Spec/ $< -o $@
 
 server: $(SERVER) stop
 	exec $< &
