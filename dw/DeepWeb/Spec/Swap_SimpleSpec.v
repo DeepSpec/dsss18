@@ -267,8 +267,8 @@ Proof. reflexivity. Qed.
 
 (* The reason for including these "hypothetical events" in
    explanations is that it enables us to reject observations like
-   this, where a "missing" event is followed by one that is clearly
-   impossible: *)
+   this, where three "missing" events are followed by one that is
+   clearly impossible: *)
 Example bad_scrambled_trace_example_3 :
   is_scrambled_trace_of 1000 swap_spec_def [
     0 !;
@@ -279,7 +279,8 @@ Example bad_scrambled_trace_example_3 :
     1 <-- "d";
     1 <-- "e";
     1 <-- "f";
-    0 --> "X"
+    0 --> "0";
+    1 --> "X"
   ]%real = NotFound.
 Proof. reflexivity. Qed.
 

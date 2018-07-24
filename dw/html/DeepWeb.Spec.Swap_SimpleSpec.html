@@ -337,8 +337,8 @@
 <br/>
 <span class="comment">(*&nbsp;The&nbsp;reason&nbsp;for&nbsp;including&nbsp;these&nbsp;"hypothetical&nbsp;events"&nbsp;in<br/>
 &nbsp;&nbsp;&nbsp;explanations&nbsp;is&nbsp;that&nbsp;it&nbsp;enables&nbsp;us&nbsp;to&nbsp;reject&nbsp;observations&nbsp;like<br/>
-&nbsp;&nbsp;&nbsp;this,&nbsp;where&nbsp;a&nbsp;"missing"&nbsp;event&nbsp;is&nbsp;followed&nbsp;by&nbsp;one&nbsp;that&nbsp;is&nbsp;clearly<br/>
-&nbsp;&nbsp;&nbsp;impossible:&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;this,&nbsp;where&nbsp;three&nbsp;"missing"&nbsp;events&nbsp;are&nbsp;followed&nbsp;by&nbsp;one&nbsp;that&nbsp;is<br/>
+&nbsp;&nbsp;&nbsp;clearly&nbsp;impossible:&nbsp;*)</span><br/>
 <span class="id" title="keyword">Example</span> <a name="bad_scrambled_trace_example_3"><span class="id" title="definition">bad_scrambled_trace_example_3</span></a> :<br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#is_scrambled_trace_of"><span class="id" title="definition">is_scrambled_trace_of</span></a> 1000 <a class="idref" href="DeepWeb.Spec.Swap_SimpleSpec.html#swap_spec_def"><span class="id" title="definition">swap_spec_def</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#f83abbde7679bdbfec6afddd39d41e15"><span class="id" title="notation">[</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;0 <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#feb8153d04fc6665339c1391f2cece92"><span class="id" title="notation">!</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#f83abbde7679bdbfec6afddd39d41e15"><span class="id" title="notation">;</span></a><br/>
@@ -349,7 +349,8 @@
 &nbsp;&nbsp;&nbsp;&nbsp;1 <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#df3bb969d0dcda948e709d6197bf8f6a"><span class="id" title="notation">&lt;--</span></a> "d"<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#f83abbde7679bdbfec6afddd39d41e15"><span class="id" title="notation">;</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;1 <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#df3bb969d0dcda948e709d6197bf8f6a"><span class="id" title="notation">&lt;--</span></a> "e"<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#f83abbde7679bdbfec6afddd39d41e15"><span class="id" title="notation">;</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;1 <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#df3bb969d0dcda948e709d6197bf8f6a"><span class="id" title="notation">&lt;--</span></a> "f"<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#f83abbde7679bdbfec6afddd39d41e15"><span class="id" title="notation">;</span></a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;0 <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#610ef7cbd8f1a68e9592a636940548c0"><span class="id" title="notation">--&gt;</span></a> "X"<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;0 <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#610ef7cbd8f1a68e9592a636940548c0"><span class="id" title="notation">--&gt;</span></a> "0"<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#f83abbde7679bdbfec6afddd39d41e15"><span class="id" title="notation">;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1 <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#610ef7cbd8f1a68e9592a636940548c0"><span class="id" title="notation">--&gt;</span></a> "X"<br/>
 &nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#f83abbde7679bdbfec6afddd39d41e15"><span class="id" title="notation">]</span></a>%<span class="id" title="var">real</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#1c39bf18749e5cc609e83c0a0ba5a372"><span class="id" title="notation">=</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#NotFound"><span class="id" title="constructor">NotFound</span></a>.<br/>
 <span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">reflexivity</span>. <span class="id" title="keyword">Qed</span>.<br/>
 
