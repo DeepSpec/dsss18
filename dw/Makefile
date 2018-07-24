@@ -58,7 +58,7 @@ clean:
 	find . -name "*.vo" -print -exec rm -rf {} \;
 	find . -name "*.glob" -print -exec rm -rf {} \;
 	$(MAKE) -f Makefile.coq clean
-	-rm -rf ../_qc_dw.tmp html Makefile.coq*
+	-rm -rf ../_qc_dw.tmp html Makefile.coq* _CoqProject.Vst
 
 .PHONY: html clean coq-qc test coq
 
