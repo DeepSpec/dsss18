@@ -45,7 +45,6 @@ Declare Instance scrambled_transitive : Transitive network_scrambled0.
 
 (* Note that the "well-formedness" precondition is implicit
    in the two preconditions of transitivity. *)
-(* TODO: [network_scrambled] actually needs to be fixed. *)
 Parameter scrambled_preserves_wf : forall tr str : real_trace,
     network_scrambled0 tr str ->
     wf_trace tr /\ wf_trace str.
@@ -128,8 +127,7 @@ Axiom equiv_open_wf :
 
 Lemma scrambled_preserves_wf : forall tr str : real_trace,
     network_scrambled0 tr str ->
-    wf_trace tr /\
-    wf_trace str.
+    wf_trace tr /\ wf_trace str.
 Proof.
 Admitted.
 
@@ -222,19 +220,6 @@ Definition clean_state (ns : network_state) := forall c,
     connection_inbytes  cs = [] /\
     connection_outbytes cs = [].
 
-(*
-Lemma connect_accept ns c c0 :
-  Map.lookup (unsafe_accept_ns (unsafe_connect_ns ns c) c) c0
-  = if c = c0 ? then
-      {| connection_status := ACCEPTED;
-         connection_inbytes := [];
-         connection_outbytes := []; |}
-    else
-      Map.lookup ns c0.
-Proof.
-Admitted.
-*)
-
 Definition bind_transition {S B}
            (a : option (S * unit)) (b : S -> option (S * B)) :
   option (S * B) :=
@@ -244,40 +229,6 @@ Definition bind_transition {S B}
   end.
 
 Infix ">>=" := bind_transition (at level 30).
-
-Lemma direct_to_server ns c b :
-  connection_inbytes (Map.lookup ns c) = [] ->
-  (client_send c b ns >>= server_recv c) = Some (ns, b).
-Proof.
-  intro Hc.
-  simpl.
-  rewrite Hc.
-  unfold server_recv.
-  rewrite Map.update_lookup_eq by reflexivity.
-  simpl.
-  rewrite Map.update_update_eq by reflexivity.
-  erewrite Map.lookup_update_eq; eauto.
-  destruct Map.lookup.
-  unfold update_in; simpl.
-  f_equal; auto.
-Qed.
-
-Lemma direct_from_server ns c b :
-  connection_outbytes (Map.lookup ns c) = [] ->
-  server_send c b ns >>= client_recv c = Some (ns, b).
-Proof.
-  intro Hc.
-  simpl.
-  rewrite Hc.
-  unfold client_recv.
-  rewrite Map.update_lookup_eq by reflexivity.
-  simpl.
-  rewrite Map.update_update_eq by reflexivity.
-  erewrite Map.lookup_update_eq; eauto.
-  destruct Map.lookup.
-  unfold update_out; simpl.
-  f_equal; auto.
-Qed.
 
 Lemma open_scrambled_reflexive :
   forall ns tr,
@@ -331,32 +282,58 @@ Proof.
       { rewrite Map.update_lookup_neq by assumption.
         split; auto.
         intros []; auto; contradiction. }
+
   - (* ToServer c b :: tr *)
+    assert (connection_status (Map.lookup ns c) = ACCEPTED).
+    { apply Htr_open. }
     eapply ScrambleClient.
-    { reflexivity. }
+    { simpl. unfold client_send. rewrite H.
+      rewrite (proj1 (proj2 (Hns_clean _))).
+      simpl.
+      reflexivity. }
     eapply ScrambleServer.
     { simpl.
-      pose proof direct_to_server as H.
-      simpl in H.
+      unfold server_recv.
+      rewrite Map.update_lookup_eq by reflexivity.
+      simpl.
       rewrite H.
-      reflexivity.
+      rewrite Map.update_update_eq by reflexivity.
+      reflexivity. }
+    replace (update_in _ _) with (Map.lookup ns c).
+    { erewrite Map.lookup_update_eq by reflexivity.
+      apply IHtr.
+      { assumption. }
+      { apply Htr_open. } }
+    { specialize (Hns_clean c).
+      destruct Map.lookup; unfold update_in; simpl in *.
+      f_equal.
       apply Hns_clean. }
-    apply IHtr.
-    { auto. }
-    { apply Htr_open. }
+
   - (* FromServer c b :: tr *)
+    assert (connection_status (Map.lookup ns c) = ACCEPTED).
+    { apply Htr_open. }
     eapply ScrambleServer.
-    { reflexivity. }
+    { simpl. unfold server_send. rewrite H.
+      rewrite (proj2 (proj2 (Hns_clean _))).
+      simpl.
+      reflexivity. }
     eapply ScrambleClient.
     { simpl.
-      pose proof direct_from_server as H.
-      simpl in H.
+      unfold client_recv.
+      rewrite Map.update_lookup_eq by reflexivity.
+      simpl.
       rewrite H.
-      reflexivity.
+      rewrite Map.update_update_eq by reflexivity.
+      reflexivity. }
+    replace (update_out _ _) with (Map.lookup ns c).
+    { erewrite Map.lookup_update_eq by reflexivity.
+      apply IHtr.
+      { assumption. }
+      { apply Htr_open. } }
+    { specialize (Hns_clean c).
+      destruct Map.lookup; unfold update_out; simpl in *.
+      f_equal.
       apply Hns_clean. }
-    apply IHtr.
-    { auto. }
-    { apply Htr_open. }
 Qed.
 
 Instance scrambled_reflexive : Reflexive network_scrambled_wf0.

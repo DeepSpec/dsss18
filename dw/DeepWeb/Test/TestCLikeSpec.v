@@ -42,7 +42,7 @@ Sample random_trace_server.
 *)
 
 Definition test :=
-  check_trace_incl_def
+  refines_mod_network_test
     Swap_SimpleSpec.swap_spec_def
     swap_server.
 

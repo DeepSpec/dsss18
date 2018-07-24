@@ -15,7 +15,7 @@ Require Import DeepWeb.Lib.Util.
 
 From DeepWeb Require Import
      Lib.SimpleSpec_NetworkModel
-     Lib.SimpleSpec_NetworkInterface
+     Lib.SimpleSpec_Server
      Lib.SimpleSpec_Observer
      Lib.SimpleSpec_Scramble
      Lib.SimpleSpec_Traces.
@@ -38,7 +38,6 @@ Import ScramblingFacts.
    "descrambled trace" [dstr] in the "linear spec".  *)
 Definition refines_mod_network server spec : Prop :=
   forall tr : real_trace,
-    wf_trace tr ->
     is_server_trace server tr ->
     forall str : real_trace,
       network_scrambled0 tr str ->
@@ -70,8 +69,9 @@ Definition strong_sound :
     strong_refines_mod_network server spec ->
     refines_mod_network server spec.
 Proof.
-  intros server spec Hstrong tr Htr_wf Htr_istrace str Hstr_scrambled.
-  destruct (Hstrong tr Htr_wf Htr_istrace)
+  intros server spec Hstrong tr Htr_istrace str Hstr_scrambled.
+  pose proof (scrambled_preserves_wf _ _ Hstr_scrambled) as Hwf.
+  destruct (Hstrong tr (proj1 Hwf) Htr_istrace)
     as [dstr [Hdstr_scrambled Hdstr_istrace]].
   exists dstr.
   split; auto.
@@ -84,7 +84,7 @@ Definition strong_complete :
     strong_refines_mod_network server spec.
 Proof.
   intros server spec Hcorrect tr Htr_wf Htr_istrace.
-  destruct (Hcorrect tr Htr_wf Htr_istrace tr)
+  destruct (Hcorrect tr Htr_istrace tr)
     as [dstr [Hdstr_scrambled Hdstr_istrace]].
   { apply scrambled_reflexive; auto. }
   exists dstr.

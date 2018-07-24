@@ -162,50 +162,67 @@ Proof.
   rewrite Hc; auto.
 Qed.
 
-(* The server receives a byte on a connection.
-   The connection must be [ACCEPTED], and the
+(* The server receives a byte [b] on connection [c].
+   The connection [c] must be [ACCEPTED], and the
    [connection_inbytes] buffer must be nonempty. *)
 Definition server_recv (c : connection_id) : transition byte :=
   fun ns =>
     let cs := Map.lookup ns c in
-    match connection_inbytes cs with
-    | [] => None
-    | b :: bs =>
-      let cs := update_in bs cs in
-      let ns := Map.update c cs ns in
-      Some (ns, b)
+    match connection_status cs with
+    | ACCEPTED =>
+      match connection_inbytes cs with
+      | [] => None
+      | b :: bs =>
+        let cs := update_in bs cs in
+        let ns := Map.update c cs ns in
+        Some (ns, b)
+      end
+    | PENDING | CLOSED => None
     end.
 
-(* The server sends a byte.
-   The connection must be [ACCEPTED]. *)
+(* The server sends a byte [b] on connection [c].
+   The connection [c] must be [ACCEPTED]. *)
 Definition server_send
            (c : connection_id) (b : byte) : transition unit :=
   fun ns =>
     let cs := Map.lookup ns c in
-    let cs := update_out (connection_outbytes cs ++ [b]) cs in
-    Some (Map.update c cs ns, tt).
+    match connection_status cs with
+    | ACCEPTED =>
+      let cs := update_out (connection_outbytes cs ++ [b]) cs in
+      Some (Map.update c cs ns, tt)
+    | PENDING | CLOSED => None
+    end.
 
-(* The client receives a byte sent by the server.
-   The connection is assumed to be [ACCEPTED] (the server must
-   accept a connection before sending bytes on it). *)
+(* The client receives a byte sent by the server on connection [c].
+   The connection [c] must be [ACCEPTED] (the server must
+   accept a connection before sending bytes on it),
+   and the [connections_outbytes] buffer must be nonempty. *)
 Definition client_recv (c : connection_id) : transition byte :=
   fun ns =>
     let cs := Map.lookup ns c in
-    match connection_outbytes cs with
-    | [] => None
-    | b :: bs =>
-      let cs := update_out bs cs in
-      let ns := Map.update c cs ns in
-      Some (ns, b)
+    match connection_status cs with
+    | ACCEPTED =>
+      match connection_outbytes cs with
+      | [] => None
+      | b :: bs =>
+        let cs := update_out bs cs in
+        let ns := Map.update c cs ns in
+        Some (ns, b)
+      end
+    | PENDING | CLOSED => None
     end.
 
-(* The client sends a byte to the server.
-   The connection is assumed to be [PENDING] or [ACCEPTED]. *)
+(* The client sends a byte [b] to the server on connection [c].
+   The connection [c] must be [PENDING] or [ACCEPTED]. *)
 Definition client_send
            (c : connection_id) (b : byte) : transition unit :=
   fun ns =>
     let cs := Map.lookup ns c in
-    let cs := update_in (connection_inbytes cs ++ [b]) cs in
-    Some (Map.update c cs ns, tt).
+    match connection_status cs with
+    | ACCEPTED | PENDING =>
+      let cs := update_in (connection_inbytes cs ++ [b]) cs in
+      Some (Map.update c cs ns, tt)
+    | CLOSED => None
+    end.
 
 End NetworkModel.
