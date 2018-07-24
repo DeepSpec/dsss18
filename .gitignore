@@ -37,3 +37,4 @@ vfa/Makefile.conf
 dw/Makefile.coq
 dw/Makefile.coq.conf
 _qc_*.tmp
+vst

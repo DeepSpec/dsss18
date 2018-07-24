@@ -1,21 +1,29 @@
-DeepSpec Web Server Demo
-========================
+DeepSpec Swap Server Demo
+=========================
 
 Directory Structure
 -------------------
 
-    Custom/       Miscellaneous standard library extensions
-    FreeMonad/    Interaction trees 
-    IODemo/       Simple I/O demo
-    DeepWeb/      Larger server demo
-       Spec         Specifications     
-       Proofs       Proofs
-       Util         Miscellaneous utilities
-       Lib          Effect types
-       Test         Testing
+    Custom/          Miscellaneous standard library extensions
+    DeepWeb/         Swap server demo
+       Free/Monad/     Interaction trees 
+       Spec            Specifications     
+       Proofs          Proofs
+       Lib             Effect types
+       Test            Testing
 
 Building
 --------
+
+Make sure QuickChick is installed.  Then do:
+
+    make
+
+Building with VST
+-----------------
+
+[Warning: You may need to install the upo-to-the-minute version of VST 
+from https://github.com/PrincetonUniversity/VST.git to do this]
 
 In this `dw/` directory, create a `CONFIGURE` file containing
 
@@ -26,11 +34,15 @@ installation.
 
 Then run
 
-    make
-
-The proofs are currently not built as they are not compatible with VST 2.2.
+    make build-with-vst
 
 Reading
 -------
 
-The top-level spec lives in Spec/TopLevelSpec.v
+The links in 
+
+    html/toc.html
+
+offer a good sequence for reading the first several files (up to
+DeepWed/Spec/TopLevelSpec -- the files after that are internal).
+
