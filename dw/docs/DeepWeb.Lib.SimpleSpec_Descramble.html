@@ -19,6 +19,9 @@
 <h1 class="libtitle">Library DeepWeb.Lib.SimpleSpec_Descramble</h1>
 
 <div class="code">
+<span class="comment">(*&nbsp;Traces&nbsp;that&nbsp;a&nbsp;client&nbsp;observes&nbsp;are&nbsp;scrambled&nbsp;by&nbsp;the&nbsp;network.<br/>
+&nbsp;&nbsp;&nbsp;We&nbsp;try&nbsp;to&nbsp;explain&nbsp;it&nbsp;by&nbsp;"descrambling"&nbsp;it&nbsp;into&nbsp;a&nbsp;trace<br/>
+&nbsp;&nbsp;&nbsp;that&nbsp;is&nbsp;recognized&nbsp;by&nbsp;a&nbsp;given&nbsp;spec.&nbsp;*)</span><br/>
 
 <br/>
 <span class="id" title="keyword">Generalizable</span> <span class="id" title="keyword">Variable</span> <span class="id" title="var">E</span>.<br/>
@@ -56,15 +59,30 @@
 <br/>
 
 <br/>
+<span class="comment">(*&nbsp;The&nbsp;constraints&nbsp;on&nbsp;the&nbsp;network&nbsp;are:<br/>
+&nbsp;&nbsp;&nbsp;-&nbsp;a&nbsp;connection&nbsp;must&nbsp;be&nbsp;open&nbsp;before&nbsp;bytes&nbsp;can&nbsp;be&nbsp;exchanged&nbsp;on&nbsp;it;<br/>
+&nbsp;&nbsp;&nbsp;-&nbsp;two&nbsp;bytes&nbsp;going&nbsp;in&nbsp;the&nbsp;same&nbsp;direction&nbsp;on&nbsp;the&nbsp;same&nbsp;connection<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;must&nbsp;arrive&nbsp;in-order;<br/>
+&nbsp;&nbsp;&nbsp;-&nbsp;if&nbsp;we&nbsp;get&nbsp;a&nbsp;byte&nbsp;<span class="inlinecode"><span class="id" title="var">b1</span></span>&nbsp;from&nbsp;the&nbsp;server&nbsp;before&nbsp;we&nbsp;send&nbsp;some&nbsp;<span class="inlinecode"><span class="id" title="var">b2</span></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;it,&nbsp;then&nbsp;the&nbsp;server&nbsp;definitely&nbsp;sent&nbsp;<span class="inlinecode"><span class="id" title="var">b1</span></span>&nbsp;before&nbsp;it<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;can&nbsp;receive&nbsp;<span class="inlinecode"><span class="id" title="var">b2</span></span>.&nbsp;(<span class="inlinecode"><span class="id" title="var">FromServer</span>,<span class="id" title="var">ToServer</span></span>&nbsp;cannot&nbsp;be&nbsp;descrambled<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;<span class="inlinecode"><span class="id" title="var">ToServer</span>,<span class="id" title="var">FromServer</span></span>,&nbsp;regardless&nbsp;of&nbsp;the&nbsp;connections<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;where&nbsp;the&nbsp;two&nbsp;events&nbsp;happen.)<br/>
+&nbsp;*)</span><br/>
 
 <br/>
+<span class="comment">(*&nbsp;Unary&nbsp;tree&nbsp;node&nbsp;carrying&nbsp;some&nbsp;event.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Inductive</span> <a name="eventE"><span class="id" title="inductive">eventE</span></a> : <span class="id" title="keyword">Type</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Type</span> :=<br/>
 | <a name="Happened"><span class="id" title="constructor">Happened</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#hypo_event"><span class="id" title="definition">hypo_event</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#eventE"><span class="id" title="inductive">eventE</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;We&nbsp;enumerate&nbsp;descramblings&nbsp;in&nbsp;a&nbsp;tree&nbsp;structure,&nbsp;using<br/>
+&nbsp;&nbsp;&nbsp;<span class="inlinecode"><span class="id" title="var">nondetE</span></span>&nbsp;to&nbsp;branch,&nbsp;so&nbsp;that&nbsp;each&nbsp;successful&nbsp;pat&nbsp;(i.e.,&nbsp;not<br/>
+&nbsp;&nbsp;&nbsp;leading&nbsp;to&nbsp;failure)&nbsp;is&nbsp;a&nbsp;descrambling&nbsp;of&nbsp;a&nbsp;given&nbsp;trace.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="eventE'"><span class="id" title="definition">eventE'</span></a> := <a class="idref" href="DeepWeb.Free.Monad.Common.html#NonDeterminismBis.nondetE"><span class="id" title="inductive">nondetE</span></a> <a class="idref" href="DeepWeb.Free.Monad.Effect.html#a713615ae89f5e79b81b3a5662d0793f"><span class="id" title="notation">+'</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#eventE"><span class="id" title="inductive">eventE</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;Helper&nbsp;for&nbsp;<span class="inlinecode"><span class="id" title="var">pick_event</span></span>.&nbsp;*)</span><br/>
 <span class="id" title="keyword">CoFixpoint</span> <a name="pick_event'"><span class="id" title="definition">pick_event'</span></a> (<span class="id" title="var">t_prev</span> <span class="id" title="var">t</span> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#real_trace"><span class="id" title="definition">real_trace</span></a>) : <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#eventE'"><span class="id" title="definition">eventE'</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#real_trace"><span class="id" title="definition">real_trace</span></a> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#t"><span class="id" title="variable">t</span></a> <span class="id" title="keyword">with</span><br/>
 &nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#145bedf8a5d4a541831f3f70db03085c"><span class="id" title="notation">[]</span></a> ⇒ <a class="idref" href="DeepWeb.Free.Monad.Common.html#NonDeterminismBis.fail"><span class="id" title="definition">fail</span></a> "empty trace"<br/>
@@ -112,6 +130,9 @@
 &nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;Given&nbsp;a&nbsp;scrambled&nbsp;trace,&nbsp;remove&nbsp;one&nbsp;event&nbsp;that&nbsp;could&nbsp;potentially<br/>
+&nbsp;&nbsp;&nbsp;be&nbsp;the&nbsp;next&nbsp;one&nbsp;in&nbsp;a&nbsp;descrambling.<br/>
+&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="pick_event"><span class="id" title="definition">pick_event</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#real_trace"><span class="id" title="definition">real_trace</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#eventE'"><span class="id" title="definition">eventE'</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#real_trace"><span class="id" title="definition">real_trace</span></a> :=<br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#pick_event'"><span class="id" title="definition">pick_event'</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#145bedf8a5d4a541831f3f70db03085c"><span class="id" title="notation">[]</span></a>.<br/>
 
@@ -130,6 +151,9 @@
 &nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;Once&nbsp;the&nbsp;only&nbsp;things&nbsp;left&nbsp;are&nbsp;messages&nbsp;sent&nbsp;to&nbsp;the&nbsp;server,<br/>
+&nbsp;&nbsp;&nbsp;we&nbsp;drop&nbsp;them,&nbsp;since&nbsp;there&nbsp;is&nbsp;no&nbsp;response&nbsp;to&nbsp;compare&nbsp;them<br/>
+&nbsp;&nbsp;&nbsp;against.&nbsp;*)</span><br/>
 <span class="id" title="keyword">CoFixpoint</span> <a name="descramble"><span class="id" title="definition">descramble</span></a> (<span class="id" title="var">t</span> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#real_trace"><span class="id" title="definition">real_trace</span></a>) : <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#eventE'"><span class="id" title="definition">eventE'</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#filter"><span class="id" title="definition">filter</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#is_FromServer"><span class="id" title="definition">is_FromServer</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#t"><span class="id" title="variable">t</span></a> <span class="id" title="keyword">with</span><br/>
 &nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#145bedf8a5d4a541831f3f70db03085c"><span class="id" title="notation">[]</span></a> ⇒ <a class="idref" href="Custom.Monad.html#ret"><span class="id" title="method">ret</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#tt"><span class="id" title="constructor">tt</span></a><br/>
@@ -139,6 +163,7 @@
 &nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;Functions&nbsp;to&nbsp;list&nbsp;the&nbsp;descrambled&nbsp;traces&nbsp;*)</span><br/>
 <span class="id" title="keyword">Section</span> <a name="ListDescramble"><span class="id" title="section">ListDescramble</span></a>.<br/>
 
 <br/>
@@ -173,21 +198,35 @@
 &nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;<span class="inlinecode"><span class="id" title="var">None</span></span>&nbsp;if&nbsp;not&nbsp;enough&nbsp;fuel.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="list_eventE"><span class="id" title="definition">list_eventE</span></a> (<span class="id" title="var">fuel</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) (<span class="id" title="var">s</span> : <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#eventE'"><span class="id" title="definition">eventE'</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>) :<br/>
 &nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#option"><span class="id" title="inductive">option</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#hypo_trace"><span class="id" title="definition">hypo_trace</span></a>) :=<br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#list_eventE'"><span class="id" title="definition">list_eventE'</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#fuel"><span class="id" title="variable">fuel</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#s"><span class="id" title="variable">s</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#145bedf8a5d4a541831f3f70db03085c"><span class="id" title="notation">[]</span></a> (<span class="id" title="keyword">fun</span> <span class="id" title="var">t</span> ⇒ <a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#t"><span class="id" title="variable">t</span></a>).<br/>
 
 <br/>
+<span class="comment">(*&nbsp;Fuel&nbsp;of&nbsp;the&nbsp;order&nbsp;of&nbsp;<span class="inlinecode"><span class="id" title="var">length</span></span> <span class="inlinecode"><span class="id" title="var">t</span></span> <span class="inlinecode">^</span> <span class="inlinecode">2</span>&nbsp;should&nbsp;suffice.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="list_descramblings"><span class="id" title="definition">list_descramblings</span></a> (<span class="id" title="var">fuel</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) (<span class="id" title="var">t</span> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#real_trace"><span class="id" title="definition">real_trace</span></a>) :<br/>
 &nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#option"><span class="id" title="inductive">option</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#hypo_trace"><span class="id" title="definition">hypo_trace</span></a>) :=<br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#list_eventE"><span class="id" title="definition">list_eventE</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#fuel"><span class="id" title="variable">fuel</span></a> (<a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#descramble"><span class="id" title="definition">descramble</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#t"><span class="id" title="variable">t</span></a>).<br/>
 
 <br/>
+<span class="comment">(*<br/>
+Compute&nbsp;list_descramblings&nbsp;50&nbsp;<span class="inlinecode"></span>
+  <span class="inlinecode"><span class="id" title="var">Event</span></span> <span class="inlinecode"><span class="id" title="var">ObsConnect</span></span> <span class="inlinecode">0;</span>
+  <span class="inlinecode"><span class="id" title="var">Event</span></span> <span class="inlinecode">(<span class="id" title="var">ObsToServer</span></span> <span class="inlinecode">0</span> <span class="inlinecode"><span class="id" title="var">tt</span>)</span> <span class="inlinecode">&quot;<span class="id" title="var">A</span>&quot;;</span>
+  <span class="inlinecode"><span class="id" title="var">Event</span></span> <span class="inlinecode"><span class="id" title="var">ObsConnect</span></span> <span class="inlinecode">1;</span>
+  <span class="inlinecode"><span class="id" title="var">Event</span></span> <span class="inlinecode">(<span class="id" title="var">ObsToServer</span></span> <span class="inlinecode">0</span> <span class="inlinecode"><span class="id" title="var">tt</span>)</span> <span class="inlinecode">&quot;<span class="id" title="var">B</span>&quot;;</span>
+  <span class="inlinecode"><span class="id" title="var">Event</span></span> <span class="inlinecode">(<span class="id" title="var">ObsFromServer</span></span> <span class="inlinecode">0)</span> <span class="inlinecode">(<span class="id" title="var">Some</span></span> <span class="inlinecode">&quot;<span class="id" title="var">C</span>&quot;)</span>
+<span class="inlinecode"></span>*)</span><br/>
 
 <br/>
 <span class="id" title="keyword">End</span> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#ListDescramble"><span class="id" title="section">ListDescramble</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;Those&nbsp;descramblings&nbsp;are&nbsp;still&nbsp;missing&nbsp;<span class="inlinecode"><span class="id" title="var">ObsFromServer</span></span>&nbsp;events<br/>
+&nbsp;&nbsp;&nbsp;with&nbsp;holes&nbsp;(i.e.,&nbsp;with&nbsp;<span class="inlinecode"><span class="id" title="var">None</span></span>&nbsp;in&nbsp;the&nbsp;last&nbsp;field&nbsp;of&nbsp;<span class="inlinecode"><span class="id" title="var">Event</span></span>).<br/>
+&nbsp;&nbsp;&nbsp;We&nbsp;will&nbsp;insert&nbsp;them&nbsp;as&nbsp;needed&nbsp;when&nbsp;comparing&nbsp;the&nbsp;tree&nbsp;of<br/>
+&nbsp;&nbsp;&nbsp;descramblings&nbsp;with&nbsp;the&nbsp;spec&nbsp;tree.&nbsp;*)</span><br/>
 
 <br/>
 <span class="id" title="keyword">Definition</span> <a name="select_input_events"><span class="id" title="definition">select_input_events</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#real_trace"><span class="id" title="definition">real_trace</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> (<a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#real_event"><span class="id" title="definition">real_event</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#d19c7eafd0e2d195d10df94b392087b5"><span class="id" title="notation">×</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#real_trace"><span class="id" title="definition">real_trace</span></a>) :=<br/>
@@ -258,6 +297,12 @@
 &nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;<span class="inlinecode"><span class="id" title="var">s</span></span>:&nbsp;tree&nbsp;of&nbsp;acceptable&nbsp;traces&nbsp;(spec)<br/>
+&nbsp;&nbsp;&nbsp;<span class="inlinecode"><span class="id" title="var">t</span></span>:&nbsp;scrambled&nbsp;trace<br/>
+<br/>
+&nbsp;&nbsp;&nbsp;The&nbsp;result&nbsp;tree&nbsp;has&nbsp;a&nbsp;<span class="inlinecode"><span class="id" title="var">Ret</span></span>&nbsp;leaf&nbsp;iff&nbsp;there&nbsp;is&nbsp;a&nbsp;descrambled<br/>
+&nbsp;&nbsp;&nbsp;trace&nbsp;accepted&nbsp;by&nbsp;<span class="inlinecode"><span class="id" title="var">s</span></span>&nbsp;(<span class="inlinecode"><span class="id" title="var">is_trace_of</span></span>).<br/>
+&nbsp;*)</span><br/>
 <span class="id" title="keyword">CoFixpoint</span> <a name="intersect_trace"><span class="id" title="definition">intersect_trace</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">s</span> : <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> (<a class="idref" href="DeepWeb.Free.Monad.Common.html#NonDeterminismBis.nondetE"><span class="id" title="inductive">nondetE</span></a> <a class="idref" href="DeepWeb.Free.Monad.Effect.html#a713615ae89f5e79b81b3a5662d0793f"><span class="id" title="notation">+'</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#observerE"><span class="id" title="inductive">observerE</span></a>) <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">t</span> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#real_trace"><span class="id" title="definition">real_trace</span></a>) :<br/>
@@ -326,11 +371,22 @@
 &nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;SHOW&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="is_scrambled_trace_of"><span class="id" title="definition">is_scrambled_trace_of</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">fuel</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) (<span class="id" title="var">s</span> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#itree_spec"><span class="id" title="definition">itree_spec</span></a>) (<span class="id" title="var">t</span> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#real_trace"><span class="id" title="definition">real_trace</span></a>) : <a class="idref" href="DeepWeb.Lib.Util.html#result"><span class="id" title="inductive">result</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#hypo_trace"><span class="id" title="definition">hypo_trace</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> :=<br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#to_result"><span class="id" title="definition">to_result</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#fuel"><span class="id" title="variable">fuel</span></a> (<a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#find'"><span class="id" title="definition">find'</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#64ee52ab9627fca8d637e2f1207a2990"><span class="id" title="notation">[</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">(</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#145bedf8a5d4a541831f3f70db03085c"><span class="id" title="notation">[]</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">,</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#intersect_trace"><span class="id" title="definition">intersect_trace</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#s"><span class="id" title="variable">s</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#t"><span class="id" title="variable">t</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">)</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#64ee52ab9627fca8d637e2f1207a2990"><span class="id" title="notation">]</span></a>).<br/>
 
 <br/>
+<span class="comment">(*&nbsp;We&nbsp;will&nbsp;then&nbsp;generate&nbsp;traces&nbsp;produced&nbsp;by&nbsp;a&nbsp;server&nbsp;to&nbsp;test&nbsp;them<br/>
+&nbsp;&nbsp;&nbsp;with&nbsp;<span class="inlinecode"><span class="id" title="var">is_scrambled_trace_of</span></span>.<br/>
+&nbsp;&nbsp;&nbsp;There&nbsp;are&nbsp;two&nbsp;ways:<br/>
+&nbsp;&nbsp;&nbsp;-&nbsp;We&nbsp;can&nbsp;compile&nbsp;and&nbsp;run&nbsp;the&nbsp;actual&nbsp;C&nbsp;server,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;talking&nbsp;to&nbsp;it&nbsp;over&nbsp;actual&nbsp;sockets.&nbsp;This&nbsp;is&nbsp;implemented&nbsp;in<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="inlinecode"><span class="id" title="var">Test</span>/<span class="id" title="var">ExternalTest.v</span></span>.<br/>
+&nbsp;&nbsp;&nbsp;-&nbsp;We&nbsp;can&nbsp;generate&nbsp;traces&nbsp;by&nbsp;walking&nbsp;through&nbsp;the&nbsp;itree&nbsp;model&nbsp;of<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;C&nbsp;program.&nbsp;<span class="inlinecode"><span class="id" title="var">Lib</span>/<span class="id" title="var">SimpleSpec_ServerTrace.v</span></span><br/>
+&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;/SHOW&nbsp;*)</span><br/>
 </div>
 </div>
 

@@ -114,6 +114,7 @@ Leaving Taus as uninterpreted actions, we have a monad,
 <span class="id" title="keyword">Qed</span>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;Axiom&nbsp;EqM_eq&nbsp;:&nbsp;forall&nbsp;a&nbsp;b,&nbsp;EqM&nbsp;a&nbsp;b&nbsp;-&gt;&nbsp;a&nbsp;=&nbsp;b.&nbsp;*)</span><br/>
 
 <br/>
 <span class="id" title="keyword">End</span> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#CoinductiveEq"><span class="id" title="section">CoinductiveEq</span></a>.<br/>
@@ -223,7 +224,8 @@ Equivalence up to tau.
 
 <br/>
 <span class="id" title="keyword">CoInductive</span> <a name="EquivUpToTau"><span class="id" title="inductive">EquivUpToTau</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Relations.Relation_Definitions.html#relation"><span class="id" title="definition">relation</span></a> (<a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#Lawful.E"><span class="id" title="variable">E</span></a> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#Lawful.UpToTau.X"><span class="id" title="variable">X</span></a>) :=<br/>
-<br/>
+<span class="comment">(*&nbsp;Equality&nbsp;with&nbsp;spin&nbsp;is&nbsp;undecidable,<br/>
+&nbsp;&nbsp;&nbsp;but&nbsp;one&nbsp;can&nbsp;coinductively&nbsp;generate&nbsp;a&nbsp;proof&nbsp;with&nbsp;this.&nbsp;*)</span><br/>
 | <a name="EquivTau"><span class="id" title="constructor">EquivTau</span></a> : <span class="id" title="keyword">∀</span> <span class="id" title="var">s</span> <span class="id" title="var">t</span>,<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Verif.html#EquivUpToTau"><span class="id" title="inductive">EquivUpToTau</span></a> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#s"><span class="id" title="variable">s</span></a> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#t"><span class="id" title="variable">t</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Verif.html#EquivUpToTau"><span class="id" title="inductive">EquivUpToTau</span></a> (<a class="idref" href="DeepWeb.Free.Monad.Free.html#Tau"><span class="id" title="constructor">Tau</span></a> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#s"><span class="id" title="variable">s</span></a>) (<a class="idref" href="DeepWeb.Free.Monad.Free.html#Tau"><span class="id" title="constructor">Tau</span></a> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#t"><span class="id" title="variable">t</span></a>)<br/>
@@ -263,6 +265,7 @@ Equivalence up to tau.
 <span class="id" title="keyword">Qed</span>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;NB:&nbsp;EquivNoTau&nbsp;is&nbsp;not&nbsp;reflexive&nbsp;for&nbsp;Taus.&nbsp;*)</span><br/>
 
 <br/>
 <span class="id" title="keyword">Lemma</span> <a name="eutt_sym"><span class="id" title="lemma">eutt_sym</span></a> :<br/>
@@ -359,8 +362,8 @@ Equivalence up to tau.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">H2</span>;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H2</span> <span class="id" title="keyword">as</span> [ <span class="id" title="var">t2</span> <span class="id" title="var">u2</span> <span class="id" title="var">H2'</span> | <span class="id" title="var">t2</span> <span class="id" title="var">t2'</span> <span class="id" title="var">u2</span> <span class="id" title="var">u2'</span> <span class="id" title="var">Ht2</span> <span class="id" title="var">Hu2</span> <span class="id" title="var">H2'</span> ];<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">subst</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;-  <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">eapply</span> <span class="id" title="var">eutt_trans</span>; <span class="id" title="tactic">eauto</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;- <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="comment">(*&nbsp;Tau,&nbsp;Tau,&nbsp;Tau&nbsp;*)</span> <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">eapply</span> <span class="id" title="var">eutt_trans</span>; <span class="id" title="tactic">eauto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="comment">(*&nbsp;Tau,&nbsp;Tau&nbsp;&amp;&nbsp;_,&nbsp;_&nbsp;*)</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#push_tau"><span class="id" title="lemma">push_tau</span></a> <span class="id" title="tactic">in</span> <span class="id" title="var">H1</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">Hs1t1</span> := <a class="idref" href="DeepWeb.Free.Monad.Verif.html#tau_notau"><span class="id" title="lemma">tau_notau</span></a> <span class="id" title="var">H1</span> <span class="id" title="var">Ht2</span> <span class="id" title="var">H2'</span>).<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">Hs1t1</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">s'</span> [<span class="id" title="var">Hs1</span> <span class="id" title="var">Hs't2'</span>]].<br/>
@@ -368,7 +371,7 @@ Equivalence up to tau.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">constructor</span>; <span class="id" title="var">eassumption</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="var">eassumption</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">eapply</span> <span class="id" title="var">eunt_trans</span>; <span class="id" title="var">eassumption</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;- <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="comment">(*&nbsp;_,&nbsp;_&nbsp;&amp;&nbsp;Tau,&nbsp;Tau&nbsp;*)</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#eutt_sym"><span class="id" title="lemma">eutt_sym</span></a> <span class="id" title="tactic">in</span> <span class="id" title="var">H2</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#eunt_sym"><span class="id" title="lemma">eunt_sym</span></a> <span class="id" title="tactic">in</span> <span class="id" title="var">H1</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">Ht1u</span> := <a class="idref" href="DeepWeb.Free.Monad.Verif.html#tau_notau"><span class="id" title="lemma">tau_notau</span></a> <span class="id" title="var">H2</span> <span class="id" title="var">H0</span> <span class="id" title="var">H1</span>).<br/>
@@ -377,7 +380,7 @@ Equivalence up to tau.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="var">eassumption</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="var">eassumption</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">eapply</span> <span class="id" title="var">eunt_trans</span>; <span class="id" title="tactic">apply</span> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#eunt_sym"><span class="id" title="lemma">eunt_sym</span></a>; <span class="id" title="var">eassumption</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;- <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="comment">(*&nbsp;_,&nbsp;_,&nbsp;_&nbsp;*)</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">econstructor</span>; <span class="id" title="tactic">try</span> <span class="id" title="var">eassumption</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">eunt_trans</span>. <span class="id" title="var">eassumption</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">replace</span> <span class="id" title="var">t2'</span> <span class="id" title="keyword">with</span> <span class="id" title="var">t1'</span> <span class="id" title="tactic">in</span> ×.<br/>
@@ -433,6 +436,24 @@ Equivalence up to tau.
 <span class="id" title="keyword">Qed</span>.<br/>
 
 <br/>
+<span class="comment">(*<br/>
+Lemma&nbsp;untau_tau&nbsp;:&nbsp;forall&nbsp;s&nbsp;s',<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;UnTau&nbsp;s&nbsp;(Tau&nbsp;s')&nbsp;-&gt;&nbsp;exists&nbsp;s1,&nbsp;s&nbsp;=&nbsp;Tau&nbsp;s1&nbsp;/\&nbsp;UnTau&nbsp;s1&nbsp;s'.<br/>
+Proof.<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;induction&nbsp;doesn't&nbsp;give&nbsp;me&nbsp;s&nbsp;=&nbsp;Tau&nbsp;s'&nbsp;in&nbsp;the&nbsp;NoTau&nbsp;case...&nbsp;*)</span><br/>
+&nbsp;&nbsp;fix&nbsp;IH&nbsp;3.<br/>
+&nbsp;&nbsp;intros&nbsp;s&nbsp;s'&nbsp;H.<br/>
+&nbsp;&nbsp;inversion_clear&nbsp;H&nbsp;as&nbsp;<span class="inlinecode"></span> <span class="inlinecode"><span class="id" title="var">s0</span></span> <span class="inlinecode"><span class="id" title="var">s0'</span></span> <span class="inlinecode"><span class="id" title="var">H0</span></span> <span class="inlinecode">|</span> <span class="inlinecode"></span>.<br/>
+&nbsp;&nbsp;-&nbsp;apply&nbsp;IH&nbsp;in&nbsp;H0.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;destruct&nbsp;H0&nbsp;as&nbsp;<span class="inlinecode"><span class="id" title="var">s1</span></span> <span class="inlinecode">[</span> <span class="inlinecode"><span class="id" title="var">e1</span></span> <span class="inlinecode"><span class="id" title="var">H1</span></span> <span class="inlinecode">]</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;exists&nbsp;s0.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;split.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+&nbsp;auto.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+&nbsp;rewrite&nbsp;e1.&nbsp;constructor.&nbsp;auto.<br/>
+&nbsp;&nbsp;-&nbsp;exists&nbsp;s'.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;split;&nbsp;constructor.<br/>
+Qed.<br/>
+&nbsp;*)</span><br/>
 
 <br/>
 <span class="id" title="keyword">Lemma</span> <a name="untau_tau"><span class="id" title="lemma">untau_tau</span></a> : <span class="id" title="keyword">∀</span> <span class="id" title="var">s</span> <span class="id" title="var">s'</span>,<br/>
@@ -508,6 +529,8 @@ Equivalence up to tau.
 <span class="id" title="keyword">Section</span> <a name="Lawful.Congruence"><span class="id" title="section">Congruence</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;We&nbsp;decompose&nbsp;the&nbsp;handling&nbsp;of&nbsp;<span class="inlinecode"><span class="id" title="var">bindM</span></span>&nbsp;by<br/>
+&nbsp;&nbsp;&nbsp;first&nbsp;proving&nbsp;congruence&nbsp;of&nbsp;<span class="inlinecode"><span class="id" title="var">Core.bindM</span></span>.&nbsp;*)</span><br/>
 
 <br/>
 </div>
@@ -526,6 +549,7 @@ Everything should be a setoid.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Verif.html#EquivUpToTau"><span class="id" title="inductive">EquivUpToTau</span></a> (<span class="id" title="var">bind</span> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#s"><span class="id" title="variable">s</span></a> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#k"><span class="id" title="variable">k</span></a>) (<span class="id" title="var">bind</span> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#s'"><span class="id" title="variable">s'</span></a> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#k'"><span class="id" title="variable">k'</span></a>)).<br/>
 
 <br/>
+<span class="comment">(*&nbsp;FIXME:&nbsp;Give&nbsp;this&nbsp;a&nbsp;better&nbsp;name...&nbsp;*)</span><br/>
 <span class="id" title="keyword">Ltac</span> <span class="id" title="var">dispatch</span> :=<br/>
 &nbsp;&nbsp;<span class="id" title="tactic">try</span> (<span class="id" title="tactic">eapply</span> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#untau_trans"><span class="id" title="lemma">untau_trans</span></a>;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[ <span class="id" title="tactic">eapply</span> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#untau_bind"><span class="id" title="lemma">untau_bind</span></a>; <span class="id" title="tactic">eauto</span><br/>
@@ -535,18 +559,19 @@ Everything should be a setoid.
 <span class="id" title="keyword">Lemma</span> <a name="cong_bind_core"><span class="id" title="lemma">cong_bind_core</span></a> : <a class="idref" href="DeepWeb.Free.Monad.Verif.html#CONG_BIND"><span class="id" title="abbreviation">CONG_BIND</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#Core.bindM"><span class="id" title="definition">Core.bindM</span></a>.<br/>
 <span class="id" title="keyword">Proof</span>.<br/>
 &nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
-&nbsp;&nbsp;<span class="id" title="keyword">cofix</span> <span class="id" title="var">self</span>. &nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">s</span> <span class="id" title="var">s'</span> <span class="id" title="var">k</span> <span class="id" title="var">k'</span> <span class="id" title="var">Hss'</span> <span class="id" title="var">Hkk'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">cofix</span> <span class="id" title="var">self</span>. <span class="comment">(*&nbsp;Recurse&nbsp;in&nbsp;the&nbsp;Tau&nbsp;case.&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">s</span> <span class="id" title="var">s'</span> <span class="id" title="var">k</span> <span class="id" title="var">k'</span> <span class="id" title="var">Hss'</span> <span class="id" title="var">Hkk'</span>.<br/>
 &nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">Hss'</span>.<br/>
-&nbsp;&nbsp;- <br/>
+&nbsp;&nbsp;- <span class="comment">(*&nbsp;Tau&nbsp;*)</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">do</span> 2 <span class="id" title="tactic">rewrite</span> <a class="idref" href="DeepWeb.Free.Monad.Internal.html#bind_def_core"><span class="id" title="lemma">bind_def_core</span></a>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
-&nbsp;&nbsp;- <br/>
+&nbsp;&nbsp;- <span class="comment">(*&nbsp;-&gt;&nbsp;~Tau&nbsp;*)</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H1</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;+ <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="comment">(*&nbsp;-&gt;&nbsp;Ret&nbsp;*)</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#untau_eutt"><span class="id" title="lemma">untau_eutt</span></a>; <span class="id" title="var">dispatch</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eauto</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;+ <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="comment">(*&nbsp;-&gt;&nbsp;Vis&nbsp;*)</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">econstructor</span>; <span class="id" title="var">dispatch</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>. <span class="id" title="tactic">auto</span>.<br/>
 <span class="id" title="keyword">Qed</span>.<br/>
@@ -589,7 +614,7 @@ Everything should be a setoid.
 <span class="id" title="keyword">Proof</span>.<br/>
 &nbsp;&nbsp;<span class="id" title="tactic">intros</span>.<br/>
 &nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#eutt_trans"><span class="id" title="lemma">eutt_trans</span></a>.<br/>
-&nbsp;&nbsp;- <br/>
+&nbsp;&nbsp;- <span class="comment">(*&nbsp;x&nbsp;&lt;-&nbsp;s&nbsp;;;&nbsp;Tau&nbsp;(Ret&nbsp;x)&nbsp;&nbsp;~&nbsp;&nbsp;x&nbsp;&lt;-&nbsp;s&nbsp;;;&nbsp;Ret&nbsp;x&nbsp;*)</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#cong_bind_core"><span class="id" title="lemma">cong_bind_core</span></a>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#eutt_refl"><span class="id" title="lemma">eutt_refl</span></a>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">eapply</span> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#eutt_trans"><span class="id" title="lemma">eutt_trans</span></a>.<br/>
@@ -599,12 +624,13 @@ Everything should be a setoid.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-- <span class="id" title="tactic">constructor</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-- <span class="id" title="tactic">constructor</span> 2.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-- <span class="id" title="tactic">constructor</span>.<br/>
-&nbsp;&nbsp;- <br/>
+&nbsp;&nbsp;- <span class="comment">(*&nbsp;x&nbsp;&lt;-&nbsp;s&nbsp;;;&nbsp;Ret&nbsp;x&nbsp;&nbsp;~&nbsp;&nbsp;s&nbsp;*)</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#eutt_refl_EqM"><span class="id" title="lemma">eutt_refl_EqM</span></a>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (@<a class="idref" href="DeepWeb.Free.Monad.Verif.html#rightId"><span class="id" title="lemma">CoreLawful.rightId</span></a> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#Lawful.E"><span class="id" title="variable">E</span></a>).<br/>
 <span class="id" title="keyword">Qed</span>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;Associativity&nbsp;actually&nbsp;holds&nbsp;structurally.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Lemma</span> <a name="bindAssoc_EqM"><span class="id" title="lemma">bindAssoc_EqM</span></a> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span> :<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">∀</span> (<span class="id" title="var">s</span> : <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#Lawful.E"><span class="id" title="variable">E</span></a> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#X"><span class="id" title="variable">X</span></a>) (<span class="id" title="var">k</span> : <a class="idref" href="DeepWeb.Free.Monad.Verif.html#X"><span class="id" title="variable">X</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#Lawful.E"><span class="id" title="variable">E</span></a> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#Y"><span class="id" title="variable">Y</span></a>) (<span class="id" title="var">h</span> : <a class="idref" href="DeepWeb.Free.Monad.Verif.html#Y"><span class="id" title="variable">Y</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#Lawful.E"><span class="id" title="variable">E</span></a> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#Z"><span class="id" title="variable">Z</span></a>),<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Verif.html#EqM"><span class="id" title="inductive">EqM</span></a> (<a class="idref" href="DeepWeb.Free.Monad.Verif.html#s"><span class="id" title="variable">s</span></a> <a class="idref" href="Custom.Monad.html#a3fbc9e077330a5ed7e551bfb7728bde"><span class="id" title="notation">&gt;&gt;=</span></a> <a class="idref" href="Custom.Monad.html#a3fbc9e077330a5ed7e551bfb7728bde"><span class="id" title="notation">(</span></a><span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> ⇒ <a class="idref" href="DeepWeb.Free.Monad.Verif.html#k"><span class="id" title="variable">k</span></a> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#x"><span class="id" title="variable">x</span></a> <a class="idref" href="Custom.Monad.html#a3fbc9e077330a5ed7e551bfb7728bde"><span class="id" title="notation">&gt;&gt;=</span></a> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#h"><span class="id" title="variable">h</span></a><a class="idref" href="Custom.Monad.html#a3fbc9e077330a5ed7e551bfb7728bde"><span class="id" title="notation">)</span></a>) (<a class="idref" href="Custom.Monad.html#a3fbc9e077330a5ed7e551bfb7728bde"><span class="id" title="notation">(</span></a><a class="idref" href="DeepWeb.Free.Monad.Verif.html#s"><span class="id" title="variable">s</span></a> <a class="idref" href="Custom.Monad.html#a3fbc9e077330a5ed7e551bfb7728bde"><span class="id" title="notation">&gt;&gt;=</span></a> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#k"><span class="id" title="variable">k</span></a><a class="idref" href="Custom.Monad.html#a3fbc9e077330a5ed7e551bfb7728bde"><span class="id" title="notation">)</span></a> <a class="idref" href="Custom.Monad.html#a3fbc9e077330a5ed7e551bfb7728bde"><span class="id" title="notation">&gt;&gt;=</span></a> <a class="idref" href="DeepWeb.Free.Monad.Verif.html#h"><span class="id" title="variable">h</span></a>).<br/>

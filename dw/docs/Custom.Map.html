@@ -19,8 +19,10 @@
 <h1 class="libtitle">Library Custom.Map</h1>
 
 <div class="code">
+<span class="comment">(*&nbsp;Total&nbsp;maps&nbsp;*)</span><br/>
 
 <br/>
+<span class="comment">(*&nbsp;This&nbsp;module&nbsp;is&nbsp;meant&nbsp;to&nbsp;be&nbsp;<span class="inlinecode"><span class="id" title="keyword">Require</span></span>-d&nbsp;but&nbsp;not&nbsp;<span class="inlinecode"><span class="id" title="keyword">Import</span></span>-ed.&nbsp;*)</span><br/>
 
 <br/>
 <span class="id" title="var">From</span> <span class="id" title="var">QuickChick</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="library">Decidability</span>.<br/>
@@ -73,6 +75,7 @@
 &nbsp;&nbsp;<a class="idref" href="Custom.Map.html#k"><span class="id" title="variable">k</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#1c39bf18749e5cc609e83c0a0ba5a372"><span class="id" title="notation">=</span></a> <a class="idref" href="Custom.Map.html#k'"><span class="id" title="variable">k'</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a><br/>
 &nbsp;&nbsp;<a class="idref" href="Custom.Map.html#update"><span class="id" title="definition">update</span></a> <a class="idref" href="Custom.Map.html#k"><span class="id" title="variable">k</span></a> <a class="idref" href="Custom.Map.html#v"><span class="id" title="variable">v</span></a> (<a class="idref" href="Custom.Map.html#update"><span class="id" title="definition">update</span></a> <a class="idref" href="Custom.Map.html#k'"><span class="id" title="variable">k'</span></a> <a class="idref" href="Custom.Map.html#v'"><span class="id" title="variable">v'</span></a> <a class="idref" href="Custom.Map.html#m"><span class="id" title="variable">m</span></a>) <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#1c39bf18749e5cc609e83c0a0ba5a372"><span class="id" title="notation">=</span></a> <a class="idref" href="Custom.Map.html#update"><span class="id" title="definition">update</span></a> <a class="idref" href="Custom.Map.html#k"><span class="id" title="variable">k</span></a> <a class="idref" href="Custom.Map.html#v"><span class="id" title="variable">v</span></a> <a class="idref" href="Custom.Map.html#m"><span class="id" title="variable">m</span></a>.<br/>
 <span class="id" title="keyword">Proof</span>.<br/>
+<span class="comment">(*&nbsp;Extensionally...&nbsp;*)</span><br/>
 <span class="id" title="var">Admitted</span>.<br/>
 
 <br/>
@@ -81,6 +84,7 @@
 &nbsp;&nbsp;<a class="idref" href="Custom.Map.html#v"><span class="id" title="variable">v</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#1c39bf18749e5cc609e83c0a0ba5a372"><span class="id" title="notation">=</span></a> <a class="idref" href="Custom.Map.html#lookup"><span class="id" title="definition">lookup</span></a> <a class="idref" href="Custom.Map.html#m"><span class="id" title="variable">m</span></a> <a class="idref" href="Custom.Map.html#k'"><span class="id" title="variable">k'</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a><br/>
 &nbsp;&nbsp;<a class="idref" href="Custom.Map.html#update"><span class="id" title="definition">update</span></a> <a class="idref" href="Custom.Map.html#k"><span class="id" title="variable">k</span></a> <a class="idref" href="Custom.Map.html#v"><span class="id" title="variable">v</span></a> <a class="idref" href="Custom.Map.html#m"><span class="id" title="variable">m</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#1c39bf18749e5cc609e83c0a0ba5a372"><span class="id" title="notation">=</span></a> <a class="idref" href="Custom.Map.html#m"><span class="id" title="variable">m</span></a>.<br/>
 <span class="id" title="keyword">Proof</span>.<br/>
+<span class="comment">(*&nbsp;Also&nbsp;extensional...&nbsp;*)</span><br/>
 <span class="id" title="var">Admitted</span>.<br/>
 
 <br/>

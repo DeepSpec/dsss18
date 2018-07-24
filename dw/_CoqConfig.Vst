@@ -82,29 +82,30 @@ DeepWeb/Spec/Vst/select_loop_spec.v
 
 DeepWeb/Spec/Vst/Gprog.v
 
-DeepWeb/Proofs/Vst/VerifLib.v
-DeepWeb/Proofs/Vst/SocketTactics.v
-DeepWeb/Proofs/Vst/Connection.v
-DeepWeb/Proofs/Vst/Store.v
-DeepWeb/Proofs/Vst/AppLib.v
-
-DeepWeb/Proofs/Vst/verif_bind_socket.v
-DeepWeb/Proofs/Vst/verif_add_to_fd_set.v
-DeepWeb/Proofs/Vst/verif_new_connection.v
-DeepWeb/Proofs/Vst/verif_reset_connection.v
-DeepWeb/Proofs/Vst/verif_new_store.v
-DeepWeb/Proofs/Vst/verif_init_store.v
-DeepWeb/Proofs/Vst/verif_populate_response.v
-DeepWeb/Proofs/Vst/verif_accept_connection.v
-DeepWeb/Proofs/Vst/verif_check_if_complete.v
-DeepWeb/Proofs/Vst/verif_conn_read.v
-DeepWeb/Proofs/Vst/verif_conn_write.v
-DeepWeb/Proofs/Vst/verif_process.v
-DeepWeb/Proofs/Vst/verif_monitor_connections.v
-DeepWeb/Proofs/Vst/verif_process_connections.v
-DeepWeb/Proofs/Vst/verif_select_loop.v
-DeepWeb/Proofs/Vst/verif_main.v
-
-DeepWeb/Proofs/Vst/verif_prog.v
-# DeepWeb/Proofs/TopLevelProof.v
+# Commented out for now to save rebuilding time!
+# DeepWeb/Proofs/Vst/VerifLib.v
+# DeepWeb/Proofs/Vst/SocketTactics.v
+# DeepWeb/Proofs/Vst/Connection.v
+# DeepWeb/Proofs/Vst/Store.v
+# DeepWeb/Proofs/Vst/AppLib.v
+# 
+# DeepWeb/Proofs/Vst/verif_bind_socket.v
+# DeepWeb/Proofs/Vst/verif_add_to_fd_set.v
+# DeepWeb/Proofs/Vst/verif_new_connection.v
+# DeepWeb/Proofs/Vst/verif_reset_connection.v
+# DeepWeb/Proofs/Vst/verif_new_store.v
+# DeepWeb/Proofs/Vst/verif_init_store.v
+# DeepWeb/Proofs/Vst/verif_populate_response.v
+# DeepWeb/Proofs/Vst/verif_accept_connection.v
+# DeepWeb/Proofs/Vst/verif_check_if_complete.v
+# DeepWeb/Proofs/Vst/verif_conn_read.v
+# DeepWeb/Proofs/Vst/verif_conn_write.v
+# DeepWeb/Proofs/Vst/verif_process.v
+# DeepWeb/Proofs/Vst/verif_monitor_connections.v
+# DeepWeb/Proofs/Vst/verif_process_connections.v
+# DeepWeb/Proofs/Vst/verif_select_loop.v
+# DeepWeb/Proofs/Vst/verif_main.v
+# 
+# DeepWeb/Proofs/Vst/verif_prog.v
+# # DeepWeb/Proofs/TopLevelProof.v
 

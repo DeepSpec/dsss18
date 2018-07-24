@@ -19,6 +19,7 @@
 <h1 class="libtitle">Library DeepWeb.Lib.SimpleSpec_NetworkModel</h1>
 
 <div class="code">
+<span class="comment">(*&nbsp;A&nbsp;model&nbsp;of&nbsp;the&nbsp;network.&nbsp;*)</span><br/>
 
 <br/>
 <span class="id" title="var">From</span> <span class="id" title="var">Custom</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span><br/>
@@ -33,21 +34,29 @@
 <span class="id" title="keyword">Module</span> <span class="id" title="keyword">Type</span> <a name="NetworkModelInterface"><span class="id" title="module">NetworkModelInterface</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;The&nbsp;complete&nbsp;state&nbsp;of&nbsp;the&nbsp;network.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Parameter</span> <a name="NetworkModelInterface.network_state"><span class="id" title="axiom">network_state</span></a> : <span class="id" title="keyword">Type</span>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;The&nbsp;initial&nbsp;state.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Parameter</span> <a name="NetworkModelInterface.initial_ns"><span class="id" title="axiom">initial_ns</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModelInterface.network_state"><span class="id" title="axiom">network_state</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;State&nbsp;transitions.<br/>
+&nbsp;&nbsp;&nbsp;-&nbsp;The&nbsp;result&nbsp;is&nbsp;<span class="inlinecode"><span class="id" title="var">None</span></span>&nbsp;when&nbsp;a&nbsp;transition&nbsp;is&nbsp;not&nbsp;defined.<br/>
+&nbsp;&nbsp;&nbsp;-&nbsp;Transitions&nbsp;may&nbsp;carry&nbsp;some&nbsp;output&nbsp;(in&nbsp;this&nbsp;case,&nbsp;a&nbsp;byte<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;<span class="inlinecode"><span class="id" title="var">recv</span></span>&nbsp;transitions.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="NetworkModelInterface.transition"><span class="id" title="definition">transition</span></a> (<span class="id" title="var">output</span> : <span class="id" title="keyword">Type</span>) : <span class="id" title="keyword">Type</span> :=<br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModelInterface.network_state"><span class="id" title="axiom">network_state</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#option"><span class="id" title="inductive">option</span></a> (<a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModelInterface.network_state"><span class="id" title="axiom">network_state</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#d19c7eafd0e2d195d10df94b392087b5"><span class="id" title="notation">×</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#output"><span class="id" title="variable">output</span></a>).<br/>
 
 <br/>
+<span class="comment">(*&nbsp;Server-side&nbsp;transitions&nbsp;*)</span><br/>
 <span class="id" title="keyword">Parameter</span> <a name="NetworkModelInterface.server_accept"><span class="id" title="axiom">server_accept</span></a> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModelInterface.transition"><span class="id" title="definition">transition</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>.<br/>
 <span class="id" title="keyword">Parameter</span> <a name="NetworkModelInterface.server_send"><span class="id" title="axiom">server_send</span></a> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModelInterface.transition"><span class="id" title="definition">transition</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>.<br/>
 <span class="id" title="keyword">Parameter</span> <a name="NetworkModelInterface.server_recv"><span class="id" title="axiom">server_recv</span></a> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModelInterface.transition"><span class="id" title="definition">transition</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;Client-side&nbsp;transitions&nbsp;*)</span><br/>
 <span class="id" title="keyword">Parameter</span> <a name="NetworkModelInterface.client_connect"><span class="id" title="axiom">client_connect</span></a> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModelInterface.transition"><span class="id" title="definition">transition</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>.<br/>
 <span class="id" title="keyword">Parameter</span> <a name="NetworkModelInterface.client_send"><span class="id" title="axiom">client_send</span></a> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModelInterface.transition"><span class="id" title="definition">transition</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>.<br/>
 <span class="id" title="keyword">Parameter</span> <a name="NetworkModelInterface.client_recv"><span class="id" title="axiom">client_recv</span></a> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModelInterface.transition"><span class="id" title="definition">transition</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a>.<br/>
@@ -59,27 +68,41 @@
 <span class="id" title="keyword">Module</span> <span class="id" title="keyword">Export</span> <a name="NetworkModel"><span class="id" title="module">NetworkModel</span></a> &lt;: <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModelInterface"><span class="id" title="module">NetworkModelInterface</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;The&nbsp;network&nbsp;state&nbsp;is&nbsp;a&nbsp;map&nbsp;from&nbsp;<span class="inlinecode"><span class="id" title="var">connection_id</span></span><br/>
+&nbsp;&nbsp;&nbsp;to&nbsp;the&nbsp;state&nbsp;of&nbsp;the&nbsp;connection&nbsp;(<span class="inlinecode"><span class="id" title="var">connection_state</span></span>).&nbsp;*)</span><br/>
 
 <br/>
+<span class="comment">(*&nbsp;We&nbsp;start&nbsp;by&nbsp;defining&nbsp;the&nbsp;state&nbsp;of&nbsp;a&nbsp;single&nbsp;connection.&nbsp;*)</span><br/>
 
 <br/>
+<span class="comment">(*&nbsp;-&nbsp;Connections&nbsp;start&nbsp;in&nbsp;the&nbsp;<span class="inlinecode"><span class="id" title="var">CLOSED</span></span>&nbsp;state.<br/>
+&nbsp;&nbsp;&nbsp;-&nbsp;When&nbsp;a&nbsp;client&nbsp;initiates&nbsp;a&nbsp;connection&nbsp;(<span class="inlinecode"><span class="id" title="var">client_connect</span></span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;connection&nbsp;enters&nbsp;the&nbsp;<span class="inlinecode"><span class="id" title="var">PENDING</span></span>&nbsp;state,&nbsp;and&nbsp;the&nbsp;client&nbsp;can<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;immediately&nbsp;start&nbsp;sending&nbsp;messages&nbsp;over&nbsp;it.<br/>
+&nbsp;&nbsp;&nbsp;-&nbsp;The&nbsp;server&nbsp;must&nbsp;then&nbsp;accept&nbsp;the&nbsp;connection,&nbsp;which&nbsp;enters<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;<span class="inlinecode"><span class="id" title="var">ACCEPTED</span></span>&nbsp;state,&nbsp;before&nbsp;receiving&nbsp;and&nbsp;sending&nbsp;messages<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;over&nbsp;it.&nbsp;The&nbsp;client&nbsp;can&nbsp;now&nbsp;also&nbsp;receive&nbsp;messages.<br/>
+&nbsp;*)</span><br/>
 <span class="id" title="keyword">Inductive</span> <a name="NetworkModel.connection_state_enum"><span class="id" title="inductive">connection_state_enum</span></a> := <a name="NetworkModel.CLOSED"><span class="id" title="constructor">CLOSED</span></a> | <a name="NetworkModel.PENDING"><span class="id" title="constructor">PENDING</span></a> | <a name="NetworkModel.ACCEPTED"><span class="id" title="constructor">ACCEPTED</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;A&nbsp;connection&nbsp;can&nbsp;be&nbsp;seen&nbsp;as&nbsp;a&nbsp;pair&nbsp;of&nbsp;buffers.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Record</span> <a name="NetworkModel.connection_state"><span class="id" title="record">connection_state</span></a> :=<br/>
 &nbsp;&nbsp;<a name="NetworkModel.Build_connection_state"><span class="id" title="constructor">Build_connection_state</span></a> {<br/>
 <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;The&nbsp;state&nbsp;of&nbsp;the&nbsp;connection&nbsp;(see&nbsp;above).&nbsp;*)</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a name="NetworkModel.connection_status"><span class="id" title="projection">connection_status</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.connection_state_enum"><span class="id" title="inductive">connection_state_enum</span></a>;<br/>
 <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;The&nbsp;buffer&nbsp;of&nbsp;bytes&nbsp;going&nbsp;into&nbsp;the&nbsp;server.&nbsp;*)</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a name="NetworkModel.connection_inbytes"><span class="id" title="projection">connection_inbytes</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a>;<br/>
 <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;The&nbsp;buffer&nbsp;of&nbsp;bytes&nbsp;going&nbsp;out&nbsp;from&nbsp;the&nbsp;server.&nbsp;*)</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a name="NetworkModel.connection_outbytes"><span class="id" title="projection">connection_outbytes</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a>;<br/>
 &nbsp;&nbsp;}.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;Connections&nbsp;start&nbsp;<span class="inlinecode"><span class="id" title="var">CLOSED</span></span>.&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;"cs"&nbsp;for&nbsp;<span class="inlinecode"><span class="id" title="var">connection_state</span></span>.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="NetworkModel.initial_cs"><span class="id" title="definition">initial_cs</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.connection_state"><span class="id" title="record">connection_state</span></a> := {|<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">connection_status</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">:=</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">CLOSED</span></a><a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">;</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">connection_inbytes</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">:=</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">[];</span></a><br/>
@@ -87,6 +110,8 @@
 &nbsp;&nbsp;|}.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;A&nbsp;client-side&nbsp;"connect"&nbsp;updates&nbsp;the&nbsp;connection&nbsp;from&nbsp;<span class="inlinecode"><span class="id" title="var">CLOSED</span></span><br/>
+&nbsp;&nbsp;&nbsp;to&nbsp;<span class="inlinecode"><span class="id" title="var">PENDING</span></span>.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="NetworkModel.pending_cs"><span class="id" title="definition">pending_cs</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.connection_state"><span class="id" title="record">connection_state</span></a> := {|<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">connection_status</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">:=</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">PENDING</span></a><a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">;</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">connection_inbytes</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">:=</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">[];</span></a><br/>
@@ -94,6 +119,9 @@
 &nbsp;&nbsp;|}.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;A&nbsp;server-side&nbsp;"accept"&nbsp;updates&nbsp;the&nbsp;connection&nbsp;from&nbsp;<span class="inlinecode"><span class="id" title="var">PENDING</span></span><br/>
+&nbsp;&nbsp;&nbsp;to&nbsp;<span class="inlinecode"><span class="id" title="var">ACCEPTED</span></span>.&nbsp;There&nbsp;may&nbsp;already&nbsp;be&nbsp;bytes&nbsp;going&nbsp;into&nbsp;the<br/>
+&nbsp;&nbsp;&nbsp;server&nbsp;that&nbsp;we&nbsp;must&nbsp;preserve.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="NetworkModel.accept_cs"><span class="id" title="definition">accept_cs</span></a> (<span class="id" title="var">cs</span> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.connection_state"><span class="id" title="record">connection_state</span></a>) : <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.connection_state"><span class="id" title="record">connection_state</span></a> := {|<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">connection_status</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">:=</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">ACCEPTED</span></a><a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">;</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">connection_inbytes</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">:=</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">connection_inbytes</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">cs</span></a><a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">;</span></a><br/>
@@ -101,6 +129,8 @@
 &nbsp;&nbsp;|}.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;A&nbsp;client&nbsp;sends&nbsp;a&nbsp;byte&nbsp;to&nbsp;the&nbsp;server&nbsp;on&nbsp;some&nbsp;connection&nbsp;by<br/>
+&nbsp;&nbsp;&nbsp;adding&nbsp;it&nbsp;to&nbsp;the&nbsp;connection's&nbsp;"in"-buffer.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="NetworkModel.update_in"><span class="id" title="definition">update_in</span></a> (<span class="id" title="var">bs</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a>) (<span class="id" title="var">cs</span> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.connection_state"><span class="id" title="record">connection_state</span></a>) :<br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.connection_state"><span class="id" title="record">connection_state</span></a> := {|<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">connection_status</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">:=</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">connection_status</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">cs</span></a><a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">;</span></a><br/>
@@ -109,6 +139,8 @@
 &nbsp;&nbsp;|}.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;A&nbsp;server&nbsp;sends&nbsp;a&nbsp;byte&nbsp;to&nbsp;the&nbsp;client&nbsp;by&nbsp;adding&nbsp;it&nbsp;to&nbsp;the<br/>
+&nbsp;&nbsp;&nbsp;connection's&nbsp;"out"-buffer.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="NetworkModel.update_out"><span class="id" title="definition">update_out</span></a> (<span class="id" title="var">bs</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a>) (<span class="id" title="var">cs</span> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.connection_state"><span class="id" title="record">connection_state</span></a>) :<br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.connection_state"><span class="id" title="record">connection_state</span></a> := {|<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">connection_status</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">:=</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">connection_status</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">cs</span></a><a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.Build_connection_state"><span class="id" title="constructor">;</span></a><br/>
@@ -117,16 +149,24 @@
 &nbsp;&nbsp;|}.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;We&nbsp;can&nbsp;now&nbsp;define&nbsp;the&nbsp;complete&nbsp;state&nbsp;of&nbsp;the&nbsp;network.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="NetworkModel.network_state"><span class="id" title="definition">network_state</span></a> := <a class="idref" href="Custom.Map.html#t"><span class="id" title="definition">Map.t</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.connection_state"><span class="id" title="record">connection_state</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;Initial&nbsp;state.&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;"ns"&nbsp;for&nbsp;<span class="inlinecode"><span class="id" title="var">network_state</span></span>.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="NetworkModel.initial_ns"><span class="id" title="definition">initial_ns</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.network_state"><span class="id" title="definition">network_state</span></a> := <span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> ⇒ <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.initial_cs"><span class="id" title="definition">initial_cs</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;State&nbsp;transitions&nbsp;(see&nbsp;<span class="inlinecode"><span class="id" title="var">NetworkModelInterface</span></span>).&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="NetworkModel.transition"><span class="id" title="definition">transition</span></a> (<span class="id" title="var">output</span> : <span class="id" title="keyword">Type</span>) : <span class="id" title="keyword">Type</span> :=<br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.network_state"><span class="id" title="definition">network_state</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#option"><span class="id" title="inductive">option</span></a> (<a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.network_state"><span class="id" title="definition">network_state</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#d19c7eafd0e2d195d10df94b392087b5"><span class="id" title="notation">×</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#output"><span class="id" title="variable">output</span></a>).<br/>
 
 <br/>
+<span class="comment">(*&nbsp;The&nbsp;client&nbsp;opens&nbsp;a&nbsp;new&nbsp;connection.<br/>
+&nbsp;&nbsp;&nbsp;The&nbsp;result&nbsp;is&nbsp;<span class="inlinecode"><span class="id" title="var">Some</span></span>&nbsp;if&nbsp;and&nbsp;only&nbsp;if&nbsp;the&nbsp;connection&nbsp;is&nbsp;<span class="inlinecode"><span class="id" title="var">CLOSED</span></span>,<br/>
+&nbsp;&nbsp;&nbsp;and&nbsp;it&nbsp;then&nbsp;moves&nbsp;to&nbsp;the&nbsp;<span class="inlinecode"><span class="id" title="var">PENDING</span></span>&nbsp;state,&nbsp;waiting&nbsp;to&nbsp;be&nbsp;accepted<br/>
+&nbsp;&nbsp;&nbsp;by&nbsp;the&nbsp;server.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="NetworkModel.client_connect"><span class="id" title="definition">client_connect</span></a> (<span class="id" title="var">c</span> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a>) : <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.transition"><span class="id" title="definition">transition</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">fun</span> (<span class="id" title="var">ns</span> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.network_state"><span class="id" title="definition">network_state</span></a>) ⇒<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">cs</span> := <a class="idref" href="Custom.Map.html#lookup"><span class="id" title="definition">Map.lookup</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#ns"><span class="id" title="variable">ns</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#c"><span class="id" title="variable">c</span></a> <span class="id" title="tactic">in</span><br/>
@@ -146,6 +186,10 @@
 <span class="id" title="keyword">Qed</span>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;The&nbsp;server&nbsp;accepts&nbsp;a&nbsp;<span class="inlinecode"><span class="id" title="var">PENDING</span></span>&nbsp;connection.<br/>
+&nbsp;&nbsp;&nbsp;The&nbsp;result&nbsp;is&nbsp;<span class="inlinecode"><span class="id" title="var">Some</span></span>&nbsp;if&nbsp;and&nbsp;only&nbsp;if&nbsp;the&nbsp;connection&nbsp;is&nbsp;<span class="inlinecode"><span class="id" title="var">PENDING</span></span>,<br/>
+&nbsp;&nbsp;&nbsp;and&nbsp;it&nbsp;then&nbsp;moves&nbsp;to&nbsp;the&nbsp;<span class="inlinecode"><span class="id" title="var">ACCEPTED</span></span>&nbsp;state,&nbsp;indicating&nbsp;that&nbsp;the<br/>
+&nbsp;&nbsp;&nbsp;server&nbsp;can&nbsp;send&nbsp;and&nbsp;recv&nbsp;messages&nbsp;on&nbsp;it.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="NetworkModel.server_accept"><span class="id" title="definition">server_accept</span></a> (<span class="id" title="var">c</span> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a>) : <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.transition"><span class="id" title="definition">transition</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">fun</span> <span class="id" title="var">ns</span> ⇒<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">cs</span> := <a class="idref" href="Custom.Map.html#lookup"><span class="id" title="definition">Map.lookup</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#ns"><span class="id" title="variable">ns</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#c"><span class="id" title="variable">c</span></a> <span class="id" title="tactic">in</span><br/>
@@ -166,6 +210,9 @@
 <span class="id" title="keyword">Qed</span>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;The&nbsp;server&nbsp;receives&nbsp;a&nbsp;byte&nbsp;<span class="inlinecode"><span class="id" title="var">b</span></span>&nbsp;on&nbsp;connection&nbsp;<span class="inlinecode"><span class="id" title="var">c</span></span>.<br/>
+&nbsp;&nbsp;&nbsp;The&nbsp;connection&nbsp;<span class="inlinecode"><span class="id" title="var">c</span></span>&nbsp;must&nbsp;be&nbsp;<span class="inlinecode"><span class="id" title="var">ACCEPTED</span></span>,&nbsp;and&nbsp;the<br/>
+&nbsp;&nbsp;&nbsp;<span class="inlinecode"><span class="id" title="var">connection_inbytes</span></span>&nbsp;buffer&nbsp;must&nbsp;be&nbsp;nonempty.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="NetworkModel.server_recv"><span class="id" title="definition">server_recv</span></a> (<span class="id" title="var">c</span> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a>) : <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.transition"><span class="id" title="definition">transition</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">fun</span> <span class="id" title="var">ns</span> ⇒<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">cs</span> := <a class="idref" href="Custom.Map.html#lookup"><span class="id" title="definition">Map.lookup</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#ns"><span class="id" title="variable">ns</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#c"><span class="id" title="variable">c</span></a> <span class="id" title="tactic">in</span><br/>
@@ -182,6 +229,8 @@
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;The&nbsp;server&nbsp;sends&nbsp;a&nbsp;byte&nbsp;<span class="inlinecode"><span class="id" title="var">b</span></span>&nbsp;on&nbsp;connection&nbsp;<span class="inlinecode"><span class="id" title="var">c</span></span>.<br/>
+&nbsp;&nbsp;&nbsp;The&nbsp;connection&nbsp;<span class="inlinecode"><span class="id" title="var">c</span></span>&nbsp;must&nbsp;be&nbsp;<span class="inlinecode"><span class="id" title="var">ACCEPTED</span></span>.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="NetworkModel.server_send"><span class="id" title="definition">server_send</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">c</span> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a>) (<span class="id" title="var">b</span> : <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a>) : <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.transition"><span class="id" title="definition">transition</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">fun</span> <span class="id" title="var">ns</span> ⇒<br/>
@@ -194,6 +243,10 @@
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;The&nbsp;client&nbsp;receives&nbsp;a&nbsp;byte&nbsp;sent&nbsp;by&nbsp;the&nbsp;server&nbsp;on&nbsp;connection&nbsp;<span class="inlinecode"><span class="id" title="var">c</span></span>.<br/>
+&nbsp;&nbsp;&nbsp;The&nbsp;connection&nbsp;<span class="inlinecode"><span class="id" title="var">c</span></span>&nbsp;must&nbsp;be&nbsp;<span class="inlinecode"><span class="id" title="var">ACCEPTED</span></span>&nbsp;(the&nbsp;server&nbsp;must<br/>
+&nbsp;&nbsp;&nbsp;accept&nbsp;a&nbsp;connection&nbsp;before&nbsp;sending&nbsp;bytes&nbsp;on&nbsp;it),<br/>
+&nbsp;&nbsp;&nbsp;and&nbsp;the&nbsp;<span class="inlinecode"><span class="id" title="var">connections_outbytes</span></span>&nbsp;buffer&nbsp;must&nbsp;be&nbsp;nonempty.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="NetworkModel.client_recv"><span class="id" title="definition">client_recv</span></a> (<span class="id" title="var">c</span> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a>) : <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.transition"><span class="id" title="definition">transition</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">fun</span> <span class="id" title="var">ns</span> ⇒<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">cs</span> := <a class="idref" href="Custom.Map.html#lookup"><span class="id" title="definition">Map.lookup</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#ns"><span class="id" title="variable">ns</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#c"><span class="id" title="variable">c</span></a> <span class="id" title="tactic">in</span><br/>
@@ -210,6 +263,8 @@
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;The&nbsp;client&nbsp;sends&nbsp;a&nbsp;byte&nbsp;<span class="inlinecode"><span class="id" title="var">b</span></span>&nbsp;to&nbsp;the&nbsp;server&nbsp;on&nbsp;connection&nbsp;<span class="inlinecode"><span class="id" title="var">c</span></span>.<br/>
+&nbsp;&nbsp;&nbsp;The&nbsp;connection&nbsp;<span class="inlinecode"><span class="id" title="var">c</span></span>&nbsp;must&nbsp;be&nbsp;<span class="inlinecode"><span class="id" title="var">PENDING</span></span>&nbsp;or&nbsp;<span class="inlinecode"><span class="id" title="var">ACCEPTED</span></span>.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="NetworkModel.client_send"><span class="id" title="definition">client_send</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">c</span> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a>) (<span class="id" title="var">b</span> : <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a>) : <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.transition"><span class="id" title="definition">transition</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">fun</span> <span class="id" title="var">ns</span> ⇒<br/>

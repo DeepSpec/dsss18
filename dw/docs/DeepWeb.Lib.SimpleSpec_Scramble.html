@@ -46,27 +46,38 @@
 <span class="id" title="keyword">Set</span> <span class="id" title="var">Bullet</span> <span class="id" title="var">Behavior</span> "Strict Subproofs".<br/>
 
 <br/>
+<span class="comment">(*&nbsp;Main&nbsp;facts&nbsp;about&nbsp;<span class="inlinecode"><span class="id" title="var">network_scrambled</span></span>&nbsp;*)</span><br/>
 <span class="id" title="keyword">Module</span> <span class="id" title="keyword">Type</span> <a name="ScramblingTypes"><span class="id" title="module">ScramblingTypes</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;This&nbsp;predicates&nbsp;defines&nbsp;"well-formed"&nbsp;traces,&nbsp;where<br/>
+&nbsp;&nbsp;&nbsp;connections&nbsp;must&nbsp;be&nbsp;open&nbsp;before&nbsp;messages&nbsp;can&nbsp;be&nbsp;sent&nbsp;on&nbsp;them.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Parameter</span> <a name="ScramblingTypes.wf_trace"><span class="id" title="axiom">wf_trace</span></a> : <span class="id" title="keyword">∀</span> {<span class="id" title="var">byte'</span>}, <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> (<a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#event"><span class="id" title="inductive">event</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Scramble.html#byte'"><span class="id" title="variable">byte'</span></a>) <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Prop</span>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;We&nbsp;restrict&nbsp;the&nbsp;relation&nbsp;<span class="inlinecode"><span class="id" title="var">network_scrambled</span></span>&nbsp;to&nbsp;well-formed<br/>
+&nbsp;&nbsp;&nbsp;traces,&nbsp;by&nbsp;making&nbsp;this&nbsp;vacuously&nbsp;true&nbsp;on&nbsp;bad&nbsp;traces.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="ScramblingTypes.network_scrambled_wf"><span class="id" title="definition">network_scrambled_wf</span></a> <span class="id" title="var">ns</span> (<span class="id" title="var">tr0</span> <span class="id" title="var">tr1</span> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#real_trace"><span class="id" title="definition">real_trace</span></a>) :=<br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Scramble.html#ScramblingTypes.wf_trace"><span class="id" title="axiom">wf_trace</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Scramble.html#tr0"><span class="id" title="variable">tr0</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a><br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Scramble.html#ScramblingTypes.wf_trace"><span class="id" title="axiom">wf_trace</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Scramble.html#tr1"><span class="id" title="variable">tr1</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a><br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#network_scrambled"><span class="id" title="inductive">network_scrambled</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Scramble.html#ns"><span class="id" title="variable">ns</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Scramble.html#tr0"><span class="id" title="variable">tr0</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Scramble.html#tr1"><span class="id" title="variable">tr1</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;We&nbsp;consider&nbsp;scramblings&nbsp;of&nbsp;well-formed&nbsp;traces&nbsp;from&nbsp;the<br/>
+&nbsp;&nbsp;&nbsp;initial&nbsp;state.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="ScramblingTypes.network_scrambled_wf0"><span class="id" title="definition">network_scrambled_wf0</span></a> := <a class="idref" href="DeepWeb.Lib.SimpleSpec_Scramble.html#ScramblingTypes.network_scrambled_wf"><span class="id" title="definition">network_scrambled_wf</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.initial_ns"><span class="id" title="definition">initial_ns</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;Then&nbsp;<span class="inlinecode"><span class="id" title="var">network_scrambled_wf0</span></span>&nbsp;is&nbsp;reflexive.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Declare Instance</span> <a name="ScramblingTypes.scrambled_reflexive"><span class="id" title="instance">scrambled_reflexive</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Classes.RelationClasses.html#Reflexive"><span class="id" title="class">Reflexive</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Scramble.html#ScramblingTypes.network_scrambled_wf0"><span class="id" title="definition">network_scrambled_wf0</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;And&nbsp;<span class="inlinecode"><span class="id" title="var">network_scrambled0</span></span>&nbsp;is&nbsp;transitive.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Declare Instance</span> <a name="ScramblingTypes.scrambled_transitive"><span class="id" title="instance">scrambled_transitive</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Classes.RelationClasses.html#Transitive"><span class="id" title="class">Transitive</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#network_scrambled0"><span class="id" title="definition">network_scrambled0</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;Note&nbsp;that&nbsp;the&nbsp;"well-formedness"&nbsp;precondition&nbsp;is&nbsp;implicit<br/>
+&nbsp;&nbsp;&nbsp;in&nbsp;the&nbsp;two&nbsp;preconditions&nbsp;of&nbsp;transitivity.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Parameter</span> <a name="ScramblingTypes.scrambled_preserves_wf"><span class="id" title="axiom">scrambled_preserves_wf</span></a> : <span class="id" title="keyword">∀</span> <span class="id" title="var">tr</span> <span class="id" title="var">str</span> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#real_trace"><span class="id" title="definition">real_trace</span></a>,<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#network_scrambled0"><span class="id" title="definition">network_scrambled0</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Scramble.html#tr"><span class="id" title="variable">tr</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Scramble.html#str"><span class="id" title="variable">str</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Scramble.html#ScramblingTypes.wf_trace"><span class="id" title="axiom">wf_trace</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Scramble.html#tr"><span class="id" title="variable">tr</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d82a7d96d3659d805ffe732283716822"><span class="id" title="notation">∧</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Scramble.html#ScramblingTypes.wf_trace"><span class="id" title="axiom">wf_trace</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Scramble.html#str"><span class="id" title="variable">str</span></a>.<br/>
@@ -173,6 +184,8 @@
 <span class="id" title="keyword">Definition</span> <a name="ScramblingFacts.network_scrambled_wf0"><span class="id" title="definition">network_scrambled_wf0</span></a> := <a class="idref" href="DeepWeb.Lib.SimpleSpec_Scramble.html#ScramblingFacts.network_scrambled_wf"><span class="id" title="definition">network_scrambled_wf</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.initial_ns"><span class="id" title="definition">initial_ns</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;TODO:&nbsp;we&nbsp;can&nbsp;always&nbsp;append&nbsp;ServerSend&nbsp;and&nbsp;ClientSend<br/>
+&nbsp;&nbsp;&nbsp;and&nbsp;preserve&nbsp;the&nbsp;<span class="inlinecode"><span class="id" title="var">network_scrambled</span></span>&nbsp;property.&nbsp;*)</span><br/>
 
 <br/>
 <span class="id" title="keyword">Definition</span> <a name="ScramblingFacts.combined_networks"><span class="id" title="definition">combined_networks</span></a> (<span class="id" title="var">ns01</span> <span class="id" title="var">ns12</span> <span class="id" title="var">ns02</span> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.network_state"><span class="id" title="definition">network_state</span></a>) : <span class="id" title="keyword">Prop</span> :=<br/>
@@ -223,6 +236,9 @@
 &nbsp;&nbsp;- <span class="id" title="tactic">econstructor</span>.<br/>
 
 <br/>
+<span class="comment">(*<br/>
+Lemma&nbsp;scrambled_transitive_<br/>
+*)</span><br/>
 
 <br/>
 <span class="id" title="var">Admitted</span>.<br/>
@@ -234,19 +250,26 @@
 <span class="id" title="var">Admitted</span>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;The&nbsp;notion&nbsp;of&nbsp;"open"&nbsp;connection&nbsp;is&nbsp;not&nbsp;quite&nbsp;the&nbsp;same<br/>
+&nbsp;&nbsp;&nbsp;depending&nbsp;on&nbsp;whether&nbsp;we're&nbsp;on&nbsp;the&nbsp;client&nbsp;side&nbsp;or&nbsp;server&nbsp;side.&nbsp;*)</span><br/>
 
 <br/>
+<span class="comment">(*&nbsp;For&nbsp;a&nbsp;client,&nbsp;open&nbsp;connections&nbsp;are&nbsp;those&nbsp;that&nbsp;are<br/>
+&nbsp;&nbsp;&nbsp;<span class="inlinecode"><span class="id" title="var">PENDING</span></span>&nbsp;or&nbsp;<span class="inlinecode"><span class="id" title="var">ACCEPTED</span></span>.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="ScramblingFacts.is_open_conns_client"><span class="id" title="definition">is_open_conns_client</span></a> <span class="id" title="var">ns</span> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Prop</span> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">fun</span> <span class="id" title="var">c</span> ⇒<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.connection_status"><span class="id" title="projection">connection_status</span></a> (<a class="idref" href="Custom.Map.html#lookup"><span class="id" title="definition">Map.lookup</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Scramble.html#ns"><span class="id" title="variable">ns</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Scramble.html#c"><span class="id" title="variable">c</span></a>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#32263a1c8b01baecdff9deb038955bc9"><span class="id" title="notation">≠</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.CLOSED"><span class="id" title="constructor">CLOSED</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;For&nbsp;a&nbsp;server,&nbsp;open&nbsp;connections&nbsp;are&nbsp;those&nbsp;that&nbsp;it&nbsp;<span class="inlinecode"><span class="id" title="var">ACCEPTED</span></span>.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="ScramblingFacts.is_open_conns_server"><span class="id" title="definition">is_open_conns_server</span></a> <span class="id" title="var">ns</span> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Prop</span> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">fun</span> <span class="id" title="var">c</span> ⇒<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.connection_status"><span class="id" title="projection">connection_status</span></a> (<a class="idref" href="Custom.Map.html#lookup"><span class="id" title="definition">Map.lookup</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Scramble.html#ns"><span class="id" title="variable">ns</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Scramble.html#c"><span class="id" title="variable">c</span></a>) <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#1c39bf18749e5cc609e83c0a0ba5a372"><span class="id" title="notation">=</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.ACCEPTED"><span class="id" title="constructor">ACCEPTED</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;<span class="inlinecode"><span class="id" title="var">clean_state</span></span> <span class="inlinecode"><span class="id" title="var">ns</span></span>&nbsp;holds&nbsp;when&nbsp;all&nbsp;connections&nbsp;<span class="inlinecode"><span class="id" title="var">ns</span></span><br/>
+&nbsp;&nbsp;&nbsp;have&nbsp;empty&nbsp;buffers.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="ScramblingFacts.clean_state"><span class="id" title="definition">clean_state</span></a> (<span class="id" title="var">ns</span> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.network_state"><span class="id" title="definition">network_state</span></a>) := <span class="id" title="keyword">∀</span> <span class="id" title="var">c</span>,<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">cs</span> := <a class="idref" href="Custom.Map.html#lookup"><span class="id" title="definition">Map.lookup</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Scramble.html#ns"><span class="id" title="variable">ns</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Scramble.html#c"><span class="id" title="variable">c</span></a> <span class="id" title="tactic">in</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.connection_status"><span class="id" title="projection">connection_status</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Scramble.html#cs"><span class="id" title="variable">cs</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#32263a1c8b01baecdff9deb038955bc9"><span class="id" title="notation">≠</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.PENDING"><span class="id" title="constructor">PENDING</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d82a7d96d3659d805ffe732283716822"><span class="id" title="notation">∧</span></a><br/>
@@ -276,8 +299,8 @@
 &nbsp;&nbsp;<span class="id" title="tactic">generalize</span> <span class="id" title="tactic">dependent</span> <span class="id" title="var">ns</span>.<br/>
 &nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">tr</span> <span class="id" title="keyword">as</span> [ | [ <span class="id" title="var">c</span> | <span class="id" title="var">c</span> <span class="id" title="var">b</span> | <span class="id" title="var">c</span> <span class="id" title="var">b</span> ] <span class="id" title="var">tr</span> ];<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">ns</span> <span class="id" title="var">Hns_clean</span> <span class="id" title="var">Htr_open</span>.<br/>
-&nbsp;&nbsp;-  <span class="id" title="tactic">constructor</span>.<br/>
-&nbsp;&nbsp;- <br/>
+&nbsp;&nbsp;- <span class="comment">(*&nbsp;<span class="inlinecode"></span>&nbsp;*)</span> <span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;- <span class="comment">(*&nbsp;NewConnection&nbsp;c&nbsp;::&nbsp;tr&nbsp;*)</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#ScrambleClient"><span class="id" title="constructor">ScrambleClient</span></a>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">rewrite</span> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.connect_success"><span class="id" title="lemma">connect_success</span></a>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">reflexivity</span>. }<br/>
@@ -319,7 +342,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="tactic">auto</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> []; <span class="id" title="tactic">auto</span>; <span class="id" title="var">contradiction</span>. }<br/>
 <br/>
-&nbsp;&nbsp;- <br/>
+&nbsp;&nbsp;- <span class="comment">(*&nbsp;ToServer&nbsp;c&nbsp;b&nbsp;::&nbsp;tr&nbsp;*)</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.connection_status"><span class="id" title="projection">connection_status</span></a> (<a class="idref" href="Custom.Map.html#lookup"><span class="id" title="definition">Map.lookup</span></a> <span class="id" title="var">ns</span> <span class="id" title="var">c</span>) <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#1c39bf18749e5cc609e83c0a0ba5a372"><span class="id" title="notation">=</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.ACCEPTED"><span class="id" title="constructor">ACCEPTED</span></a>).<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">apply</span> <span class="id" title="var">Htr_open</span>. }<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#ScrambleClient"><span class="id" title="constructor">ScrambleClient</span></a>.<br/>
@@ -345,7 +368,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">f_equal</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Hns_clean</span>. }<br/>
 <br/>
-&nbsp;&nbsp;- <br/>
+&nbsp;&nbsp;- <span class="comment">(*&nbsp;FromServer&nbsp;c&nbsp;b&nbsp;::&nbsp;tr&nbsp;*)</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.connection_status"><span class="id" title="projection">connection_status</span></a> (<a class="idref" href="Custom.Map.html#lookup"><span class="id" title="definition">Map.lookup</span></a> <span class="id" title="var">ns</span> <span class="id" title="var">c</span>) <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#1c39bf18749e5cc609e83c0a0ba5a372"><span class="id" title="notation">=</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.ACCEPTED"><span class="id" title="constructor">ACCEPTED</span></a>).<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">apply</span> <span class="id" title="var">Htr_open</span>. }<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#ScrambleServer"><span class="id" title="constructor">ScrambleServer</span></a>.<br/>

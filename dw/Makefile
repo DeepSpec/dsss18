@@ -1,6 +1,6 @@
 SERVER = out/dw-swap-server
 EXCLUDE= Proofs Spec/TopLevelSpec.v Spec/Vst Spec/main.v \
-		 Lib/VstLib.v html \
+		 Lib/VstLib.v docs \
          Spec/Swap_SimpleSpec_Examples.v
 OCAMLBUILDFLAGS=-libs unix,str
 QC = quickChick -color -top "" -ocamlbuild '$(OCAMLBUILDFLAGS)' \
@@ -51,8 +51,8 @@ coq-qc: $(SERVER)
 	$Vmake -f Makefile.tmp QuickChickTop.vo
 	$Vecho 'let _ = print_endline "done"' >> QuickChickTop.ml
 
-html: build-with-vst
-	$(MAKE) -f Makefile.coq html
+docs: build-with-vst
+	$(MAKE) -f Makefile.coq.vst html
 	rm -rf docs
 	mv html docs
 
@@ -62,12 +62,12 @@ clean:
 	$(MAKE) -f Makefile.coq clean
 	-rm -rf ../_qc_dw.tmp html Makefile.coq* _CoqProject.Vst
 
-.PHONY: html clean coq-qc test coq
+.PHONY: docs clean coq-qc test coq
 
 # Just for BCP
 bcp:
 	$(MAKE) -C $(HOME)/dw/src dsss18 -j
 	$(MAKE) -j
-	$(MAKE) -j html COQDOCFLAGS="-interpolate -utf8 --parse-comments"
+	$(MAKE) -j docs COQDOCFLAGS="-interpolate -utf8 --parse-comments"
 	osascript $(HOME)/s/tools/safari-reload.as
 	$(MAKE) -j test

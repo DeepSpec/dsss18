@@ -42,6 +42,9 @@ Arguments NewConnection {byte'}.
 Arguments ToServer {byte'}.
 Arguments FromServer {byte'}.
 
+(* A trace is a sequence of events. *)
+Definition trace byte' := list (event byte').
+
 (* ... In the real world, this output is a concrete byte. *)
 Definition real_event := event byte.
 

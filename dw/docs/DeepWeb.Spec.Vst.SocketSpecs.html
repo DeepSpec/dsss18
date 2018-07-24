@@ -186,6 +186,7 @@
 &nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
 
 <br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;Interface&nbsp;*)</span><br/>
 
 <br/>
 &nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <a name="TracePred.internal_nondet1"><span class="id" title="lemma">internal_nondet1</span></a>: <br/>
@@ -344,6 +345,11 @@
 &nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
 
 <br/>
+&nbsp;&nbsp;<span class="comment">(*<br/>
+&nbsp;&nbsp;Eval&nbsp;compute&nbsp;in&nbsp;(reptype&nbsp;(Tstruct&nbsp;_fd_set&nbsp;noattr)).<br/>
+<br/>
+&nbsp;&nbsp;Eval&nbsp;compute&nbsp;in&nbsp;(nested_field_type&nbsp;(Tstruct&nbsp;_fd_set&nbsp;noattr)&nbsp;<span class="inlinecode"></span>).<br/>
+&nbsp;&nbsp;Eval&nbsp;compute&nbsp;in&nbsp;(reptype&nbsp;(Tstruct&nbsp;15*)</span><br/>
 
 <br/>
 &nbsp;&nbsp;<span class="id" title="keyword">Axiom</span> <a name="FDSetPred.rep_fd_set"><span class="id" title="axiom">rep_fd_set</span></a> : <a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#FDSetPred.FD_Set"><span class="id" title="definition">FD_Set</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="definition">reptype</span> (<span class="id" title="constructor">Tstruct</span> <a class="idref" href="DeepWeb.Spec.main.html#_fd_set"><span class="id" title="definition">_fd_set</span></a> <span class="id" title="definition">noattr</span>).<br/>
@@ -430,6 +436,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">SEP</span> <span class="id" title="notation">(</span> <a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#SOCKAPI"><span class="id" title="axiom">SOCKAPI</span></a> <a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#st'"><span class="id" title="variable">st'</span></a> <span class="id" title="notation">)</span>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;shutdown&nbsp;never&nbsp;fails&nbsp;for&nbsp;now&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="shutdown_spec"><span class="id" title="definition">shutdown_spec</span></a> (<span class="id" title="var">T</span> : <span class="id" title="keyword">Type</span>) :=<br/>
 &nbsp;&nbsp;<span class="id" title="notation">DECLARE</span> <a class="idref" href="DeepWeb.Spec.main.html#_shutdown"><span class="id" title="definition">_shutdown</span></a><br/>
 &nbsp;&nbsp;<span class="id" title="notation">WITH</span> <span class="id" title="var">t</span><span class="id" title="notation">:</span> <a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#SocketMonad"><span class="id" title="definition">SocketMonad</span></a> <a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#T"><span class="id" title="variable">T</span></a><span class="id" title="notation">,</span><br/>
@@ -728,7 +735,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">PROP</span> <span class="id" title="notation">(</span> <span class="id" title="definition">writable_share</span> <a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#read_sh"><span class="id" title="variable">read_sh</span></a> <span class="id" title="notation">;</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="definition">writable_share</span> <a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#write_sh"><span class="id" title="variable">write_sh</span></a> <span class="id" title="notation">;</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="definition">writable_share</span> <a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#exception_sh"><span class="id" title="variable">exception_sh</span></a><span class="id" title="notation">;</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#max_fd"><span class="id" title="variable">max_fd</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.ZArith.BinInt.html#162be8364124d2d389b2e8a3fc881ab2"><span class="id" title="notation">≥</span></a> 0 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#max_fd"><span class="id" title="variable">max_fd</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.ZArith.BinInt.html#162be8364124d2d389b2e8a3fc881ab2"><span class="id" title="notation">≥</span></a> 0 <span class="comment">(*&nbsp;not&nbsp;really&nbsp;necessary,&nbsp;but&nbsp;safeguard&nbsp;*)</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">)</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">LOCAL</span> <span class="id" title="notation">(</span> <span class="id" title="constructor">temp</span> 1%<span class="id" title="var">positive</span> (<span class="id" title="constructor">Vint</span> (<span class="id" title="definition">Int.repr</span> <a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#max_fd"><span class="id" title="variable">max_fd</span></a>))<span class="id" title="notation">;</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="constructor">temp</span> 2%<span class="id" title="var">positive</span> <a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#read_set_ptr"><span class="id" title="variable">read_set_ptr</span></a><span class="id" title="notation">;</span><br/>
@@ -843,7 +850,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">LOCAL</span> <span class="id" title="notation">(</span> <span class="id" title="constructor">temp</span> 1%<span class="id" title="var">positive</span> (<span class="id" title="constructor">Vint</span> (<span class="id" title="definition">Int.repr</span> <a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#n"><span class="id" title="variable">n</span></a>)) <span class="id" title="notation">)</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">SEP</span> <span class="id" title="notation">(</span> <span class="id" title="notation">)</span><br/>
 &nbsp;&nbsp;<span class="id" title="notation">POST</span> <span class="id" title="notation">[</span> <span class="id" title="definition">tushort</span> <span class="id" title="notation">]</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">PROP</span> <span class="id" title="notation">(</span> 0 <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.ZArith.BinInt.html#5dda7752d319ac2ccefb830f12787952"><span class="id" title="notation">≤</span></a> <a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#n"><span class="id" title="variable">n</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.ZArith.BinInt.html#5dda7752d319ac2ccefb830f12787952"><span class="id" title="notation">≤</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.ZArith.Zpower.html#two_p"><span class="id" title="definition">two_p</span></a> 16 <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.ZArith.BinInt.html#239a40728d107295b3cb2c790f57f9e9"><span class="id" title="notation">-</span></a> 1  <span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">PROP</span> <span class="id" title="notation">(</span> 0 <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.ZArith.BinInt.html#5dda7752d319ac2ccefb830f12787952"><span class="id" title="notation">≤</span></a> <a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#n"><span class="id" title="variable">n</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.ZArith.BinInt.html#5dda7752d319ac2ccefb830f12787952"><span class="id" title="notation">≤</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.ZArith.Zpower.html#two_p"><span class="id" title="definition">two_p</span></a> 16 <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.ZArith.BinInt.html#239a40728d107295b3cb2c790f57f9e9"><span class="id" title="notation">-</span></a> 1 <span class="comment">(*&nbsp;to&nbsp;typecheck&nbsp;return&nbsp;value&nbsp;*)</span> <span class="id" title="notation">)</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">LOCAL</span> <span class="id" title="notation">(</span> <span class="id" title="constructor">temp</span> <span class="id" title="definition">ret_temp</span> (<span class="id" title="constructor">Vint</span> (<span class="id" title="definition">Int.repr</span> <a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#n"><span class="id" title="variable">n</span></a>)) <span class="id" title="notation">)</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">SEP</span> <span class="id" title="notation">(</span> <span class="id" title="notation">)</span>.<br/>
 
@@ -851,6 +858,27 @@
 <span class="id" title="keyword">End</span> <a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#HoareInet"><span class="id" title="section">HoareInet</span></a>.<br/>
 
 <br/>
+<span class="comment">(*<br/>
+Ltac&nbsp;forward_select&nbsp;max_fd&nbsp;rs&nbsp;ws&nbsp;es&nbsp;timeval_ptr&nbsp;:=<br/>
+&nbsp;&nbsp;match&nbsp;goal&nbsp;with<br/>
+&nbsp;&nbsp;|&nbsp;<span class="inlinecode">|-</span> <span class="inlinecode"><span class="id" title="keyword">context</span>[<span class="id" title="var">SOCKAPI</span></span> <span class="inlinecode">?<span class="id" title="var">st</span>]</span>&nbsp;=&gt;<br/>
+&nbsp;&nbsp;match&nbsp;goal&nbsp;with<br/>
+&nbsp;&nbsp;|&nbsp;<span class="inlinecode">|-</span> <span class="inlinecode"><span class="id" title="keyword">context</span>[<span class="id" title="var">FD_SET</span></span> <span class="inlinecode">?<span class="id" title="var">read_sh</span></span> <span class="inlinecode"><span class="id" title="var">rs</span></span> <span class="inlinecode">?<span class="id" title="var">read_set_ptr</span>]</span>&nbsp;=&gt;<br/>
+&nbsp;&nbsp;match&nbsp;goal&nbsp;with<br/>
+&nbsp;&nbsp;|&nbsp;<span class="inlinecode">|-</span> <span class="inlinecode"><span class="id" title="keyword">context</span>[<span class="id" title="var">FD_SET</span></span> <span class="inlinecode">?<span class="id" title="var">write_sh</span></span> <span class="inlinecode"><span class="id" title="var">ws</span></span> <span class="inlinecode">?<span class="id" title="var">write_set_ptr</span>]</span>&nbsp;=&gt;<br/>
+&nbsp;&nbsp;match&nbsp;goal&nbsp;with<br/>
+&nbsp;&nbsp;|&nbsp;<span class="inlinecode">|-</span> <span class="inlinecode"><span class="id" title="keyword">context</span>[<span class="id" title="var">FD_SET</span></span> <span class="inlinecode">?<span class="id" title="var">exception_sh</span></span> <span class="inlinecode">?<span class="id" title="var">exception_set_ptr</span></span> <span class="inlinecode"><span class="id" title="var">es</span>]</span>&nbsp;=&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;replace&nbsp;fds_in_read_set&nbsp;with&nbsp;(fds_in&nbsp;rs);&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;forward_call&nbsp;(st,&nbsp;max_fd,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rs,&nbsp;ws,&nbsp;es,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;read_set_ptr,&nbsp;write_set_ptr,&nbsp;exception_set_ptr,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;timeval_ptr,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;read_sh,&nbsp;write_sh,&nbsp;exception_sh)&nbsp;<span class="comment">(*&nbsp;|&nbsp;auto]&nbsp;*)</span><br/>
+&nbsp;&nbsp;end<br/>
+&nbsp;&nbsp;end<br/>
+&nbsp;&nbsp;end<br/>
+&nbsp;&nbsp;end.<br/>
+&nbsp;*)</span><br/>
 
 <br/>
 <span class="id" title="keyword">Definition</span> <a name="socket_specs"><span class="id" title="definition">socket_specs</span></a> :=<br/>

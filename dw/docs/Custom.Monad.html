@@ -19,8 +19,11 @@
 <h1 class="libtitle">Library Custom.Monad</h1>
 
 <div class="code">
+<span class="comment">(*&nbsp;Monad&nbsp;type&nbsp;class&nbsp;*)</span><br/>
 
 <br/>
+<span class="comment">(*&nbsp;We&nbsp;define&nbsp;our&nbsp;own&nbsp;instead&nbsp;of&nbsp;reusing&nbsp;ext-lib's&nbsp;because<br/>
+&nbsp;&nbsp;&nbsp;of&nbsp;a&nbsp;universe&nbsp;inconsistency&nbsp;when&nbsp;used&nbsp;with&nbsp;itrees&nbsp;and&nbsp;VST.&nbsp;*)</span><br/>
 
 <br/>
 <span class="id" title="keyword">Class</span> <a name="Monad"><span class="id" title="record">Monad</span></a> (<span class="id" title="var">m</span> : <span class="id" title="keyword">Type</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Type</span>) : <span class="id" title="keyword">Type</span> :=<br/>

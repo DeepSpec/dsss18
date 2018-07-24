@@ -24,15 +24,12 @@ Open Scope string_scope.
 (** * Main specification of a swap server *)
 
 (** This is the main loop of the swap server.  The parameter [conns]
-     maintains the list of open connections (this is used for
-     generating test cases), while [last_msg] holds the message
+     maintains the list of open connections, while [last_msg] holds the message
      received from the last client (which will be sent back to the next
      client).  The server repeatedly chooses between accepting a new
      connection or doing a receive and then a send on some existing
-     connection. *)
-(* BCP: How is conns used for generating test cases?? *)
+     connection picked in the list [conns]. *)
 
-(* BCP: Should/could this be written using [forever]? *)
 CoFixpoint swap_spec_loop (buffer_size : nat)
                           (conns : list connection_id)
                           (last_msg : bytes) 

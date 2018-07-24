@@ -74,7 +74,9 @@ Parameter obs_to_server : connection_id -> M specE byte.
 
 (* Observe a byte sent from the server. A [None] result is a
    "hypothetical" byte of unknown value (a hole in the observed
-   trace). *)
+   trace), intuitively meaning that no more bytes have
+   been received from the server on this connection, but the
+   server could have sent some. *)
 (* BCP: We'll need some examples showing how the option is handled *)
 Parameter obs_from_server : connection_id -> M specE (option byte).
 
@@ -89,6 +91,10 @@ Parameter obs_msg_to_server : nat -> connection_id -> M specE bytes.
    and match it with an expected value, failing if they are not
    equal. *)
 Parameter obs_msg_from_server : connection_id -> bytes -> M specE unit.
+
+(* [obs_msg_from_server] is implemented in terms of [obs_from_server].
+   In particular, when [obs_from_server] returns [None], we assume
+   that the hole stands for the next expected byte. *)
 
 End ObserverIface.
 
@@ -105,20 +111,26 @@ Inductive event (byte' : Type) :=
 | ToServer : connection_id -> byte -> event byte'
 | FromServer : connection_id -> byte' -> event byte'.
 
+(* Traces are sequences of events. *)
+Definition trace byte' := list (event byte').
+
 (* ... In the real world, this output is a concrete byte. *)
 Definition real_event := event byte.
+Definition real_trace := list real_event.
 
 (* ... but it will also be useful for testing to insert hypothetical
    bytes of unknown values in a trace, representing values that the
    server may have output but which have not reached the client yet. *)
 Definition hypo_event := event (option byte).
-
-Definition real_trace := list real_event.
 Definition hypo_trace := list hypo_event.
 
 Parameter real_to_hypo : real_trace -> hypo_trace.
 
+(* [is_server_trace server tr] holds if [tr] is a trace of
+   the [server].  *)
 Parameter is_server_trace : itree_server -> real_trace -> Prop.
+
+(* [is_spec_trace spec tr] holds if [tr] is a trace of the [spec]. *)
 Parameter is_spec_trace : itree_spec -> hypo_trace -> Prop.
 
 (* Corresponding "server-side" and "client-side" traces. *)
@@ -185,7 +197,7 @@ End Network.
 Module Traces : TracesIface.
 
   Include SimpleSpec_Traces.
-  
+
   Definition real_to_hypo := real_to_hypo_trace.
   Definition is_server_trace := Network.is_server_trace.
   Definition is_spec_trace := SimpleSpec_Observer.is_spec_trace.

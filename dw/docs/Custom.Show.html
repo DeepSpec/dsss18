@@ -19,6 +19,7 @@
 <h1 class="libtitle">Library Custom.Show</h1>
 
 <div class="code">
+<span class="comment">(*&nbsp;Instances&nbsp;of&nbsp;<span class="inlinecode"><span class="id" title="var">QuickChick.Show</span></span>.&nbsp;*)</span><br/>
 
 <br/>
 <span class="id" title="var">From</span> <span class="id" title="var">Coq</span> <span class="id" title="keyword">Require</span><br/>
@@ -29,11 +30,13 @@
 <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="Custom.String.html#"><span class="id" title="library">Custom.String</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;<span class="inlinecode"><span class="id" title="var">Fin.t</span></span>&nbsp;*)</span><br/>
 <span class="id" title="keyword">Instance</span> <a name="Show_Fin"><span class="id" title="instance">Show_Fin</span></a> (<span class="id" title="var">n</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) : <span class="id" title="class">Show</span> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Vectors.Fin.html#t"><span class="id" title="inductive">Fin.t</span></a> <a class="idref" href="Custom.Show.html#n"><span class="id" title="variable">n</span></a>) :=<br/>
 &nbsp;&nbsp;{ <span class="id" title="method">show</span> <span class="id" title="var">i</span> := <span class="id" title="method">show</span> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Specif.html#proj1_sig"><span class="id" title="definition">proj1_sig</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Vectors.Fin.html#to_nat"><span class="id" title="definition">Fin.to_nat</span></a> <a class="idref" href="Custom.Show.html#i"><span class="id" title="variable">i</span></a>)) }.<br/>
 
 <br/>
-<span class="id" title="keyword">Section</span> <a name="NatToString"><span class="id" title="section">NatToString</span></a>. <span class="id" title="keyword">Import</span> <span class="id" title="var">Arith</span>.<br/>
+<span class="id" title="keyword">Section</span> <a name="NatToString"><span class="id" title="section">NatToString</span></a>. <span class="comment">(*&nbsp;Also&nbsp;does&nbsp;NatFromString.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">Arith</span>.<br/>
 <span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">string_scope</span>.<br/>
 <span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">nat_scope</span>.<br/>
 

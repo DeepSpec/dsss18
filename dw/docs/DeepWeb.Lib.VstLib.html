@@ -259,6 +259,20 @@
 &nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
 
 <br/>
+&nbsp;&nbsp;<span class="comment">(*<br/>
+Lemma&nbsp;In_preserved_by_map:<br/>
+&nbsp;&nbsp;forall&nbsp;{A&nbsp;B}&nbsp;(f&nbsp;:&nbsp;A&nbsp;-&gt;&nbsp;B)&nbsp;(l1&nbsp;l2&nbsp;:&nbsp;list&nbsp;A),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;incl&nbsp;l1&nbsp;l2&nbsp;-&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(forall&nbsp;y,&nbsp;In&nbsp;y&nbsp;(map&nbsp;f&nbsp;l1)&nbsp;-&gt;&nbsp;In&nbsp;y&nbsp;(map&nbsp;f&nbsp;l2)).<br/>
+Proof.<br/>
+&nbsp;&nbsp;intros&nbsp;A&nbsp;B&nbsp;f&nbsp;l1&nbsp;l2&nbsp;HIncl&nbsp;y&nbsp;HIn_map.<br/>
+&nbsp;&nbsp;apply&nbsp;list_in_map_inv&nbsp;in&nbsp;HIn_map.<br/>
+&nbsp;&nbsp;destruct&nbsp;HIn_map&nbsp;as&nbsp;<span class="inlinecode"><span class="id" title="var">x</span></span> <span class="inlinecode">[<span class="id" title="var">y_eq</span></span> <span class="inlinecode"><span class="id" title="var">x_in</span>]</span>;&nbsp;subst.<br/>
+&nbsp;&nbsp;apply&nbsp;in_map.<br/>
+&nbsp;&nbsp;unfold&nbsp;incl&nbsp;in&nbsp;HIncl;&nbsp;apply&nbsp;HIncl.<br/>
+&nbsp;&nbsp;assumption.<br/>
+Qed.<br/>
+&nbsp;&nbsp;&nbsp;*)</span><br/>
 
 <br/>
 &nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <a name="projected_filter_reflects_cond"><span class="id" title="lemma">projected_filter_reflects_cond</span></a>:<br/>

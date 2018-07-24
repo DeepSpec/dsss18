@@ -91,7 +91,7 @@ Fixpoint obs_msg_from_server `{observerE -< E} `{nondetE -< E}
   match msg with
   | "" => ret tt
   | String b0 msg =>
-    ob <- ^ ObsFromServer c;;
+    ob <- obs_from_server c;;
     assert_on "bytes must match" ob (fun b1 => b1 = b0 ?);;
     obs_msg_from_server c msg
   end.

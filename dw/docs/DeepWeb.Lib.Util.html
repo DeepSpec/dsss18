@@ -32,16 +32,22 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Free.html#"><span class="id" title="library">Monad.Free</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;Bytes&nbsp;*)</span><br/>
 
 <br/>
+<span class="comment">(*&nbsp;We&nbsp;use&nbsp;Coq's&nbsp;standard&nbsp;<span class="inlinecode"><span class="id" title="var">string</span></span>&nbsp;type&nbsp;to&nbsp;use&nbsp;its<br/>
+&nbsp;&nbsp;&nbsp;pretty-printing&nbsp;niceness.&nbsp;*)</span><br/>
 
 <br/>
+<span class="comment">(*&nbsp;Single&nbsp;byte&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="byte"><span class="id" title="definition">byte</span></a> : <span class="id" title="keyword">Type</span> := <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.Ascii.html#ascii"><span class="id" title="inductive">Ascii.ascii</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;Bytestring&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="bytes"><span class="id" title="definition">bytes</span></a> : <span class="id" title="keyword">Type</span> := <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">String.string</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;Iterate&nbsp;a&nbsp;byte-producing&nbsp;process&nbsp;<span class="inlinecode"><span class="id" title="var">n</span></span>&nbsp;times.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Fixpoint</span> <a name="replicate_bytes"><span class="id" title="definition">replicate_bytes</span></a> {<span class="id" title="var">E</span>} (<span class="id" title="var">n</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) (<span class="id" title="var">get_byte</span> : <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a>) :<br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#bytes"><span class="id" title="definition">bytes</span></a> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="DeepWeb.Lib.Util.html#n"><span class="id" title="variable">n</span></a> <span class="id" title="keyword">with</span><br/>
@@ -53,6 +59,7 @@
 &nbsp;&nbsp;<span class="id" title="keyword">end</span>%<span class="id" title="var">string</span>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;Loop&nbsp;over&nbsp;each&nbsp;byte.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Fixpoint</span> <a name="for_bytes"><span class="id" title="definition">for_bytes</span></a> {<span class="id" title="var">E</span>} (<span class="id" title="var">bs</span> : <a class="idref" href="DeepWeb.Lib.Util.html#bytes"><span class="id" title="definition">bytes</span></a>) (<span class="id" title="var">eat_byte</span> : <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>) :<br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="DeepWeb.Lib.Util.html#bs"><span class="id" title="variable">bs</span></a> <span class="id" title="keyword">with</span><br/>
@@ -61,6 +68,8 @@
 &nbsp;&nbsp;<span class="id" title="keyword">end</span>%<span class="id" title="var">string</span>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;Get&nbsp;a&nbsp;null-terminated&nbsp;sequence&nbsp;of&nbsp;bytes,&nbsp;excluding&nbsp;the&nbsp;zero-byte<br/>
+&nbsp;&nbsp;&nbsp;delimiter.&nbsp;Loops&nbsp;infinitely&nbsp;if&nbsp;there&nbsp;is&nbsp;no&nbsp;zero-byte.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="get_str"><span class="id" title="definition">get_str</span></a> {<span class="id" title="var">E</span>} (<span class="id" title="var">get_byte</span> : <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a>) : <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#bytes"><span class="id" title="definition">bytes</span></a> :=<br/>
 &nbsp;&nbsp;(<span class="id" title="keyword">cofix</span> <span class="id" title="var">get_str'</span> (<span class="id" title="var">mk_bytes</span> : <a class="idref" href="DeepWeb.Lib.Util.html#bytes"><span class="id" title="definition">bytes</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#bytes"><span class="id" title="definition">bytes</span></a>) : <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#bytes"><span class="id" title="definition">bytes</span></a> :=<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Free.html#bindM"><span class="id" title="definition">bindM</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#get_byte"><span class="id" title="variable">get_byte</span></a> (<span class="id" title="keyword">fun</span> <span class="id" title="var">b</span> ⇒<br/>
@@ -71,6 +80,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">bs</span> ⇒ <a class="idref" href="DeepWeb.Lib.Util.html#bs"><span class="id" title="variable">bs</span></a>).<br/>
 
 <br/>
+<span class="comment">(*&nbsp;Loop&nbsp;over&nbsp;each&nbsp;byte&nbsp;and&nbsp;an&nbsp;extra&nbsp;null&nbsp;byte&nbsp;at&nbsp;the&nbsp;end.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Fixpoint</span> <a name="for_str"><span class="id" title="definition">for_str</span></a> {<span class="id" title="var">E</span>} (<span class="id" title="var">bs</span> : <a class="idref" href="DeepWeb.Lib.Util.html#bytes"><span class="id" title="definition">bytes</span></a>) (<span class="id" title="var">eat_byte</span> : <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>) :<br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="DeepWeb.Lib.Util.html#bs"><span class="id" title="variable">bs</span></a> <span class="id" title="keyword">with</span><br/>
@@ -79,6 +89,7 @@
 &nbsp;&nbsp;<span class="id" title="keyword">end</span>%<span class="id" title="var">string</span>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;Network&nbsp;*)</span><br/>
 
 <br/>
 <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.ZArith.ZArith.html#"><span class="id" title="library">ZArith</span></a>.<br/>
@@ -107,10 +118,12 @@
 <span class="id" title="keyword">Module</span> <a name="TestDefault"><span class="id" title="module">TestDefault</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;A&nbsp;short&nbsp;buffer&nbsp;size&nbsp;for&nbsp;easier&nbsp;testing.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="TestDefault.buffer_size"><span class="id" title="definition">buffer_size</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a><br/>
 &nbsp;&nbsp;:= 3.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;"000"&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="TestDefault.init_message"><span class="id" title="definition">init_message</span></a> : <a class="idref" href="DeepWeb.Lib.Util.html#bytes"><span class="id" title="definition">bytes</span></a><br/>
 &nbsp;&nbsp;:= <a class="idref" href="Custom.String.html#repeat_string"><span class="id" title="definition">repeat_string</span></a> "0"%<span class="id" title="var">char</span> <a class="idref" href="DeepWeb.Lib.Util.html#TestDefault.buffer_size"><span class="id" title="definition">buffer_size</span></a>.<br/>
 
@@ -118,14 +131,16 @@
 <span class="id" title="keyword">End</span> <a class="idref" href="DeepWeb.Lib.Util.html#TestDefault"><span class="id" title="module">TestDefault</span></a>.<br/>
 
 <br/>
+<span class="comment">(**)</span><br/>
 
 <br/>
+<span class="comment">(*&nbsp;Partial&nbsp;test&nbsp;result&nbsp;type.&nbsp;*)</span><br/>
 
 <br/>
 <span class="id" title="keyword">Inductive</span> <a name="result"><span class="id" title="inductive">result</span></a> (<span class="id" title="var">W</span> <span class="id" title="var">CE</span> : <span class="id" title="keyword">Type</span>) :=<br/>
-| <a name="OK"><span class="id" title="constructor">OK</span></a> (<span class="id" title="var">witness</span> : <a class="idref" href="DeepWeb.Lib.Util.html#W"><span class="id" title="variable">W</span></a>)       <br/>
-| <a name="FAIL"><span class="id" title="constructor">FAIL</span></a> (<span class="id" title="var">counterex</span> : <a class="idref" href="DeepWeb.Lib.Util.html#CE"><span class="id" title="variable">CE</span></a>)  <br/>
-| <a name="DONTKNOW"><span class="id" title="constructor">DONTKNOW</span></a>               <br/>
+| <a name="OK"><span class="id" title="constructor">OK</span></a> (<span class="id" title="var">witness</span> : <a class="idref" href="DeepWeb.Lib.Util.html#W"><span class="id" title="variable">W</span></a>)       <span class="comment">(*&nbsp;Success,&nbsp;with&nbsp;a&nbsp;witness&nbsp;*)</span><br/>
+| <a name="FAIL"><span class="id" title="constructor">FAIL</span></a> (<span class="id" title="var">counterex</span> : <a class="idref" href="DeepWeb.Lib.Util.html#CE"><span class="id" title="variable">CE</span></a>)  <span class="comment">(*&nbsp;Failure,&nbsp;with&nbsp;a&nbsp;counterexample&nbsp;*)</span><br/>
+| <a name="DONTKNOW"><span class="id" title="constructor">DONTKNOW</span></a>               <span class="comment">(*&nbsp;Test&nbsp;ran&nbsp;out&nbsp;of&nbsp;fuel&nbsp;or&nbsp;something&nbsp;*)</span><br/>
 .<br/>
 
 <br/>
@@ -134,6 +149,8 @@
 <span class="id" title="var">Arguments</span> <a class="idref" href="DeepWeb.Lib.Util.html#DONTKNOW"><span class="id" title="constructor">DONTKNOW</span></a> {<span class="id" title="var">W</span>} {<span class="id" title="var">CE</span>}.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;A&nbsp;result&nbsp;with&nbsp;no&nbsp;meaningful&nbsp;witnesses&nbsp;of&nbsp;success&nbsp;or<br/>
+&nbsp;&nbsp;&nbsp;counterexamples.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="simple_result"><span class="id" title="definition">simple_result</span></a> := <a class="idref" href="DeepWeb.Lib.Util.html#result"><span class="id" title="inductive">result</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>.<br/>
 </div>
 </div>

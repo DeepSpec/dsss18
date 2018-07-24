@@ -70,12 +70,16 @@
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>) <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#n"><span class="id" title="variable">n</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#xs"><span class="id" title="variable">xs</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;Here&nbsp;we&nbsp;traverse&nbsp;the&nbsp;<span class="inlinecode"><span class="id" title="var">server'</span></span>&nbsp;tree&nbsp;to&nbsp;generate&nbsp;its&nbsp;traces.&nbsp;*)</span><br/>
 
 <br/>
+<span class="comment">(*&nbsp;We&nbsp;use&nbsp;the&nbsp;following&nbsp;effect&nbsp;to&nbsp;annotate&nbsp;a&nbsp;tree&nbsp;with&nbsp;traces.&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;TODO:&nbsp;put&nbsp;in&nbsp;<span class="inlinecode"><span class="id" title="var">Free</span></span>?&nbsp;*)</span><br/>
 <span class="id" title="keyword">Inductive</span> <a name="note_traceE"><span class="id" title="inductive">note_traceE</span></a> : <span class="id" title="keyword">Type</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Type</span> :=<br/>
 | <a name="NoteTrace"><span class="id" title="constructor">NoteTrace</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#real_trace"><span class="id" title="definition">real_trace</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#note_traceE"><span class="id" title="inductive">note_traceE</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;We&nbsp;keep&nbsp;track&nbsp;of&nbsp;a&nbsp;counter&nbsp;to&nbsp;generate&nbsp;fresh&nbsp;connection&nbsp;IDs.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="network_state"><span class="id" title="definition">network_state</span></a> := <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>.<br/>
 
 <br/>
@@ -87,11 +91,17 @@
 <span class="id" title="keyword">Definition</span> <a name="traceE"><span class="id" title="definition">traceE</span></a> := <a class="idref" href="DeepWeb.Free.Monad.Common.html#NonDeterminismBis.nondetE"><span class="id" title="inductive">nondetE</span></a> <a class="idref" href="DeepWeb.Free.Monad.Effect.html#a713615ae89f5e79b81b3a5662d0793f"><span class="id" title="notation">+'</span></a> <a class="idref" href="DeepWeb.Free.Monad.Spec.html#arbitraryE"><span class="id" title="inductive">arbitraryE</span></a> <a class="idref" href="DeepWeb.Free.Monad.Effect.html#a713615ae89f5e79b81b3a5662d0793f"><span class="id" title="notation">+'</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#note_traceE"><span class="id" title="inductive">note_traceE</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;Type&nbsp;of&nbsp;trees&nbsp;annotated&nbsp;with&nbsp;traces.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="itree_traces"><span class="id" title="definition">itree_traces</span></a> := <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#traceE"><span class="id" title="definition">traceE</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;We&nbsp;traverse&nbsp;the&nbsp;tree,&nbsp;accumulating&nbsp;a&nbsp;trace&nbsp;and&nbsp;outputing<br/>
+&nbsp;&nbsp;&nbsp;it&nbsp;every&nbsp;time&nbsp;a&nbsp;new&nbsp;event&nbsp;gets&nbsp;added.&nbsp;The&nbsp;traces&nbsp;that&nbsp;the<br/>
+&nbsp;&nbsp;&nbsp;output&nbsp;tree&nbsp;is&nbsp;annotated&nbsp;with&nbsp;are&nbsp;exactly&nbsp;the&nbsp;set&nbsp;of&nbsp;traces<br/>
+&nbsp;&nbsp;&nbsp;of&nbsp;the&nbsp;original&nbsp;tree.&nbsp;*)</span><br/>
 
 <br/>
+<span class="comment">(*&nbsp;Main&nbsp;body&nbsp;of&nbsp;<span class="inlinecode"><span class="id" title="var">enum_traces_handler</span></span>.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="enum_traces_handler"><span class="id" title="definition">enum_traces_handler</span></a> :<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">∀</span> <span class="id" title="var">X</span>, <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#network_state"><span class="id" title="definition">network_state</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#d19c7eafd0e2d195d10df94b392087b5"><span class="id" title="notation">×</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#real_trace"><span class="id" title="definition">real_trace</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#Network.serverE"><span class="id" title="definition">serverE</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#X"><span class="id" title="variable">X</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#traceE"><span class="id" title="definition">traceE</span></a> (<span class="id" title="var">_</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#d19c7eafd0e2d195d10df94b392087b5"><span class="id" title="notation">×</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#X"><span class="id" title="variable">X</span></a>) :=<br/>
@@ -120,12 +130,19 @@
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Free.html#mapM"><span class="id" title="definition">mapM</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#snd"><span class="id" title="definition">snd</span></a> (<a class="idref" href="DeepWeb.Free.Monad.Internal.html#hom_state"><span class="id" title="definition">hom_state</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#enum_traces_handler"><span class="id" title="definition">enum_traces_handler</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">(</span></a>0<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">,</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#145bedf8a5d4a541831f3f70db03085c"><span class="id" title="notation">[]</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">)</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#t"><span class="id" title="variable">t</span></a>).<br/>
 
 <br/>
+<span class="comment">(**)</span><br/>
 
 <br/>
+<span class="comment">(*&nbsp;A&nbsp;small&nbsp;backtracking&nbsp;generator&nbsp;library.&nbsp;*)</span><br/>
 
 <br/>
+<span class="comment">(*&nbsp;There&nbsp;are&nbsp;a&nbsp;lot&nbsp;of&nbsp;dead&nbsp;ends&nbsp;in&nbsp;the&nbsp;above&nbsp;tree.<br/>
+&nbsp;&nbsp;&nbsp;We&nbsp;use&nbsp;backtracking&nbsp;to&nbsp;increase&nbsp;our&nbsp;chances&nbsp;of&nbsp;reaching<br/>
+&nbsp;&nbsp;&nbsp;more&nbsp;interesting&nbsp;traces.&nbsp;*)</span><br/>
 
 <br/>
+<span class="comment">(*&nbsp;Backtracking&nbsp;generator.&nbsp;We&nbsp;use&nbsp;fuel&nbsp;to&nbsp;control&nbsp;the&nbsp;execution<br/>
+&nbsp;&nbsp;&nbsp;time&nbsp;predictably.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="G'"><span class="id" title="definition">G'</span></a> (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) := <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">(</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="axiom">G</span> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#A"><span class="id" title="variable">A</span></a>)<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">)</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="axiom">G</span> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#A"><span class="id" title="variable">A</span></a>).<br/>
 
 <br/>
@@ -133,6 +150,7 @@
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#g"><span class="id" title="variable">g</span></a> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> ⇒ <a class="idref" href="Custom.Monad.html#ret"><span class="id" title="method">ret</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#145bedf8a5d4a541831f3f70db03085c"><span class="id" title="notation">[]</span></a>) <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#fuel"><span class="id" title="variable">fuel</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;Append&nbsp;two&nbsp;generators.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="orG'"><span class="id" title="definition">orG'</span></a> {<span class="id" title="var">A</span>} (<span class="id" title="var">g1</span> <span class="id" title="var">g2</span> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#G'"><span class="id" title="definition">G'</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#A"><span class="id" title="variable">A</span></a>) : <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#G'"><span class="id" title="definition">G'</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#A"><span class="id" title="variable">A</span></a> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">fun</span> <span class="id" title="var">cont</span> ⇒<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#g1"><span class="id" title="variable">g1</span></a> (<span class="id" title="keyword">fun</span> <span class="id" title="var">fuel</span> ⇒ <span class="id" title="keyword">match</span> <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#fuel"><span class="id" title="variable">fuel</span></a> <span class="id" title="keyword">with</span><br/>
@@ -141,15 +159,19 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>).<br/>
 
 <br/>
+<span class="comment">(*&nbsp;Generate&nbsp;a&nbsp;constant&nbsp;element.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="retG'"><span class="id" title="definition">retG'</span></a> {<span class="id" title="var">A</span>} (<span class="id" title="var">x</span> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#A"><span class="id" title="variable">A</span></a>) : <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#G'"><span class="id" title="definition">G'</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#A"><span class="id" title="variable">A</span></a> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">fun</span> <span class="id" title="var">cont</span> <span class="id" title="var">fuel</span> ⇒<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">xs</span> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">&lt;-</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#cont"><span class="id" title="variable">cont</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#fuel"><span class="id" title="variable">fuel</span></a><a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">;;</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Custom.Monad.html#ret"><span class="id" title="method">ret</span></a> (<a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#x"><span class="id" title="variable">x</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#0a8150c3c4df34d205c5ed9a427e2ed5"><span class="id" title="notation">::</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#xs"><span class="id" title="variable">xs</span></a>).<br/>
 
 <br/>
+<span class="comment">(*&nbsp;Empty&nbsp;generator.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="emptyG'"><span class="id" title="definition">emptyG'</span></a> {<span class="id" title="var">A</span>} : <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#G'"><span class="id" title="definition">G'</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#A"><span class="id" title="variable">A</span></a> := <span class="id" title="keyword">fun</span> <span class="id" title="var">cont</span> <span class="id" title="var">fuel</span> ⇒ <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#cont"><span class="id" title="variable">cont</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#fuel"><span class="id" title="variable">fuel</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;Run&nbsp;a&nbsp;parameterized&nbsp;generator&nbsp;<span class="inlinecode"><span class="id" title="var">f</span></span>&nbsp;with&nbsp;each&nbsp;element<br/>
+&nbsp;&nbsp;&nbsp;in&nbsp;the&nbsp;list&nbsp;<span class="inlinecode"><span class="id" title="var">xs</span></span>&nbsp;as&nbsp;an&nbsp;argument.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Fixpoint</span> <a name="traverseG'"><span class="id" title="definition">traverseG'</span></a> {<span class="id" title="var">A</span> <span class="id" title="var">B</span>} (<span class="id" title="var">xs</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#A"><span class="id" title="variable">A</span></a>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#A"><span class="id" title="variable">A</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#G'"><span class="id" title="definition">G'</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#B"><span class="id" title="variable">B</span></a>) : <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#G'"><span class="id" title="definition">G'</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#B"><span class="id" title="variable">B</span></a> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#xs"><span class="id" title="variable">xs</span></a> <span class="id" title="keyword">with</span><br/>
@@ -158,8 +180,10 @@
 &nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
 
 <br/>
+<span class="comment">(**)</span><br/>
 
 <br/>
+<span class="comment">(*&nbsp;Generate&nbsp;random&nbsp;traces&nbsp;up&nbsp;to&nbsp;a&nbsp;given&nbsp;depth&nbsp;in&nbsp;the&nbsp;tree.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Fixpoint</span> <a name="random_trace'"><span class="id" title="definition">random_trace'</span></a> (<span class="id" title="var">max_depth</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) (<span class="id" title="var">t</span> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#itree_traces"><span class="id" title="definition">itree_traces</span></a>) :<br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#G'"><span class="id" title="definition">G'</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#real_trace"><span class="id" title="definition">real_trace</span></a> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#max_depth"><span class="id" title="variable">max_depth</span></a> <span class="id" title="keyword">with</span><br/>
@@ -197,10 +221,13 @@
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#runG'"><span class="id" title="definition">runG'</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#fuel"><span class="id" title="variable">fuel</span></a> (<a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#random_trace'"><span class="id" title="definition">random_trace'</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#max_depth"><span class="id" title="variable">max_depth</span></a> (<a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#enum_traces"><span class="id" title="definition">enum_traces</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#t"><span class="id" title="variable">t</span></a>)).<br/>
 
 <br/>
+<span class="comment">(**)</span><br/>
 
 <br/>
+<span class="comment">(*&nbsp;Plumbing&nbsp;to&nbsp;adapt&nbsp;the&nbsp;test&nbsp;function.&nbsp;*)</span><br/>
 
 <br/>
+<span class="comment">(*&nbsp;Failure&nbsp;carries&nbsp;counterexample.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="test_result"><span class="id" title="definition">test_result</span></a> <span class="id" title="var">cx</span> := <a class="idref" href="DeepWeb.Lib.Util.html#result"><span class="id" title="inductive">result</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#cx"><span class="id" title="variable">cx</span></a>.<br/>
 
 <br/>
