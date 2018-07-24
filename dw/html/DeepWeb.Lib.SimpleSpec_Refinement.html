@@ -49,12 +49,22 @@
 <span class="id" title="keyword">Set</span> <span class="id" title="var">Bullet</span> <span class="id" title="var">Behavior</span> "Strict Subproofs".<br/>
 
 <br/>
+<span class="comment">(*&nbsp;The&nbsp;definition&nbsp;of&nbsp;"refinement"&nbsp;between&nbsp;an&nbsp;itree&nbsp;representing<br/>
+&nbsp;&nbsp;&nbsp;a&nbsp;server&nbsp;implementation,&nbsp;and&nbsp;an&nbsp;itree&nbsp;of&nbsp;"linear&nbsp;traces"<br/>
+&nbsp;&nbsp;&nbsp;as&nbsp;a&nbsp;specification.&nbsp;The&nbsp;<span class="inlinecode"><span class="id" title="var">ScramblingFacts</span></span>&nbsp;that&nbsp;the<br/>
+&nbsp;&nbsp;&nbsp;theorems&nbsp;below&nbsp;depend&nbsp;on&nbsp;are&nbsp;defined&nbsp;and&nbsp;proved&nbsp;in<br/>
+&nbsp;&nbsp;&nbsp;<span class="inlinecode"><span class="id" title="var">Lib</span>/<span class="id" title="var">SimpleSpec_Scramble.v</span></span>.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Module</span> <a name="MkScramblingRefinement"><span class="id" title="module">MkScramblingRefinement</span></a> (<span class="id" title="var">ScramblingFacts</span> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Scramble.html#ScramblingTypes"><span class="id" title="module">ScramblingTypes</span></a>).<br/>
 
 <br/>
 <span class="id" title="keyword">Import</span> <span class="id" title="var">ScramblingFacts</span>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;A&nbsp;server&nbsp;(<span class="inlinecode"><span class="id" title="var">server</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">itree_server</span></span>)&nbsp;refines&nbsp;a&nbsp;"linear&nbsp;spec"<br/>
+&nbsp;&nbsp;&nbsp;(<span class="inlinecode"><span class="id" title="var">spec</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">itree_spec</span></span>)&nbsp;if,&nbsp;for&nbsp;every&nbsp;trace&nbsp;<span class="inlinecode"><span class="id" title="var">tr</span></span>&nbsp;that&nbsp;the<br/>
+&nbsp;&nbsp;&nbsp;server&nbsp;can&nbsp;produce,&nbsp;and&nbsp;every&nbsp;trace&nbsp;<span class="inlinecode"><span class="id" title="var">str</span></span>&nbsp;that&nbsp;can&nbsp;be&nbsp;observed<br/>
+&nbsp;&nbsp;&nbsp;from&nbsp;it&nbsp;via&nbsp;the&nbsp;network,&nbsp;it&nbsp;can&nbsp;be&nbsp;explained&nbsp;by&nbsp;a<br/>
+&nbsp;&nbsp;&nbsp;"descrambled&nbsp;trace"&nbsp;<span class="inlinecode"><span class="id" title="var">dstr</span></span>&nbsp;in&nbsp;the&nbsp;"linear&nbsp;spec".&nbsp;&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="MkScramblingRefinement.refines_mod_network"><span class="id" title="definition">refines_mod_network</span></a> <span class="id" title="var">server</span> <span class="id" title="var">spec</span> : <span class="id" title="keyword">Prop</span> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">∀</span> <span class="id" title="var">tr</span> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#real_trace"><span class="id" title="definition">real_trace</span></a>,<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Refinement.html#ScramblingFacts.wf_trace"><span class="id" title="axiom">wf_trace</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Refinement.html#tr"><span class="id" title="variable">tr</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a><br/>
@@ -66,6 +76,11 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#is_spec_trace"><span class="id" title="definition">is_spec_trace</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Refinement.html#spec"><span class="id" title="variable">spec</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Refinement.html#dstr"><span class="id" title="variable">dstr</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;It&nbsp;turns&nbsp;out&nbsp;that&nbsp;we&nbsp;can&nbsp;simplify&nbsp;this&nbsp;property<br/>
+&nbsp;&nbsp;&nbsp;(three&nbsp;quantifiers!)&nbsp;to&nbsp;remove&nbsp;an&nbsp;intermediate&nbsp;step.<br/>
+&nbsp;&nbsp;&nbsp;We&nbsp;can&nbsp;directly&nbsp;descramble&nbsp;only&nbsp;the&nbsp;traces&nbsp;of&nbsp;the&nbsp;server.<br/>
+&nbsp;&nbsp;&nbsp;<span class="inlinecode"><span class="id" title="var">strong_sound</span></span>&nbsp;and&nbsp;<span class="inlinecode"><span class="id" title="var">strong_complete</span></span>&nbsp;shown&nbsp;below&nbsp;establish<br/>
+&nbsp;&nbsp;&nbsp;the&nbsp;equivalence&nbsp;between&nbsp;these&nbsp;two&nbsp;properties.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="MkScramblingRefinement.strong_refines_mod_network"><span class="id" title="definition">strong_refines_mod_network</span></a> <span class="id" title="var">server</span> <span class="id" title="var">spec</span> : <span class="id" title="keyword">Prop</span> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">∀</span> <span class="id" title="var">tr</span> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#real_trace"><span class="id" title="definition">real_trace</span></a>,<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Refinement.html#ScramblingFacts.wf_trace"><span class="id" title="axiom">wf_trace</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Refinement.html#tr"><span class="id" title="variable">tr</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a><br/>
@@ -73,6 +88,13 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#84eb6d2849dbf3581b1c0c05add5f2d8"><span class="id" title="notation">∃</span></a> <span class="id" title="var">dstr</span> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#real_trace"><span class="id" title="definition">real_trace</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#84eb6d2849dbf3581b1c0c05add5f2d8"><span class="id" title="notation">,</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#network_scrambled0"><span class="id" title="definition">network_scrambled0</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Refinement.html#dstr"><span class="id" title="variable">dstr</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Refinement.html#tr"><span class="id" title="variable">tr</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d82a7d96d3659d805ffe732283716822"><span class="id" title="notation">∧</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#is_spec_trace"><span class="id" title="definition">is_spec_trace</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Refinement.html#spec"><span class="id" title="variable">spec</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Refinement.html#dstr"><span class="id" title="variable">dstr</span></a>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;<span class="inlinecode"><span class="id" title="var">strong_sound</span></span>&nbsp;and&nbsp;<span class="inlinecode"><span class="id" title="var">strong_complete</span></span>&nbsp;rely&nbsp;on&nbsp;two&nbsp;properties<br/>
+&nbsp;&nbsp;&nbsp;of&nbsp;the&nbsp;<span class="inlinecode"><span class="id" title="var">network_scrambled</span></span>&nbsp;relation:&nbsp;it&nbsp;is&nbsp;reflexive<br/>
+&nbsp;&nbsp;&nbsp;(<span class="inlinecode"><span class="id" title="var">scrambled_reflexive</span></span>)&nbsp;and&nbsp;transitive&nbsp;(<span class="inlinecode"><span class="id" title="var">scrambled_transitive</span></span>).<br/>
+&nbsp;&nbsp;&nbsp;(These&nbsp;are&nbsp;shown&nbsp;in&nbsp;<span class="inlinecode"><span class="id" title="var">Lib</span>/<span class="id" title="var">SimpleSpec_Scramble.v</span></span>.)<br/>
+&nbsp;*)</span><br/>
 
 <br/>
 <span class="id" title="keyword">Definition</span> <a name="MkScramblingRefinement.strong_sound"><span class="id" title="definition">strong_sound</span></a> :<br/>
@@ -108,6 +130,10 @@
 <br/>
 <span class="id" title="keyword">Module</span> <span class="id" title="keyword">Export</span> <a name="ScramblingRefinement"><span class="id" title="module">ScramblingRefinement</span></a> :=<br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Refinement.html#MkScramblingRefinement"><span class="id" title="module">MkScramblingRefinement</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Scramble.html#ScramblingFacts"><span class="id" title="module">ScramblingFacts</span></a>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;<span class="inlinecode"><span class="id" title="var">refines_mod_network</span></span>&nbsp;is&nbsp;part&nbsp;of&nbsp;the&nbsp;toplevel&nbsp;property<br/>
+&nbsp;&nbsp;&nbsp;about&nbsp;the&nbsp;swap&nbsp;server,&nbsp;stated&nbsp;in&nbsp;<span class="inlinecode"><span class="id" title="var">Spec</span>/<span class="id" title="var">TopLevelSpec.v</span></span>.&nbsp;*)</span><br/>
 </div>
 </div>
 

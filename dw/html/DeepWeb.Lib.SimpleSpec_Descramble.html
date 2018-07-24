@@ -19,6 +19,11 @@
 <h1 class="libtitle">Library DeepWeb.Lib.SimpleSpec_Descramble</h1>
 
 <div class="code">
+<span class="comment">(*&nbsp;Traces&nbsp;that&nbsp;a&nbsp;client&nbsp;observes&nbsp;are&nbsp;scrambled&nbsp;by&nbsp;the&nbsp;network.<br/>
+&nbsp;&nbsp;&nbsp;We&nbsp;try&nbsp;to&nbsp;explain&nbsp;it&nbsp;by&nbsp;"descrambling"&nbsp;it&nbsp;into&nbsp;a&nbsp;trace<br/>
+&nbsp;&nbsp;&nbsp;that&nbsp;is&nbsp;recognized&nbsp;by&nbsp;a&nbsp;given&nbsp;spec.&nbsp;*)</span><br/>
+
+<br/>
 <span class="id" title="keyword">Generalizable</span> <span class="id" title="keyword">Variable</span> <span class="id" title="var">E</span>.<br/>
 <span class="id" title="keyword">Type</span><span class="id" title="var">classes</span> <span class="id" title="tactic">eauto</span> := 6.<br/>
 
@@ -377,8 +382,15 @@ Compute&nbsp;list_descramblings&nbsp;50&nbsp;<span class="inlinecode"></span>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#to_result"><span class="id" title="definition">to_result</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#fuel"><span class="id" title="variable">fuel</span></a> (<a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#find'"><span class="id" title="definition">find'</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#64ee52ab9627fca8d637e2f1207a2990"><span class="id" title="notation">[</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">(</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#145bedf8a5d4a541831f3f70db03085c"><span class="id" title="notation">[]</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">,</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#intersect_trace"><span class="id" title="definition">intersect_trace</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#s"><span class="id" title="variable">s</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#t"><span class="id" title="variable">t</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">)</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#64ee52ab9627fca8d637e2f1207a2990"><span class="id" title="notation">]</span></a>).<br/>
 
 <br/>
-<span class="comment">(*&nbsp;We&nbsp;will&nbsp;then&nbsp;generate&nbsp;traces&nbsp;produced&nbsp;by&nbsp;a&nbsp;server&nbsp;to&nbsp;test&nbsp;them.<br/>
-&nbsp;&nbsp;&nbsp;See&nbsp;<span class="inlinecode"><span class="id" title="var">Lib</span>/<span class="id" title="var">SimpleSpec_ServerTrace.v</span></span>&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;We&nbsp;will&nbsp;then&nbsp;generate&nbsp;traces&nbsp;produced&nbsp;by&nbsp;a&nbsp;server&nbsp;to&nbsp;test&nbsp;them<br/>
+&nbsp;&nbsp;&nbsp;with&nbsp;<span class="inlinecode"><span class="id" title="var">is_scrambled_trace_of</span></span>.<br/>
+&nbsp;&nbsp;&nbsp;There&nbsp;are&nbsp;two&nbsp;ways:<br/>
+&nbsp;&nbsp;&nbsp;-&nbsp;We&nbsp;can&nbsp;compile&nbsp;and&nbsp;run&nbsp;the&nbsp;actual&nbsp;C&nbsp;server,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;talking&nbsp;to&nbsp;it&nbsp;over&nbsp;actual&nbsp;sockets.&nbsp;This&nbsp;is&nbsp;implemented&nbsp;in<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="inlinecode"><span class="id" title="var">Test</span>/<span class="id" title="var">ExternalTest.v</span></span>.<br/>
+&nbsp;&nbsp;&nbsp;-&nbsp;We&nbsp;can&nbsp;generate&nbsp;traces&nbsp;by&nbsp;walking&nbsp;through&nbsp;the&nbsp;itree&nbsp;model&nbsp;of<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;C&nbsp;program.&nbsp;<span class="inlinecode"><span class="id" title="var">Lib</span>/<span class="id" title="var">SimpleSpec_ServerTrace.v</span></span><br/>
+&nbsp;*)</span><br/>
 <span class="comment">(*&nbsp;/SHOW&nbsp;*)</span><br/>
 </div>
 </div>

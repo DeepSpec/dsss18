@@ -19,20 +19,36 @@ From DeepWeb Require Import
 
 Set Bullet Behavior "Strict Subproofs".
 
+(* Main facts about [network_scrambled] *)
 Module Type ScramblingTypes.
 
+(* This predicates defines "well-formed" traces, where
+   connections must be open before messages can be sent on them. *)
 Parameter wf_trace : forall {byte'}, list (event byte') -> Prop.
 
+(* We restrict the relation [network_scrambled] to well-formed
+   traces, by making this vacuously true on bad traces. *)
 Definition network_scrambled_wf ns (tr0 tr1 : real_trace) :=
   wf_trace tr0 ->
   wf_trace tr1 ->
   network_scrambled ns tr0 tr1.
 
+(* We consider scramblings of well-formed traces from the
+   initial state. *)
 Definition network_scrambled_wf0 := network_scrambled_wf initial_ns.
 
+(* Then [network_scrambled_wf0] is reflexive. *)
+Declare Instance scrambled_reflexive : Reflexive network_scrambled_wf0.
+
+(* And [network_scrambled0] is transitive. *)
 Declare Instance scrambled_transitive : Transitive network_scrambled0.
 
-Declare Instance scrambled_reflexive : Reflexive network_scrambled_wf0.
+(* Note that the "well-formedness" precondition is implicit
+   in the two preconditions of transitivity. *)
+(* TODO: [network_scrambled] actually needs to be fixed. *)
+Parameter scrambled_preserves_wf : forall tr str : real_trace,
+    network_scrambled0 tr str ->
+    wf_trace tr /\ wf_trace str.
 
 End ScramblingTypes.
 
@@ -111,8 +127,8 @@ Axiom equiv_open_wf :
     open_trace (fun _ => False) tr <-> wf_trace tr.
 
 Lemma scrambled_preserves_wf : forall tr str : real_trace,
-    wf_trace tr ->
     network_scrambled0 tr str ->
+    wf_trace tr /\
     wf_trace str.
 Proof.
 Admitted.

@@ -1,3 +1,7 @@
+(* Traces that a client observes are scrambled by the network.
+   We try to explain it by "descrambling" it into a trace
+   that is recognized by a given spec. *)
+
 Generalizable Variable E.
 Typeclasses eauto := 6.
 
@@ -327,6 +331,13 @@ Definition is_scrambled_trace_of
            (fuel : nat) (s : itree_spec) (t : real_trace) : result :=
   to_result fuel (find' [([], intersect_trace s t)]).
 
-(* We will then generate traces produced by a server to test them.
-   See [Lib/SimpleSpec_ServerTrace.v] *)
+(* We will then generate traces produced by a server to test them
+   with [is_scrambled_trace_of].
+   There are two ways:
+   - We can compile and run the actual C server,
+     talking to it over actual sockets. This is implemented in
+     [Test/ExternalTest.v].
+   - We can generate traces by walking through the itree model of
+     the C program. [Lib/SimpleSpec_ServerTrace.v]
+ *)
 (* /SHOW *)

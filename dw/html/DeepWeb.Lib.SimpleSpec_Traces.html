@@ -19,6 +19,20 @@
 <h1 class="libtitle">Library DeepWeb.Lib.SimpleSpec_Traces</h1>
 
 <div class="code">
+<span class="comment">(*&nbsp;Traces&nbsp;and&nbsp;scramblings.&nbsp;*)</span><br/>
+
+<br/>
+<span class="comment">(*&nbsp;We&nbsp;define&nbsp;the&nbsp;notion&nbsp;of&nbsp;trace&nbsp;and&nbsp;a&nbsp;"scrambling"<br/>
+&nbsp;&nbsp;&nbsp;relation&nbsp;between&nbsp;the&nbsp;traces&nbsp;produced&nbsp;by&nbsp;a&nbsp;server&nbsp;and<br/>
+&nbsp;&nbsp;&nbsp;those&nbsp;that&nbsp;can&nbsp;be&nbsp;observed&nbsp;by&nbsp;a&nbsp;client&nbsp;on&nbsp;the&nbsp;other&nbsp;side<br/>
+&nbsp;&nbsp;&nbsp;of&nbsp;the&nbsp;network.<br/>
+<br/>
+&nbsp;&nbsp;&nbsp;The&nbsp;network&nbsp;is&nbsp;defined&nbsp;as&nbsp;a&nbsp;state&nbsp;machine&nbsp;with&nbsp;transitions<br/>
+&nbsp;&nbsp;&nbsp;visible&nbsp;either&nbsp;by&nbsp;the&nbsp;server&nbsp;or&nbsp;by&nbsp;the&nbsp;client,<br/>
+&nbsp;&nbsp;&nbsp;see&nbsp;<span class="inlinecode"><span class="id" title="var">Lib</span>/<span class="id" title="var">SimpleSpec_NetworkModel.v</span></span>.<br/>
+&nbsp;*)</span><br/>
+
+<br/>
 <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Relations.Relations.html#"><span class="id" title="library">Relations</span></a>.<br/>
 <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Classes.RelationClasses.html#"><span class="id" title="library">RelationClasses</span></a>.<br/>
 
@@ -185,6 +199,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;The&nbsp;main&nbsp;"scrambling"&nbsp;relation.&nbsp;*)</span><br/>
 <span class="comment">(*&nbsp;Corresponding&nbsp;"server-side"&nbsp;and&nbsp;"client-side"&nbsp;traces.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Inductive</span> <a name="network_scrambled"><span class="id" title="inductive">network_scrambled</span></a> :<br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#NetworkModel.network_state"><span class="id" title="definition">network_state</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#real_trace"><span class="id" title="definition">real_trace</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#real_trace"><span class="id" title="definition">real_trace</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Prop</span> :=<br/>
@@ -261,6 +276,13 @@
 
 <br/>
 <span class="id" title="keyword">End</span> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#EventNotations"><span class="id" title="module">EventNotations</span></a>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;With&nbsp;the&nbsp;<span class="inlinecode"><span class="id" title="var">network_scrambled</span></span>&nbsp;relation&nbsp;we&nbsp;defined&nbsp;here,&nbsp;we<br/>
+&nbsp;&nbsp;&nbsp;can&nbsp;state&nbsp;the&nbsp;correctness&nbsp;property&nbsp;we&nbsp;generally&nbsp;want&nbsp;to&nbsp;test<br/>
+&nbsp;&nbsp;&nbsp;and&nbsp;verify&nbsp;about&nbsp;server&nbsp;itrees,&nbsp;in<br/>
+&nbsp;&nbsp;&nbsp;<span class="inlinecode"><span class="id" title="var">Lib</span>/<span class="id" title="var">SimpleSpec_Refinement.v</span></span>.&nbsp;It&nbsp;is&nbsp;specialized&nbsp;to&nbsp;the<br/>
+&nbsp;&nbsp;&nbsp;swap&nbsp;server&nbsp;in&nbsp;<span class="inlinecode"><span class="id" title="var">Spec</span>/<span class="id" title="var">TopLevelSpec.v</span></span>.&nbsp;*)</span><br/>
 </div>
 </div>
 

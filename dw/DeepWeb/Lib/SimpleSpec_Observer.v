@@ -1,3 +1,8 @@
+(* Our specifications are itrees whose effects allow them to
+   _observe_ events and make assertions to define what makes a
+   valid interaction.
+ *)
+
 Generalizable Variable E.
 Typeclasses eauto := 6.
 
@@ -223,6 +228,6 @@ Fixpoint is_trace_of
      distinguished over the network from a server that actually
      produces the same traces as the spec above. *)
 
-(* The network's behavior is accounted for in
-   [Lib/SimpleSpec_Descramble.v] *)
+(* The network's behavior is defined in [Lib/SimpleSpec_Traces.v]
+   and is accounted for in testing in [Lib/SimpleSpec_Descramble.v]. *)
 (* /SHOW *)

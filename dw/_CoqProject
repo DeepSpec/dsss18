@@ -2,10 +2,7 @@
 -R DeepWeb/ DeepWeb
 
 DeepWeb/Spec/Swap_SimpleSpec.v
-DeepWeb/Spec/Swap_SimpleSpec_Examples.v
-
 DeepWeb/Free/Monad/Free.v
-
 DeepWeb/Spec/Swap_CLikeSpec.v
 
 DeepWeb/Free/Monad/Event.v

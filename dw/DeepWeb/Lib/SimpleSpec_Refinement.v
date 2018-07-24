@@ -22,10 +22,20 @@ From DeepWeb Require Import
 
 Set Bullet Behavior "Strict Subproofs".
 
+(* The definition of "refinement" between an itree representing
+   a server implementation, and an itree of "linear traces"
+   as a specification. The [ScramblingFacts] that the
+   theorems below depend on are defined and proved in
+   [Lib/SimpleSpec_Scramble.v]. *)
 Module MkScramblingRefinement (ScramblingFacts : ScramblingTypes).
 
 Import ScramblingFacts.
 
+(* A server ([server : itree_server]) refines a "linear spec"
+   ([spec : itree_spec]) if, for every trace [tr] that the
+   server can produce, and every trace [str] that can be observed
+   from it via the network, it can be explained by a
+   "descrambled trace" [dstr] in the "linear spec".  *)
 Definition refines_mod_network server spec : Prop :=
   forall tr : real_trace,
     wf_trace tr ->
@@ -36,6 +46,11 @@ Definition refines_mod_network server spec : Prop :=
         network_scrambled0 dstr str /\
         is_spec_trace spec dstr.
 
+(* It turns out that we can simplify this property
+   (three quantifiers!) to remove an intermediate step.
+   We can directly descramble only the traces of the server.
+   [strong_sound] and [strong_complete] shown below establish
+   the equivalence between these two properties. *)
 Definition strong_refines_mod_network server spec : Prop :=
   forall tr : real_trace,
     wf_trace tr ->
@@ -43,6 +58,12 @@ Definition strong_refines_mod_network server spec : Prop :=
       exists dstr : real_trace,
         network_scrambled0 dstr tr /\
         is_spec_trace spec dstr.
+
+(* [strong_sound] and [strong_complete] rely on two properties
+   of the [network_scrambled] relation: it is reflexive
+   ([scrambled_reflexive]) and transitive ([scrambled_transitive]).
+   (These are shown in [Lib/SimpleSpec_Scramble.v].)
+ *)
 
 Definition strong_sound :
   forall server spec,
@@ -74,3 +95,6 @@ End MkScramblingRefinement.
 
 Module Export ScramblingRefinement :=
   MkScramblingRefinement ScramblingFacts.
+
+(* [refines_mod_network] is part of the toplevel property
+   about the swap server, stated in [Spec/TopLevelSpec.v]. *)

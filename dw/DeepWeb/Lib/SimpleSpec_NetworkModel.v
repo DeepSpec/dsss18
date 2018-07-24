@@ -163,9 +163,8 @@ Proof.
 Qed.
 
 (* The server receives a byte on a connection.
-   The connection is assumed to be [ACCEPTED], and the result
-   is [Some] if and only if there is a nonempty
-   [connection_inbytes] buffer. *)
+   The connection must be [ACCEPTED], and the
+   [connection_inbytes] buffer must be nonempty. *)
 Definition server_recv (c : connection_id) : transition byte :=
   fun ns =>
     let cs := Map.lookup ns c in
@@ -178,7 +177,7 @@ Definition server_recv (c : connection_id) : transition byte :=
     end.
 
 (* The server sends a byte.
-   The connection is assumed to be [ACCEPTED]. *)
+   The connection must be [ACCEPTED]. *)
 Definition server_send
            (c : connection_id) (b : byte) : transition unit :=
   fun ns =>
@@ -187,7 +186,8 @@ Definition server_send
     Some (Map.update c cs ns, tt).
 
 (* The client receives a byte sent by the server.
-   The connection is assumed to be [PENDING] or [ACCEPTED]. *)
+   The connection is assumed to be [ACCEPTED] (the server must
+   accept a connection before sending bytes on it). *)
 Definition client_recv (c : connection_id) : transition byte :=
   fun ns =>
     let cs := Map.lookup ns c in
@@ -200,8 +200,7 @@ Definition client_recv (c : connection_id) : transition byte :=
     end.
 
 (* The client sends a byte to the server.
-   The connection is assumed to be [ACCEPTED] (the server must
-   accept a connection before sending bytes on it). *)
+   The connection is assumed to be [PENDING] or [ACCEPTED]. *)
 Definition client_send
            (c : connection_id) (b : byte) : transition unit :=
   fun ns =>

@@ -16,8 +16,13 @@ build-with-vst:
 	make -f Makefile.vst build
 
 test:
-	$(MAKE) testcoq
-	$(MAKE) testexternal
+	$V$(MAKE) 
+	@echo
+	@echo ------------------- Internal tests ----------------------
+	$V$(MAKE) testcoq
+	@echo
+	@echo ------------------- External tests ----------------------
+	$V$(MAKE) testexternal --quiet
 
 testcoq:
 	$(QC) -s CLikeTest -exclude $(EXCLUDE)
@@ -60,5 +65,5 @@ bcp:
 	$(MAKE) -C $(HOME)/dw/src dsss18
 	$(MAKE) -j
 	$(MAKE) -j html COQDOCFLAGS="-interpolate -utf8 --parse-comments"
+	osascript $(HOME)/s/tools/safari-reload.as
 	$(MAKE) -j test
-#	osascript $(HOME)/s/tools/safari-reload.as

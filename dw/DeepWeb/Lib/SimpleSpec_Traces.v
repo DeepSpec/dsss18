@@ -1,3 +1,15 @@
+(* Traces and scramblings. *)
+
+(* We define the notion of trace and a "scrambling"
+   relation between the traces produced by a server and
+   those that can be observed by a client on the other side
+   of the network.
+
+   The network is defined as a state machine with transitions
+   visible either by the server or by the client,
+   see [Lib/SimpleSpec_NetworkModel.v].
+ *)
+
 Require Import Relations.
 Require Import RelationClasses.
 
@@ -139,6 +151,7 @@ Definition client_transition (ev : real_event) :
     | FromServer c b => client_recv c ns = Some (ns', b)
     end.
 
+(* The main "scrambling" relation. *)
 (* Corresponding "server-side" and "client-side" traces. *)
 Inductive network_scrambled :
   network_state -> real_trace -> real_trace -> Prop :=
@@ -202,3 +215,9 @@ Delimit Scope hypo_scope with hypo.
 Delimit Scope real_scope with real.
 
 End EventNotations.
+
+(* With the [network_scrambled] relation we defined here, we
+   can state the correctness property we generally want to test
+   and verify about server itrees, in
+   [Lib/SimpleSpec_Refinement.v]. It is specialized to the
+   swap server in [Spec/TopLevelSpec.v]. *)

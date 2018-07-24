@@ -19,6 +19,12 @@
 <h1 class="libtitle">Library DeepWeb.Lib.SimpleSpec_Observer</h1>
 
 <div class="code">
+<span class="comment">(*&nbsp;Our&nbsp;specifications&nbsp;are&nbsp;itrees&nbsp;whose&nbsp;effects&nbsp;allow&nbsp;them&nbsp;to<br/>
+&nbsp;&nbsp;&nbsp;_observe_&nbsp;events&nbsp;and&nbsp;make&nbsp;assertions&nbsp;to&nbsp;define&nbsp;what&nbsp;makes&nbsp;a<br/>
+&nbsp;&nbsp;&nbsp;valid&nbsp;interaction.<br/>
+&nbsp;*)</span><br/>
+
+<br/>
 <span class="id" title="keyword">Generalizable</span> <span class="id" title="keyword">Variable</span> <span class="id" title="var">E</span>.<br/>
 <span class="id" title="keyword">Type</span><span class="id" title="var">classes</span> <span class="id" title="tactic">eauto</span> := 6.<br/>
 
@@ -274,8 +280,8 @@ The type of observations that can be made by the spec.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;produces&nbsp;the&nbsp;same&nbsp;traces&nbsp;as&nbsp;the&nbsp;spec&nbsp;above.&nbsp;*)</span><br/>
 
 <br/>
-<span class="comment">(*&nbsp;The&nbsp;network's&nbsp;behavior&nbsp;is&nbsp;accounted&nbsp;for&nbsp;in<br/>
-&nbsp;&nbsp;&nbsp;<span class="inlinecode"><span class="id" title="var">Lib</span>/<span class="id" title="var">SimpleSpec_Descramble.v</span></span>&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;The&nbsp;network's&nbsp;behavior&nbsp;is&nbsp;defined&nbsp;in&nbsp;<span class="inlinecode"><span class="id" title="var">Lib</span>/<span class="id" title="var">SimpleSpec_Traces.v</span></span><br/>
+&nbsp;&nbsp;&nbsp;and&nbsp;is&nbsp;accounted&nbsp;for&nbsp;in&nbsp;testing&nbsp;in&nbsp;<span class="inlinecode"><span class="id" title="var">Lib</span>/<span class="id" title="var">SimpleSpec_Descramble.v</span></span>.&nbsp;*)</span><br/>
 <span class="comment">(*&nbsp;/SHOW&nbsp;*)</span><br/>
 </div>
 </div>

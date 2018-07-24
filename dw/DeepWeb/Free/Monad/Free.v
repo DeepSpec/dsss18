@@ -177,7 +177,7 @@ CoFixpoint for_each {E A} (bs : list A) (body : A -> M E unit)
   | b :: bs' => body b;; for_each bs' body
   end.
 
-(** * More stuff *)
+(** * Internals *)
 
 (* If we can interpret the events of one such monad as
     computations in another, we can extend that
