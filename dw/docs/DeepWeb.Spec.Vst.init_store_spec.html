@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>DeepWeb.Spec.Vst.init_store_spec</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library DeepWeb.Spec.Vst.init_store_spec</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#"><span class="id" title="library">String</span></a>.<br/>
+
+<br/>
+<span class="id" title="var">From</span> <span class="id" title="var">DeepWeb.Spec</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="DeepWeb.Spec.Vst.MainInit.html#"><span class="id" title="library">Vst.MainInit</span></a> <a class="idref" href="DeepWeb.Spec.Vst.Representation.html#"><span class="id" title="library">Vst.Representation</span></a> <a class="idref" href="DeepWeb.Spec.ServerDefs.html#"><span class="id" title="library">ServerDefs</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="init_store_spec"><span class="id" title="definition">init_store_spec</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="notation">DECLARE</span> <a class="idref" href="DeepWeb.Spec.main.html#_init_store"><span class="id" title="definition">_init_store</span></a><br/>
+&nbsp;&nbsp;<span class="id" title="notation">WITH</span> <span class="id" title="var">ptr</span> <span class="id" title="notation">:</span> <span class="id" title="inductive">val</span><br/>
+&nbsp;&nbsp;<span class="id" title="notation">PRE</span> <span class="id" title="notation">[</span> <a class="idref" href="DeepWeb.Spec.main.html#_last_msg_store"><span class="id" title="definition">_last_msg_store</span></a> <span class="id" title="notation">OF</span> <span class="id" title="definition">tptr</span> (<span class="id" title="constructor">Tstruct</span> <a class="idref" href="DeepWeb.Spec.main.html#_store"><span class="id" title="definition">_store</span></a> <span class="id" title="definition">noattr</span>) <span class="id" title="notation">]</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">PROP</span> <span class="id" title="notation">()</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">LOCAL</span> <span class="id" title="notation">(</span> <span class="id" title="constructor">temp</span> <a class="idref" href="DeepWeb.Spec.main.html#_last_msg_store"><span class="id" title="definition">_last_msg_store</span></a> <a class="idref" href="DeepWeb.Spec.Vst.init_store_spec.html#ptr"><span class="id" title="variable">ptr</span></a> <span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">SEP</span> <span class="id" title="notation">(</span> <span class="id" title="definition">field_at</span> <span class="id" title="definition">Tsh</span> (<span class="id" title="constructor">Tstruct</span> <a class="idref" href="DeepWeb.Spec.main.html#_store"><span class="id" title="definition">_store</span></a> <span class="id" title="definition">noattr</span>) <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#145bedf8a5d4a541831f3f70db03085c"><span class="id" title="notation">[]</span></a> (<a class="idref" href="DeepWeb.Spec.Vst.Representation.html#rep_store"><span class="id" title="definition">rep_store</span></a> "") <a class="idref" href="DeepWeb.Spec.Vst.init_store_spec.html#ptr"><span class="id" title="variable">ptr</span></a> <span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;<span class="id" title="notation">POST</span> <span class="id" title="notation">[</span> <span class="id" title="definition">tvoid</span> <span class="id" title="notation">]</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">PROP</span> <span class="id" title="notation">(</span> <span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">LOCAL</span> <span class="id" title="notation">(</span> <span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">SEP</span> <span class="id" title="notation">(</span> <span class="id" title="definition">field_at</span> <span class="id" title="definition">Tsh</span> (<span class="id" title="constructor">Tstruct</span> <a class="idref" href="DeepWeb.Spec.main.html#_store"><span class="id" title="definition">_store</span></a> <span class="id" title="definition">noattr</span>) <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#145bedf8a5d4a541831f3f70db03085c"><span class="id" title="notation">[]</span></a> (<a class="idref" href="DeepWeb.Spec.Vst.Representation.html#rep_store"><span class="id" title="definition">rep_store</span></a> <a class="idref" href="DeepWeb.Spec.ServerDefs.html#INIT_MSG"><span class="id" title="definition">INIT_MSG</span></a>) <a class="idref" href="DeepWeb.Spec.Vst.init_store_spec.html#ptr"><span class="id" title="variable">ptr</span></a> <span class="id" title="notation">)</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

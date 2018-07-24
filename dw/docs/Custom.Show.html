@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Custom.Show</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Custom.Show</h1>
+
+<div class="code">
+
+<br/>
+<span class="id" title="var">From</span> <span class="id" title="var">Coq</span> <span class="id" title="keyword">Require</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Arith.Arith.html#"><span class="id" title="library">Arith</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.NArith.NArith.html#"><span class="id" title="library">NArith</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Vectors.Fin.html#"><span class="id" title="library">Fin</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <span class="id" title="library">QuickChick.Show</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="Custom.String.html#"><span class="id" title="library">Custom.String</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a name="Show_Fin"><span class="id" title="instance">Show_Fin</span></a> (<span class="id" title="var">n</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) : <span class="id" title="class">Show</span> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Vectors.Fin.html#t"><span class="id" title="inductive">Fin.t</span></a> <a class="idref" href="Custom.Show.html#n"><span class="id" title="variable">n</span></a>) :=<br/>
+&nbsp;&nbsp;{ <span class="id" title="method">show</span> <span class="id" title="var">i</span> := <span class="id" title="method">show</span> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Specif.html#proj1_sig"><span class="id" title="definition">proj1_sig</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Vectors.Fin.html#to_nat"><span class="id" title="definition">Fin.to_nat</span></a> <a class="idref" href="Custom.Show.html#i"><span class="id" title="variable">i</span></a>)) }.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <a name="NatToString"><span class="id" title="section">NatToString</span></a>. <span class="id" title="keyword">Import</span> <span class="id" title="var">Arith</span>.<br/>
+<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">string_scope</span>.<br/>
+<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">nat_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="digitToNat"><span class="id" title="definition">digitToNat</span></a> (<span class="id" title="var">c</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.Ascii.html#ascii"><span class="id" title="inductive">ascii</span></a>) : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#option"><span class="id" title="inductive">option</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">n</span> := <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.Ascii.html#nat_of_ascii"><span class="id" title="definition">nat_of_ascii</span></a> <a class="idref" href="Custom.Show.html#c"><span class="id" title="variable">c</span></a> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">if</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#andb"><span class="id" title="definition">andb</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Arith.Compare_dec.html#leb"><span class="id" title="abbreviation">leb</span></a> 48 <a class="idref" href="Custom.Show.html#n"><span class="id" title="variable">n</span></a>) (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Arith.Compare_dec.html#leb"><span class="id" title="abbreviation">leb</span></a> <a class="idref" href="Custom.Show.html#n"><span class="id" title="variable">n</span></a> 57) <span class="id" title="keyword">then</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#Some"><span class="id" title="constructor">Some</span></a> (<a class="idref" href="Custom.Show.html#n"><span class="id" title="variable">n</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Peano.html#9482aae3d3b06e249765c1225dbb8cbb"><span class="id" title="notation">-</span></a> 48)<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">else</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#None"><span class="id" title="constructor">None</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Fixpoint</span> <a name="readNatAux"><span class="id" title="definition">readNatAux</span></a> (<span class="id" title="var">s</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a>) (<span class="id" title="var">acc</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#option"><span class="id" title="inductive">option</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="Custom.Show.html#s"><span class="id" title="variable">s</span></a> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| "" ⇒ <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#Some"><span class="id" title="constructor">Some</span></a> <a class="idref" href="Custom.Show.html#acc"><span class="id" title="variable">acc</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#String"><span class="id" title="constructor">String</span></a> <span class="id" title="var">c</span> <span class="id" title="var">s'</span> ⇒<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="Custom.Show.html#digitToNat"><span class="id" title="definition">digitToNat</span></a> <span class="id" title="var">c</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#Some"><span class="id" title="constructor">Some</span></a> <span class="id" title="var">n</span> ⇒ <a class="idref" href="Custom.Show.html#readNatAux"><span class="id" title="definition">readNatAux</span></a> <span class="id" title="var">s'</span> (10 <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Peano.html#697e4695610f677ae98a52af81f779d2"><span class="id" title="notation">×</span></a> <a class="idref" href="Custom.Show.html#acc"><span class="id" title="variable">acc</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Peano.html#b3eea360671e1b32b18a26e15b3aace3"><span class="id" title="notation">+</span></a> <span class="id" title="var">n</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#None"><span class="id" title="constructor">None</span></a> ⇒ <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#None"><span class="id" title="constructor">None</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="nat_of_string"><span class="id" title="definition">nat_of_string</span></a> (<span class="id" title="var">s</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a>) : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="Custom.Show.html#readNatAux"><span class="id" title="definition">readNatAux</span></a> <a class="idref" href="Custom.Show.html#s"><span class="id" title="variable">s</span></a> 0 <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#Some"><span class="id" title="constructor">Some</span></a> <span class="id" title="var">v</span> ⇒ <span class="id" title="var">v</span><br/>
+&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#None"><span class="id" title="constructor">None</span></a> ⇒ 0<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+converting a nat to a string of numbers 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="natToDigit"><span class="id" title="definition">natToDigit</span></a> (<span class="id" title="var">n</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.Ascii.html#ascii"><span class="id" title="inductive">ascii</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="Custom.Show.html#n"><span class="id" title="variable">n</span></a> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| 0 ⇒ "0"<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| 1 ⇒ "1"<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| 2 ⇒ "2"<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| 3 ⇒ "3"<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| 4 ⇒ "4"<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| 5 ⇒ "5"<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| 6 ⇒ "6"<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| 7 ⇒ "7"<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| 8 ⇒ "8"<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">_</span> ⇒ "9"<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Fixpoint</span> <a name="writeNatAux"><span class="id" title="definition">writeNatAux</span></a> (<span class="id" title="var">time</span> <span class="id" title="var">n</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) (<span class="id" title="var">acc</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a>) : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">acc'</span> := <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#String"><span class="id" title="constructor">String</span></a> (<a class="idref" href="Custom.Show.html#natToDigit"><span class="id" title="definition">natToDigit</span></a> (<a class="idref" href="Custom.Show.html#n"><span class="id" title="variable">n</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Arith.PeanoNat.html#0984ed888197c75c46fdcd2f323d822d"><span class="id" title="notation">mod</span></a> 10)) <a class="idref" href="Custom.Show.html#acc"><span class="id" title="variable">acc</span></a> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="Custom.Show.html#time"><span class="id" title="variable">time</span></a> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| 0 ⇒ <a class="idref" href="Custom.Show.html#acc'"><span class="id" title="variable">acc'</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#S"><span class="id" title="constructor">S</span></a> <span class="id" title="var">time'</span> ⇒<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="Custom.Show.html#n"><span class="id" title="variable">n</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Arith.PeanoNat.html#bffd7547a415ecbef458064b68735e19"><span class="id" title="notation">/</span></a> 10 <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| 0 ⇒ <a class="idref" href="Custom.Show.html#acc'"><span class="id" title="variable">acc'</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">n'</span> ⇒ <a class="idref" href="Custom.Show.html#writeNatAux"><span class="id" title="definition">writeNatAux</span></a> <span class="id" title="var">time'</span> <span class="id" title="var">n'</span> <a class="idref" href="Custom.Show.html#acc'"><span class="id" title="variable">acc'</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="string_of_nat"><span class="id" title="definition">string_of_nat</span></a> (<span class="id" title="var">n</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a> :=<br/>
+&nbsp;&nbsp;<a class="idref" href="Custom.Show.html#writeNatAux"><span class="id" title="definition">writeNatAux</span></a> <a class="idref" href="Custom.Show.html#n"><span class="id" title="variable">n</span></a> <a class="idref" href="Custom.Show.html#n"><span class="id" title="variable">n</span></a> "".<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="Custom.Show.html#NatToString"><span class="id" title="section">NatToString</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <a name="NToString"><span class="id" title="section">NToString</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">NArith</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <a name="Show_n"><span class="id" title="instance">Show_n</span></a> : <span class="id" title="class">Show</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Numbers.BinNums.html#N"><span class="id" title="inductive">N</span></a> :=<br/>
+&nbsp;&nbsp;{| <span class="id" title="constructor">show</span> <span class="id" title="constructor">:=</span> <span class="id" title="constructor">fun</span> <span class="id" title="constructor">n</span> <span class="id" title="constructor">:</span> <span class="id" title="constructor">N</span> <span class="id" title="constructor">⇒</span> <span class="id" title="constructor">string_of_nat</span> <span class="id" title="constructor">(</span><span class="id" title="constructor">nat_of_N</span> <span class="id" title="constructor">n</span><span class="id" title="constructor">)</span> |}.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="Custom.Show.html#NToString"><span class="id" title="section">NToString</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="pretty_char"><span class="id" title="definition">pretty_char</span></a> (<span class="id" title="var">c</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.Ascii.html#ascii"><span class="id" title="inductive">ascii</span></a>) : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">if</span> <a class="idref" href="Custom.String.html#isPrintable"><span class="id" title="definition">isPrintable</span></a> <a class="idref" href="Custom.Show.html#c"><span class="id" title="variable">c</span></a> <span class="id" title="keyword">then</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#String"><span class="id" title="constructor">String</span></a> <a class="idref" href="Custom.Show.html#c"><span class="id" title="variable">c</span></a> ""<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">else</span> <span class="id" title="keyword">let</span> <span class="id" title="var">n</span> := <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.Ascii.html#N_of_ascii"><span class="id" title="definition">N_of_ascii</span></a> <a class="idref" href="Custom.Show.html#c"><span class="id" title="variable">c</span></a> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#String"><span class="id" title="constructor">String</span></a> "\" (<span class="id" title="keyword">if</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.NArith.BinNat.html#N.ltb"><span class="id" title="definition">BinNat.N.ltb</span></a> <a class="idref" href="Custom.Show.html#n"><span class="id" title="variable">n</span></a> 10 <span class="id" title="keyword">then</span> "00" <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#6c3bece79abbc48868e7371c2d2fa55c"><span class="id" title="notation">++</span></a> <span class="id" title="method">show</span> <a class="idref" href="Custom.Show.html#n"><span class="id" title="variable">n</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">else</span> <span class="id" title="keyword">if</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.NArith.BinNat.html#N.ltb"><span class="id" title="definition">BinNat.N.ltb</span></a> <a class="idref" href="Custom.Show.html#n"><span class="id" title="variable">n</span></a> 100 <span class="id" title="keyword">then</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#String"><span class="id" title="constructor">String</span></a> "0" (<span class="id" title="method">show</span> <a class="idref" href="Custom.Show.html#n"><span class="id" title="variable">n</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">else</span> <span class="id" title="method">show</span> <a class="idref" href="Custom.Show.html#n"><span class="id" title="variable">n</span></a>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <a name="showAscii"><span class="id" title="instance">showAscii</span></a> : <span class="id" title="class">Show</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.Ascii.html#ascii"><span class="id" title="inductive">ascii</span></a> :=<br/>
+&nbsp;&nbsp;{| <span class="id" title="constructor">show</span> <span class="id" title="constructor">c</span> <span class="id" title="constructor">:=</span> <span class="id" title="constructor">(</span>"""" <span class="id" title="constructor">++</span> <span class="id" title="constructor">pretty_char</span> <span class="id" title="constructor">c</span> <span class="id" title="constructor">++</span> """"<span class="id" title="constructor">)%</span><span class="id" title="constructor">string</span> |}.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

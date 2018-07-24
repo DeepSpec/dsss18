@@ -53,6 +53,8 @@ coq-qc: $(SERVER)
 
 html: build-with-vst
 	$(MAKE) -f Makefile.coq html
+	rm -rf docs
+	mv html docs
 
 clean:
 	find . -name "*.vo" -print -exec rm -rf {} \;

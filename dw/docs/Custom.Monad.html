@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Custom.Monad</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Custom.Monad</h1>
+
+<div class="code">
+
+<br/>
+
+<br/>
+<span class="id" title="keyword">Class</span> <a name="Monad"><span class="id" title="record">Monad</span></a> (<span class="id" title="var">m</span> : <span class="id" title="keyword">Type</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Type</span>) : <span class="id" title="keyword">Type</span> :=<br/>
+&nbsp;&nbsp;{ <a name="ret"><span class="id" title="projection">ret</span></a> : <span class="id" title="keyword">∀</span> <span class="id" title="var">a</span>, <a class="idref" href="Custom.Monad.html#a"><span class="id" title="variable">a</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="Custom.Monad.html#m"><span class="id" title="variable">m</span></a> <a class="idref" href="Custom.Monad.html#a"><span class="id" title="variable">a</span></a>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a name="bind"><span class="id" title="projection">bind</span></a> : <span class="id" title="keyword">∀</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>, <a class="idref" href="Custom.Monad.html#m"><span class="id" title="variable">m</span></a> <a class="idref" href="Custom.Monad.html#a"><span class="id" title="variable">a</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">(</span></a><a class="idref" href="Custom.Monad.html#a"><span class="id" title="variable">a</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="Custom.Monad.html#m"><span class="id" title="variable">m</span></a> <a class="idref" href="Custom.Monad.html#b"><span class="id" title="variable">b</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">)</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="Custom.Monad.html#m"><span class="id" title="variable">m</span></a> <a class="idref" href="Custom.Monad.html#b"><span class="id" title="variable">b</span></a><br/>
+&nbsp;&nbsp;}.<br/>
+
+<br/>
+<span class="id" title="var">Arguments</span> <a class="idref" href="Custom.Monad.html#ret"><span class="id" title="method">ret</span></a> {<span class="id" title="var">m</span> <span class="id" title="var">Monad</span> <span class="id" title="var">a</span>}.<br/>
+<span class="id" title="var">Arguments</span> <a class="idref" href="Custom.Monad.html#bind"><span class="id" title="method">bind</span></a> {<span class="id" title="var">m</span> <span class="id" title="var">Monad</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>}.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <a name="MonadNotations"><span class="id" title="module">MonadNotations</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Delimit</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">monad_scope</span> <span class="id" title="keyword">with</span> <span class="id" title="var">monad</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a name="a3fbc9e077330a5ed7e551bfb7728bde"><span class="id" title="notation">&quot;</span></a>c &gt;&gt;= f" := (<a class="idref" href="Custom.Monad.html#bind"><span class="id" title="method">bind</span></a> <span class="id" title="var">c</span> <span class="id" title="var">f</span>)<br/>
+(<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 50, <span class="id" title="tactic">left</span> <span class="id" title="keyword">associativity</span>) : <span class="id" title="var">monad_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a name="e51725aaf407067941f4560210c4d43a"><span class="id" title="notation">&quot;</span></a>f =&lt;&lt; c" := (<a class="idref" href="Custom.Monad.html#bind"><span class="id" title="method">bind</span></a> <span class="id" title="var">c</span> <span class="id" title="var">f</span>)<br/>
+(<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 51, <span class="id" title="tactic">right</span> <span class="id" title="keyword">associativity</span>) : <span class="id" title="var">monad_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a name="650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">&quot;</span></a>x &lt;- c1 ;; c2" := (<a class="idref" href="Custom.Monad.html#bind"><span class="id" title="method">bind</span></a> <span class="id" title="var">c1</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> ⇒ <span class="id" title="var">c2</span>))<br/>
+(<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 100, <span class="id" title="var">c1</span> <span class="id" title="tactic">at</span> <span class="id" title="var">next</span> <span class="id" title="keyword">level</span>, <span class="id" title="tactic">right</span> <span class="id" title="keyword">associativity</span>) : <span class="id" title="var">monad_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a name="8c58efb00f3e785bda923e6e6ccf3725"><span class="id" title="notation">&quot;</span></a>' pat &lt;- c1 ;; c2" := (<a class="idref" href="Custom.Monad.html#bind"><span class="id" title="method">bind</span></a> <span class="id" title="var">c1</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">pat</span> ⇒ <span class="id" title="var">c2</span>))<br/>
+(<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 100, <span class="id" title="var">pat</span> <span class="id" title="tactic">pattern</span>, <span class="id" title="var">c1</span> <span class="id" title="tactic">at</span> <span class="id" title="var">next</span> <span class="id" title="keyword">level</span>, <span class="id" title="tactic">right</span> <span class="id" title="keyword">associativity</span>) : <span class="id" title="var">monad_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a name="617d4c2635d7166c8606c5fbf0f2733e"><span class="id" title="notation">&quot;</span></a>e1 ;; e2" := (<span class="id" title="var">_</span> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">&lt;-</span></a> <span class="id" title="var">e1</span>%<span class="id" title="var">monad</span> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">;;</span></a> <span class="id" title="var">e2</span>%<span class="id" title="var">monad</span>)%<span class="id" title="var">monad</span><br/>
+(<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 100, <span class="id" title="tactic">right</span> <span class="id" title="keyword">associativity</span>) : <span class="id" title="var">monad_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="Custom.Monad.html#MonadNotations"><span class="id" title="module">MonadNotations</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#"><span class="id" title="library">List</span></a>.<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">ListNotations</span>.<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">MonadNotations</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Fixpoint</span> <a name="forM"><span class="id" title="definition">forM</span></a> {<span class="id" title="var">M</span> : <span class="id" title="keyword">Type</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Type</span>} {<span class="id" title="var">MM</span> : <a class="idref" href="Custom.Monad.html#Monad"><span class="id" title="class">Monad</span></a> <a class="idref" href="Custom.Monad.html#M"><span class="id" title="variable">M</span></a>} {<span class="id" title="var">X</span> <span class="id" title="var">Y</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">xs</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="Custom.Monad.html#X"><span class="id" title="variable">X</span></a>) (<span class="id" title="var">f</span> : <a class="idref" href="Custom.Monad.html#X"><span class="id" title="variable">X</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="Custom.Monad.html#M"><span class="id" title="variable">M</span></a> <a class="idref" href="Custom.Monad.html#Y"><span class="id" title="variable">Y</span></a>)<br/>
+&nbsp;&nbsp;: <a class="idref" href="Custom.Monad.html#M"><span class="id" title="variable">M</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="Custom.Monad.html#Y"><span class="id" title="variable">Y</span></a>) :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="Custom.Monad.html#xs"><span class="id" title="variable">xs</span></a> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#145bedf8a5d4a541831f3f70db03085c"><span class="id" title="notation">[]</span></a> ⇒ <a class="idref" href="Custom.Monad.html#ret"><span class="id" title="method">ret</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#145bedf8a5d4a541831f3f70db03085c"><span class="id" title="notation">[]</span></a><br/>
+&nbsp;&nbsp;| <span class="id" title="var">x</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#0a8150c3c4df34d205c5ed9a427e2ed5"><span class="id" title="notation">::</span></a> <span class="id" title="var">xs</span> ⇒ <span class="id" title="var">y</span> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">&lt;-</span></a> <a class="idref" href="Custom.Monad.html#f"><span class="id" title="variable">f</span></a> <span class="id" title="var">x</span><a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">;;</span></a> <span class="id" title="var">ys</span> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">&lt;-</span></a> <a class="idref" href="Custom.Monad.html#forM"><span class="id" title="definition">forM</span></a> <a class="idref" href="Custom.Monad.html#xs"><span class="id" title="variable">xs</span></a> <a class="idref" href="Custom.Monad.html#f"><span class="id" title="variable">f</span></a><a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">;;</span></a> <a class="idref" href="Custom.Monad.html#ret"><span class="id" title="method">ret</span></a> (<a class="idref" href="Custom.Monad.html#y"><span class="id" title="variable">y</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#0a8150c3c4df34d205c5ed9a427e2ed5"><span class="id" title="notation">::</span></a> <a class="idref" href="Custom.Monad.html#ys"><span class="id" title="variable">ys</span></a>)<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>%<span class="id" title="var">monad</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

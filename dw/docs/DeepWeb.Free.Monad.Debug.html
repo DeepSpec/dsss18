@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>DeepWeb.Free.Monad.Debug</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library DeepWeb.Free.Monad.Debug</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="DeepWeb.Free.Monad.Free.html#"><span class="id" title="library">DeepWeb.Free.Monad.Free</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="DeepWeb.Free.Monad.Internal.html#"><span class="id" title="library">DeepWeb.Free.Monad.Internal</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Inductive</span> <a name="_M"><span class="id" title="inductive">_M</span></a> {<span class="id" title="var">E</span> <span class="id" title="var">R</span>} (<span class="id" title="var">n</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) : <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <span class="id" title="var">E</span> <span class="id" title="var">R</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Prop</span> :=<br/>
+| <a name="MTau"><span class="id" title="constructor">MTau</span></a> : <span class="id" title="keyword">∀</span> <span class="id" title="var">t</span>, <a class="idref" href="DeepWeb.Free.Monad.Debug.html#_M"><span class="id" title="inductive">_M</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#S"><span class="id" title="constructor">S</span></a> <a class="idref" href="DeepWeb.Free.Monad.Debug.html#n"><span class="id" title="variable">n</span></a>) <a class="idref" href="DeepWeb.Free.Monad.Debug.html#t"><span class="id" title="variable">t</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Debug.html#_M"><span class="id" title="inductive">_M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Debug.html#n"><span class="id" title="variable">n</span></a> (<a class="idref" href="DeepWeb.Free.Monad.Free.html#Tau"><span class="id" title="constructor">Tau</span></a> <a class="idref" href="DeepWeb.Free.Monad.Debug.html#t"><span class="id" title="variable">t</span></a>)<br/>
+| <a name="MVis"><span class="id" title="constructor">MVis</span></a> : <span class="id" title="keyword">∀</span> <span class="id" title="var">X</span> (<span class="id" title="var">e</span> : <a class="idref" href="DeepWeb.Free.Monad.Debug.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="DeepWeb.Free.Monad.Debug.html#X"><span class="id" title="variable">X</span></a>) <span class="id" title="var">k</span> <span class="id" title="var">x</span>, <a class="idref" href="DeepWeb.Free.Monad.Debug.html#_M"><span class="id" title="inductive">_M</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#S"><span class="id" title="constructor">S</span></a> <a class="idref" href="DeepWeb.Free.Monad.Debug.html#n"><span class="id" title="variable">n</span></a>) (<a class="idref" href="DeepWeb.Free.Monad.Debug.html#k"><span class="id" title="variable">k</span></a> <a class="idref" href="DeepWeb.Free.Monad.Debug.html#x"><span class="id" title="variable">x</span></a>) <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Debug.html#_M"><span class="id" title="inductive">_M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Debug.html#n"><span class="id" title="variable">n</span></a> (<a class="idref" href="DeepWeb.Free.Monad.Free.html#Vis"><span class="id" title="constructor">Vis</span></a> <a class="idref" href="DeepWeb.Free.Monad.Debug.html#e"><span class="id" title="variable">e</span></a> <a class="idref" href="DeepWeb.Free.Monad.Debug.html#k"><span class="id" title="variable">k</span></a>).<br/>
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">simpl_M</span> := <span class="id" title="tactic">rewrite</span> <a class="idref" href="DeepWeb.Free.Monad.Internal.html#matchM"><span class="id" title="lemma">matchM</span></a>; <span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">rewrite</span> &lt;- <a class="idref" href="DeepWeb.Free.Monad.Internal.html#matchM"><span class="id" title="lemma">matchM</span></a>.<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">step_tau</span> := <span class="id" title="tactic">repeat</span> (<span class="id" title="tactic">apply</span> <a class="idref" href="DeepWeb.Free.Monad.Debug.html#MTau"><span class="id" title="constructor">MTau</span></a>; <span class="id" title="var">simpl_M</span>).<br/>
+<span class="id" title="keyword">Tactic Notation</span> "step" <span class="id" title="var">uconstr</span>(<span class="id" title="var">y</span>) := (<span class="id" title="tactic">eapply</span> <a class="idref" href="DeepWeb.Free.Monad.Debug.html#MVis"><span class="id" title="constructor">MVis</span></a> <span class="id" title="keyword">with</span> (<span class="id" title="var">x</span> := <span class="id" title="var">y</span>); <span class="id" title="var">simpl_M</span>; <span class="id" title="var">step_tau</span>).<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>DeepWeb.Spec.Vst.reset_connection_spec</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library DeepWeb.Spec.Vst.reset_connection_spec</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#"><span class="id" title="library">String</span></a>.<br/>
+
+<br/>
+<span class="id" title="var">From</span> <span class="id" title="var">DeepWeb.Spec</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="DeepWeb.Spec.Vst.MainInit.html#"><span class="id" title="library">Vst.MainInit</span></a> <a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#"><span class="id" title="library">Vst.SocketSpecs</span></a> <a class="idref" href="DeepWeb.Spec.Vst.Representation.html#"><span class="id" title="library">Vst.Representation</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#"><span class="id" title="library">Swap_CLikeSpec</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="reset_connection_spec"><span class="id" title="definition">reset_connection_spec</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="notation">DECLARE</span> <a class="idref" href="DeepWeb.Spec.main.html#_reset_connection"><span class="id" title="definition">_reset_connection</span></a><br/>
+&nbsp;&nbsp;<span class="id" title="notation">WITH</span> <span class="id" title="var">conn</span> <span class="id" title="notation">:</span> <a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#connection"><span class="id" title="record">connection</span></a><span class="id" title="notation">,</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">curr_fd</span> <span class="id" title="notation">:</span> <a class="idref" href="DeepWeb.Lib.SocketInterface.html#SocketAPI.sockfd"><span class="id" title="record">sockfd</span></a><span class="id" title="notation">,</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">new_fd</span> <span class="id" title="notation">:</span> <a class="idref" href="DeepWeb.Lib.SocketInterface.html#SocketAPI.sockfd"><span class="id" title="record">sockfd</span></a><span class="id" title="notation">,</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">conn_ptr</span> <span class="id" title="notation">:</span> <span class="id" title="inductive">val</span><br/>
+&nbsp;&nbsp;<span class="id" title="notation">PRE</span> <span class="id" title="notation">[</span> <a class="idref" href="DeepWeb.Spec.main.html#_conn"><span class="id" title="definition">_conn</span></a> <span class="id" title="notation">OF</span> <span class="id" title="definition">tptr</span> (<span class="id" title="constructor">Tstruct</span> <a class="idref" href="DeepWeb.Spec.main.html#_connection"><span class="id" title="definition">_connection</span></a> <span class="id" title="definition">noattr</span>)<span class="id" title="notation">,</span> <a class="idref" href="DeepWeb.Spec.main.html#_fd"><span class="id" title="definition">_fd</span></a> <span class="id" title="notation">OF</span> <span class="id" title="definition">tint</span> <span class="id" title="notation">]</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">PROP</span> <span class="id" title="notation">(</span> <span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">LOCAL</span> <span class="id" title="notation">(</span> <span class="id" title="constructor">temp</span> <a class="idref" href="DeepWeb.Spec.main.html#_conn"><span class="id" title="definition">_conn</span></a> <a class="idref" href="DeepWeb.Spec.Vst.reset_connection_spec.html#conn_ptr"><span class="id" title="variable">conn_ptr</span></a> <span class="id" title="notation">;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="constructor">temp</span> <a class="idref" href="DeepWeb.Spec.main.html#_fd"><span class="id" title="definition">_fd</span></a> (<span class="id" title="constructor">Vint</span> (<span class="id" title="definition">Int.repr</span> (<a class="idref" href="DeepWeb.Lib.SocketInterface.html#SocketAPI.descriptor"><span class="id" title="projection">descriptor</span></a> <a class="idref" href="DeepWeb.Spec.Vst.reset_connection_spec.html#new_fd"><span class="id" title="variable">new_fd</span></a>)))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">SEP</span> <span class="id" title="notation">(</span> <span class="id" title="definition">list_cell</span> <a class="idref" href="DeepWeb.Spec.Vst.Representation.html#LS"><span class="id" title="instance">LS</span></a> <span class="id" title="definition">Tsh</span> (<a class="idref" href="DeepWeb.Spec.Vst.Representation.html#rep_connection"><span class="id" title="definition">rep_connection</span></a> <a class="idref" href="DeepWeb.Spec.Vst.reset_connection_spec.html#conn"><span class="id" title="variable">conn</span></a> <a class="idref" href="DeepWeb.Spec.Vst.reset_connection_spec.html#curr_fd"><span class="id" title="variable">curr_fd</span></a>) <a class="idref" href="DeepWeb.Spec.Vst.reset_connection_spec.html#conn_ptr"><span class="id" title="variable">conn_ptr</span></a> <span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;<span class="id" title="notation">POST</span> <span class="id" title="notation">[</span> <span class="id" title="definition">tvoid</span> <span class="id" title="notation">]</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">PROP</span> <span class="id" title="notation">(</span> <span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">LOCAL</span> <span class="id" title="notation">(</span> <span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">SEP</span> <span class="id" title="notation">(</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">conn'</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#upd_conn_request"><span class="id" title="definition">upd_conn_request</span></a> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#upd_conn_response_bytes_sent"><span class="id" title="definition">upd_conn_response_bytes_sent</span></a> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#upd_conn_response"><span class="id" title="definition">upd_conn_response</span></a> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#upd_conn_state"><span class="id" title="definition">upd_conn_state</span></a> <a class="idref" href="DeepWeb.Spec.Vst.reset_connection_spec.html#conn"><span class="id" title="variable">conn</span></a> <a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#RECVING"><span class="id" title="constructor">RECVING</span></a>) "") 0) "") <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="definition">list_cell</span> <a class="idref" href="DeepWeb.Spec.Vst.Representation.html#LS"><span class="id" title="instance">LS</span></a> <span class="id" title="definition">Tsh</span> (<a class="idref" href="DeepWeb.Spec.Vst.Representation.html#rep_connection"><span class="id" title="definition">rep_connection</span></a> <a class="idref" href="DeepWeb.Spec.Vst.reset_connection_spec.html#conn'"><span class="id" title="variable">conn'</span></a> <a class="idref" href="DeepWeb.Spec.Vst.reset_connection_spec.html#new_fd"><span class="id" title="variable">new_fd</span></a>) <a class="idref" href="DeepWeb.Spec.Vst.reset_connection_spec.html#conn_ptr"><span class="id" title="variable">conn_ptr</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">)</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -4,3 +4,4 @@ Makefile.coq
 Makefile.coq.conf
 out
 _CoqProject.Vst
+html

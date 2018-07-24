@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>DeepWeb.Proofs.Vst.verif_new_connection</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library DeepWeb.Proofs.Vst.verif_new_connection</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#"><span class="id" title="library">String</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#"><span class="id" title="library">DeepWeb.Spec.Swap_CLikeSpec</span></a>.<br/>
+
+<br/>
+<span class="id" title="var">From</span> <span class="id" title="var">DeepWeb.Spec.Vst</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="DeepWeb.Spec.Vst.MainInit.html#"><span class="id" title="library">MainInit</span></a> <a class="idref" href="DeepWeb.Spec.Vst.Gprog.html#"><span class="id" title="library">Gprog</span></a> <a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#"><span class="id" title="library">SocketSpecs</span></a> <a class="idref" href="DeepWeb.Spec.Vst.Representation.html#"><span class="id" title="library">Representation</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Vst.new_connection_spec.html#"><span class="id" title="library">new_connection_spec</span></a>.<br/>
+
+<br/>
+<span class="id" title="var">From</span> <span class="id" title="var">DeepWeb.Lib</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="DeepWeb.Lib.VstLib.html#"><span class="id" title="library">VstLib</span></a>.<br/>
+
+<br/>
+<span class="id" title="var">From</span> <span class="id" title="var">DeepWeb.Proofs</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="DeepWeb.Proofs.Vst.VerifLib.html#"><span class="id" title="library">VerifLib</span></a> <a class="idref" href="DeepWeb.Proofs.Vst.Connection.html#"><span class="id" title="library">Connection</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Set</span> <span class="id" title="var">Bullet</span> <span class="id" title="var">Behavior</span> "Strict Subproofs".<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a name="body_new_connection"><span class="id" title="lemma">body_new_connection</span></a>:<br/>
+&nbsp;&nbsp;<span class="id" title="definition">semax_body</span> <a class="idref" href="DeepWeb.Spec.Vst.Gprog.html#Vprog"><span class="id" title="definition">Vprog</span></a> <a class="idref" href="DeepWeb.Spec.Vst.Gprog.html#Gprog"><span class="id" title="definition">Gprog</span></a> <a class="idref" href="DeepWeb.Spec.main.html#f_new_connection"><span class="id" title="definition">f_new_connection</span></a> <a class="idref" href="DeepWeb.Spec.Vst.new_connection_spec.html#new_connection_spec"><span class="id" title="definition">new_connection_spec</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">start_function</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">forward_call</span> (<span class="id" title="constructor">Tstruct</span> <a class="idref" href="DeepWeb.Spec.main.html#_connection"><span class="id" title="definition">_connection</span></a> <span class="id" title="definition">noattr</span>).<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">repeat</span> <span class="id" title="tactic">split</span>; <span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">auto</span>; <span class="id" title="var">rep_omega</span>. }<br/>
+<br/>
+&nbsp;&nbsp;<span class="id" title="var">Intro</span> <span class="id" title="var">conn_ptr</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="var">forward_if</span>.<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">destruct</span> <span class="id" title="var">conn_ptr</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">tauto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">PNconn_ptr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">subst</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">entailer</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">entailer</span>.<br/>
+&nbsp;&nbsp;}<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">subst</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">forward</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Exists</span> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#None"><span class="id" title="constructor">None</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#option"><span class="id" title="inductive">option</span></a> <a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#connection"><span class="id" title="record">connection</span></a>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Exists</span> <span class="id" title="definition">nullval</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">entailer</span>!.<br/>
+&nbsp;&nbsp;}<br/>
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| [|- <span class="id" title="keyword">context</span>[<span class="id" title="keyword">if</span> ?<span class="id" title="var">cond</span> <span class="id" title="keyword">then</span> <span class="id" title="var">_</span> <span class="id" title="keyword">else</span> <span class="id" title="var">_</span>]] ⇒<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">cond</span>; [<span class="id" title="tactic">tauto</span> | ]<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="var">Intros</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="var">focus_SEP</span> 1.<br/>
+&nbsp;&nbsp;<span class="id" title="var">data_at_to_field_at_default</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">do</span> 6 <span class="id" title="var">forward</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">new_conn</span> := {| <a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#Build_connection"><span class="id" title="constructor">conn_id</span></a> <a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#Build_connection"><span class="id" title="constructor">:=</span></a> <a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#Build_connection"><span class="id" title="constructor">Connection</span></a> <a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#Build_connection"><span class="id" title="constructor">0%</span></a><a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#Build_connection"><span class="id" title="constructor">nat</span></a><a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#Build_connection"><span class="id" title="constructor">;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#Build_connection"><span class="id" title="constructor">conn_request</span></a> <a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#Build_connection"><span class="id" title="constructor">:=</span></a> ""<a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#Build_connection"><span class="id" title="constructor">;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#Build_connection"><span class="id" title="constructor">conn_response</span></a> <a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#Build_connection"><span class="id" title="constructor">:=</span></a> ""<a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#Build_connection"><span class="id" title="constructor">;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#Build_connection"><span class="id" title="constructor">conn_response_bytes_sent</span></a> <a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#Build_connection"><span class="id" title="constructor">:=</span></a> <a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#Build_connection"><span class="id" title="constructor">0;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#Build_connection"><span class="id" title="constructor">conn_state</span></a> <a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#Build_connection"><span class="id" title="constructor">:=</span></a> <a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#Build_connection"><span class="id" title="constructor">RECVING</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|}).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">new_fd</span> := {| <a class="idref" href="DeepWeb.Lib.SocketInterface.html#SocketAPI.Build_sockfd"><span class="id" title="constructor">descriptor</span></a> <a class="idref" href="DeepWeb.Lib.SocketInterface.html#SocketAPI.Build_sockfd"><span class="id" title="constructor">:=</span></a> <a class="idref" href="DeepWeb.Lib.SocketInterface.html#SocketAPI.Build_sockfd"><span class="id" title="constructor">0;</span></a> <a class="idref" href="DeepWeb.Lib.SocketInterface.html#SocketAPI.Build_sockfd"><span class="id" title="constructor">is_descriptor</span></a> <a class="idref" href="DeepWeb.Lib.SocketInterface.html#SocketAPI.Build_sockfd"><span class="id" title="constructor">:=</span></a> <a class="idref" href="DeepWeb.Lib.SocketInterface.html#SocketAPI.Build_sockfd"><span class="id" title="constructor">zero_is_fd</span></a> |}).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| [|- <span class="id" title="keyword">context</span>[<span class="id" title="definition">field_at</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> ?<span class="id" title="var">rep</span> <span class="id" title="var">_</span>]] ⇒<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">rep</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#1c39bf18749e5cc609e83c0a0ba5a372"><span class="id" title="notation">=</span></a> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">(</span></a><span class="id" title="constructor">Vint</span> (<span class="id" title="definition">Int.repr</span> (<a class="idref" href="DeepWeb.Lib.SocketInterface.html#SocketAPI.descriptor"><span class="id" title="projection">descriptor</span></a> <span class="id" title="var">new_fd</span>))<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">,</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">(</span></a><a class="idref" href="DeepWeb.Lib.VstLib.html#rep_msg_len"><span class="id" title="definition">rep_msg_len</span></a> (<a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#conn_request"><span class="id" title="projection">conn_request</span></a> <span class="id" title="var">new_conn</span>)<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">,</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">(</span></a><a class="idref" href="DeepWeb.Lib.VstLib.html#rep_msg"><span class="id" title="definition">rep_msg</span></a> (<a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#conn_request"><span class="id" title="projection">conn_request</span></a> <span class="id" title="var">new_conn</span>) <a class="idref" href="DeepWeb.Spec.ServerDefs.html#BUFFER_SIZE"><span class="id" title="definition">BUFFER_SIZE</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">,</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">(</span></a><a class="idref" href="DeepWeb.Lib.VstLib.html#rep_msg_len"><span class="id" title="definition">rep_msg_len</span></a> (<a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#conn_response"><span class="id" title="projection">conn_response</span></a> <span class="id" title="var">new_conn</span>)<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">,</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">(</span></a><a class="idref" href="DeepWeb.Lib.VstLib.html#rep_msg"><span class="id" title="definition">rep_msg</span></a> (<a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#conn_response"><span class="id" title="projection">conn_response</span></a> <span class="id" title="var">new_conn</span>) <a class="idref" href="DeepWeb.Spec.ServerDefs.html#BUFFER_SIZE"><span class="id" title="definition">BUFFER_SIZE</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">,</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">(</span></a><span class="id" title="constructor">Vint</span> (<span class="id" title="definition">Int.repr</span> (<a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#conn_response_bytes_sent"><span class="id" title="projection">conn_response_bytes_sent</span></a> <span class="id" title="var">new_conn</span>))<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">,</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">(</span></a><a class="idref" href="DeepWeb.Spec.Vst.Representation.html#rep_connection_state"><span class="id" title="definition">rep_connection_state</span></a> (<a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#conn_state"><span class="id" title="projection">conn_state</span></a> <span class="id" title="var">new_conn</span>)<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">,</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="constructor">Vint</span> (<span class="id" title="definition">Int.repr</span> 0)<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">)))))))</span></a>) <span class="id" title="keyword">as</span> <span class="id" title="var">Hrep</span> <span class="id" title="tactic">by</span> <span class="id" title="tactic">reflexivity</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Hrep</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">clear</span> <span class="id" title="var">Hrep</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="var">unfold_field_at</span> 1%<span class="id" title="var">nat</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="var">gather_SEP</span> 0 1 2 3 4 5 6.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="method">sepcon_assoc</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">assert_PROP</span> (<span class="id" title="definition">field_compatible</span> (<span class="id" title="constructor">Tstruct</span> <a class="idref" href="DeepWeb.Spec.main.html#_connection"><span class="id" title="definition">_connection</span></a> <span class="id" title="definition">noattr</span>) <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#145bedf8a5d4a541831f3f70db03085c"><span class="id" title="notation">[]</span></a> <span class="id" title="var">conn_ptr</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="var">entailer</span>!.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <a class="idref" href="DeepWeb.Proofs.Vst.Connection.html#connection_list_cell_eq"><span class="id" title="lemma">connection_list_cell_eq</span></a>; [| <span class="id" title="tactic">assumption</span>].<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="var">fold_rep_connection</span> <span class="id" title="var">new_conn</span> <span class="id" title="var">new_fd</span>.<br/>
+&nbsp;&nbsp;{ <span class="id" title="var">go_lower</span>; <span class="id" title="tactic">subst</span> <span class="id" title="var">new_conn</span>; <span class="id" title="tactic">unfold</span> <a class="idref" href="DeepWeb.Spec.Vst.Representation.html#rep_connection"><span class="id" title="definition">rep_connection</span></a>; <span class="id" title="tactic">simpl</span>; <span class="id" title="var">cancel</span>. }<br/>
+<br/>
+&nbsp;&nbsp;<span class="id" title="var">forward</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">Exists</span> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#Some"><span class="id" title="constructor">Some</span></a> <span class="id" title="var">new_conn</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">Exists</span> <span class="id" title="var">conn_ptr</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">Exists</span> <span class="id" title="definition">nullval</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="tactic">apply</span> <span class="id" title="method">andp_right</span>; <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="method">prop_right</span>; <span class="id" title="tactic">repeat</span> <span class="id" title="tactic">split</span>; <span class="id" title="tactic">auto</span>. <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">tauto</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">cancel</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="method">andp_right</span>; [<span class="id" title="var">entailer</span> | <span class="id" title="var">cancel</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">subst</span> <span class="id" title="var">new_fd</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">entailer</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

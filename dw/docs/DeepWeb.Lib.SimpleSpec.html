@@ -1,0 +1,280 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>DeepWeb.Lib.SimpleSpec</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library DeepWeb.Lib.SimpleSpec</h1>
+
+<div class="code">
+<span class="id" title="var">From</span> <span class="id" title="var">QuickChick</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="library">QuickChick</span>.<br/>
+<span class="id" title="var">From</span> <span class="id" title="var">Custom</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="Custom.String.html#"><span class="id" title="library">String</span></a> <a class="idref" href="Custom.Monad.html#"><span class="id" title="library">Monad</span></a>.<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">MonadNotations</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="DeepWeb.Free.Monad.Free.html#"><span class="id" title="library">DeepWeb.Free.Monad.Free</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="DeepWeb.Free.Monad.Common.html#"><span class="id" title="library">DeepWeb.Free.Monad.Common</span></a>.<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">NonDeterminismBis</span> <span class="id" title="var">SumNotations</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="DeepWeb.Lib.Util.html#"><span class="id" title="library">DeepWeb.Lib.Util</span></a>.<br/>
+
+<br/>
+<span class="id" title="var">From</span> <span class="id" title="var">DeepWeb</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#"><span class="id" title="library">Lib.SimpleSpec_Server</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#"><span class="id" title="library">Lib.SimpleSpec_Observer</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#"><span class="id" title="library">Lib.SimpleSpec_Descramble</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#"><span class="id" title="library">Lib.SimpleSpec_Traces</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Refinement.html#"><span class="id" title="library">Lib.SimpleSpec_Refinement</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#"><span class="id" title="library">Lib.SimpleSpec_ServerTrace</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#"><span class="id" title="library">Lib.SimpleSpec_NetworkModel</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a name="lab17"></a><h1 class="section">Interfaces</h1>
+
+<div class="paragraph"> </div>
+
+<a name="lab18"></a><h2 class="section">Network</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Type</span> <a name="ServerIface"><span class="id" title="module">ServerIface</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Parameter</span> <a name="ServerIface.serverE"><span class="id" title="axiom">serverE</span></a> : <span class="id" title="keyword">Type</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Type</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Declare Instance</span> <a name="ServerIface.nondet_server"><span class="id" title="instance">nondet_server</span></a> : <a class="idref" href="DeepWeb.Free.Monad.Common.html#NonDeterminismBis.nondetE"><span class="id" title="inductive">nondetE</span></a> <a class="idref" href="DeepWeb.Free.Monad.Effect.html#2800906c13e5a3b8a4720448ab367ce9"><span class="id" title="notation">-&lt;</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#ServerIface.serverE"><span class="id" title="axiom">serverE</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Parameter</span> <a name="ServerIface.accept"><span class="id" title="axiom">accept</span></a> : <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#ServerIface.serverE"><span class="id" title="axiom">serverE</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Parameter</span> <a name="ServerIface.recv_byte"><span class="id" title="axiom">recv_byte</span></a> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#ServerIface.serverE"><span class="id" title="axiom">serverE</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Parameter</span> <a name="ServerIface.send_byte"><span class="id" title="axiom">send_byte</span></a> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#ServerIface.serverE"><span class="id" title="axiom">serverE</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Parameter</span> <a name="ServerIface.recv"><span class="id" title="axiom">recv</span></a> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#ServerIface.serverE"><span class="id" title="axiom">serverE</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#bytes"><span class="id" title="definition">bytes</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Parameter</span> <a name="ServerIface.recv_full"><span class="id" title="axiom">recv_full</span></a> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#ServerIface.serverE"><span class="id" title="axiom">serverE</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#bytes"><span class="id" title="definition">bytes</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Parameter</span> <a name="ServerIface.send"><span class="id" title="axiom">send</span></a> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#bytes"><span class="id" title="definition">bytes</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#ServerIface.serverE"><span class="id" title="axiom">serverE</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#ServerIface"><span class="id" title="module">ServerIface</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a name="lab19"></a><h2 class="section">Observer</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Type</span> <a name="ObserverIface"><span class="id" title="module">ObserverIface</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Parameter</span> <a name="ObserverIface.specE"><span class="id" title="axiom">specE</span></a> : <span class="id" title="keyword">Type</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Type</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Declare Instance</span> <a name="ObserverIface.nondet_spec"><span class="id" title="instance">nondet_spec</span></a> : <a class="idref" href="DeepWeb.Free.Monad.Common.html#NonDeterminismBis.nondetE"><span class="id" title="inductive">nondetE</span></a> <a class="idref" href="DeepWeb.Free.Monad.Effect.html#2800906c13e5a3b8a4720448ab367ce9"><span class="id" title="notation">-&lt;</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#ObserverIface.specE"><span class="id" title="axiom">specE</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Parameter</span> <a name="ObserverIface.obs_connect"><span class="id" title="axiom">obs_connect</span></a> : <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#ObserverIface.specE"><span class="id" title="axiom">specE</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Parameter</span> <a name="ObserverIface.obs_to_server"><span class="id" title="axiom">obs_to_server</span></a> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#ObserverIface.specE"><span class="id" title="axiom">specE</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Parameter</span> <a name="ObserverIface.obs_from_server"><span class="id" title="axiom">obs_from_server</span></a> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#ObserverIface.specE"><span class="id" title="axiom">specE</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#option"><span class="id" title="inductive">option</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a>).<br/>
+
+<br/>
+<span class="id" title="keyword">Parameter</span> <a name="ObserverIface.assert_on"><span class="id" title="axiom">assert_on</span></a> :<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">∀</span> {<span class="id" title="var">A</span>}, <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#option"><span class="id" title="inductive">option</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#A"><span class="id" title="variable">A</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">(</span></a><a class="idref" href="DeepWeb.Lib.SimpleSpec.html#A"><span class="id" title="variable">A</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#bool"><span class="id" title="inductive">bool</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">)</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#ObserverIface.specE"><span class="id" title="axiom">specE</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Parameter</span> <a name="ObserverIface.obs_msg_to_server"><span class="id" title="axiom">obs_msg_to_server</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#ObserverIface.specE"><span class="id" title="axiom">specE</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#bytes"><span class="id" title="definition">bytes</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Parameter</span> <a name="ObserverIface.obs_msg_from_server"><span class="id" title="axiom">obs_msg_from_server</span></a> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#bytes"><span class="id" title="definition">bytes</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#ObserverIface.specE"><span class="id" title="axiom">specE</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#ObserverIface"><span class="id" title="module">ObserverIface</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a name="lab20"></a><h2 class="section">Event traces</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Type</span> <a name="TracesIface"><span class="id" title="module">TracesIface</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Inductive</span> <a name="TracesIface.event"><span class="id" title="inductive">event</span></a> (<span class="id" title="var">byte'</span> : <span class="id" title="keyword">Type</span>) :=<br/>
+| <a name="TracesIface.NewConnection"><span class="id" title="constructor">NewConnection</span></a> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#event"><span class="id" title="inductive">event</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#byte'"><span class="id" title="variable">byte'</span></a><br/>
+| <a name="TracesIface.ToServer"><span class="id" title="constructor">ToServer</span></a> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#event"><span class="id" title="inductive">event</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#byte'"><span class="id" title="variable">byte'</span></a><br/>
+| <a name="TracesIface.FromServer"><span class="id" title="constructor">FromServer</span></a> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#byte'"><span class="id" title="variable">byte'</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#event"><span class="id" title="inductive">event</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#byte'"><span class="id" title="variable">byte'</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="TracesIface.real_event"><span class="id" title="definition">real_event</span></a> := <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.event"><span class="id" title="inductive">event</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="TracesIface.hypo_event"><span class="id" title="definition">hypo_event</span></a> := <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.event"><span class="id" title="inductive">event</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#option"><span class="id" title="inductive">option</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="TracesIface.real_trace"><span class="id" title="definition">real_trace</span></a> := <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.real_event"><span class="id" title="definition">real_event</span></a>.<br/>
+<span class="id" title="keyword">Definition</span> <a name="TracesIface.hypo_trace"><span class="id" title="definition">hypo_trace</span></a> := <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.hypo_event"><span class="id" title="definition">hypo_event</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Parameter</span> <a name="TracesIface.real_to_hypo"><span class="id" title="axiom">real_to_hypo</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.real_trace"><span class="id" title="definition">real_trace</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.hypo_trace"><span class="id" title="definition">hypo_trace</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Parameter</span> <a name="TracesIface.is_server_trace"><span class="id" title="axiom">is_server_trace</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#Network.itree_server"><span class="id" title="definition">itree_server</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.real_trace"><span class="id" title="definition">real_trace</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Prop</span>.<br/>
+<span class="id" title="keyword">Parameter</span> <a name="TracesIface.is_spec_trace"><span class="id" title="axiom">is_spec_trace</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#itree_spec"><span class="id" title="definition">itree_spec</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.hypo_trace"><span class="id" title="definition">hypo_trace</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Prop</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Parameter</span> <a name="TracesIface.network_scrambled0"><span class="id" title="axiom">network_scrambled0</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.real_trace"><span class="id" title="definition">real_trace</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.real_trace"><span class="id" title="definition">real_trace</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Prop</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="TracesIface.is_scrambled_trace"><span class="id" title="definition">is_scrambled_trace</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#itree_spec"><span class="id" title="definition">itree_spec</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.real_trace"><span class="id" title="definition">real_trace</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Prop</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">fun</span> <span class="id" title="var">spec</span> <span class="id" title="var">tr</span> ⇒<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#84eb6d2849dbf3581b1c0c05add5f2d8"><span class="id" title="notation">∃</span></a> <span class="id" title="var">str</span><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#84eb6d2849dbf3581b1c0c05add5f2d8"><span class="id" title="notation">,</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.network_scrambled0"><span class="id" title="axiom">network_scrambled0</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#str"><span class="id" title="variable">str</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#tr"><span class="id" title="variable">tr</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d82a7d96d3659d805ffe732283716822"><span class="id" title="notation">∧</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.is_spec_trace"><span class="id" title="axiom">is_spec_trace</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#spec"><span class="id" title="variable">spec</span></a> (<a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.real_to_hypo"><span class="id" title="axiom">real_to_hypo</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#str"><span class="id" title="variable">str</span></a>).<br/>
+
+<br/>
+
+<br/>
+<span class="id" title="keyword">Parameter</span> <a name="TracesIface.is_spec_trace_test"><span class="id" title="axiom">is_spec_trace_test</span></a> :<br/>
+&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#itree_spec"><span class="id" title="definition">itree_spec</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.hypo_trace"><span class="id" title="definition">hypo_trace</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#simple_result"><span class="id" title="definition">simple_result</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="TracesIface.descrambled_result"><span class="id" title="definition">descrambled_result</span></a> := <a class="idref" href="DeepWeb.Lib.Util.html#result"><span class="id" title="inductive">result</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.hypo_trace"><span class="id" title="definition">hypo_trace</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Parameter</span> <a name="TracesIface.is_scrambled_trace_test"><span class="id" title="axiom">is_scrambled_trace_test</span></a> :<br/>
+&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#itree_spec"><span class="id" title="definition">itree_spec</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.real_trace"><span class="id" title="definition">real_trace</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.descrambled_result"><span class="id" title="definition">descrambled_result</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Parameter</span> <a name="TracesIface.refines_mod_network_test"><span class="id" title="axiom">refines_mod_network_test</span></a> :<br/>
+&nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#specE"><span class="id" title="definition">specE</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#Network.serverE"><span class="id" title="definition">serverE</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="definition">Checker</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface"><span class="id" title="module">TracesIface</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a name="lab21"></a><h1 class="section">Implementations</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Module</span> <a name="Observer"><span class="id" title="module">Observer</span></a> &lt;: <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#ObserverIface"><span class="id" title="module">ObserverIface</span></a>.<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">Lib.SimpleSpec_Observer</span>.<br/>
+<span class="id" title="keyword">Definition</span> <a name="Observer.specE"><span class="id" title="definition">specE</span></a> := <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#specE"><span class="id" title="definition">specE</span></a>.<br/>
+<span class="id" title="keyword">Instance</span> <a name="Observer.nondet_spec"><span class="id" title="instance">nondet_spec</span></a> : <a class="idref" href="DeepWeb.Free.Monad.Common.html#NonDeterminismBis.nondetE"><span class="id" title="inductive">nondetE</span></a> <a class="idref" href="DeepWeb.Free.Monad.Effect.html#2800906c13e5a3b8a4720448ab367ce9"><span class="id" title="notation">-&lt;</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#Observer.specE"><span class="id" title="definition">specE</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="var">typeclasses</span> <span class="id" title="tactic">eauto</span>. <span class="id" title="keyword">Defined</span>.<br/>
+<span class="id" title="keyword">Definition</span> <a name="Observer.obs_connect"><span class="id" title="definition">obs_connect</span></a> := @<a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#obs_connect"><span class="id" title="definition">obs_connect</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#Observer.specE"><span class="id" title="definition">specE</span></a> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Definition</span> <a name="Observer.obs_to_server"><span class="id" title="definition">obs_to_server</span></a> := @<a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#obs_to_server"><span class="id" title="definition">obs_to_server</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#Observer.specE"><span class="id" title="definition">specE</span></a> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Definition</span> <a name="Observer.obs_from_server"><span class="id" title="definition">obs_from_server</span></a> := @<a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#obs_from_server"><span class="id" title="definition">obs_from_server</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#Observer.specE"><span class="id" title="definition">specE</span></a> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Definition</span> <a name="Observer.assert_on"><span class="id" title="definition">assert_on</span></a> <span class="id" title="var">A</span> := @<a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#assert_on"><span class="id" title="definition">assert_on</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#Observer.specE"><span class="id" title="definition">specE</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#A"><span class="id" title="variable">A</span></a> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Definition</span> <a name="Observer.obs_msg_to_server"><span class="id" title="definition">obs_msg_to_server</span></a> := @<a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#obs_msg_to_server"><span class="id" title="definition">obs_msg_to_server</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#Observer.specE"><span class="id" title="definition">specE</span></a> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Definition</span> <a name="Observer.obs_msg_from_server"><span class="id" title="definition">obs_msg_from_server</span></a> := @<a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#obs_msg_from_server"><span class="id" title="definition">obs_msg_from_server</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#Observer.specE"><span class="id" title="definition">specE</span></a> <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#Observer"><span class="id" title="module">Observer</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <a name="Network"><span class="id" title="module">Network</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#ServerIface"><span class="id" title="module">ServerIface</span></a>.<br/>
+<span class="id" title="keyword">Definition</span> <a name="Network.serverE"><span class="id" title="definition">serverE</span></a> := <a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#Network.serverE"><span class="id" title="definition">Network.serverE</span></a>.<br/>
+<span class="id" title="keyword">Instance</span> <a name="Network.networkE_server"><span class="id" title="instance">networkE_server</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#Network.networkE"><span class="id" title="inductive">networkE</span></a> <a class="idref" href="DeepWeb.Free.Monad.Effect.html#2800906c13e5a3b8a4720448ab367ce9"><span class="id" title="notation">-&lt;</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#Network.serverE"><span class="id" title="definition">serverE</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="var">typeclasses</span> <span class="id" title="tactic">eauto</span>. <span class="id" title="keyword">Defined</span>.<br/>
+<span class="id" title="keyword">Instance</span> <a name="Network.nondet_server"><span class="id" title="instance">nondet_server</span></a> : <a class="idref" href="DeepWeb.Free.Monad.Common.html#NonDeterminismBis.nondetE"><span class="id" title="inductive">nondetE</span></a> <a class="idref" href="DeepWeb.Free.Monad.Effect.html#2800906c13e5a3b8a4720448ab367ce9"><span class="id" title="notation">-&lt;</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#Network.serverE"><span class="id" title="definition">serverE</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="var">typeclasses</span> <span class="id" title="tactic">eauto</span>. <span class="id" title="keyword">Defined</span>.<br/>
+<span class="id" title="keyword">Definition</span> <a name="Network.accept"><span class="id" title="definition">accept</span></a> := @<a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#Network.accept"><span class="id" title="definition">Network.accept</span></a> <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Definition</span> <a name="Network.recv_byte"><span class="id" title="definition">recv_byte</span></a> := @<a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#Network.recv_byte"><span class="id" title="definition">Network.recv_byte</span></a> <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Definition</span> <a name="Network.send_byte"><span class="id" title="definition">send_byte</span></a> := @<a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#Network.send_byte"><span class="id" title="definition">Network.send_byte</span></a> <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Definition</span> <a name="Network.recv"><span class="id" title="definition">recv</span></a> := @<a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#Network.recv"><span class="id" title="definition">Network.recv</span></a> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Definition</span> <a name="Network.recv_full"><span class="id" title="definition">recv_full</span></a> := @<a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#Network.recv_full"><span class="id" title="definition">Network.recv_full</span></a> <span class="id" title="var">_</span> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#Network.networkE_server"><span class="id" title="instance">networkE_server</span></a>.<br/>
+<span class="id" title="keyword">Definition</span> <a name="Network.send"><span class="id" title="definition">send</span></a> := @<a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#Network.send"><span class="id" title="definition">Network.send</span></a> <span class="id" title="var">_</span> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#Network.networkE_server"><span class="id" title="instance">networkE_server</span></a>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#Network"><span class="id" title="module">Network</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <a name="Traces"><span class="id" title="module">Traces</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface"><span class="id" title="module">TracesIface</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Include</span> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#"><span class="id" title="module">SimpleSpec_Traces</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="Traces.real_to_hypo"><span class="id" title="definition">real_to_hypo</span></a> := <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#Traces.real_to_hypo_trace"><span class="id" title="definition">real_to_hypo_trace</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="Traces.is_server_trace"><span class="id" title="definition">is_server_trace</span></a> := <a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#Network.is_server_trace"><span class="id" title="definition">Network.is_server_trace</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="Traces.is_spec_trace"><span class="id" title="definition">is_spec_trace</span></a> := <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#is_spec_trace"><span class="id" title="definition">SimpleSpec_Observer.is_spec_trace</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="Traces.is_spec_trace_test"><span class="id" title="definition">is_spec_trace_test</span></a> := <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#is_spec_trace_test"><span class="id" title="definition">SimpleSpec_Observer.is_spec_trace_test</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="Traces.is_scrambled_trace"><span class="id" title="definition">is_scrambled_trace</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#itree_spec"><span class="id" title="definition">itree_spec</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#Traces.real_trace"><span class="id" title="definition">real_trace</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Prop</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">fun</span> <span class="id" title="var">spec</span> <span class="id" title="var">tr</span> ⇒<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#84eb6d2849dbf3581b1c0c05add5f2d8"><span class="id" title="notation">∃</span></a> <span class="id" title="var">str</span><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#84eb6d2849dbf3581b1c0c05add5f2d8"><span class="id" title="notation">,</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec.html#Traces.network_scrambled0"><span class="id" title="definition">network_scrambled0</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#str"><span class="id" title="variable">str</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#tr"><span class="id" title="variable">tr</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d82a7d96d3659d805ffe732283716822"><span class="id" title="notation">∧</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec.html#Traces.is_spec_trace"><span class="id" title="definition">is_spec_trace</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#spec"><span class="id" title="variable">spec</span></a> (<a class="idref" href="DeepWeb.Lib.SimpleSpec.html#Traces.real_to_hypo"><span class="id" title="definition">real_to_hypo</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#str"><span class="id" title="variable">str</span></a>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="Traces.descrambled_result"><span class="id" title="definition">descrambled_result</span></a> := <a class="idref" href="DeepWeb.Lib.Util.html#result"><span class="id" title="inductive">result</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#Traces.hypo_trace"><span class="id" title="definition">hypo_trace</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>.<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="Traces.is_scrambled_trace_test"><span class="id" title="definition">is_scrambled_trace_test</span></a> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#is_scrambled_trace_of"><span class="id" title="definition">SimpleSpec_Descramble.is_scrambled_trace_of</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="Traces.refines_mod_network_test"><span class="id" title="definition">refines_mod_network_test</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#refines_mod_network_test"><span class="id" title="definition">SimpleSpec_ServerTrace.refines_mod_network_test</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#Traces"><span class="id" title="module">Traces</span></a>.<br/>
+
+<br/>
+
+<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

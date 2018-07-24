@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>DeepWeb.Spec.Vst.LibrarySpecs</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library DeepWeb.Spec.Vst.LibrarySpecs</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#"><span class="id" title="library">String</span></a>.<br/>
+
+<br/>
+<span class="id" title="var">From</span> <span class="id" title="var">DeepWeb.Spec</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="DeepWeb.Spec.Vst.MainInit.html#"><span class="id" title="library">Vst.MainInit</span></a>.<br/>
+
+<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="memset_spec"><span class="id" title="definition">memset_spec</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="notation">DECLARE</span> <a class="idref" href="DeepWeb.Spec.main.html#_memset"><span class="id" title="definition">_memset</span></a><br/>
+&nbsp;&nbsp;<span class="id" title="notation">WITH</span> <span class="id" title="var">ptr</span> <span class="id" title="notation">:</span> <span class="id" title="inductive">val</span><span class="id" title="notation">,</span> <span class="id" title="var">v</span> <span class="id" title="notation">:</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Numbers.BinNums.html#Z"><span class="id" title="inductive">Z</span></a><span class="id" title="notation">,</span> <span class="id" title="var">n</span> <span class="id" title="notation">:</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Numbers.BinNums.html#Z"><span class="id" title="inductive">Z</span></a><br/>
+&nbsp;&nbsp;<span class="id" title="notation">PRE</span> <span class="id" title="notation">[</span> 1%<span class="id" title="var">positive</span> <span class="id" title="notation">OF</span> <span class="id" title="definition">tptr</span> <span class="id" title="definition">tvoid</span><span class="id" title="notation">,</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2%<span class="id" title="var">positive</span> <span class="id" title="notation">OF</span> <span class="id" title="definition">tint</span><span class="id" title="notation">,</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3%<span class="id" title="var">positive</span> <span class="id" title="notation">OF</span> <span class="id" title="definition">tuint</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">]</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">PROP</span> <span class="id" title="notation">(</span> 0 <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.ZArith.BinInt.html#5dda7752d319ac2ccefb830f12787952"><span class="id" title="notation">≤</span></a> <a class="idref" href="DeepWeb.Spec.Vst.LibrarySpecs.html#n"><span class="id" title="variable">n</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.ZArith.BinInt.html#5dda7752d319ac2ccefb830f12787952"><span class="id" title="notation">≤</span></a> <span class="id" title="definition">Int.max_unsigned</span> <span class="id" title="notation">)</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">LOCAL</span> <span class="id" title="notation">(</span> <span class="id" title="constructor">temp</span> 1%<span class="id" title="var">positive</span> <a class="idref" href="DeepWeb.Spec.Vst.LibrarySpecs.html#ptr"><span class="id" title="variable">ptr</span></a> <span class="id" title="notation">;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="constructor">temp</span> 2%<span class="id" title="var">positive</span> (<span class="id" title="constructor">Vint</span> (<span class="id" title="definition">Int.repr</span> <a class="idref" href="DeepWeb.Spec.Vst.LibrarySpecs.html#v"><span class="id" title="variable">v</span></a>)) <span class="id" title="notation">;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="constructor">temp</span> 3%<span class="id" title="var">positive</span> (<span class="id" title="constructor">Vint</span> (<span class="id" title="definition">Int.repr</span> <a class="idref" href="DeepWeb.Spec.Vst.LibrarySpecs.html#n"><span class="id" title="variable">n</span></a>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">SEP</span> <span class="id" title="notation">(</span> <span class="id" title="definition">data_at_</span> <span class="id" title="definition">Tsh</span> (<span class="id" title="definition">tarray</span> <span class="id" title="definition">tuchar</span> <a class="idref" href="DeepWeb.Spec.Vst.LibrarySpecs.html#n"><span class="id" title="variable">n</span></a>) <a class="idref" href="DeepWeb.Spec.Vst.LibrarySpecs.html#ptr"><span class="id" title="variable">ptr</span></a> <span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;<span class="id" title="notation">POST</span> <span class="id" title="notation">[</span> <span class="id" title="definition">tptr</span> <span class="id" title="definition">tvoid</span> <span class="id" title="notation">]</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">PROP</span> <span class="id" title="notation">(</span> <span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">LOCAL</span> <span class="id" title="notation">(</span> <span class="id" title="constructor">temp</span> <span class="id" title="definition">ret_temp</span> <a class="idref" href="DeepWeb.Spec.Vst.LibrarySpecs.html#ptr"><span class="id" title="variable">ptr</span></a> <span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">SEP</span> <span class="id" title="notation">(</span> <span class="id" title="definition">data_at</span> <span class="id" title="definition">Tsh</span> (<span class="id" title="definition">tarray</span> <span class="id" title="definition">tuchar</span> <a class="idref" href="DeepWeb.Spec.Vst.LibrarySpecs.html#n"><span class="id" title="variable">n</span></a>) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="definition">list_repeat</span> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.ZArith.BinInt.html#Z.to_nat"><span class="id" title="definition">Z.to_nat</span></a> <a class="idref" href="DeepWeb.Spec.Vst.LibrarySpecs.html#n"><span class="id" title="variable">n</span></a>) (<span class="id" title="constructor">Vint</span> (<span class="id" title="definition">Int.repr</span> <a class="idref" href="DeepWeb.Spec.Vst.LibrarySpecs.html#v"><span class="id" title="variable">v</span></a>))) <a class="idref" href="DeepWeb.Spec.Vst.LibrarySpecs.html#ptr"><span class="id" title="variable">ptr</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">)</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="memcpy_spec"><span class="id" title="definition">memcpy_spec</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="notation">DECLARE</span> <a class="idref" href="DeepWeb.Spec.main.html#_memcpy"><span class="id" title="definition">_memcpy</span></a><br/>
+&nbsp;&nbsp;<span class="id" title="notation">WITH</span> <span class="id" title="var">contents</span> <span class="id" title="notation">:</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <span class="id" title="inductive">val</span><span class="id" title="notation">,</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">dst_ptr</span> <span class="id" title="notation">:</span> <span class="id" title="inductive">val</span><span class="id" title="notation">,</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">src_ptr</span> <span class="id" title="notation">:</span> <span class="id" title="inductive">val</span><span class="id" title="notation">,</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">n</span> <span class="id" title="notation">:</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Numbers.BinNums.html#Z"><span class="id" title="inductive">Z</span></a><span class="id" title="notation">,</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">sh</span> <span class="id" title="notation">:</span> <span class="id" title="definition">share</span><br/>
+&nbsp;&nbsp;<span class="id" title="notation">PRE</span> <span class="id" title="notation">[</span> 1%<span class="id" title="var">positive</span> <span class="id" title="notation">OF</span> <span class="id" title="definition">tptr</span> <span class="id" title="definition">tvoid</span><span class="id" title="notation">,</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2%<span class="id" title="var">positive</span> <span class="id" title="notation">OF</span> <span class="id" title="definition">tptr</span> <span class="id" title="definition">tvoid</span><span class="id" title="notation">,</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3%<span class="id" title="var">positive</span> <span class="id" title="notation">OF</span> <span class="id" title="definition">tuint</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">]</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">PROP</span> <span class="id" title="notation">(</span> 0 <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.ZArith.BinInt.html#5dda7752d319ac2ccefb830f12787952"><span class="id" title="notation">≤</span></a> <a class="idref" href="DeepWeb.Spec.Vst.LibrarySpecs.html#n"><span class="id" title="variable">n</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.ZArith.BinInt.html#5dda7752d319ac2ccefb830f12787952"><span class="id" title="notation">≤</span></a> <span class="id" title="definition">Int.max_unsigned</span> <span class="id" title="notation">)</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">LOCAL</span> <span class="id" title="notation">(</span> <span class="id" title="constructor">temp</span> 1%<span class="id" title="var">positive</span> <a class="idref" href="DeepWeb.Spec.Vst.LibrarySpecs.html#dst_ptr"><span class="id" title="variable">dst_ptr</span></a> <span class="id" title="notation">;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="constructor">temp</span> 2%<span class="id" title="var">positive</span> <a class="idref" href="DeepWeb.Spec.Vst.LibrarySpecs.html#src_ptr"><span class="id" title="variable">src_ptr</span></a><span class="id" title="notation">;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="constructor">temp</span> 3%<span class="id" title="var">positive</span> (<span class="id" title="constructor">Vint</span> (<span class="id" title="definition">Int.repr</span> <a class="idref" href="DeepWeb.Spec.Vst.LibrarySpecs.html#n"><span class="id" title="variable">n</span></a>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">SEP</span> <span class="id" title="notation">(</span> <span class="id" title="definition">data_at_</span> <span class="id" title="definition">Tsh</span> (<span class="id" title="definition">tarray</span> <span class="id" title="definition">tuchar</span> <a class="idref" href="DeepWeb.Spec.Vst.LibrarySpecs.html#n"><span class="id" title="variable">n</span></a>) <a class="idref" href="DeepWeb.Spec.Vst.LibrarySpecs.html#dst_ptr"><span class="id" title="variable">dst_ptr</span></a> <span class="id" title="notation">;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="definition">data_at</span> <a class="idref" href="DeepWeb.Spec.Vst.LibrarySpecs.html#sh"><span class="id" title="variable">sh</span></a> (<span class="id" title="definition">tarray</span> <span class="id" title="definition">tuchar</span> <a class="idref" href="DeepWeb.Spec.Vst.LibrarySpecs.html#n"><span class="id" title="variable">n</span></a>) <a class="idref" href="DeepWeb.Spec.Vst.LibrarySpecs.html#contents"><span class="id" title="variable">contents</span></a> <a class="idref" href="DeepWeb.Spec.Vst.LibrarySpecs.html#src_ptr"><span class="id" title="variable">src_ptr</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;<span class="id" title="notation">POST</span> <span class="id" title="notation">[</span> <span class="id" title="definition">tptr</span> <span class="id" title="definition">tvoid</span> <span class="id" title="notation">]</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">PROP</span> <span class="id" title="notation">(</span> <span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">LOCAL</span> <span class="id" title="notation">(</span> <span class="id" title="constructor">temp</span> <span class="id" title="definition">ret_temp</span> <a class="idref" href="DeepWeb.Spec.Vst.LibrarySpecs.html#dst_ptr"><span class="id" title="variable">dst_ptr</span></a> <span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">SEP</span> <span class="id" title="notation">(</span> <span class="id" title="definition">data_at</span> <span class="id" title="definition">Tsh</span> (<span class="id" title="definition">tarray</span> <span class="id" title="definition">tuchar</span> <a class="idref" href="DeepWeb.Spec.Vst.LibrarySpecs.html#n"><span class="id" title="variable">n</span></a>) <a class="idref" href="DeepWeb.Spec.Vst.LibrarySpecs.html#contents"><span class="id" title="variable">contents</span></a> <a class="idref" href="DeepWeb.Spec.Vst.LibrarySpecs.html#dst_ptr"><span class="id" title="variable">dst_ptr</span></a> <span class="id" title="notation">;</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="definition">data_at</span> <a class="idref" href="DeepWeb.Spec.Vst.LibrarySpecs.html#sh"><span class="id" title="variable">sh</span></a> (<span class="id" title="definition">tarray</span> <span class="id" title="definition">tuchar</span> <a class="idref" href="DeepWeb.Spec.Vst.LibrarySpecs.html#n"><span class="id" title="variable">n</span></a>) <a class="idref" href="DeepWeb.Spec.Vst.LibrarySpecs.html#contents"><span class="id" title="variable">contents</span></a> <a class="idref" href="DeepWeb.Spec.Vst.LibrarySpecs.html#src_ptr"><span class="id" title="variable">src_ptr</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">)</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">forward_memcpy</span> <span class="id" title="var">dst_ptr</span> <span class="id" title="var">src_ptr</span> <span class="id" title="var">len</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="definition">tarray</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| [|- <span class="id" title="keyword">context</span>[<span class="id" title="definition">data_at</span> ?<span class="id" title="var">sh</span> (<span class="id" title="constructor">Tarray</span> <span class="id" title="definition">tuchar</span> ?<span class="id" title="var">n</span> ?<span class="id" title="var">attr</span>) ?<span class="id" title="var">contents</span> <span class="id" title="var">src_ptr</span>]] ⇒<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">forward_call</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">(</span></a><span class="id" title="var">contents</span><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">,</span></a> <span class="id" title="var">dst_ptr</span><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">,</span></a> <span class="id" title="var">src_ptr</span><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">,</span></a> <span class="id" title="var">n</span><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">,</span></a> <span class="id" title="var">sh</span><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">)</span></a><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

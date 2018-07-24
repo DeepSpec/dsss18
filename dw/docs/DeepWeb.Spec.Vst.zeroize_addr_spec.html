@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>DeepWeb.Spec.Vst.zeroize_addr_spec</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library DeepWeb.Spec.Vst.zeroize_addr_spec</h1>
+
+<div class="code">
+<span class="id" title="var">From</span> <span class="id" title="var">DeepWeb.Spec</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="DeepWeb.Spec.Vst.MainInit.html#"><span class="id" title="library">Vst.MainInit</span></a> <a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#"><span class="id" title="library">Vst.SocketSpecs</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">SockAddr</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="zeroize_addr_spec"><span class="id" title="definition">zeroize_addr_spec</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="notation">DECLARE</span> <a class="idref" href="DeepWeb.Spec.main.html#_zeroize_addr"><span class="id" title="definition">_zeroize_addr</span></a><br/>
+&nbsp;&nbsp;<span class="id" title="notation">WITH</span> <span class="id" title="var">ptr</span> <span class="id" title="notation">:</span> <span class="id" title="inductive">val</span><br/>
+&nbsp;&nbsp;<span class="id" title="notation">PRE</span> <span class="id" title="notation">[</span> <a class="idref" href="DeepWeb.Spec.main.html#_addr"><span class="id" title="definition">_addr</span></a> <span class="id" title="notation">OF</span> <span class="id" title="definition">tptr</span> (<span class="id" title="constructor">Tstruct</span> <a class="idref" href="DeepWeb.Spec.main.html#_sockaddr_in"><span class="id" title="definition">_sockaddr_in</span></a> <span class="id" title="definition">noattr</span>) <span class="id" title="notation">]</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">PROP</span> <span class="id" title="notation">(</span> <span class="id" title="notation">)</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">LOCAL</span> <span class="id" title="notation">(</span> <span class="id" title="constructor">temp</span> <a class="idref" href="DeepWeb.Spec.main.html#_addr"><span class="id" title="definition">_addr</span></a> <a class="idref" href="DeepWeb.Spec.Vst.zeroize_addr_spec.html#ptr"><span class="id" title="variable">ptr</span></a> <span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">SEP</span> <span class="id" title="notation">(</span> <span class="id" title="definition">data_at_</span> <span class="id" title="definition">Tsh</span> (<span class="id" title="constructor">Tstruct</span> <a class="idref" href="DeepWeb.Spec.main.html#_sockaddr_in"><span class="id" title="definition">_sockaddr_in</span></a> <span class="id" title="definition">noattr</span>) <a class="idref" href="DeepWeb.Spec.Vst.zeroize_addr_spec.html#ptr"><span class="id" title="variable">ptr</span></a> <span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;<span class="id" title="notation">POST</span> <span class="id" title="notation">[</span> <span class="id" title="definition">tvoid</span> <span class="id" title="notation">]</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">PROP</span> <span class="id" title="notation">(</span> <span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">LOCAL</span> <span class="id" title="notation">(</span> <span class="id" title="notation">)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">SEP</span> <span class="id" title="notation">(</span> <span class="id" title="definition">data_at</span> <span class="id" title="definition">Tsh</span> (<span class="id" title="constructor">Tstruct</span> <a class="idref" href="DeepWeb.Spec.main.html#_sockaddr_in"><span class="id" title="definition">_sockaddr_in</span></a> <span class="id" title="definition">noattr</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#SockAddr.rep_sockaddr"><span class="id" title="definition">rep_sockaddr</span></a> {| <a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#SockAddr.Build_sockaddr"><span class="id" title="constructor">sin_family</span></a> <a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#SockAddr.Build_sockaddr"><span class="id" title="constructor">:=</span></a> <a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#SockAddr.Build_sockaddr"><span class="id" title="constructor">0;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#SockAddr.Build_sockaddr"><span class="id" title="constructor">sin_port</span></a> <a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#SockAddr.Build_sockaddr"><span class="id" title="constructor">:=</span></a> <a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#SockAddr.Build_sockaddr"><span class="id" title="constructor">0;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#SockAddr.Build_sockaddr"><span class="id" title="constructor">sin_addr</span></a> <a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#SockAddr.Build_sockaddr"><span class="id" title="constructor">:=</span></a> <a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#SockAddr.Build_sockaddr"><span class="id" title="constructor">0</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|})<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Vst.zeroize_addr_spec.html#ptr"><span class="id" title="variable">ptr</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="notation">)</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>
