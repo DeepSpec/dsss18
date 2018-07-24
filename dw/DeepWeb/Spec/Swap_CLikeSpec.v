@@ -37,7 +37,7 @@ Record connection : Type :=
   }.
 
 Definition upd_conn_request (conn : connection) (request : string)
-  : connection :=
+                          : connection :=
   {|
     conn_id := conn_id conn;
     conn_request := request;
@@ -48,7 +48,7 @@ Definition upd_conn_request (conn : connection) (request : string)
 
 
 Definition upd_conn_response (conn : connection) (response : string)
-  : connection :=
+                           : connection :=
   {|
     conn_id := conn_id conn;
     conn_request := conn_request conn;
@@ -59,7 +59,7 @@ Definition upd_conn_response (conn : connection) (response : string)
 
 Definition upd_conn_response_bytes_sent
            (conn : connection) (response_bytes_sent : Z)
-  : connection :=
+         : connection :=
   {|
     conn_id := conn_id conn;
     conn_request := conn_request conn;
@@ -69,7 +69,7 @@ Definition upd_conn_response_bytes_sent
   |}.
 
 Definition upd_conn_state (conn : connection) (state : connection_state)
-  : connection :=
+                        : connection :=
   {|
     conn_id := conn_id conn;
     conn_request := conn_request conn;
@@ -77,39 +77,6 @@ Definition upd_conn_state (conn : connection) (state : connection_state)
     conn_response_bytes_sent := conn_response_bytes_sent conn;
     conn_state := state
   |}.
-
-(* BCP: Belongs in /Lib? *)
-CoFixpoint while {E : Type -> Type} {T : Type}
-           (cond : T -> bool)
-           (body : T -> M E T) : T -> M E T :=
-  fun t =>
-    match cond t with
-    | true =>
-      r <- body t ;;
-      while cond body r
-    | false => ret t
-    end.
-
-(* BCP: Belongs in /Lib? *)
-Lemma while_loop_unfold :
-  forall {E T} (cond : T -> bool) (P : T -> M E T) (t : T), 
-    while cond P t = if (cond t) then
-                       (r <- P t ;; while cond P r)
-                     else ret t.
-Proof.
-  intros.
-  rewrite matchM.
-  simpl.
-  destruct (cond t);
-    auto.
-  match goal with
-  | [|- ?LHS = ?RHS] =>
-    replace LHS with (idM RHS);
-      auto
-  end.
-  rewrite <- matchM.
-  auto.
-Qed.
 
 Definition accept_connection (addr : endpoint_id):
   M SocketE (option connection) :=
@@ -125,7 +92,7 @@ Definition accept_connection (addr : endpoint_id):
      (ret None).
 
 Instance dec_eq_connection_state {st1 st2 : connection_state}
-  : Dec (st1 = st2).
+                               : Dec (st1 = st2).
 Proof. dec_eq. Defined.
 
 Class HasConnectionState (A : Type) :=
@@ -172,8 +139,7 @@ Definition conn_read (buffer_size : Z)
      )
      (ret (conn, last_full_msg)).
 
-Definition conn_write 
-           (conn: connection) : M SocketE connection :=
+Definition conn_write (conn: connection) : M SocketE connection :=
   or (let num_bytes_sent := Z.to_nat (conn_response_bytes_sent conn) in
       r <- send_any_prefix
             (conn_id conn)
@@ -200,9 +166,9 @@ Definition conn_write
      )
      (ret (upd_conn_state conn DELETED)).
 
-Definition process_conn (buffer_size : Z)
-           (conn: connection) (last_full_msg : string)
-  : M SocketE (connection * string) :=
+Definition process_conn 
+             (buffer_size : Z) (conn: connection) (last_full_msg : string)
+          : M SocketE (connection * string) :=
   match conn_state conn with
   | RECVING => conn_read  buffer_size conn last_full_msg
   | SENDING =>
@@ -215,7 +181,7 @@ Definition select_loop_body
            (server_addr : endpoint_id)
            (buffer_size : Z)
            (server_st : list connection * string)
-  : M SocketE (bool * (list connection * string)) :=
+         : M SocketE (bool * (list connection * string)) :=
   let '(connections, last_full_msg) := server_st in
   or
     (r <- accept_connection server_addr ;;
@@ -243,9 +209,10 @@ Definition select_loop_body
           ret (true, (connections', last_full_msg'))
     ).
 
-Definition select_loop (server_addr : endpoint_id) (buffer_size : Z)
-  : (bool * (list connection * string))
-    -> M SocketE (bool * (list connection * string)) :=
+Definition select_loop 
+                (server_addr : endpoint_id) (buffer_size : Z)
+              : (bool * (list connection * string))
+                  -> M SocketE (bool * (list connection * string)) :=
   while fst
         (fun '(_, server_st) =>
            select_loop_body server_addr buffer_size server_st).

@@ -31,7 +31,7 @@ testcoq:
 
 testexternal: $(SERVER)
 	$V$(RM) /tmp/server_log /tmp/client_log /tmp/server_error /tmp/client_error
-	$(QC) -s ExternalTest -N 100 -exclude $(EXCLUDE)
+	$V$(QC) -s ExternalTest -N 100 -exclude $(EXCLUDE)
 
 $(SERVER): DeepWeb/Spec/main.c DeepWeb/Spec/macros.h
 	$Vmkdir -p out/
@@ -56,7 +56,7 @@ html:
 	$(MAKE) -f Makefile.coq html
 
 clean:
-	-rm -rf ../_qc_dw.tmp/
+	-rm -rf ../_qc_dw.tmp html
 	find . -name "*.vo" -print -exec rm -rf {} \;
 	find . -name "*.glob" -print -exec rm -rf {} \;
 	$(MAKE) -f Makefile.coq clean
@@ -65,7 +65,7 @@ clean:
 
 # Just for BCP
 bcp:
-	$(MAKE) -C $(HOME)/dw/src dsss18
+	$(MAKE) -C $(HOME)/dw/src dsss18 -j
 	$(MAKE) -j
 	$(MAKE) -j html COQDOCFLAGS="-interpolate -utf8 --parse-comments"
 	osascript $(HOME)/s/tools/safari-reload.as

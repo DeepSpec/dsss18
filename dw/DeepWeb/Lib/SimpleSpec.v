@@ -3,8 +3,7 @@ From Custom Require Import String.
 
 Require Import DeepWeb.Free.Monad.Free.
 Require Import DeepWeb.Free.Monad.Common.
-Import NonDeterminismBis.
-Import SumNotations.
+Import NonDeterminismBis SumNotations.
 
 Require Import DeepWeb.Lib.Util.
 
@@ -17,11 +16,13 @@ From DeepWeb Require Export
      Lib.SimpleSpec_ServerTrace
      Lib.SimpleSpec_NetworkModel.
 
-(* SHOW *)
-(* SimpleSpec Interface. *)
+(** * Interfaces *)
 
-(* Module to define servers. For more details, see
-   [Lib.SimpleSpec_NetworkInterface]. *)
+(** ** Network *)
+
+(* Types and operations for defining server ITrees.  For more details,
+   see [Lib.SimpleSpec_NetworkInterface]. *)
+(* BCP: What about calling it ServerInterface? *)
 Module Type NetworkIface.
 
 (* A server is a program with internal nondeterminism and
@@ -35,7 +36,7 @@ Declare Instance nondet_server : nondetE -< serverE.
 Parameter accept : M serverE connection_id.
 
 (* Receive one byte from a connection. *)
-Parameter recv_byte : connection_id -> connection_id -> M serverE byte.
+Parameter recv_byte : connection_id -> M serverE byte.
 
 (* Send one byte to a connection. *)
 Parameter send_byte : connection_id -> byte -> M serverE unit.
@@ -43,13 +44,15 @@ Parameter send_byte : connection_id -> byte -> M serverE unit.
 (* Receive up to [n] bytes, nondeterministically. *)
 Parameter recv : connection_id -> nat -> M serverE bytes.
 
-(* Receive a bytestring of length [n] exactly. *)
+(* Receive a bytestring of length (exactly) [n]. *)
 Parameter recv_full : connection_id -> nat -> M serverE bytes.
 
 (* Send all bytes in a bytestring. *)
 Parameter send : connection_id -> bytes -> M serverE unit.
 
 End NetworkIface.
+
+(** ** Observer *)
 
 (* Module to define specifications as "observers".
    For more details, see [Lib.SimpleSpec_Observer]. *)
@@ -89,7 +92,9 @@ Parameter obs_msg_from_server :
 
 End ObserverIface.
 
-Module Type Traces.
+(** ** Event traces *)
+
+Module Type TracesIface.
 
 (* An event can be observed to happen on the network,
    either from the server's or the client's point of view.
@@ -98,8 +103,7 @@ Module Type Traces.
 Inductive event (byte' : Type) :=
 | NewConnection : connection_id -> event byte'
 | ToServer : connection_id -> byte -> event byte'
-| FromServer : connection_id -> byte' -> event byte'
-.
+| FromServer : connection_id -> byte' -> event byte'.
 
 (* ... In the real world, this output is a concrete byte. *)
 Definition real_event := event byte.
@@ -118,32 +122,25 @@ Parameter is_server_trace : itree_server -> real_trace -> Prop.
 Parameter is_spec_trace : itree_spec -> hypo_trace -> Prop.
 
 (* Corresponding "server-side" and "client-side" traces. *)
-Parameter network_scrambled : real_trace -> real_trace -> Prop.
+Parameter network_scrambled0 : real_trace -> real_trace -> Prop.
 
 (* Property that a real trace [tr] is a scrambled trace of some
    spec trace. *)
 Definition is_scrambled_trace : itree_spec -> real_trace -> Prop :=
   fun spec tr =>
     exists str,
-      network_scrambled str tr /\
+      network_scrambled0 str tr /\
       is_spec_trace spec (real_to_hypo str).
 
-(* Partial test results. *)
-Inductive result' yes no :=
-| Yes (example : yes)
-| No (counterexample : no)
-| Don'tKnow.
-
-Definition result := result' unit unit.
-Definition descrambled_result := result' hypo_trace unit.
+Definition descrambled_result := result hypo_trace unit.
 
 (* A test for [is_spec_trace]. *)
-Parameter is_spec_trace_of : nat -> itree_spec -> hypo_trace -> result.
+Parameter is_spec_trace_of : nat -> itree_spec -> hypo_trace -> simple_result.
 
-(* A test for [is_scrambled_trace]. Note that the result is
-   a [hypo_trace], and there may be no way to fill the holes
-   to actually satisfy [is_scrambled_trace]. (This test
-   is unsound.) *)
+(* A test for [is_scrambled_trace]. Note that the result is a
+   [hypo_trace], and there may be no way to fill the holes to actually
+   satisfy [is_scrambled_trace]. (This test is unsound.) *)
+(* BCP: Explain better... *)
 Parameter is_scrambled_trace_of :
   nat -> itree_spec -> real_trace -> descrambled_result.
 
@@ -152,8 +149,9 @@ Parameter is_scrambled_trace_of :
 Parameter check_trace_incl_def :
   M specE unit -> M serverE unit -> Checker.
 
-End Traces.
-(* /SHOW *)
+End TracesIface.
+
+(** * Implementations *)
 
 Module Observer <: ObserverIface.
 Import Lib.SimpleSpec_Observer.
@@ -167,3 +165,48 @@ Definition assert_on A := @assert_on specE A _.
 Definition obs_msg_to_server := @obs_msg_to_server specE _.
 Definition obs_msg_from_server := @obs_msg_from_server specE _ _.
 End Observer.
+
+Module Network : NetworkIface.
+Definition serverE := Network.serverE.
+Instance networkE_server : networkE -< serverE.
+Proof. typeclasses eauto. Defined.
+Instance nondet_server : nondetE -< serverE.
+Proof. typeclasses eauto. Defined.
+Definition accept := @Network.accept _ _.
+Definition recv_byte := @Network.recv_byte _ _.
+Definition send_byte := @Network.send_byte _ _.
+Definition recv := @Network.recv _ _ _.
+Definition recv_full := @Network.recv_full _ networkE_server.
+Definition send := @Network.send _ networkE_server.
+End Network.
+
+Module Traces : TracesIface.
+
+  Include SimpleSpec_Traces.
+  
+  Definition real_to_hypo := real_to_hypo_trace.
+  Definition is_server_trace := Network.is_server_trace.
+  Definition is_spec_trace := SimpleSpec_Observer.is_spec_trace.
+  Definition is_spec_trace_of := SimpleSpec_Observer.is_trace_of.
+  
+  (* Property that a real trace [tr] is a scrambled trace of some
+   spec trace. *)
+  Definition is_scrambled_trace : itree_spec -> real_trace -> Prop :=
+    fun spec tr =>
+      exists str,
+        network_scrambled0 str tr /\
+        is_spec_trace spec (real_to_hypo str).
+
+  Definition descrambled_result := result hypo_trace unit.
+
+  (* Parameter is_spec_trace_of : nat -> itree_spec -> hypo_trace -> result. *)
+
+  Definition is_scrambled_trace_of :=
+    SimpleSpec_Descramble.is_scrambled_trace_of.
+
+  Definition check_trace_incl_def
+    := SimpleSpec_ServerTrace.check_trace_incl_def.
+  
+End Traces.
+
+  

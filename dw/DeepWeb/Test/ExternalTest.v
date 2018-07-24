@@ -8,7 +8,6 @@ From ExtLib Require Import
 From QuickChick Require Import QuickChick.
 From DeepWeb Require Import
      Test.Client
-     Test.Rand
      Lib.Util
      Lib.SimpleSpec.
 
@@ -168,20 +167,21 @@ Definition execute (msgs : list byte) : Client real_trace :=
   lift (log (nl ++ "Trace: " ++ show tr ++ nl));;
   ret tr.
 
-Instance showResult : Show result :=
+Instance showResult {A CE : Type} `{Show A} `{Show CE}: Show (result A CE) :=
   {| show r :=
        match r with
-       | Found _   => "Found"
-       | NotFound  => "Not Found"
+       | Found a   => "Found " ++ show a
+       | NotFound ce  => "Not Found (counterexample: " ++ show ce ++ ")"
        | OutOfFuel => "Out of Fuel"
        end |}.
 
-Instance Checkable_result : Checkable result :=
+Instance Checkable_result {A CE : Type} `{Show A} `{Show CE}
+  : Checkable (@result A CE)  :=
   {| checker r :=
        collect r
        match r with
        | Found _ => checker true
-       | NotFound => checker false
+       | NotFound _ => checker false
        | OutOfFuel => checker tt
        end |}.
 
@@ -191,11 +191,14 @@ Instance genMoreBytes : GenSized (list byte) :=
   {| arbitrarySized := arbitrarySized ∘ (mult 10) |}.
 
 Definition execute_prop' (msgs : list byte) : Checker :=
-  let tr := runIO_with_server (evalStateT (execute msgs) []) in
-  match filter is_FromServer tr with
-  | [] => collect "No Response" (checker tt) (* If the server never said anything, no point checking. *)
-  | _ :: _ => whenFail (show tr)
-           (is_scrambled_trace_of 5000 (Swap_SimpleSpec.swap_spec_def) tr)
+  match runIO_with_server (evalStateT (execute msgs) []) with
+  | None => collect "Ignored socket exception" (checker tt)
+  | Some tr =>
+    match filter is_FromServer tr with
+    | [] => collect "No Response" (checker tt) (* If the server never said anything, no point checking. *)
+    | _ :: _ => whenFail (show tr)
+      (is_scrambled_trace_of 5000 (Swap_SimpleSpec.swap_spec_def) tr)
+    end
   end.
 
 Definition execute_prop : Checker :=

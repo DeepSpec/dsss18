@@ -303,9 +303,6 @@ CoFixpoint find' (ts : list (hypo_trace * M (nondetE +' eventE) unit)) :
     end
   end.
 
-Inductive result :=
-| Found (descrambling : hypo_trace) | NotFound | OutOfFuel.
-
 Definition option_to_list {A} (o : option A) : list A :=
   match o with
   | None => []
@@ -313,13 +310,13 @@ Definition option_to_list {A} (o : option A) : list A :=
   end.
 
 Fixpoint to_result (fuel : nat) (m : M emptyE (option hypo_trace)) :
-  result :=
+  result hypo_trace unit :=
   match fuel with
   | O => OutOfFuel
   | S fuel =>
     match m with
     | Ret (Some tr) => Found tr
-    | Ret None => NotFound
+    | Ret None => NotFound tt
     | Tau m => to_result fuel m
     | Vis X e k => match e in emptyE X' with end
     end
@@ -328,7 +325,7 @@ Fixpoint to_result (fuel : nat) (m : M emptyE (option hypo_trace)) :
 (* SHOW *)
 (* BCP: This will probably move up too. *)
 Definition is_scrambled_trace_of
-           (fuel : nat) (s : itree_spec) (t : real_trace) : result :=
+           (fuel : nat) (s : itree_spec) (t : real_trace) : result hypo_trace unit :=
   to_result fuel (find' [([], intersect_trace s t)]).
 
 (* We will then generate traces produced by a server to test them

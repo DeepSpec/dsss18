@@ -18,6 +18,9 @@ Parameter file_descr : Type.
 Parameter ocaml_unit : Type.
 (* Opaque type in case Coq tries to be too smart about [unit]. *)
 
+Parameter out_channel : Type.
+Parameter error_handle : out_channel.
+
 Parameter IO     : Type -> Type.
 Parameter retIO  : forall A, A -> IO A.
 Parameter bindIO : forall A B, IO A -> (A -> IO B) -> IO B.
@@ -27,7 +30,8 @@ Instance Monad_IO : Monad IO :=
     bind := bindIO;
   }.
 
-Parameter runIO_with_server : forall A, IO A -> A.
+Parameter runIO_with_server' : forall A, out_channel -> IO A -> option A.
+Definition runIO_with_server A := runIO_with_server' A error_handle.
 Parameter log    : string -> IO unit.
 Parameter close  : file_descr -> IO unit.
 Parameter recvb  : file_descr -> IO (option byte).
@@ -41,14 +45,23 @@ Extract Constant IO "'a" => "unit -> 'a".
 Extract Constant file_descr => "Unix.file_descr".
 Extract Constant ocaml_unit => "unit".
 
+Extract Inlined Constant out_channel => "out_channel".
+Extract Constant error_handle => "open_out ""/tmp/client_error""".
+
 Extract Constant retIO => "fun a () -> a".
 Extract Constant bindIO =>
   "fun ioa to_iob () -> to_iob (ioa ()) ()".
 
-Extract Constant runIO_with_server => "fun io ->
+Extract Constant runIO_with_server' => "fun err io ->
   ignore (Unix.system ""make server --quiet"");
   Unix.sleepf 1e-3;
-  let a = io () in
+  let a =
+    try Some (io ())
+    with e ->
+      output_string err (Printexc.to_string e);
+      output_char err '\n';
+      flush err;
+      None in
   ignore (Unix.system ""make stop --quiet"");
   a".
 
@@ -92,3 +105,9 @@ Extract Constant socket => "fun () ->
   | Unix.Unix_error(Unix.ECONNREFUSED, _, _) ->
     close sock;
     None".
+
+Parameter flip : IO bool.
+Parameter rand : nat -> IO nat.
+
+Extract Constant flip => "Random.bool".
+Extract Constant rand => "fun n () -> Random.int n".

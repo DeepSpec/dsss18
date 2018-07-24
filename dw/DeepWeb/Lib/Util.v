@@ -73,6 +73,18 @@ Instance Eq_connection_id : Eq connection_id :=
 Instance Show_connection_id : Show connection_id :=
   { show := fun '(Connection c) => show c }.
 
+Inductive result (A CE : Type) :=
+| Found (res : A) | NotFound (counterexample : CE) | OutOfFuel.
+
+Arguments OutOfFuel {A} {CE}.
+Arguments Found {A} {CE}.
+Arguments NotFound {A} {CE}.
+
+Definition simple_result := result unit unit.
+
+Instance show_unit : Show unit :=
+  { show _ := "tt"%string }.
+
 Module TestDefault.
 
 (* A short buffer size for easier testing. *)

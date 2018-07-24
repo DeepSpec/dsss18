@@ -2,7 +2,7 @@
    to the simplified version used by SimpleSpec. *)
 
 From DeepWeb.Free.Monad Require Import
-     Free Common.
+     Free Common Internal.
 Import MonadNotations.
 Import SumNotations.
 Import NonDeterminismBis.

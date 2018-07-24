@@ -31,3 +31,15 @@ Notation "e1 ;; e2" := (_ <- e1%monad ;; e2%monad)%monad
 (at level 100, right associativity) : monad_scope.
 
 End MonadNotations.
+
+Require Import List.
+Import ListNotations.
+Import MonadNotations.
+
+Fixpoint forM {M : Type -> Type} {MM : Monad M} {X Y}
+              (xs : list X) (f : X -> M Y)
+  : M (list Y) :=
+  match xs with
+  | [] => ret []
+  | x :: xs => y <- f x;; ys <- forM xs f;; ret (y :: ys)
+  end%monad.

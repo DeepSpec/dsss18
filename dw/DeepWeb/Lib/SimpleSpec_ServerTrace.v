@@ -11,6 +11,7 @@ Require Fin.
 Import ListNotations.
 
 Require Import DeepWeb.Free.Monad.Free.
+Require Import DeepWeb.Free.Monad.Internal.
 Import MonadNotations.
 Require Import DeepWeb.Free.Monad.Common.
 Import SumNotations.
@@ -210,7 +211,7 @@ Fixpoint traverse_qc {A} (xs : list A)
   end.
 
 Fixpoint forall_traces (max_depth : nat)
-         (check_trace : real_trace -> result) (t : itree_traces)
+         (check_trace : real_trace -> result hypo_trace unit) (t : itree_traces)
   : Checker' :=
   match max_depth with
   | O => ok
@@ -226,7 +227,7 @@ Fixpoint forall_traces (max_depth : nat)
           match check_trace tr with
           | OutOfFuel => ok cont fuel
           | Found _ => forall_traces max_depth check_trace (k (id tt)) cont fuel
-          | NotFound => whenFail' (fun _ => show tr) false
+          | NotFound _ => whenFail' (fun _ => show tr) false
           end
         end id
       | (| _Arb |) =>

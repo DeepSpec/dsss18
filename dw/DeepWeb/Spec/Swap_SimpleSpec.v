@@ -32,11 +32,11 @@ Open Scope string_scope.
      connection. *)
 (* BCP: How is conns used for generating test cases?? *)
 
-CoFixpoint swap_spec_loop
-           (buffer_size : nat)
-           (conns : list connection_id)
-           (last_msg : bytes) :
-  itree_spec :=
+(* BCP: Should/could this be written using [forever]? *)
+CoFixpoint swap_spec_loop (buffer_size : nat)
+                          (conns : list connection_id)
+                          (last_msg : bytes) 
+                        : itree_spec :=
   disj "swap_spec"
     ( (* Accept a new connection. *)
       c <- obs_connect;;
@@ -48,17 +48,16 @@ CoFixpoint swap_spec_loop
       swap_spec_loop buffer_size conns msg
     ).
 
-Definition swap_spec_
-           (buffer_size : nat)
-           (init_msg : bytes) : itree_spec :=
+Definition swap_spec_ (buffer_size : nat)
+                      (init_msg : bytes) 
+                    : itree_spec :=
   swap_spec_loop buffer_size [] init_msg.
 
 Module Def := Lib.Util.TestDefault.
 
 (* Top-level spec *)
 Definition swap_spec_def : itree_spec :=
-  swap_spec_ Def.buffer_size
-             Def.init_message.
+  swap_spec_ Def.buffer_size Def.init_message.
 
 (** * Examples *)
 
@@ -79,7 +78,7 @@ Import EventNotations.
 
 (* A simple example illustrated the behavior described by the spec: *)
 Example trace_example :
-  true = is_trace_of 100 swap_spec_def [
+  Found tt = is_trace_of 100 swap_spec_def [
     0 !;
     1 !;
     0 <-- "a";
@@ -100,7 +99,7 @@ Proof. reflexivity. Qed.
 (* An example of a behavior _not_ described by the spec (the first
    byte sent back should be ["0"], not ["1"]): *)
 Example trace_example2 :
-  false = is_trace_of 100 swap_spec_def [
+  NotFound tt = is_trace_of 100 swap_spec_def [
     0 !;
     0 <-- "a";
     0 <-- "b";
@@ -201,7 +200,7 @@ Example bad_scrambled_trace_example_1 :
     0 <-- "b";
     0 <-- "c";
     0 --> "X"
-  ]%real = NotFound.
+  ]%real = NotFound tt.
 Proof. reflexivity. Qed.
 
 (* A more interesting bad trace, where the server appears to send the
@@ -227,7 +226,7 @@ Example bad_scrambled_trace_example_2 :
     2 --> "d";
     2 --> "e";
     2 --> "f"
-  ]%real = NotFound.
+  ]%real = NotFound tt.
 Proof. reflexivity. Qed.
 
 (* Finally, an example of a trace that might be observed if the
@@ -281,6 +280,6 @@ Example bad_scrambled_trace_example_3 :
     1 <-- "f";
     0 --> "0";
     1 --> "X"
-  ]%real = NotFound.
+  ]%real = NotFound tt.
 Proof. reflexivity. Qed.
 

@@ -111,6 +111,22 @@
 &nbsp;&nbsp;{ <span class="id" title="method">show</span> := <span class="id" title="keyword">fun</span> '(<a class="idref" href="DeepWeb.Lib.Util.html#Connection"><span class="id" title="constructor">Connection</span></a> <span class="id" title="var">c</span>) ⇒ <span class="id" title="method">show</span> <a class="idref" href="DeepWeb.Lib.Util.html#c"><span class="id" title="variable">c</span></a> }.<br/>
 
 <br/>
+<span class="id" title="keyword">Inductive</span> <a name="result"><span class="id" title="inductive">result</span></a> (<span class="id" title="var">A</span> <span class="id" title="var">CE</span> : <span class="id" title="keyword">Type</span>) :=<br/>
+| <a name="Found"><span class="id" title="constructor">Found</span></a> (<span class="id" title="var">res</span> : <a class="idref" href="DeepWeb.Lib.Util.html#A"><span class="id" title="variable">A</span></a>) | <a name="NotFound"><span class="id" title="constructor">NotFound</span></a> (<span class="id" title="var">counterexample</span> : <a class="idref" href="DeepWeb.Lib.Util.html#CE"><span class="id" title="variable">CE</span></a>) | <a name="OutOfFuel"><span class="id" title="constructor">OutOfFuel</span></a>.<br/>
+
+<br/>
+<span class="id" title="var">Arguments</span> <a class="idref" href="DeepWeb.Lib.Util.html#OutOfFuel"><span class="id" title="constructor">OutOfFuel</span></a> {<span class="id" title="var">A</span>} {<span class="id" title="var">CE</span>}.<br/>
+<span class="id" title="var">Arguments</span> <a class="idref" href="DeepWeb.Lib.Util.html#Found"><span class="id" title="constructor">Found</span></a> {<span class="id" title="var">A</span>} {<span class="id" title="var">CE</span>}.<br/>
+<span class="id" title="var">Arguments</span> <a class="idref" href="DeepWeb.Lib.Util.html#NotFound"><span class="id" title="constructor">NotFound</span></a> {<span class="id" title="var">A</span>} {<span class="id" title="var">CE</span>}.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="simple_result"><span class="id" title="definition">simple_result</span></a> := <a class="idref" href="DeepWeb.Lib.Util.html#result"><span class="id" title="inductive">result</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a name="show_unit"><span class="id" title="instance">show_unit</span></a> : <span class="id" title="class">Show</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> :=<br/>
+&nbsp;&nbsp;{ <span class="id" title="method">show</span> <span class="id" title="var">_</span> := "tt"%<span class="id" title="var">string</span> }.<br/>
+
+<br/>
 <span class="id" title="keyword">Module</span> <a name="TestDefault"><span class="id" title="module">TestDefault</span></a>.<br/>
 
 <br/>

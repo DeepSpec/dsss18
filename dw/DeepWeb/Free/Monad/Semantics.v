@@ -2,6 +2,7 @@ Require ProofIrrelevance.
 
 Require Import DeepWeb.Free.Monad.Free.
 Require Import DeepWeb.Free.Monad.Common.
+Require Import DeepWeb.Free.Monad.Internal.
 Import MonadNotations.
 
 Section Sem.
@@ -175,7 +176,7 @@ Lemma hoist_def E F X Y (e : F Y) (k : Y -> M F X)
       (f : forall X, F X -> E X) :
   hoist f (Vis e k) = Vis (f _ e) (fun y => hoist f (k y)).
 Proof.
-  rewrite matchM.
+  rewrite (matchM (hoist _ _)).
   simpl.
   auto.
 Qed.
@@ -187,8 +188,8 @@ Lemma hom_def E F X Y (e : F Y) (k : Y -> M F X)
   interpret _ e >>= fun y =>
     hom interpret (k y).
 Proof.
-  rewrite matchM.
-  rewrite (@matchM _ _ (interpret Y e >>= fun y => hom interpret (k y))).
+  rewrite (matchM (hom _ _)).
+  rewrite (matchM (bind _ _)).
   simpl.
   auto.
 Qed.

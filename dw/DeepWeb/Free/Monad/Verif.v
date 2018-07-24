@@ -6,6 +6,7 @@ Require Import Setoid.
 Require Import ProofIrrelevance.
 
 Require Import DeepWeb.Free.Monad.Free.
+Require Import DeepWeb.Free.Monad.Internal.
 Import MonadNotations.
 
 Class Equiv (m : Type -> Type) : Type :=
@@ -118,7 +119,7 @@ Lemma rightId : RightId (M E).
 Proof.
   cofix self.
   intros X s.
-  rewrite matchM.
+  rewrite (matchM (bind _ _)).
   destruct s; constructor; intros; apply self.
 Qed.
 
@@ -558,3 +559,23 @@ Qed.
 End LawfulMonad.
 
 End Lawful.
+
+Lemma while_loop_unfold :
+  forall {E T} (cond : T -> bool) (P : T -> M E T) (t : T),
+    while cond P t = if (cond t) then
+                       (r <- P t ;; while cond P r)
+                     else ret t.
+Proof.
+  intros.
+  rewrite (matchM (while _ _ _)).
+  simpl.
+  destruct (cond t);
+    auto.
+  match goal with
+  | [|- ?LHS = ?RHS] =>
+    replace LHS with (idM RHS);
+      auto
+  end.
+  rewrite <- matchM.
+  auto.
+Qed.

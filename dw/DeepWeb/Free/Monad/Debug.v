@@ -1,4 +1,5 @@
 Require Import DeepWeb.Free.Monad.Free.
+Require Import DeepWeb.Free.Monad.Internal.
 
 Inductive _M {E R} (n : nat) : M E R -> Prop :=
 | MTau : forall t, _M (S n) t -> _M n (Tau t)

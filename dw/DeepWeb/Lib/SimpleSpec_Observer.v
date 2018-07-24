@@ -156,13 +156,18 @@ Definition match_obs {X Y R S : Type}
 
 (* [exists x, k x = true] *)
 Definition nondet_exists {X : Type}
-           (e : nondetE X) (k : X -> bool) : bool :=
+           (e : nondetE X) (k : X -> simple_result) : simple_result :=
   match e in nondetE X' return (X' -> X) -> _ with
   | Or n _ =>
-    (fix go n0 : (Fin.t n0 -> X) -> bool :=
+    (fix go n0 : (Fin.t n0 -> X) -> simple_result :=
        match n0 with
-       | O => fun _ => false
-       | S n0 => fun f => k (f Fin.F1) || go n0 (fun m => f (Fin.FS m))
+       | O => fun _ => NotFound tt
+       | S n0 => fun f =>
+                  match k (f Fin.F1) with
+                  | Found tt => Found tt
+                  | OutOfFuel                                
+                  | NotFound tt => go n0 (fun m => f (Fin.FS m))
+                  end
        end) n
   end%bool (fun x => x).
 
@@ -194,21 +199,21 @@ Definition is_spec_trace : itree_spec -> hypo_trace -> Prop :=
    for the result to be reliable. *)
 
 Fixpoint is_trace_of
-         (max_depth : nat) (s : itree_spec) (t : hypo_trace) : bool :=
+         (max_depth : nat) (s : itree_spec) (t : hypo_trace) : simple_result :=
   match max_depth with
-  | O => false
+  | O => OutOfFuel 
   | S max_depth =>
     match s, t with
     | Tau s, t => is_trace_of max_depth s t
-    | Ret tt, [] => true
-    | Ret tt, _ :: _ => false
+    | Ret tt, [] => Found tt
+    | Ret tt, _ :: _ => NotFound tt
     | Vis _ (| e1 ) k, x :: t =>
       match event_to_observerE x with
       | existT T1 (e0, y) => 
         match_obs e0 e1 (fun s => is_trace_of max_depth s t)
-                  false y k
+                  (NotFound tt) y k
       end
-    | Vis _ (| e1 ) k, [] => true
+    | Vis _ (| e1 ) k, [] => Found tt
     (* The trace belongs to the tree [s] *)
     | Vis _ ( _Or |) k, t =>
       nondet_exists _Or (fun b => is_trace_of max_depth (k b) t)

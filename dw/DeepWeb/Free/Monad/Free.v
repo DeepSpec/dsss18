@@ -1,5 +1,3 @@
-(* BCP: The file needs a little tidying *)
-
 Set Implicit Arguments.
 Set Contextual Implicit.
 
@@ -110,9 +108,8 @@ End Core.
    insert a [Tau] in the case where the right-hand argument to bind is
    just a [Ret], to make programs/specifications neater and easier to
    write.  With this variant of bind, [M] is no longer a monad
-   strictly speaking, but it remains one in a looser sense as long as
-   [Tau] is interpreted as the identity. *)
-(* BCP: Not sure what it means to "interpret Tau as the identity" *) 
+   strictly speaking, but it remains one in a looser sense where we
+   ignore [Tau] such that [Tau t] is considered equivalent to [t]. *)
 Definition bindM {E X Y} (s: M E X) (t: X -> M E Y) : M E Y :=
   Core.bindM s (fun x => Tau (t x)).
 
@@ -132,39 +129,26 @@ let cofix go (s : M E X) :=
     end
 in go s.
 
-(* BCP: This is a generic monad thing, right?  Belongs elsewhere I guess. *)
-Fixpoint forM {M : Type -> Type} {MM : Monad M} {X Y}
-         (xs : list X) (f : X -> M Y)
-  : M (list Y) :=
-  match xs with
-  | [] => ret []
-  | x :: xs => y <- f x;; ys <- forM xs f;; ret (y :: ys)
-  end.
+(* Lift a single event to an [M] action. *)
+Definition liftE Event X (e : Event X) : M Event X :=
+  Vis e (fun x => Ret x).
 
 (* Ignore the results from an ITree (changing it to have [unit] result type) *)
 Definition ignore {E X} : M E X -> M E unit := mapM (fun _ => tt).
 
 (* An ITree representing an infinite loop *)
 CoFixpoint spin {E} {X} : M E X := Tau spin.
+
 (* An ITree that does one internal step and then returns. *)
 Definition tick {E} : M E unit := Tau (Ret tt).
-
-(* Lift a single event to an [M] action. *)
-Definition liftE Event X (e : Event X) : M Event X :=
-  Vis e (fun x => Ret x).
 
 (* The void type is useful as a return type to [M], to enforce the
     constraint that a given computation should never terminate. *)
 Inductive void : Type := .
 
 (* An infinite loop with a given body. *)
-(* BCP: Why do we need both forever and loop? *)
 CoFixpoint forever {E} {X} (x : M E X) : M E void :=
   x ;; forever x.
-
-(* An infinite loop with a given body that obviously never returns. *)
-CoFixpoint loop {E void} (body : M E unit) : M E void :=
-  body;; loop body.
 
 (* A one-sided conditional. *)
 Definition when {E} (b : bool) (body : M E unit)
@@ -179,138 +163,15 @@ CoFixpoint for_each {E A} (bs : list A) (body : A -> M E unit)
   | b :: bs' => body b;; for_each bs' body
   end.
 
-(** * Internals *)
-(* BCP: Can we split this off and move it to a separate file? *)
-
-(* If we can interpret the events of one such monad as
-    computations in another, we can extend that
-    interpretation to the whole monad. *)
-Definition hom
-           {E1 E2 : Type -> Type}
-           (f : forall X, E1 X -> M E2 X) :
-  forall R, M E1 R -> M E2 R :=
-  cofix hom_ R (p : M E1 R) : M E2 R :=
-    match p with
-    | Ret x => Ret x
-    | Vis e k => bindM (f _ e) (fun x => hom_ _ (k x))
-    | Tau k => Tau (hom_ _ k)
+(* An imperative while-loop. *)
+CoFixpoint while {E : Type -> Type} {T : Type}
+           (cond : T -> bool)
+           (body : T -> M E T) : T -> M E T :=
+  fun t =>
+    match cond t with
+    | true =>
+      r <- body t ;;
+      while cond body r
+    | false => ret t
     end.
-
-Arguments hom {E1 E2} f {R}.
-
-Definition hom_state
-           {E1 E2 : Type -> Type}
-           {S : Type}
-           (f : forall X, S -> E1 X -> M E2 (S * X)) :
-  forall R, S -> M E1 R -> M E2 (S * R) :=
-  cofix hom_ R s (p : M E1 R) : M E2 (S * R) :=
-    match p with
-    | Ret x => Ret (s, x)
-    | Vis e k => bindM (f _ s e) (fun sa => hom_ _ (fst sa) (k (snd sa)))
-    | Tau k => Tau (hom_ _ s k)
-    end.
-
-CoFixpoint hoist {E F X}
-           (f : forall Z, E Z -> F Z)
-           (m : M E X)
-  : M F X :=
-  match m with
-  | Ret x => Ret x
-  | Vis e k => Vis (f _ e) (fun z => hoist f (k z))
-  | Tau n => Tau (hoist f n)
-  end.
-
-Definition fold_finite {E X R}
-           (default : R)
-           (ret_ : X -> R)
-           (f : forall X, E X -> (X -> R) -> R) : nat -> M E X -> R :=
-  fix fold_ max_depth t :=
-    match max_depth with
-    | O => default
-    | S max_depth =>
-      match t with
-      | Ret x => ret_ x
-      | Tau t => fold_ max_depth t
-      | Vis e k => f _ e (fun x => fold_ max_depth (k x))
-      end
-    end.
-
-Fixpoint collapse_root {E X} (fuel : nat) (m : M E X) : M E X :=
-  match fuel with
-  | O => m
-  | S fuel' =>
-    match m with
-    | Tau m' => collapse_root fuel' m'
-    | _ => m
-    end
-  end.
-
-CoFixpoint collapse {E X} (refuel : nat) (m : M E X) : M E X :=
-  match collapse_root refuel m with
-  | Tau m' => Tau (collapse refuel m')
-  | Vis e k => Vis e (fun z => collapse refuel (k z))
-  | Ret x => Ret x
-  end.
-
-(* ------------------------------------------------------------- *)
-
-Module MORE.
-
-(* Some more interesting algebraic structure.  This is not
-    immediately useful for zipping tests and programs because there
-    are things in tests that we do not want to zip with anything in
-    the program.  Might be useful later for something, though. *)
-
-Inductive Pair1 (E1 E2: Type -> Type) : Type -> Type :=
- | pair1 {X} {Y} (e1 : E1 X) (e2 : E2 Y) : Pair1 E1 E2 (X * Y).
-
-(* If we can interpret two infinite streams with different events as one
-    where we line up the events in lockstep. *)
-Definition lockstep {E1 E2 : Type -> Type} {X} : M E1 X -> M E2 X -> M (Pair1 E1 E2) X :=
-  cofix go p1 p2 :=
-    match p1, p2 with
-      | Tau p1', _ => Tau (go p1' p2)
-      | _, Tau p2' => Tau (go p1 p2')
-      | Ret x,_ => Ret x
-      | _, Ret x => Ret x
-      | Vis e1 p1k, Vis e2 p2k =>
-        Vis (pair1 e1 e2) (fun p => match p with (x, y) => go (p1k x) (p2k y) end)
-    end.
-(* There are a few variants depending on which return values we want
-    to to force to be void. But this seems to be the most general
-    one.*)
-
-End MORE.
-
-(* In order to unfold a cofixpoint we have to rewrite it with [matchM]. *)
-Notation idM i :=
-  match i with
-  | Ret x => Ret x
-  | @Vis _ _ Y e k => Vis e k
-  | Tau k => Tau k
-  end.
-
-Lemma matchM : forall E X (i: M E X), i = idM i.
-Proof. destruct i; auto. Qed.
-
-Lemma bind_def_core : forall E X Y s (k : X -> M E Y),
-    Core.bindM s k = Core.bind_body s (fun s => Core.bindM s k) k.
-Proof.
-  intros.
-  rewrite matchM.
-  destruct s; auto.
-  simpl.
-  rewrite (@matchM _ _ (k x)) at 2.
-  auto.
-Qed.
-
-Lemma bind_def E X Y :
-  forall s (k : X -> M E Y),
-    bindM s k = Core.bind_body s (fun s' => bindM s' k) (fun x => Tau (k x)).
-Proof.
-  unfold bindM.
-  intros s k.
-  rewrite bind_def_core.
-  auto.
-Qed.
 

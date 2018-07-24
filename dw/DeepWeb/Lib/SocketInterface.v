@@ -12,6 +12,7 @@ From Custom Require Monad.
 Import MonadNotations.
 
 Require Import DeepWeb.Free.Monad.Free.
+Require Import DeepWeb.Free.Monad.Internal.
 Require Import DeepWeb.Free.Monad.Common.
 Require Import DeepWeb.Free.Monad.Verif.
 
@@ -223,7 +224,7 @@ Module SocketAPI.
                  (or (x <- m1 ;; k x)
                      (x <- m2 ;; k x)).
   Proof.
-    rewrite matchM.
+    rewrite (matchM (bind (or _ _) (fun x => k x))).
     unfold or.
     simpl.
     eapply EquivTauExhaust; try constructor.
