@@ -161,7 +161,7 @@ Fixpoint random_trace' (max_depth : nat) (t : itree_traces) :
     | Vis _ ( _Or ||) k =>
       match _Or in nondetE X return (X -> _) -> G' _ with
       | Or _ _ => fun id cont fuel =>
-        xs <- shuffle every_fin;;
+        xs <- shuffle (every_fin _);;
         traverseG' xs (fun x =>
           random_trace' max_depth (k (id x))) cont fuel
       end id
@@ -244,7 +244,7 @@ Fixpoint forall_traces (max_depth : nat)
           let check x :=
               forall_traces max_depth check_trace (k (id x)) in
           checker (
-            xs <- shuffle every_fin;;
+            xs <- shuffle (every_fin _);;
             ret (traverse_qc xs check cont fuel))
         end id
       end

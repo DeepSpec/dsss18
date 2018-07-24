@@ -175,10 +175,17 @@ Instance showResult {A CE : Type} `{Show A} `{Show CE}: Show (result A CE) :=
        | OutOfFuel => "Out of Fuel"
        end |}.
 
+Definition collectResult {A CE} (r : result A CE) : string :=
+  match r with
+  | Found _    => "Found"
+  | NotFound _ => "Not Found"
+  | OutOfFuel  => "Out of Fuel"
+  end.
+
 Instance Checkable_result {A CE : Type} `{Show A} `{Show CE}
   : Checkable (@result A CE)  :=
   {| checker r :=
-       collect r
+       collect (collectResult r)
        match r with
        | Found _ => checker true
        | NotFound _ => checker false

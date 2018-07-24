@@ -16,11 +16,15 @@ VST_DIRS= msl sepcomp veric floyd progs
 VSTFLAGS= -Q $(CC_LOC) compcert $(foreach d, $(VST_DIRS), -Q $(VST_LOC)/$(d) VST.$(d))
 
 build: Makefile.coq.vst $(EXTR_BIN)
-	@$(MAKE) -f $<
+	$(MAKE) -f $<
+
+_CoqProject.Vst: _CoqConfig.Vst
+	echo $(VSTFLAGS) > _CoqProject.Vst
+	cat _CoqConfig.Vst >> _CoqProject.Vst
 
 Makefile.coq.vst: _CoqProject.Vst
 	coq_makefile -f $< -o $@
 
-_CoqProject.Vst: _CoqProject _CoqProject.Vst.Proofs
-	echo "$(VSTFLAGS)" > $@
-	cat $* >> $@
+# _CoqProject.Vst: _CoqProject _CoqProject.Vst.Proofs
+# 	echo "$(VSTFLAGS)" > $@
+# 	cat $* >> $@

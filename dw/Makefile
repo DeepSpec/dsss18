@@ -51,15 +51,14 @@ coq-qc: $(SERVER)
 	$Vmake -f Makefile.tmp QuickChickTop.vo
 	$Vecho 'let _ = print_endline "done"' >> QuickChickTop.ml
 
-html:
-	$(MAKE) -f Makefile.coq -j
+html: build-with-vst
 	$(MAKE) -f Makefile.coq html
 
 clean:
-	-rm -rf ../_qc_dw.tmp html
 	find . -name "*.vo" -print -exec rm -rf {} \;
 	find . -name "*.glob" -print -exec rm -rf {} \;
 	$(MAKE) -f Makefile.coq clean
+	-rm -rf ../_qc_dw.tmp html Makefile.coq*
 
 .PHONY: html clean coq-qc test coq
 

@@ -19,6 +19,10 @@ Require Export DeepWeb.Free.Monad.Effect.
 Import MonadNotations.
 Import SumNotations.
 
+Export Failure.
+Export Reader.
+Export Writer.
+
 Definition run {E F X} (run_ : forall Y, F Y -> M E Y)
   : M (E +' F) X -> M E X :=
   let run' Y (e : (E +' F) Y) :=
@@ -27,17 +31,6 @@ Definition run {E F X} (run_ : forall Y, F Y -> M E Y)
       | (| f') => run_ _ f'
       end
   in hom run'.
-
-Section Failure.
-
-Inductive failureE : Type -> Type :=
-| Fail : string -> failureE void.
-
-Definition fail `{failureE -< E} {X} (reason : string)
-  : M E X :=
-  Vis (convert (Fail reason)) (fun v : void => match v with end).
-
-End Failure.
 
 Module Export Basic.
 Section NonDeterminism.
@@ -70,74 +63,38 @@ Module NonDeterminismBis.
     end.
 End NonDeterminismBis.
 
-Section Reader.
+Module Export State.
+Include Effect.State.
 
-Variable (R : Type).
-
-Inductive readerE : Type -> Type :=
-| Ask : readerE R.
-
-Definition ask {E} `{readerE -< E} : M E R :=
-  liftE (convert Ask).
-
-CoFixpoint run_reader {E A} (r : R) (m : M (E +' readerE) A)
-  : M E A :=
-  match m with
-  | Ret a => Ret a
-  | Vis (| e ) k =>
-    match e in readerE T return (T -> _) -> _ with
-    | Ask => fun k => Tau (run_reader r (k r))
-    end k
-  | Vis ( e |) k => Vis e (fun z => run_reader r (k z))
-  | Tau m => Tau (run_reader r m)
-  end.
-
-End Reader.
-
-Arguments ask {R E _}.
-
-Section State.
-
-Variable (S : Type).
-
-Inductive stateE : Type -> Type :=
-| Get : stateE S
-| Put : S -> stateE unit.
-
-Definition get `{stateE -< E} : M E S := embed Get.
-Definition put `{stateE -< E} : S -> M E unit := embed Put.
-
-(** TODO: Refactorable if we can generalize
-    [Free.hom] to arbitrary monads. *)
-CoFixpoint run_state' {E A} (s : S) (m : M (E +' stateE) A)
+CoFixpoint run_state' {S E A} (s : S) (m : M (E +' stateE S) A)
   : M E (S * A) :=
   match m with
   | Ret x => Ret (s, x)
   | Tau n => Tau (run_state' s n)
   | Vis (| e4 ) k =>
-    match e4 in stateE T return (T -> _) -> _ with
+    match e4 in stateE _ T return (T -> _) -> _ with
     | Get => fun k => Tau (run_state' s (k s))
     | Put s' => fun k => Tau (run_state' s' (k tt))
     end k
   | Vis ( e |) k => Vis e (fun z => run_state' s (k z))
   end.
 
-Definition run_state `{Convertible E (F +' stateE)} {A}
+Definition run_state {S} `{Convertible E (F +' stateE S)} {A}
            (s : S) (m : M E A) : M F (S * A) :=
-  run_state' s (hoist (@convert _ _ _) m : M (F +' stateE) A).
+  run_state' s (hoist (@convert _ _ _) m : M (F +' stateE S) A).
 
-Definition exec_state `{Convertible E (F +' stateE)} {A}
+Definition exec_state {S} `{Convertible E (F +' stateE S)} {A}
            (s : S) (m : M E A) : M F S :=
   mapM fst (run_state s m).
 
-Definition eval_state `{Convertible E (F +' stateE)} {A}
+Definition eval_state {S} `{Convertible E (F +' stateE S)} {A}
            (s : S) (m : M E A) : M F A :=
   mapM snd (run_state s m).
 
-End State.
-
 Arguments get {S E _}.
 Arguments put {S E _}.
+
+End State.
 
 Section Counter.
 
@@ -194,18 +151,6 @@ End Counter.
 
 Arguments run_counter_using N {_ _ _ _ _} m.
 Arguments run_counter_for {T} tag {_ _ _ _} m.
-
-Section Writer.
-
-Variable (W : Type).
-
-Inductive writerE : Type -> Type :=
-| Tell : W -> writerE unit.
-
-Definition tell `{Convertible writerE E} (w : W) : M E unit :=
-  liftE (convert (Tell w)).
-
-End Writer.
 
 Section Stop.
   (* "Return" as an effect. *)

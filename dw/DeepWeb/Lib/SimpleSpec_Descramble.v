@@ -297,7 +297,7 @@ CoFixpoint find' (ts : list (hypo_trace * M (nondetE +' eventE) unit)) :
       | ( _Or |) =>
         match _Or in nondetE X' return (X' -> X) -> _ with
         | Or n _ => fun id =>
-          Tau (find' (map (fun n => (tr, k (id n))) every_fin ++ ts)%list)
+          Tau (find' (map (fun n => (tr, k (id n))) (every_fin _) ++ ts)%list)
         end (fun x => x)
       end
     end

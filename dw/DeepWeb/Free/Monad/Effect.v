@@ -1,8 +1,4 @@
-(** Common effects *)
-
-Set Implicit Arguments.
-Set Contextual Implicit.
-Generalizable All Variables.
+Generalizable Variables A B C D E F.
 
 Require Import List.
 Import ListNotations.
@@ -17,32 +13,21 @@ Import MonadNotations.
 
 Section Extensible.
 
-(** * Combinators for extensible event types. *)
+(** * Combinators for Extensible Event Types *)
 
-(* BCP: Explain what this is all about *)
+(* BCP: Explain a bit what this is all about... *)
 
+(* Union of two effect types. *)
 Definition sum1 (E1 E2 : Type -> Type) (X : Type) : Type :=
   E1 X + E2 X.
 
+(* Empty effect type. *)
 Inductive emptyE : Type -> Type := .
 
-Definition swap1 `(ab : sum1 A B X) : sum1 B A X :=
-  match ab with
-  | inl a => inr a
-  | inr b => inl b
-  end.
-
-Definition bimap_sum1 `(f : A X -> C Y) `(g : B X -> D Y)
-           (ab : sum1 A B X) : sum1 C D Y :=
-  match ab with
-  | inl a => inl (f a)
-  | inr b => inr (g b)
-  end.
-
 (* Automatic application of commutativity and associativity for sums.
-   TODO: This is still quite fragile and prone to
-   infinite instance resolution loops.
- *)
+
+   TODO: This is still quite fragile and prone to infinite instance
+   resolution loops. *)
 
 Class Convertible (A B : Type -> Type) :=
   { convert : forall {X}, A X -> B X }.
@@ -87,6 +72,8 @@ Notation "E -< F" := (Convertible E F)
 Module Import SumNotations.
 
 (* Is this readable? *)
+(* BCP: Readable, yes.  Understandable (i.e., can I guess what it's
+   for?), not really. *)
 
 Delimit Scope sum_scope with sum.
 Bind Scope sum_scope with sum1.
@@ -132,48 +119,159 @@ Arguments embed {X Y _} e.
 
 Notation "^ x" := (embed x) (at level 80).
 
-(** * Nondeterminism events *)
+(** * Basic Effects *)
 
-(** ** Interface *)
+(** ** Failure *)
+Module Failure.
+
+  (* The [void] result type means this effect can never return.
+     (It corresponds to an ITree with no children.) *)
+  Inductive failureE : Type -> Type :=
+  | Fail : string -> failureE void.
+
+  (* An itree with no children can have any leaf type [X]. *)
+  Definition fail `{failureE -< E} {X} (reason : string)
+    : M E X :=
+    Vis (convert (Fail reason)) (fun v : void => match v with end).
+
+End Failure.
+
+(** ** Mutable state *)
+Module State.
+Section StateSection.
+
+Variable (S : Type).
+
+Inductive stateE : Type -> Type :=
+| Get : stateE S
+| Put : S -> stateE unit.
+
+Definition get `{stateE -< E} : M E S := embed Get.
+Definition put `{stateE -< E} : S -> M E unit := embed Put.
+End StateSection.
+
+Arguments Get {S}.
+Arguments Put {S}.
+
+End State.
+
+(** ** Nondeterminism *)
+
+(* BCP: Needs some kind of introduction
+
+   We show a minimized module signature for the sake of brevity.
+   The implementation is at the end of this file. *)
 
 Module Type NonDeterminismSig.
 
-  (* Nodes can be of any arity. They are annotated with
-     a string to help debugging. *)
+  (* A branching computation with [n] possible futures.
+     The constructor can be annotated with a string to help
+     debugging. *)
+
   Inductive nondetE : Type -> Type :=
   | Or : forall (n : nat), string -> nondetE (Fin.t n).
+  (* BCP: What does the Fin.t do (why not just return nat)?  Where do
+     we use it? *)
 
-  (* [Or] nodes can have no children ([n = 0]), like [failureE]. *)
+  (* [Or] nodes can have no children ([n = 0]). *)
+  (* BCP: Needs a comment on the overlap with Fail above. *) 
   Parameter fail :
     forall {E A} `{nondetE -< E},
       string (* reason *) -> M E A.
 
-  (* Choose one element in a list. *)
-  Parameter choose :
-    forall {E A} `{nondetE -< E},
-      string (* reason *) -> list A -> M E A.
-
-  (* Disjunction between two trees. *)
+  (* Disjunction between two ITrees *)
   Parameter or :
     forall {E A} `{nondetE -< E},
       M E A -> M E A -> M E A.
 
-  (* Notation for disjunction between [n] trees. It can be
-     annotated for an explanation string. *)
+  (* Notation for disjunction between [n] ITrees, optionally annotated
+     with an explanation string. *)
   Reserved Notation "'disj' reason ( f1 | .. | fn )"
   (at level 0, reason at next level).
   Reserved Notation "'disj' ( f1 | .. | fn )"
   (at level 0).
 
-  (* Remove one element from a list and return it with the
-     rest of the list. *)
+  (* ITree that nondeterministically chooses an element from a list
+     and returns it. *)
+  (* BCP: Can we make the reason parameter optional? *)
+  Parameter choose :
+    forall {E A} `{nondetE -< E},
+      string (* reason *) -> list A -> M E A.
+
+  (* ITree that nondeterministically removes one element from a list
+     and returns it with the rest of the list. *)
   Parameter pick_one :
     forall {E A} `{nondetE -< E},
       string -> list A -> M E (A * list A).
 
+  (* BCP: The un-similarity of names between [choose] and [pick-one]
+     is unfortunate! *)
 End NonDeterminismSig.
 
-(** ** Implementation *)
+(** ** Immutable State ([Reader]) *)
+
+Module Reader.
+Section ReaderSection.
+
+(* Type of the global constant. *)
+Variable (R : Type).
+
+(* Access the constant. *)
+Inductive readerE : Type -> Type :=
+| Ask : readerE R.
+
+Definition ask {E} `{readerE -< E} : M E R :=
+  liftE (convert Ask).
+
+(* Given a value [r] we can remove all [Ask] nodes, passing
+   [r] to each continuation. *)
+CoFixpoint run_reader {E A} (r : R) (m : M (E +' readerE) A)
+  : M E A :=
+  match m with
+  | Ret a => Ret a
+  | Vis (| e ) k =>
+    match e in readerE T return (T -> _) -> _ with
+    | Ask => fun k => Tau (run_reader r (k r))
+    end k
+  | Vis ( e |) k => Vis e (fun z => run_reader r (k z))
+  | Tau m => Tau (run_reader r m)
+  end.
+
+End ReaderSection.
+
+Arguments ask {R E _}.
+
+End Reader.
+
+(** ** Output ([Writer]) *)
+
+Module Writer.
+Section WriterSection.
+
+(* Output type *)
+Variable (W : Type).
+
+Inductive writerE : Type -> Type :=
+| Tell : W -> writerE unit.
+
+Definition tell `{Convertible writerE E} (w : W) : M E unit :=
+  liftE (convert (Tell w)).
+
+End WriterSection.
+
+Arguments tell {W E _} w.
+
+End Writer.
+
+(* Note that [stateE S] as a sum type is equivalent to
+   [readerE S +' writerE S]. However they differ in the way
+   they are interpreted: a [get] is assumed to get the value
+   of the last [put], whereas [ask] is always going to return
+   the same value. *)
+
+(****************************** Internals ***************************)
+
+(* Implementation of the nondeterminism signature. *)
 
 Module NonDeterminism <: NonDeterminismSig.
   Import List.
