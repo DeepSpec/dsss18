@@ -312,18 +312,17 @@ Definition option_to_list {A} (o : option A) : list A :=
 Fixpoint to_result (fuel : nat) (m : M emptyE (option hypo_trace)) :
   result hypo_trace unit :=
   match fuel with
-  | O => OutOfFuel
+  | O => DONTKNOW
   | S fuel =>
     match m with
-    | Ret (Some tr) => Found tr
-    | Ret None => NotFound tt
+    | Ret (Some tr) => OK tr
+    | Ret None => FAIL tt
     | Tau m => to_result fuel m
     | Vis X e k => match e in emptyE X' with end
     end
   end.
 
 (* SHOW *)
-(* BCP: This will probably move up too. *)
 Definition is_scrambled_trace_of
            (fuel : nat) (s : itree_spec) (t : real_trace) : result hypo_trace unit :=
   to_result fuel (find' [([], intersect_trace s t)]).

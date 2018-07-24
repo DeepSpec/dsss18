@@ -20,7 +20,7 @@ Require Import DeepWeb.Free.Monad.Spec.
 
 From DeepWeb Require Import
      Lib.Util
-     Lib.SimpleSpec_NetworkInterface
+     Lib.SimpleSpec_Server
      Lib.SimpleSpec_Traces
      Lib.SimpleSpec_Observer
      Lib.SimpleSpec_Descramble.
@@ -178,11 +178,7 @@ Definition random_trace (max_depth : nat) (fuel : nat)
 (* Plumbing to adapt the test function. *)
 
 (* Failure carries counterexample. *)
-Inductive test_result cx := OK | GIVEUP | FAIL (x : cx).
-
-Arguments OK {cx}.
-Arguments GIVEUP {cx}.
-Arguments FAIL {cx} x.
+Definition test_result cx := result unit cx.
 
 Definition Checker' := (nat -> Checker) -> (nat -> Checker).
 
@@ -225,9 +221,9 @@ Fixpoint forall_traces (max_depth : nat)
         match _Note in note_traceE X return (X -> _) -> _ with
         | NoteTrace tr => fun id cont fuel =>
           match check_trace tr with
-          | OutOfFuel => ok cont fuel
-          | Found _ => forall_traces max_depth check_trace (k (id tt)) cont fuel
-          | NotFound _ => whenFail' (fun _ => show tr) false
+          | DONTKNOW => ok cont fuel
+          | OK _ => forall_traces max_depth check_trace (k (id tt)) cont fuel
+          | FAIL _ => whenFail' (fun _ => show tr) false
           end
         end id
       | (| _Arb |) =>
@@ -251,7 +247,7 @@ Fixpoint forall_traces (max_depth : nat)
     end
   end.
 
-Definition check_trace_incl
+Definition refines_mod_network_test_
            (max_depth : nat)
            (backtrack_fuel : nat)
            (descramble_fuel : nat)
@@ -261,7 +257,7 @@ Definition check_trace_incl
   run_checker' backtrack_fuel
                (forall_traces max_depth check_trace (enum_traces impl)).
 
-Definition check_trace_incl_def
+Definition refines_mod_network_test
            (spec : itree_spec)
            (impl : itree_server) :=
-  check_trace_incl 100 100 1000 spec impl.
+  refines_mod_network_test_ 100 100 1000 spec impl.

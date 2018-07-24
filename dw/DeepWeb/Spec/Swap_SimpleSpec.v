@@ -78,7 +78,7 @@ Import EventNotations.
 
 (* A simple example illustrated the behavior described by the spec: *)
 Example trace_example :
-  Found tt = is_trace_of 100 swap_spec_def [
+  OK tt = is_spec_trace_test 100 swap_spec_def [
     0 !;
     1 !;
     0 <-- "a";
@@ -99,7 +99,7 @@ Proof. reflexivity. Qed.
 (* An example of a behavior _not_ described by the spec (the first
    byte sent back should be ["0"], not ["1"]): *)
 Example trace_example2 :
-  NotFound tt = is_trace_of 100 swap_spec_def [
+  FAIL tt = is_spec_trace_test 100 swap_spec_def [
     0 !;
     0 <-- "a";
     0 <-- "b";
@@ -136,7 +136,7 @@ Example scrambled_trace_example_1 :
     1 --> "a";
     1 --> "b";
     1 --> "c"
-  ]%real = Found [
+  ]%real = OK [
     0 !;
     1 !;
     0 <-- "a";
@@ -174,7 +174,7 @@ Example scrambled_trace_example_2 :
     0 --> "0";
     0 --> "0";
     0 --> "0"
-  ]%real = Found [
+  ]%real = OK [
     0 !;
     1 !;
     0 <-- "a";
@@ -200,7 +200,7 @@ Example bad_scrambled_trace_example_1 :
     0 <-- "b";
     0 <-- "c";
     0 --> "X"
-  ]%real = NotFound tt.
+  ]%real = FAIL tt.
 Proof. reflexivity. Qed.
 
 (* A more interesting bad trace, where the server appears to send the
@@ -226,7 +226,7 @@ Example bad_scrambled_trace_example_2 :
     2 --> "d";
     2 --> "e";
     2 --> "f"
-  ]%real = NotFound tt.
+  ]%real = FAIL tt.
 Proof. reflexivity. Qed.
 
 (* Finally, an example of a trace that might be observed if the
@@ -247,7 +247,7 @@ Example scrambled_trace_example_3 :
     0 --> "d";
     0 --> "e";
     0 --> "f"
-  ]%real = Found [
+  ]%real = OK [
     0 !;
     1 !;
     1 <-- "d";
@@ -280,6 +280,6 @@ Example bad_scrambled_trace_example_3 :
     1 <-- "f";
     0 --> "0";
     1 --> "X"
-  ]%real = NotFound tt.
+  ]%real = FAIL tt.
 Proof. reflexivity. Qed.
 

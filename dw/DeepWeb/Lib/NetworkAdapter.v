@@ -9,10 +9,10 @@ Import NonDeterminismBis.
 
 From DeepWeb.Lib Require Import
      NetworkInterface
-     SimpleSpec_NetworkInterface.
+     SimpleSpec_Server.
 
 Module N0 := NetworkInterface.Network.
-Module N1 := SimpleSpec_NetworkInterface.Network.
+Module N1 := SimpleSpec_Server.Network.
 
 Definition E0 := Basic.nondetE +' failureE +' N0.networkE.
 

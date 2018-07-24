@@ -8,14 +8,12 @@ Typeclasses eauto := 6.
 
 From QuickChick Require Import QuickChick.
 
-Require Import Ascii.
-Require Import String.
 Require Import List.
 Require Import PArith.
 Require Fin.
 Import ListNotations.
 
-From Custom Require Import Show.
+From Custom Require Import Show String.
 
 Require Import DeepWeb.Free.Monad.Free.
 Import MonadNotations.
@@ -75,25 +73,19 @@ Definition assert_on {E A} `{nondetE -< E}
     if check a then ret tt else fail ("assertion failed: " ++ r)
   end.
 
-(* Helper for [obs_msg_to_server] *)
-CoFixpoint obs_msg_to_server' `{observerE -< E}
-           (c : connection_id) (n : nat) (k : bytes -> M E bytes) :
-  M E bytes :=
+(* Observe a message of length [n] sent to the server. *)
+Fixpoint obs_msg_to_server `{observerE -< E}
+         (n : nat) (c : connection_id) : M E bytes :=
   match n with
-  | O => k ""
+  | O => ret ""
   | S n =>
-    b <- ^ ObsToServer c;;
-    obs_msg_to_server' c n (fun bs => k (String b bs))
+    b <- obs_to_server c;;
+    bs <- obs_msg_to_server n c;;
+    ret (b ::: bs)%string
   end.
 
-(* Observe a complete message sent to the server. *)
-Definition obs_msg_to_server `{observerE -< E}
-           (buffer_size : nat)
-           (c : connection_id) : M E bytes :=
-  obs_msg_to_server' c buffer_size ret.
-
-(* Observe a complete message received from the server. *)
-CoFixpoint obs_msg_from_server `{observerE -< E} `{nondetE -< E}
+(* Observe a message of length [n] received from the server. *)
+Fixpoint obs_msg_from_server `{observerE -< E} `{nondetE -< E}
            (c : connection_id) (msg : bytes) :
   M E unit :=
   match msg with
@@ -161,12 +153,12 @@ Definition nondet_exists {X : Type}
   | Or n _ =>
     (fix go n0 : (Fin.t n0 -> X) -> simple_result :=
        match n0 with
-       | O => fun _ => NotFound tt
+       | O => fun _ => FAIL tt
        | S n0 => fun f =>
                   match k (f Fin.F1) with
-                  | Found tt => Found tt
-                  | OutOfFuel                                
-                  | NotFound tt => go n0 (fun m => f (Fin.FS m))
+                  | OK tt => OK tt
+                  | DONTKNOW
+                  | FAIL tt => go n0 (fun m => f (Fin.FS m))
                   end
        end) n
   end%bool (fun x => x).
@@ -187,8 +179,6 @@ Definition is_spec_trace : itree_spec -> hypo_trace -> Prop :=
   is_trace.
 
 (* SHOW *)
-(* BCP: But probably this will move up to the top-level interface --
-   no need to show internals *)
 (* Basically, a trace [t] belongs to a tree if there is a path
    through the tree (a list of [E0] effects) such that its
    restriction to [observerE] events is [t].
@@ -198,25 +188,25 @@ Definition is_spec_trace : itree_spec -> hypo_trace -> Prop :=
    Thus we add a [fuel] parameter assumed to be "big enough"
    for the result to be reliable. *)
 
-Fixpoint is_trace_of
+Fixpoint is_spec_trace_test
          (max_depth : nat) (s : itree_spec) (t : hypo_trace) : simple_result :=
   match max_depth with
-  | O => OutOfFuel 
+  | O => DONTKNOW
   | S max_depth =>
     match s, t with
-    | Tau s, t => is_trace_of max_depth s t
-    | Ret tt, [] => Found tt
-    | Ret tt, _ :: _ => NotFound tt
+    | Tau s, t => is_spec_trace_test max_depth s t
+    | Ret tt, [] => OK tt
+    | Ret tt, _ :: _ => FAIL tt
     | Vis _ (| e1 ) k, x :: t =>
       match event_to_observerE x with
       | existT T1 (e0, y) => 
-        match_obs e0 e1 (fun s => is_trace_of max_depth s t)
-                  (NotFound tt) y k
+        match_obs e0 e1 (fun s => is_spec_trace_test max_depth s t)
+                  (FAIL tt) y k
       end
-    | Vis _ (| e1 ) k, [] => Found tt
+    | Vis _ (| e1 ) k, [] => OK tt
     (* The trace belongs to the tree [s] *)
     | Vis _ ( _Or |) k, t =>
-      nondet_exists _Or (fun b => is_trace_of max_depth (k b) t)
+      nondet_exists _Or (fun b => is_spec_trace_test max_depth (k b) t)
     end
   end.
 

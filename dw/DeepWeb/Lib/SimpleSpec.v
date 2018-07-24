@@ -1,5 +1,6 @@
 From QuickChick Require Import QuickChick.
-From Custom Require Import String.
+From Custom Require Import String Monad.
+Import MonadNotations.
 
 Require Import DeepWeb.Free.Monad.Free.
 Require Import DeepWeb.Free.Monad.Common.
@@ -8,7 +9,7 @@ Import NonDeterminismBis SumNotations.
 Require Import DeepWeb.Lib.Util.
 
 From DeepWeb Require Export
-     Lib.SimpleSpec_NetworkInterface
+     Lib.SimpleSpec_Server
      Lib.SimpleSpec_Observer
      Lib.SimpleSpec_Descramble
      Lib.SimpleSpec_Traces
@@ -21,9 +22,8 @@ From DeepWeb Require Export
 (** ** Network *)
 
 (* Types and operations for defining server ITrees.  For more details,
-   see [Lib.SimpleSpec_NetworkInterface]. *)
-(* BCP: What about calling it ServerInterface? *)
-Module Type NetworkIface.
+   see [Lib.SimpleSpec_Server]. *)
+Module Type ServerIface.
 
 (* A server is a program with internal nondeterminism and
    external network effects. *)
@@ -50,7 +50,7 @@ Parameter recv_full : connection_id -> nat -> M serverE bytes.
 (* Send all bytes in a bytestring. *)
 Parameter send : connection_id -> bytes -> M serverE unit.
 
-End NetworkIface.
+End ServerIface.
 
 (** ** Observer *)
 
@@ -82,13 +82,13 @@ Parameter obs_from_server : connection_id -> M specE (option byte).
 Parameter assert_on :
   forall {A}, string -> option A -> (A -> bool) -> M specE unit.
 
-(* Observe a fixed-length message sent to the server. *)
+(* Observe a message of fixed-length sent to the server. *)
 Parameter obs_msg_to_server : nat -> connection_id -> M specE bytes.
 
-(* Observe a complete message received from the server and match
-   it with an expected value, failing if they are not equal. *)
-Parameter obs_msg_from_server :
-  connection_id -> bytes -> M specE unit.
+(* Observe a message of fixed length received from the server
+   and match it with an expected value, failing if they are not
+   equal. *)
+Parameter obs_msg_from_server : connection_id -> bytes -> M specE unit.
 
 End ObserverIface.
 
@@ -132,21 +132,23 @@ Definition is_scrambled_trace : itree_spec -> real_trace -> Prop :=
       network_scrambled0 str tr /\
       is_spec_trace spec (real_to_hypo str).
 
-Definition descrambled_result := result hypo_trace unit.
+(* Tests *)
 
 (* A test for [is_spec_trace]. *)
-Parameter is_spec_trace_of : nat -> itree_spec -> hypo_trace -> simple_result.
+Parameter is_spec_trace_test :
+  nat -> itree_spec -> hypo_trace -> simple_result.
 
-(* A test for [is_scrambled_trace]. Note that the result is a
-   [hypo_trace], and there may be no way to fill the holes to actually
-   satisfy [is_scrambled_trace]. (This test is unsound.) *)
-(* BCP: Explain better... *)
-Parameter is_scrambled_trace_of :
+(* Test result of descrambling: if a descrambling is found,
+   it gets returned. *)
+Definition descrambled_result := result hypo_trace unit.
+
+(* A test for [is_scrambled_trace]. *)
+Parameter is_scrambled_trace_test :
   nat -> itree_spec -> real_trace -> descrambled_result.
 
 (* Check that every trace of the server can be descrambled into
    a trace of the spec. *)
-Parameter check_trace_incl_def :
+Parameter refines_mod_network_test :
   M specE unit -> M serverE unit -> Checker.
 
 End TracesIface.
@@ -166,7 +168,7 @@ Definition obs_msg_to_server := @obs_msg_to_server specE _.
 Definition obs_msg_from_server := @obs_msg_from_server specE _ _.
 End Observer.
 
-Module Network : NetworkIface.
+Module Network : ServerIface.
 Definition serverE := Network.serverE.
 Instance networkE_server : networkE -< serverE.
 Proof. typeclasses eauto. Defined.
@@ -187,7 +189,9 @@ Module Traces : TracesIface.
   Definition real_to_hypo := real_to_hypo_trace.
   Definition is_server_trace := Network.is_server_trace.
   Definition is_spec_trace := SimpleSpec_Observer.is_spec_trace.
-  Definition is_spec_trace_of := SimpleSpec_Observer.is_trace_of.
+
+  (* TODO: reuse comment above the definition of this thing? *)
+  Definition is_spec_trace_test := SimpleSpec_Observer.is_spec_trace_test.
   
   (* Property that a real trace [tr] is a scrambled trace of some
    spec trace. *)
@@ -201,11 +205,11 @@ Module Traces : TracesIface.
 
   (* Parameter is_spec_trace_of : nat -> itree_spec -> hypo_trace -> result. *)
 
-  Definition is_scrambled_trace_of :=
+  Definition is_scrambled_trace_test :=
     SimpleSpec_Descramble.is_scrambled_trace_of.
 
-  Definition check_trace_incl_def
-    := SimpleSpec_ServerTrace.check_trace_incl_def.
+  Definition refines_mod_network_test
+    := SimpleSpec_ServerTrace.refines_mod_network_test.
   
 End Traces.
 

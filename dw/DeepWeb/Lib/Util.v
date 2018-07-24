@@ -73,15 +73,6 @@ Instance Eq_connection_id : Eq connection_id :=
 Instance Show_connection_id : Show connection_id :=
   { show := fun '(Connection c) => show c }.
 
-Inductive result (A CE : Type) :=
-| Found (res : A) | NotFound (counterexample : CE) | OutOfFuel.
-
-Arguments OutOfFuel {A} {CE}.
-Arguments Found {A} {CE}.
-Arguments NotFound {A} {CE}.
-
-Definition simple_result := result unit unit.
-
 Instance show_unit : Show unit :=
   { show _ := "tt"%string }.
 
@@ -96,3 +87,21 @@ Definition init_message : bytes
   := repeat_string "0"%char buffer_size.
 
 End TestDefault.
+
+(**)
+
+(* Partial test result type. *)
+
+Inductive result (W CE : Type) :=
+| OK (witness : W)       (* Success, with a witness *)
+| FAIL (counterex : CE)  (* Failure, with a counterexample *)
+| DONTKNOW               (* Test ran out of fuel or something *)
+.
+
+Arguments OK {W} {CE}.
+Arguments FAIL {W} {CE}.
+Arguments DONTKNOW {W} {CE}.
+
+(* A result with no meaningful witnesses of success or
+   counterexamples. *)
+Definition simple_result := result unit unit.

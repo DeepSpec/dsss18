@@ -27,7 +27,7 @@ DeepWeb/Lib/SocketConstants.v
 DeepWeb/Lib/SocketInterface.v
 DeepWeb/Lib/Socket.v
 
-DeepWeb/Lib/SimpleSpec_NetworkInterface.v
+DeepWeb/Lib/SimpleSpec_Server.v
 DeepWeb/Lib/SimpleSpec_Observer.v
 DeepWeb/Lib/SimpleSpec_NetworkModel.v
 DeepWeb/Lib/SimpleSpec_Traces.v

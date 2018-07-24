@@ -170,16 +170,16 @@ Definition execute (msgs : list byte) : Client real_trace :=
 Instance showResult {A CE : Type} `{Show A} `{Show CE}: Show (result A CE) :=
   {| show r :=
        match r with
-       | Found a   => "Found " ++ show a
-       | NotFound ce  => "Not Found (counterexample: " ++ show ce ++ ")"
-       | OutOfFuel => "Out of Fuel"
+       | OK a   => "Found " ++ show a
+       | FAIL ce  => "Not Found (counterexample: " ++ show ce ++ ")"
+       | DONTKNOW => "Out of Fuel"
        end |}.
 
 Definition collectResult {A CE} (r : result A CE) : string :=
   match r with
-  | Found _    => "Found"
-  | NotFound _ => "Not Found"
-  | OutOfFuel  => "Out of Fuel"
+  | OK _    => "Found"
+  | FAIL _ => "Not Found"
+  | DONTKNOW  => "Out of Fuel"
   end.
 
 Instance Checkable_result {A CE : Type} `{Show A} `{Show CE}
@@ -187,9 +187,9 @@ Instance Checkable_result {A CE : Type} `{Show A} `{Show CE}
   {| checker r :=
        collect (collectResult r)
        match r with
-       | Found _ => checker true
-       | NotFound _ => checker false
-       | OutOfFuel => checker tt
+       | OK _ => checker true
+       | FAIL _ => checker false
+       | DONTKNOW => checker tt
        end |}.
 
 Require DeepWeb.Spec.Swap_SimpleSpec.

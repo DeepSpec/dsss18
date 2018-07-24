@@ -3,6 +3,8 @@ Set Contextual Implicit.
 
 Require Import DeepWeb.Free.Monad.Free.
 
+(** * Internals *)
+
 (* If we can interpret the events of one such monad as computations in
     another, we can extend that interpretation to the whole monad. *)
 
