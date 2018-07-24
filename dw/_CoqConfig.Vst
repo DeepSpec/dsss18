@@ -6,7 +6,7 @@ DeepWeb/Free/Monad/Free.v
 DeepWeb/Spec/Swap_CLikeSpec.v
 DeepWeb/Free/Monad/Effect.v
 DeepWeb/Lib/SimpleSpec.v
-DeepWeb/Proofs/TopLevelProof.v
+DeepWeb/Spec/TopLevelSpec.v
 
 #####################
 # Internals
@@ -81,7 +81,6 @@ DeepWeb/Spec/Vst/process_connections_spec.v
 DeepWeb/Spec/Vst/select_loop_spec.v
 
 DeepWeb/Spec/Vst/Gprog.v
-DeepWeb/Spec/TopLevelSpec.v
 
 DeepWeb/Proofs/Vst/VerifLib.v
 DeepWeb/Proofs/Vst/SocketTactics.v
@@ -107,4 +106,5 @@ DeepWeb/Proofs/Vst/verif_select_loop.v
 DeepWeb/Proofs/Vst/verif_main.v
 
 DeepWeb/Proofs/Vst/verif_prog.v
+# DeepWeb/Proofs/TopLevelProof.v
 
