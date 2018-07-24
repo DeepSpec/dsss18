@@ -6,9 +6,10 @@ OCAMLBUILDFLAGS=-libs unix,str
 QC = quickChick -color -top "" -ocamlbuild '$(OCAMLBUILDFLAGS)' \
 	 -cmd '$(MAKE) coq-qc' $(QCFLAGS)
 CFLAGS=-DBUFFER_SIZE=3
+V=@
 
 coq: Makefile.coq $(EXTR_BIN)
-	@$(MAKE) -f $<
+	$V$(MAKE) -f $<
 
 Makefile.coq: _CoqProject
 	coq_makefile -f $< -o $@
@@ -26,29 +27,29 @@ test:
 	$V$(MAKE) testexternal --quiet
 
 testcoq:
-	$(QC) -s CLikeTest -exclude $(EXCLUDE)
+	$V$(QC) -s CLikeTest -exclude $(EXCLUDE)
 
 testexternal: $(SERVER)
 	$V$(RM) /tmp/server_log /tmp/client_log /tmp/server_error /tmp/client_error
 	$(QC) -s ExternalTest -N 100 -exclude $(EXCLUDE)
 
 $(SERVER): DeepWeb/Spec/main.c DeepWeb/Spec/macros.h
-	mkdir -p out/
-	$(CC) $(CFLAGS) -IDeepWeb/Spec/ $< -o $@
+	$Vmkdir -p out/
+	$V$(CC) $(CFLAGS) -IDeepWeb/Spec/ $< -o $@
 
 server: $(SERVER) stop
-	exec $< &
+	$Vexec $< &
 
 stop:
-	@if [ -n "$$(pgrep "$(notdir $(SERVER))")" ]; then pkill "$(notdir $(SERVER))"; fi
+	$Vif [ -n "$$(pgrep "$(notdir $(SERVER))")" ]; then pkill "$(notdir $(SERVER))"; fi
 
 coq-qc: $(SERVER)
-	@perl -i -p0e 's/^(Separate Extraction)(\s+\S+)*?((\s+test\S+)*)\s*\.$$/\1\3./m' QuickChickTop.v
-	@echo "-Q . ''" > _CoqProject.tmp
-	@cat _CoqProject >> _CoqProject.tmp
-	@coq_makefile -f _CoqProject.tmp -o Makefile.tmp 2>> /tmp/client_error
-	@make -f Makefile.tmp QuickChickTop.vo
-	@echo 'let _ = print_endline "done"' >> QuickChickTop.ml
+	$Vperl -i -p0e 's/^(Separate Extraction)(\s+\S+)*?((\s+test\S+)*)\s*\.$$/\1\3./m' QuickChickTop.v
+	$Vecho "-Q . ''" > _CoqProject.tmp
+	$Vcat _CoqProject >> _CoqProject.tmp
+	$Vcoq_makefile -f _CoqProject.tmp -o Makefile.tmp 2>> /tmp/client_error
+	$Vmake -f Makefile.tmp QuickChickTop.vo
+	$Vecho 'let _ = print_endline "done"' >> QuickChickTop.ml
 
 html:
 	$(MAKE) -f Makefile.coq -j

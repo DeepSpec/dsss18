@@ -20,12 +20,13 @@ Open Scope monad_scope.
    internal nodes is either an "internal" [Tau] node with one child or
    else a "external" [Vis] node with a visible event of type [Event Y]
    plus a continuation [k] that receives a [Y] value from the event. *)
+
 CoInductive M (Event : Type -> Type) X := 
 | Ret (x:X)
 | Vis {Y: Type} (e : Event Y) (k : Y -> M Event X)
 | Tau (k: M Event X).
 
-(* [M] is known as the "Freer monad".  See _Freer Monads, More
+(* [M] is known as the "Freer monad" -- see _Freer Monads, More
    Extensible Effects_, by Oleg Kiselyov and Hiromi Ishii. *)
 
 (* begin hide *)
@@ -81,8 +82,6 @@ CoInductive M (Event : Type -> Type) X :=
 
 (** ** Monad Structure *)
 
-(* First, we show that [M E] forms a [Monad]. *)
-
 Module Core.
 
 Definition bind_body {E X Y}
@@ -99,7 +98,7 @@ Definition bindM {E X Y} (s: M E X) (t: X -> M E Y) : M E Y :=
   (cofix go (s : M E X) :=
       bind_body s go t) s.
 
-(* This is truly a Monad, but inserting [Tau] will be more convenient. *)
+(* [M E] forms a [Monad] (for any type of events [E]). *)
 Definition Monad_M E : Monad (M E) :=
   Build_Monad (M E)
               (fun X x => Ret x)
@@ -107,11 +106,12 @@ Definition Monad_M E : Monad (M E) :=
 
 End Core.
 
-(* Now we slightly change the bind operation to insert a [Tau] in the
-    case where the right-hand argument to bind is just a [Ret], to
-    make programs/specifications neater and easier to write. This
-    makes [M] no longer a monad structurally, but it remains one in a
-    looser sense as long as [Tau] is interpreted as the identity. *)
+(* However, it is convenient to slightly change the bind operation to
+   insert a [Tau] in the case where the right-hand argument to bind is
+   just a [Ret], to make programs/specifications neater and easier to
+   write.  With this variant of bind, [M] is no longer a monad
+   strictly speaking, but it remains one in a looser sense as long as
+   [Tau] is interpreted as the identity. *)
 (* BCP: Not sure what it means to "interpret Tau as the identity" *) 
 Definition bindM {E X Y} (s: M E X) (t: X -> M E Y) : M E Y :=
   Core.bindM s (fun x => Tau (t x)).
@@ -119,6 +119,8 @@ Definition bindM {E X Y} (s: M E X) (t: X -> M E Y) : M E Y :=
 Instance Monad_M E : Monad (M E) := { ret X x := Ret x; bind := @bindM E }.
 
 (** ** Handy Utilities *)
+
+(* We next define a number of useful combinators for interaction trees. *)
 
 (* Wrap a function around the results returned from an ITree *)
 Definition mapM {E X Y} (f: X -> Y) (s: M E X) : M E Y :=
@@ -178,6 +180,7 @@ CoFixpoint for_each {E A} (bs : list A) (body : A -> M E unit)
   end.
 
 (** * Internals *)
+(* BCP: Can we split this off and move it to a separate file? *)
 
 (* If we can interpret the events of one such monad as
     computations in another, we can extend that
