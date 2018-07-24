@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Custom.Map</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Custom.Map</h1>
+
+<div class="code">
+<span class="comment">(*&nbsp;Total&nbsp;maps&nbsp;*)</span><br/>
+
+<br/>
+<span class="comment">(*&nbsp;This&nbsp;module&nbsp;is&nbsp;meant&nbsp;to&nbsp;be&nbsp;<span class="inlinecode"><span class="id" title="keyword">Require</span></span>-d&nbsp;but&nbsp;not&nbsp;<span class="inlinecode"><span class="id" title="keyword">Import</span></span>-ed.&nbsp;*)</span><br/>
+
+<br/>
+<span class="id" title="var">From</span> <span class="id" title="var">QuickChick</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="library">Decidability</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <a name="Map"><span class="id" title="section">Map</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Variable</span> <a name="Map.K"><span class="id" title="variable">K</span></a> <a name="Map.V"><span class="id" title="variable">V</span></a> : <span class="id" title="keyword">Type</span>.<br/>
+<span class="id" title="keyword">Context</span> `{<span class="id" title="class">Eq</span> <a class="idref" href="Custom.Map.html#Map.K"><span class="id" title="variable">K</span></a>}.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="t"><span class="id" title="definition">t</span></a> : <span class="id" title="keyword">Type</span> := <a class="idref" href="Custom.Map.html#Map.K"><span class="id" title="variable">K</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="Custom.Map.html#Map.V"><span class="id" title="variable">V</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="update"><span class="id" title="definition">update</span></a> : <a class="idref" href="Custom.Map.html#Map.K"><span class="id" title="variable">K</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="Custom.Map.html#Map.V"><span class="id" title="variable">V</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="Custom.Map.html#t"><span class="id" title="definition">t</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="Custom.Map.html#t"><span class="id" title="definition">t</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">fun</span> <span class="id" title="var">k0</span> <span class="id" title="var">v0</span> <span class="id" title="var">f</span> <span class="id" title="var">k</span> ⇒ <span class="id" title="keyword">if</span> <a class="idref" href="Custom.Map.html#k"><span class="id" title="variable">k</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#1c39bf18749e5cc609e83c0a0ba5a372"><span class="id" title="notation">=</span></a> <a class="idref" href="Custom.Map.html#k0"><span class="id" title="variable">k0</span></a> <span class="id" title="notation">?</span> <span class="id" title="keyword">then</span> <a class="idref" href="Custom.Map.html#v0"><span class="id" title="variable">v0</span></a> <span class="id" title="keyword">else</span> <a class="idref" href="Custom.Map.html#f"><span class="id" title="variable">f</span></a> <a class="idref" href="Custom.Map.html#k"><span class="id" title="variable">k</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="lookup"><span class="id" title="definition">lookup</span></a> : <a class="idref" href="Custom.Map.html#t"><span class="id" title="definition">t</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="Custom.Map.html#Map.K"><span class="id" title="variable">K</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="Custom.Map.html#Map.V"><span class="id" title="variable">V</span></a> := <span class="id" title="keyword">fun</span> <span class="id" title="var">f</span> ⇒ <a class="idref" href="Custom.Map.html#f"><span class="id" title="variable">f</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a name="update_lookup_eq"><span class="id" title="lemma">update_lookup_eq</span></a> <span class="id" title="var">k</span> <span class="id" title="var">k'</span> <span class="id" title="var">v</span> <span class="id" title="var">m</span> :<br/>
+&nbsp;&nbsp;<a class="idref" href="Custom.Map.html#k"><span class="id" title="variable">k</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#1c39bf18749e5cc609e83c0a0ba5a372"><span class="id" title="notation">=</span></a> <a class="idref" href="Custom.Map.html#k'"><span class="id" title="variable">k'</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a><br/>
+&nbsp;&nbsp;<a class="idref" href="Custom.Map.html#lookup"><span class="id" title="definition">lookup</span></a> (<a class="idref" href="Custom.Map.html#update"><span class="id" title="definition">update</span></a> <a class="idref" href="Custom.Map.html#k"><span class="id" title="variable">k</span></a> <a class="idref" href="Custom.Map.html#v"><span class="id" title="variable">v</span></a> <a class="idref" href="Custom.Map.html#m"><span class="id" title="variable">m</span></a>) <a class="idref" href="Custom.Map.html#k'"><span class="id" title="variable">k'</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#1c39bf18749e5cc609e83c0a0ba5a372"><span class="id" title="notation">=</span></a> <a class="idref" href="Custom.Map.html#v"><span class="id" title="variable">v</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">Hk</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <a class="idref" href="Custom.Map.html#lookup"><span class="id" title="definition">lookup</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <a class="idref" href="Custom.Map.html#update"><span class="id" title="definition">update</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="method">dec</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">subst</span>; <span class="id" title="var">contradiction</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a name="update_lookup_neq"><span class="id" title="lemma">update_lookup_neq</span></a> <span class="id" title="var">k</span> <span class="id" title="var">k'</span> <span class="id" title="var">v</span> <span class="id" title="var">m</span> :<br/>
+&nbsp;&nbsp;<a class="idref" href="Custom.Map.html#k"><span class="id" title="variable">k</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#32263a1c8b01baecdff9deb038955bc9"><span class="id" title="notation">≠</span></a> <a class="idref" href="Custom.Map.html#k'"><span class="id" title="variable">k'</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a><br/>
+&nbsp;&nbsp;<a class="idref" href="Custom.Map.html#lookup"><span class="id" title="definition">lookup</span></a> (<a class="idref" href="Custom.Map.html#update"><span class="id" title="definition">update</span></a> <a class="idref" href="Custom.Map.html#k"><span class="id" title="variable">k</span></a> <a class="idref" href="Custom.Map.html#v"><span class="id" title="variable">v</span></a> <a class="idref" href="Custom.Map.html#m"><span class="id" title="variable">m</span></a>) <a class="idref" href="Custom.Map.html#k'"><span class="id" title="variable">k'</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#1c39bf18749e5cc609e83c0a0ba5a372"><span class="id" title="notation">=</span></a> <a class="idref" href="Custom.Map.html#lookup"><span class="id" title="definition">lookup</span></a> <a class="idref" href="Custom.Map.html#m"><span class="id" title="variable">m</span></a> <a class="idref" href="Custom.Map.html#k'"><span class="id" title="variable">k'</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Hk</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <a class="idref" href="Custom.Map.html#lookup"><span class="id" title="definition">lookup</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <a class="idref" href="Custom.Map.html#update"><span class="id" title="definition">update</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="method">dec</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">subst</span>; <span class="id" title="var">contradiction</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">auto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a name="update_update_eq"><span class="id" title="lemma">update_update_eq</span></a> <span class="id" title="var">k</span> <span class="id" title="var">k'</span> <span class="id" title="var">v</span> <span class="id" title="var">v'</span> <span class="id" title="var">m</span> :<br/>
+&nbsp;&nbsp;<a class="idref" href="Custom.Map.html#k"><span class="id" title="variable">k</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#1c39bf18749e5cc609e83c0a0ba5a372"><span class="id" title="notation">=</span></a> <a class="idref" href="Custom.Map.html#k'"><span class="id" title="variable">k'</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a><br/>
+&nbsp;&nbsp;<a class="idref" href="Custom.Map.html#update"><span class="id" title="definition">update</span></a> <a class="idref" href="Custom.Map.html#k"><span class="id" title="variable">k</span></a> <a class="idref" href="Custom.Map.html#v"><span class="id" title="variable">v</span></a> (<a class="idref" href="Custom.Map.html#update"><span class="id" title="definition">update</span></a> <a class="idref" href="Custom.Map.html#k'"><span class="id" title="variable">k'</span></a> <a class="idref" href="Custom.Map.html#v'"><span class="id" title="variable">v'</span></a> <a class="idref" href="Custom.Map.html#m"><span class="id" title="variable">m</span></a>) <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#1c39bf18749e5cc609e83c0a0ba5a372"><span class="id" title="notation">=</span></a> <a class="idref" href="Custom.Map.html#update"><span class="id" title="definition">update</span></a> <a class="idref" href="Custom.Map.html#k"><span class="id" title="variable">k</span></a> <a class="idref" href="Custom.Map.html#v"><span class="id" title="variable">v</span></a> <a class="idref" href="Custom.Map.html#m"><span class="id" title="variable">m</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="comment">(*&nbsp;Extensionally...&nbsp;*)</span><br/>
+<span class="id" title="var">Admitted</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a name="lookup_update_eq"><span class="id" title="lemma">lookup_update_eq</span></a> <span class="id" title="var">k</span> <span class="id" title="var">k'</span> <span class="id" title="var">v</span> <span class="id" title="var">m</span> :<br/>
+&nbsp;&nbsp;<a class="idref" href="Custom.Map.html#k"><span class="id" title="variable">k</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#1c39bf18749e5cc609e83c0a0ba5a372"><span class="id" title="notation">=</span></a> <a class="idref" href="Custom.Map.html#k'"><span class="id" title="variable">k'</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a><br/>
+&nbsp;&nbsp;<a class="idref" href="Custom.Map.html#v"><span class="id" title="variable">v</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#1c39bf18749e5cc609e83c0a0ba5a372"><span class="id" title="notation">=</span></a> <a class="idref" href="Custom.Map.html#lookup"><span class="id" title="definition">lookup</span></a> <a class="idref" href="Custom.Map.html#m"><span class="id" title="variable">m</span></a> <a class="idref" href="Custom.Map.html#k'"><span class="id" title="variable">k'</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a><br/>
+&nbsp;&nbsp;<a class="idref" href="Custom.Map.html#update"><span class="id" title="definition">update</span></a> <a class="idref" href="Custom.Map.html#k"><span class="id" title="variable">k</span></a> <a class="idref" href="Custom.Map.html#v"><span class="id" title="variable">v</span></a> <a class="idref" href="Custom.Map.html#m"><span class="id" title="variable">m</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#1c39bf18749e5cc609e83c0a0ba5a372"><span class="id" title="notation">=</span></a> <a class="idref" href="Custom.Map.html#m"><span class="id" title="variable">m</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="comment">(*&nbsp;Also&nbsp;extensional...&nbsp;*)</span><br/>
+<span class="id" title="var">Admitted</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="Custom.Map.html#Map"><span class="id" title="section">Map</span></a>.<br/>
+
+<br/>
+<span class="id" title="var">Arguments</span> <a class="idref" href="Custom.Map.html#t"><span class="id" title="definition">t</span></a> <span class="id" title="var">K</span> <span class="id" title="var">V</span> : <span class="id" title="tactic">assert</span>.<br/>
+<span class="id" title="var">Arguments</span> <a class="idref" href="Custom.Map.html#update"><span class="id" title="definition">update</span></a> {<span class="id" title="var">K</span> <span class="id" title="var">V</span> <span class="id" title="var">_</span>}.<br/>
+<span class="id" title="var">Arguments</span> <a class="idref" href="Custom.Map.html#lookup"><span class="id" title="definition">lookup</span></a> {<span class="id" title="var">K</span> <span class="id" title="var">V</span>}.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

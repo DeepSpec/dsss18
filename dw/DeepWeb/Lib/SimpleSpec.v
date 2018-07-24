@@ -12,7 +12,10 @@ From DeepWeb Require Export
      Lib.SimpleSpec_NetworkInterface
      Lib.SimpleSpec_Observer
      Lib.SimpleSpec_Descramble
-     Lib.SimpleSpec_ServerTrace.
+     Lib.SimpleSpec_Traces
+     Lib.SimpleSpec_Refinement
+     Lib.SimpleSpec_ServerTrace
+     Lib.SimpleSpec_NetworkModel.
 
 (* SHOW *)
 (* SimpleSpec Interface. *)
@@ -152,7 +155,7 @@ Parameter check_trace_incl_def :
 End Traces.
 (* /SHOW *)
 
-Module Observer : ObserverIface.
+Module Observer <: ObserverIface.
 Import Lib.SimpleSpec_Observer.
 Definition specE := specE.
 Instance nondet_spec : nondetE -< specE.

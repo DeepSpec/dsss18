@@ -70,9 +70,8 @@ Extract Constant log => "
 Extract Constant recvb  => "fun sock () ->
   let bs = Bytes.create 1 in
   match Unix.recv sock bs 0 1 [] with
-  | exception Unix.Unix_error(Unix.EAGAIN, _, _) ->
+  | exception Unix.Unix_error((Unix.EAGAIN | Unix.EWOULDBLOCK), _, _) ->
      None
-  | 0 -> None
   | k ->
      if k = 1 then
        Some (Bytes.get bs 0)
@@ -84,9 +83,12 @@ Extract Constant sendb  => "fun sock c () ->
 
 Extract Constant socket => "fun () ->
   let open Unix in
-  try
   let sock = socket PF_INET SOCK_STREAM 0 in
-  connect sock (ADDR_INET (inet_addr_loopback, 8000));
-  setsockopt_float sock SO_RCVTIMEO 1e-6;
-  Some sock
-  with Unix.Unix_error(Unix.ECONNREFUSED, _, _) -> None".
+  try
+    connect sock (ADDR_INET (inet_addr_loopback, 8000));
+    set_nonblock sock;
+    Some sock
+  with
+  | Unix.Unix_error(Unix.ECONNREFUSED, _, _) ->
+    close sock;
+    None".

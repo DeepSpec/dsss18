@@ -1,12 +1,11 @@
 -Q Custom/ Custom
 -R DeepWeb/ DeepWeb
 
-DeepWeb/Spec/SingleSwap_SimpleSpec.v
-DeepWeb/Spec/SingleSwap_SimpleSpec_Examples.v
+DeepWeb/Spec/Swap_SimpleSpec.v
+DeepWeb/Spec/Swap_SimpleSpec_Examples.v
 
 DeepWeb/Free/Monad/Free.v
 
-DeepWeb/Spec/SingleSwapSequential_Impl.v
 DeepWeb/Spec/Swap_CLikeSpec.v
 
 DeepWeb/Free/Monad/Event.v
@@ -24,21 +23,25 @@ DeepWeb/Lib/NetworkInterface.v
 DeepWeb/Lib/SocketConstants.v
 DeepWeb/Lib/SocketInterface.v
 DeepWeb/Lib/Socket.v
+
 DeepWeb/Lib/SimpleSpec.v
 DeepWeb/Lib/SimpleSpec_NetworkInterface.v
 DeepWeb/Lib/SimpleSpec_Observer.v
+DeepWeb/Lib/SimpleSpec_NetworkModel.v
+DeepWeb/Lib/SimpleSpec_Traces.v
+DeepWeb/Lib/SimpleSpec_Scramble.v
 DeepWeb/Lib/SimpleSpec_Descramble.v
+DeepWeb/Lib/SimpleSpec_Refinement.v
 DeepWeb/Lib/SimpleSpec_ServerTrace.v
 
 DeepWeb/Spec/ServerDefs.v
-DeepWeb/Spec/Swap_SimpleSpec.v
-DeepWeb/Spec/Swap_SimpleSpec_Examples.v
 
 DeepWeb/Test/Client.v
 DeepWeb/Test/Rand.v
 DeepWeb/Test/ExternalTest.v
 DeepWeb/Test/TestCLikeSpec.v
 
+Custom/Map.v
 Custom/List.v
 Custom/Monad.v
 Custom/Show.v

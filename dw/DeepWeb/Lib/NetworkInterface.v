@@ -21,6 +21,8 @@ Set Warnings "-extraction-opaque-accessed,-extraction".
 Open Scope string_scope.
 (* end hide *)
 
+Module Export Network.
+
 Record endpoint_id : Type := Endpoint
   { port_number : Z;
   }.
@@ -101,3 +103,6 @@ Definition send_any_prefix (conn : connection_id) (msg : string)
   len <- choose (range (String.length msg + 1)) ;;
   send conn (substring 0 len msg) ;;
   ret len.
+
+End Network.
+

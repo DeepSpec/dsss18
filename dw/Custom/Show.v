@@ -80,5 +80,9 @@ End NToString.
 Definition pretty_char (c : ascii) : string :=
   if isPrintable c then String c ""
   else let n := N_of_ascii c in
-       String "\" (if BinNat.N.ltb n 100 then String "0" (show n)
+       String "\" (if BinNat.N.ltb n 10 then "00" ++ show n
+                   else if BinNat.N.ltb n 100 then String "0" (show n)
                    else show n).
+
+Global Instance showAscii : Show ascii :=
+  {| show c := ("""" ++ pretty_char c ++ """")%string |}.

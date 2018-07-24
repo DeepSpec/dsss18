@@ -11,8 +11,8 @@ From DeepWeb.Lib Require Import
      NetworkInterface
      SimpleSpec_NetworkInterface.
 
-Module N0 := NetworkInterface.
-Module N1 := SimpleSpec_NetworkInterface.
+Module N0 := NetworkInterface.Network.
+Module N1 := SimpleSpec_NetworkInterface.Network.
 
 Definition E0 := Basic.nondetE +' failureE +' N0.networkE.
 

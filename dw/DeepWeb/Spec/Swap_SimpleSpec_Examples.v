@@ -24,7 +24,7 @@ Example trace_example :
     1 --> "a";
     1 --> "b";
     1 --> "c"
-  ].
+  ]%hypo.
 Proof. reflexivity. Qed.
 
 Example trace_example2 :
@@ -35,7 +35,7 @@ Example trace_example2 :
     0 <-- "c";
     0 --> "1"
     (* error: Initial state is 000 *)
-  ].
+  ]%hypo.
 Proof. reflexivity. Qed.
 
 Example scrambled_trace_example :
@@ -54,22 +54,22 @@ Example scrambled_trace_example :
     1 --> "a";
     1 --> "b";
     1 --> "c"
-  ] = Found [
+  ]%real = Found [
     0 !;
     1 !;
     0 <-- "a";
     0 <-- "b";
-    0 <-- "c";
+    0 <-- "c"; 
     0 --> "0";
     0 --> "0";
     0 --> "0";
-    1 <-- "d";
+    1 <-- "d"; 
     1 <-- "e";
     1 <-- "f";
     1 --> "a";
-    1 --> "b";
+    1 --> "b"; 
     1 --> "c"
-  ].
+  ]%hypo.
 Proof. reflexivity. Qed.
 
 Example scrambled_trace_example_2 :
@@ -88,7 +88,7 @@ Example scrambled_trace_example_2 :
     0 --> "0";
     0 --> "0";
     0 --> "0"
-  ] = Found [
+  ]%real = Found [
     0 !;
     1 !;
     0 <-- "a";
@@ -102,7 +102,7 @@ Example scrambled_trace_example_2 :
     1 <-- "f";
     1 --> "a";
     1 --> "b";
-    1 --> "c"].
+    1 --> "c"]%hypo.
 Proof. reflexivity. Qed.
 
 Example scrambled_trace_example_3 :
@@ -118,7 +118,7 @@ Example scrambled_trace_example_3 :
     0 --> "d";
     0 --> "e";
     0 --> "f"
-  ] = Found [
+  ]%real = Found [
     0 !;
     1 !;
     1 <-- "d";
@@ -132,7 +132,7 @@ Example scrambled_trace_example_3 :
     0 <-- "c";
     0 --> "d";
     0 --> "e";
-    0 --> "f"].
+    0 --> "f"]%hypo.
 Proof. reflexivity. Qed.
 
 (* This one requires quite a bit of fuel to reject... *)
@@ -156,5 +156,5 @@ Example bad_scrambled_trace_example :
     2 --> "d";
     2 --> "e";
     2 --> "f"
-  ] = NotFound.
+  ]%real = NotFound.
 Proof. reflexivity. Qed.

@@ -20,6 +20,8 @@ Import NonDeterminismBis.
 
 Require Import DeepWeb.Lib.Util.
 
+Require Import DeepWeb.Lib.SimpleSpec_Traces.
+
 (* begin hide *)
 Set Warnings "-extraction-opaque-accessed,-extraction".
 Open Scope string_scope.
@@ -123,31 +125,6 @@ Definition itree_spec := M specE unit.
 (* The spec can be viewed as a set of traces. *)
 
 (* An [event] is an observer action together with its result. *)
-Inductive event :=
-| Event : forall X, observerE X -> X -> event.
-
-Arguments Event {X}.
-
-Definition show_event (ev : event) :=
-  match ev with
-  | Event _ e x =>
-    match e in observerE X return X -> _ with
-    | ObsConnect => fun '(Connection c) => show c ++ " !"
-    | ObsToServer (Connection c) => fun b =>
-      show c ++ " <-- """ ++ pretty_char b ++ """"
-    | ObsFromServer (Connection c) => fun ob =>
-      show c ++ " --> " ++
-        match ob with
-        | None => "?"
-        | Some b => """" ++ pretty_char b ++ """"
-        end
-    end x
-  end.
-
-Instance Show_event : Show event :=
-  { show := show_event }.
-
-Definition trace := list event.
 
 Definition match_obs {X Y R S : Type}
            (e0 : observerE X)
@@ -171,6 +148,7 @@ Definition match_obs {X Y R S : Type}
   | _, _ => fun _ _ => fail_
   end.
 
+
 (* [exists x, k x = true] *)
 Definition nondet_exists {X : Type}
            (e : nondetE X) (k : X -> bool) : bool :=
@@ -183,6 +161,21 @@ Definition nondet_exists {X : Type}
        end) n
   end%bool (fun x => x).
 
+Definition event_to_observerE (e : hypo_event) :
+  { X : Type & (observerE X * X)%type } :=
+  match e with
+  | NewConnection c => existT _ _ (ObsConnect, c)
+  | ToServer c b => existT _ _ (ObsToServer c, b)
+  | FromServer c ob => existT _ _ (ObsFromServer c, ob)
+  end.
+
+Instance EventType_observerE : EventType hypo_event observerE := {|
+    from_event := event_to_observerE;
+  |}.
+
+Definition is_spec_trace : itree_spec -> hypo_trace -> Prop :=
+  is_trace.
+
 (* SHOW *)
 (* BCP: But probably this will move up to the top-level interface --
    no need to show internals *)
@@ -194,8 +187,9 @@ Definition nondet_exists {X : Type}
    it is not possible to decide whether a trace matches the tree.
    Thus we add a [fuel] parameter assumed to be "big enough"
    for the result to be reliable. *)
+
 Fixpoint is_trace_of
-         (max_depth : nat) (s : itree_spec) (t : trace) : bool :=
+         (max_depth : nat) (s : itree_spec) (t : hypo_trace) : bool :=
   match max_depth with
   | O => false
   | S max_depth =>
@@ -203,39 +197,18 @@ Fixpoint is_trace_of
     | Tau s, t => is_trace_of max_depth s t
     | Ret tt, [] => true
     | Ret tt, _ :: _ => false
-    | Vis _ (| e1 ) k, Event _ e0 x :: t =>
-      match_obs e0 e1 (fun s => is_trace_of max_depth s t)
-                false x k
+    | Vis _ (| e1 ) k, x :: t =>
+      match event_to_observerE x with
+      | existT T1 (e0, y) => 
+        match_obs e0 e1 (fun s => is_trace_of max_depth s t)
+                  false y k
+      end
     | Vis _ (| e1 ) k, [] => true
     (* The trace belongs to the tree [s] *)
     | Vis _ ( _Or |) k, t =>
       nondet_exists _Or (fun b => is_trace_of max_depth (k b) t)
     end
   end.
-
-(* Some notations to make traces readable. *)
-Module EventNotations.
-Delimit Scope event_scope with event.
-
-(* Connection [c] is open. *)
-Notation "c !" := (Event ObsConnect (Connection c))
-(at level 30) : event_scope.
-
-(* Byte [b] goes to the server on connection [c]. *)
-Notation "c <-- b" := (Event (ObsToServer (Connection c)) b%char)
-(at level 30) : event_scope.
-
-(* Byte [b] goes out of the server on connection [c]. *)
-Notation "c --> b" := (Event (ObsFromServer (Connection c)) (Some b%char))
-(at level 30) : event_scope.
-
-(* Unknown byte goes out of the server on connection [c]. *)
-Notation "c --> ?" := (Event (ObsFromServer (Connection c)) None)
-(at level 30) : event_scope.
-
-Open Scope event_scope.
-End EventNotations.
-
 
 (* The traces produced by the tree [swap_spec] are very structured,
    with sequences of bytes sent and received alternating tidily.

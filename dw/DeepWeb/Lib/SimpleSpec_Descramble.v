@@ -20,6 +20,8 @@ Import SumNotations.
 Import NonDeterminismBis.
 
 Require Import DeepWeb.Lib.Util.
+
+Require Import DeepWeb.Lib.SimpleSpec_Traces.
 Require Import DeepWeb.Lib.SimpleSpec_Observer.
 
 (* begin hide *)
@@ -40,7 +42,7 @@ Open Scope string_scope.
 
 (* Unary tree node carrying some event. *)
 Inductive eventE : Type -> Type :=
-| Happened : event -> eventE unit.
+| Happened : hypo_event -> eventE unit.
 
 (* We enumerate descramblings in a tree structure, using
    [nondetE] to branch, so that each successful pat (i.e., not
@@ -48,42 +50,42 @@ Inductive eventE : Type -> Type :=
 Definition eventE' := nondetE +' eventE.
 
 (* Helper for [pick_event]. *)
-CoFixpoint pick_event' (t_prev t : trace) : M eventE' trace :=
+CoFixpoint pick_event' (t_prev t : real_trace) : M eventE' real_trace :=
   match t with
   | [] => fail "empty trace"
-  | Event _ e _ as ev :: t =>
+  | ev :: t =>
     let pick_this :=
         _ <- ^ Happened ev;;
        ret (List.rev t_prev ++ t)%list in
     disj "pick_event'"
-      ( match e with
-        | ObsConnect =>
+      ( match ev with
+        | NewConnection c =>
           if forallb (fun ev =>
                 match ev with
-                | Event _ (ObsFromServer _) _ => false
+                | FromServer _ _ => false
                 | _ => true
                 end) t_prev then
             pick_this
           else
             fail "inaccessible ObsConnect"
 
-        | ObsToServer c =>
+        | ToServer c _ =>
           if forallb (fun ev =>
                match ev with
-               | Event _ (ObsFromServer c') _ => false
-               | Event _ ObsConnect c'
-               | Event _ (ObsToServer c') _ => c <> c' ?
+               | FromServer c' _ => false
+               | NewConnection c'
+               | ToServer c' _ => c <> c' ?
                end) t_prev then
             pick_this
           else
             fail "inaccessible ObsToServer"
 
-        | ObsFromServer c =>
+        | FromServer c _ =>
           if forallb (fun ev =>
                match ev with
-               | Event _ (ObsToServer _) _ => true
-               | Event _ ObsConnect c'
-               | Event _ (ObsFromServer c') _ => c <> c' ?
+               | ToServer _ _ => true
+               | NewConnection c'
+               | FromServer c' _ => c <> c' ?
                end) t_prev then
             pick_this
           else
@@ -97,26 +99,26 @@ CoFixpoint pick_event' (t_prev t : trace) : M eventE' trace :=
 (* Given a scrambled trace, remove one event that could potentially
    be the next one in a descrambling.
  *)
-Definition pick_event : trace -> M eventE' trace :=
+Definition pick_event : real_trace -> M eventE' real_trace :=
   pick_event' [].
 
-Definition is_ObsConnect (ev : event) :=
+Definition is_Connect {T : Type} (ev : event T) :=
   match ev with
-  | Event _ ObsConnect _ => true
+  | NewConnection _ => true
   | _ => false
   end.
 
-Definition is_ObsFromServer (ev : event) :=
+Definition is_FromServer {T : Type} (ev : event T) :=
   match ev with
-  | Event _ (ObsFromServer _) _ => true
+  | FromServer _ _ => true
   | _ => false
   end.
 
 (* Once the only things left are messages sent to the server,
    we drop them, since there is no response to compare them
    against. *)
-CoFixpoint descramble (t : trace) : M eventE' unit :=
-  match filter is_ObsFromServer t with
+CoFixpoint descramble (t : real_trace) : M eventE' unit :=
+  match filter is_FromServer t with
   | [] => ret tt
   | _ :: _ =>
     t' <- pick_event t;;
@@ -127,8 +129,8 @@ CoFixpoint descramble (t : trace) : M eventE' unit :=
 Section ListDescramble.
 
 Fixpoint list_eventE' (fuel : nat) (s : M eventE' unit)
-           (acc : list trace) (new : trace -> trace) :
-  option (list trace) :=
+           (acc : list hypo_trace) (new : hypo_trace -> hypo_trace) :
+  option (list hypo_trace) :=
   match fuel with
   | O => None
   | S fuel =>
@@ -158,12 +160,12 @@ Fixpoint list_eventE' (fuel : nat) (s : M eventE' unit)
 
 (* [None] if not enough fuel. *)
 Definition list_eventE (fuel : nat) (s : M eventE' unit) :
-  option (list trace) :=
+  option (list hypo_trace) :=
   list_eventE' fuel s [] (fun t => t).
 
 (* Fuel of the order of [length t ^ 2] should suffice. *)
-Definition list_descramblings (fuel : nat) (t : trace) :
-  option (list trace) :=
+Definition list_descramblings (fuel : nat) (t : real_trace) :
+  option (list hypo_trace) :=
   list_eventE fuel (descramble t).
 
 (*
@@ -183,47 +185,51 @@ End ListDescramble.
    We will insert them as needed when comparing the tree of
    descramblings with the spec tree. *)
 
-Definition select_input_events : trace -> list (event * trace) :=
+Definition select_input_events : real_trace -> list (real_event * real_trace) :=
   fun tr =>
     take_while
-      (fun '(ev, _) => negb (is_ObsFromServer ev))
+      (fun '(ev, _) => negb (is_FromServer ev))
       (select tr).
 
 Definition select_connect :
-  trace -> list (event * trace * connection_id) :=
+  real_trace -> list (hypo_event * real_trace * connection_id) :=
   fun tr =>
     filter_opt
       (fun '(ev, tr) =>
          match ev with
-         | Event _ ObsConnect c => Some (ev, tr, c)
+         | NewConnection c => Some (real_to_hypo_event ev, tr, c)
          | _ => None
          end)
       (select_input_events tr).
 
 Definition select_to_server :
-  connection_id -> trace -> option (event * trace * byte) :=
+  connection_id -> real_trace -> option (hypo_event * real_trace * byte) :=
   fun c tr =>
     find_opt
       (fun '(ev, tr) =>
          match ev with
-         | Event _ (ObsToServer c') b =>
-           if c = c' ? then Some (ev, tr, b) else None
+         | ToServer c' b =>
+           if c = c' ? then Some (real_to_hypo_event ev, tr, b) else None
          | _ => None
          end)
       (select_input_events tr).
 
 Definition select_from_server :
-  connection_id -> trace -> option (event * trace * option byte) :=
+  connection_id -> real_trace -> hypo_event * real_trace * option byte :=
   fun c tr =>
-    find_opt (fun '(ev, tr) =>
-      match ev with
-      | Event _ (ObsFromServer c') ob =>
-        if c = c' ? then Some (ev, tr, ob) else None
-      | _ => None
-      end) (select tr ++ [(Event (ObsFromServer c) None, tr)]).
+    let res := find_opt (fun '(ev, tr) =>
+                           match ev with
+                           | FromServer c' b =>
+                             if c = c' ? then Some (ev, tr, b) else None
+                           | _ => None
+                           end) (select tr) in
+    match res with
+    | Some (ev, tr, b) => (real_to_hypo_event ev, tr, Some b)
+    | None => (FromServer c None, tr, None)
+    end.
 
-Definition select_event {X} (e : observerE X) (tr : trace) :
-  M (nondetE +' eventE) (X * trace) :=
+Definition select_event {X} (e : observerE X) (tr : real_trace) :
+  M (nondetE +' eventE) (X * real_trace) :=
   match e with
   | ObsConnect =>
     '(ev, tr, c) <- choose "select_connect" (select_connect tr);;
@@ -237,12 +243,9 @@ Definition select_event {X} (e : observerE X) (tr : trace) :
       ret (b, tr)
     end
   | ObsFromServer c =>
-    match select_from_server c tr with
-    | None => fail "Missing FromServer"
-    | Some (ev, tr, ob) =>
-      ^ Happened ev;;
-      ret (ob, tr)
-    end
+    let '(ev, tr, ob) := select_from_server c tr in
+    ^ Happened ev;;
+    ret (ob, tr)
   end.
 
 (* [s]: tree of acceptable traces (spec)
@@ -253,18 +256,18 @@ Definition select_event {X} (e : observerE X) (tr : trace) :
  *)
 CoFixpoint intersect_trace
             (s : M (nondetE +' observerE) unit)
-            (t : trace) :
+            (t : real_trace) :
   M (nondetE +' eventE) unit :=
   match s with
   | Tau s => Tau (intersect_trace s t)
   | Ret tt =>
-    match filter is_ObsFromServer t with
+    match filter is_FromServer t with
     | [] => ret tt
     | _ :: _ => fail "unexplained events remain"
     end
   | Vis _ ( e |) k => Vis ( e |) (fun x => intersect_trace (k x) t)
   | Vis X (| e ) k =>
-    match filter is_ObsFromServer t with
+    match filter is_FromServer t with
     | [] => ret tt
     | _ :: _ =>
       xt <- select_event e t;;
@@ -273,8 +276,8 @@ CoFixpoint intersect_trace
     end
   end.
 
-CoFixpoint find' (ts : list (trace * M (nondetE +' eventE) unit)) :
-  M emptyE (option trace) :=
+CoFixpoint find' (ts : list (hypo_trace * M (nondetE +' eventE) unit)) :
+  M emptyE (option hypo_trace) :=
   match ts with
   | [] => ret None
   | (tr, t) :: ts =>
@@ -297,7 +300,7 @@ CoFixpoint find' (ts : list (trace * M (nondetE +' eventE) unit)) :
   end.
 
 Inductive result :=
-| Found (descrambling : trace) | NotFound | OutOfFuel.
+| Found (descrambling : hypo_trace) | NotFound | OutOfFuel.
 
 Definition option_to_list {A} (o : option A) : list A :=
   match o with
@@ -305,7 +308,7 @@ Definition option_to_list {A} (o : option A) : list A :=
   | Some a => [a]
   end.
 
-Fixpoint to_result (fuel : nat) (m : M emptyE (option trace)) :
+Fixpoint to_result (fuel : nat) (m : M emptyE (option hypo_trace)) :
   result :=
   match fuel with
   | O => OutOfFuel
@@ -321,7 +324,7 @@ Fixpoint to_result (fuel : nat) (m : M emptyE (option trace)) :
 (* SHOW *)
 (* BCP: This will probably move up too. *)
 Definition is_scrambled_trace_of
-           (fuel : nat) (s : itree_spec) (t : trace) : result :=
+           (fuel : nat) (s : itree_spec) (t : real_trace) : result :=
   to_result fuel (find' [([], intersect_trace s t)]).
 
 (* We will then generate traces produced by a server to test them.

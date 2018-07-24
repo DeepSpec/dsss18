@@ -73,7 +73,7 @@ Definition isDigit (c : ascii) : bool :=
 
 Definition isPrintable (c : ascii) : bool :=
   let n := N_of_ascii c in
-  andb (32 <=? n) (n <=? 127).
+  andb (32 <=? n) (n <? 127).
 
 Inductive chartype := white | alpha | digit | other.
 
@@ -191,9 +191,6 @@ Qed.
 Instance gSizedAscii : GenSized ascii :=
   {| arbitrarySized := fun _ => liftGen ascii_of_nat (choose (0,127)) |}.
 Derive GenSized for string.
-
-Global Instance showAscii : Show ascii :=
-  {| show c := ("'" ++ (String c EmptyString) ++ "'")%string |}.
 
 Global Instance shrinkAscii : Shrink ascii :=
   {| shrink c :=

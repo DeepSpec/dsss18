@@ -46,20 +46,4 @@ Definition test :=
     Swap_SimpleSpec.swap_spec_def
     swap_server.
 
-(* Takes a few seconds: *)
 (*! QuickChick test. *)
-
-Require DeepWeb.Spec.SingleSwap_SimpleSpec.
-Require DeepWeb.Spec.SingleSwapSequential_Impl.
-
-Module SingleSwap.
-
-Definition spec := SingleSwap_SimpleSpec.swap_spec.
-Definition impl := SingleSwapSequential_Impl.server.
-
-Definition test :=
-  check_trace_incl_def spec impl.
-
-End SingleSwap.
-
-(*! QuickChick SingleSwap.test. *)

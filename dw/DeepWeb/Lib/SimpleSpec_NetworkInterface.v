@@ -7,6 +7,9 @@ Import SumNotations.
 Import MonadNotations.
 
 Require Import DeepWeb.Lib.Util.
+Require Import DeepWeb.Lib.SimpleSpec_Traces.
+
+Module Export Network.
 
 (* A simple interface of server-side network effects. *)
 (* SHOW *)
@@ -53,3 +56,21 @@ Definition recv_full {E} `{networkE -< E}
 Fixpoint send {E} `{networkE -< E}
          (c : connection_id) (bs : bytes) : M E unit :=
   for_bytes bs (send_byte c).
+
+
+Definition event_to_networkE (ev : real_event) :
+  { X : Type & (networkE X * X)%type } :=
+  match ev with
+  | NewConnection c => existT _ _ (Accept, c)
+  | ToServer c b => existT _ _ (RecvByte c, b)
+  | FromServer c b => existT _ _ (SendByte c b, tt)
+  end.
+
+Instance EventType_networkE : EventType real_event networkE := {|
+    from_event := event_to_networkE;
+  |}.
+
+Definition is_server_trace : itree_server -> real_trace -> Prop :=
+  is_trace.
+
+End Network.

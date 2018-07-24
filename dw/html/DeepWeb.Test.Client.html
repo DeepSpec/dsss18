@@ -77,36 +77,35 @@
 
 <br/>
 <span class="id" title="keyword">Extract</span> <span class="id" title="var">Constant</span> <span class="id" title="var">runIO_with_server</span> ⇒ "fun io -&gt;
-  ignore (Unix.system ""make server"");
+  ignore (Unix.system ""make server --quiet"");
   Unix.sleepf 1e-3;
   let a = io () in
-  ignore (Unix.system ""make stop"");
+  ignore (Unix.system ""make stop --quiet"");
   a".<br/>
 
 <br/>
 <span class="id" title="keyword">Extract</span> <span class="id" title="var">Constant</span> <span class="id" title="var">close</span> ⇒ "fun fd () -&gt; Unix.close fd".<br/>
 
 <br/>
-<span class="id" title="keyword">Extract</span> <span class="id" title="var">Constant</span> <span class="id" title="var">log</span> ⇒ "fun cl () -&gt;
-  let str =
-    Bytes.to_string (
-      let s = Bytes.create (List.length cl) in
-      let rec copy i = function
-      | [] -&gt; s
-      | c :: l -&gt; Bytes.set s i c; copy (i+1) l
-      in copy 0 cl) in
+<span class="id" title="keyword">Extract</span> <span class="id" title="var">Constant</span> <span class="id" title="var">log</span> ⇒ "
   let out = open_out_gen [Open_wronly; Open_append; Open_creat; Open_text]
                 0o666 ""/tmp/client_log"" in
-  output_string out (str ^ ""\n"");
-  close_out out".<br/>
+  fun cl () -&gt;
+    let str =
+      Bytes.to_string (
+        let s = Bytes.create (List.length cl) in
+        let rec copy i = function
+        | [] -&gt; s
+        | c :: l -&gt; Bytes.set s i c; copy (i+1) l
+        in copy 0 cl) in
+    output_string out (str ^ ""\n"")".<br/>
 
 <br/>
 <span class="id" title="keyword">Extract</span> <span class="id" title="var">Constant</span> <span class="id" title="var">recvb</span>  ⇒ "fun sock () -&gt;
   let bs = Bytes.create 1 in
   match Unix.recv sock bs 0 1 [] with
-  | exception Unix.Unix_error(Unix.EAGAIN, _, _) -&gt;
+  | exception Unix.Unix_error((Unix.EAGAIN | Unix.EWOULDBLOCK), _, _) -&gt;
      None
-  | 0 -&gt; None
   | k -&gt;
      if k = 1 then
        Some (Bytes.get bs 0)
@@ -120,12 +119,15 @@
 <br/>
 <span class="id" title="keyword">Extract</span> <span class="id" title="var">Constant</span> <span class="id" title="var">socket</span> ⇒ "fun () -&gt;
   let open Unix in
-  try
   let sock = socket PF_INET SOCK_STREAM 0 in
-  connect sock (ADDR_INET (inet_addr_loopback, 8000));
-  setsockopt_float sock SO_RCVTIMEO 1e-6;
-  Some sock
-  with Unix.Unix_error(Unix.ECONNREFUSED, _, _) -&gt; None".<br/>
+  try
+    connect sock (ADDR_INET (inet_addr_loopback, 8000));
+    set_nonblock sock;
+    Some sock
+  with
+  | Unix.Unix_error(Unix.ECONNREFUSED, _, _) -&gt;
+    close sock;
+    None".<br/>
 </div>
 </div>
 

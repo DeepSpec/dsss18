@@ -22,11 +22,12 @@ Fixpoint filterSome {A} (l : list (option A)) : list A :=
   | None :: l => filterSome l
   end.
 
+
 Definition recv_external (cid_fd : connection_id * file_descr) :
-  IO (option event) :=
+  IO (option real_event) :=
   let (cid, fd) := cid_fd in
   ob <- recvb fd;;
-  ret (Event (ObsFromServer cid) ∘ Some <$> (ob : option byte)).
+  ret (FromServer cid <$> (ob : option byte)).
 
 Definition Client := stateT (list (connection_id * file_descr)) IO.
 
@@ -47,7 +48,7 @@ Definition pick {A} (l : list A) (a0 : A) : IO A :=
 
 Definition max_connections : nat := 4.
 
-Definition newConnection : Client (option (connection_id * file_descr * trace)) :=
+Definition newConnection : Client (option (connection_id * file_descr * real_trace)) :=
   lift (log "new connection");;
   connections <- get;;
   match connections with
@@ -57,7 +58,7 @@ Definition newConnection : Client (option (connection_id * file_descr * trace)) 
     | Some fd =>
       let c := (Connection 0, fd) in
       put [c];;
-      ret (Some (c, [Event ObsConnect (Connection 0)]))
+      ret (Some (c, [NewConnection (Connection 0)]))
     | None => ret None
     end
   | c0::_ =>
@@ -68,7 +69,7 @@ Definition newConnection : Client (option (connection_id * file_descr * trace)) 
       | Some fd =>
         let c := (Connection (length connections), fd) in
         put (c :: connections);;
-        ret (Some (c, [Event ObsConnect (fst c)]))
+        ret (Some (c, [NewConnection (fst c)]))
       | None => ret None
       end
     else ret (Some (c0, []))
@@ -77,12 +78,12 @@ Definition newConnection : Client (option (connection_id * file_descr * trace)) 
 Definition sendMessage
            (cid : connection_id)
            (fd : file_descr)
-           (b : byte) : Client event :=
+           (b : byte) : Client real_event :=
   lift (log ("sending " ++ show b));;
   lift (sendb fd b);;
-  ret (Event (ObsToServer cid) b).
+  ret (ToServer cid b).
 
-Definition recvMessages : Client trace :=
+Definition recvMessages : Client real_trace :=
   l <- get;;
   lift (filterSome <$> mapT recv_external l).
 
@@ -92,7 +93,7 @@ Definition closeAll : Client (list unit) :=
   put [];;
   mapT (lift ∘ close ∘ snd) connections.
 
-Fixpoint execute' (fuel : nat) (msgs : list byte) : Client trace :=
+Fixpoint execute' (fuel : nat) (msgs : list byte) : Client real_trace :=
   lift (log ("exec " ++ show fuel ++ " " ++ show msgs));;
   match fuel with
   | 0 =>
@@ -161,14 +162,23 @@ Fixpoint execute' (fuel : nat) (msgs : list byte) : Client trace :=
     end
   end.
 
-Definition execute (msgs : list byte) : Client trace :=
+Definition execute (msgs : list byte) : Client real_trace :=
   lift (log (nl ++ "Execute: "++ show msgs ++ nl));;
-  tr <- execute' (S (length msgs) * 4) msgs;;
+  tr <- execute' ((length msgs) * 10) msgs;;
   lift (log (nl ++ "Trace: " ++ show tr ++ nl));;
   ret tr.
 
+Instance showResult : Show result :=
+  {| show r :=
+       match r with
+       | Found _   => "Found"
+       | NotFound  => "Not Found"
+       | OutOfFuel => "Out of Fuel"
+       end |}.
+
 Instance Checkable_result : Checkable result :=
   {| checker r :=
+       collect r
        match r with
        | Found _ => checker true
        | NotFound => checker false
@@ -177,9 +187,18 @@ Instance Checkable_result : Checkable result :=
 
 Require DeepWeb.Spec.Swap_SimpleSpec.
 
-Definition execute_prop (msgs : list byte) : Checker :=
+Instance genMoreBytes : GenSized (list byte) :=
+  {| arbitrarySized := arbitrarySized ∘ (mult 10) |}.
+
+Definition execute_prop' (msgs : list byte) : Checker :=
   let tr := runIO_with_server (evalStateT (execute msgs) []) in
-  whenFail (show tr)
-           (is_scrambled_trace_of 100 (Swap_SimpleSpec.swap_spec_def) tr).
+  match filter is_FromServer tr with
+  | [] => collect "No Response" (checker tt) (* If the server never said anything, no point checking. *)
+  | _ :: _ => whenFail (show tr)
+           (is_scrambled_trace_of 5000 (Swap_SimpleSpec.swap_spec_def) tr)
+  end.
+
+Definition execute_prop : Checker :=
+  forAllShrinkNonDet 100 arbitrary shrink execute_prop'.
 
 (*! QuickChick execute_prop. *)

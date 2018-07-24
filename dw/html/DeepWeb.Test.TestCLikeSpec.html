@@ -59,7 +59,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_SimpleSpec.html#"><span class="id" title="library">Swap_SimpleSpec</span></a>.<br/>
 
 <br/>
-<span class="id" title="keyword">Definition</span> <a name="swap_server"><span class="id" title="definition">swap_server</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkInterface.html#itree_server"><span class="id" title="definition">itree_server</span></a> :=<br/>
+<span class="id" title="keyword">Definition</span> <a name="swap_server"><span class="id" title="definition">swap_server</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkInterface.html#Network.itree_server"><span class="id" title="definition">itree_server</span></a> :=<br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.NetworkAdapter.html#simplify_network"><span class="id" title="definition">simplify_network</span></a> <a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#test_server"><span class="id" title="definition">Swap_CLikeSpec.test_server</span></a>.<br/>
 
 <br/>
@@ -79,29 +79,7 @@ Sample&nbsp;random_trace_server.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Test.TestCLikeSpec.html#swap_server"><span class="id" title="definition">swap_server</span></a>.<br/>
 
 <br/>
-<span class="comment">(*&nbsp;Takes&nbsp;a&nbsp;few&nbsp;seconds:&nbsp;*)</span><br/>
 <span class="comment">(*!&nbsp;QuickChick&nbsp;test.&nbsp;*)</span><br/>
-
-<br/>
-<span class="id" title="keyword">Require</span> <a class="idref" href="DeepWeb.Spec.SingleSwap_SimpleSpec.html#"><span class="id" title="library">DeepWeb.Spec.SingleSwap_SimpleSpec</span></a>.<br/>
-<span class="id" title="keyword">Require</span> <a class="idref" href="DeepWeb.Spec.SingleSwapSequential_Impl.html#"><span class="id" title="library">DeepWeb.Spec.SingleSwapSequential_Impl</span></a>.<br/>
-
-<br/>
-<span class="id" title="keyword">Module</span> <a name="SingleSwap"><span class="id" title="module">SingleSwap</span></a>.<br/>
-
-<br/>
-<span class="id" title="keyword">Definition</span> <a name="SingleSwap.spec"><span class="id" title="definition">spec</span></a> := <a class="idref" href="DeepWeb.Spec.SingleSwap_SimpleSpec.html#swap_spec"><span class="id" title="definition">SingleSwap_SimpleSpec.swap_spec</span></a>.<br/>
-<span class="id" title="keyword">Definition</span> <a name="SingleSwap.impl"><span class="id" title="definition">impl</span></a> := <a class="idref" href="DeepWeb.Spec.SingleSwapSequential_Impl.html#server"><span class="id" title="definition">SingleSwapSequential_Impl.server</span></a>.<br/>
-
-<br/>
-<span class="id" title="keyword">Definition</span> <a name="SingleSwap.test"><span class="id" title="definition">test</span></a> :=<br/>
-&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#check_trace_incl_def"><span class="id" title="definition">check_trace_incl_def</span></a> <a class="idref" href="DeepWeb.Test.TestCLikeSpec.html#SingleSwap.spec"><span class="id" title="definition">spec</span></a> <a class="idref" href="DeepWeb.Test.TestCLikeSpec.html#SingleSwap.impl"><span class="id" title="definition">impl</span></a>.<br/>
-
-<br/>
-<span class="id" title="keyword">End</span> <a class="idref" href="DeepWeb.Test.TestCLikeSpec.html#SingleSwap"><span class="id" title="module">SingleSwap</span></a>.<br/>
-
-<br/>
-<span class="comment">(*!&nbsp;QuickChick&nbsp;SingleSwap.test.&nbsp;*)</span><br/>
 </div>
 </div>
 

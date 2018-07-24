@@ -28,6 +28,30 @@
 #endif
 #define INVALID_SOCKET -1
 
+#ifdef DEBUG
+#include <errno.h>
+#include <stdarg.h>
+static FILE *debug_file = NULL;
+void START_LOG() {
+  debug_file = fopen("/tmp/server_log", "a");
+  if (NULL == debug_file) {
+    perror("Could not open server log");
+    exit(1);
+  }
+}
+void PRINT(const char *fmt, ...) {
+  va_list args;
+  va_start(args, fmt);
+  vfprintf(debug_file, fmt, args);
+  va_end(args);
+  fflush(debug_file);
+}
+void PERROR(const char *msg) {
+  PRINT("%s: %s", msg, strerror(errno));
+  perror(msg);
+}
+#endif
+
 typedef int socket_fd;
 
 typedef enum state {
@@ -62,10 +86,6 @@ void fd_zero_macro(fd_set* set) {
 
 int fd_isset_macro(int fd, fd_set* set) {
   return FD_ISSET(fd, set);
-}
-
-void fd_clr_macro(int fd, fd_set* set) {
-  FD_CLR(fd, set);
 }
 
 void fd_set_macro(int fd, fd_set* set) {
@@ -133,7 +153,7 @@ populate_response(connection* conn, store* last_msg_store) {
   last_msg_store->stored_msg_len = request_len;
   
   uint8_t* request_buffer = conn->request_buffer;
-  memcpy(last_msg, request_buffer, /*!*/ request_len /*! 0 */);
+  memcpy(last_msg, request_buffer, /*!*/ request_len /*! request_len - 1 */);
   return 1;
 }
 
@@ -155,15 +175,15 @@ conn_read(connection* conn, store* last_msg_store) {
 
   if (r == 0) {
 #ifdef DEBUG
-    printf("conn_read(%d): DELETED\n", conn->connection_id);
+    PRINT("conn_read(%d): DELETED\n", conn->connection_id);
 #endif
-      
+
     conn->st = DELETED; // mark for cleanup later
     return 0;
   }
 
 #ifdef DEBUG
-  printf("conn_read(%d): Received %d bytes\n", conn->connection_id, r);
+  PRINT("conn_read(%d): Received %d bytes\n", conn->connection_id, r);
 #endif
   
   new_len = request_len + r;
@@ -182,8 +202,10 @@ conn_read(connection* conn, store* last_msg_store) {
     return 0;
   }
 
-  // printf("conn_read: Transiting to SENDING\n");
-  
+#ifdef DEBUG
+  PRINT("conn_read: Transiting to SENDING\n");
+#endif
+
   conn->st = SENDING;
   return 0;
 }
@@ -214,7 +236,7 @@ static int conn_write(connection* conn) {
   r = send(conn_fd, response, num_bytes_to_send, 0);
 
 #ifdef DEBUG
-  printf("conn_write(%d): Sent %d bytes\n", conn->connection_id, num_bytes_to_send);
+  PRINT("conn_write(%d): Sent %d bytes\n", conn->connection_id, num_bytes_to_send);
 #endif
 
   if(r < 0) {
@@ -277,7 +299,7 @@ static int accept_connection(socket_fd socket,
   }
 
 #ifdef DEBUG
-  printf("accept -> %d\n", conn->connection_id);
+  PRINT("accept -> %d\n", conn->connection_id);
 #endif
 
   reset_connection(conn, fd);
@@ -513,7 +535,9 @@ int select_loop(socket_fd server_socket, store* last_msg_store) {
     
     if (socket_ready) {
       accept_connection(server_socket, &head);
-      // printf("New connection accepted\n");      
+#ifdef DEBUG
+      PRINT("select_loop: New connection accepted\n");
+#endif
     }
 
     tmp_head = head;
@@ -550,11 +574,16 @@ static int bind_socket(socket_fd fd, int port) {
 static void init_store (store* last_msg_store) {
   last_msg_store->stored_msg_len = BUFFER_SIZE;
   char* last_msg = (char* )last_msg_store->stored_msg;
-  memset(last_msg, /*!*/ '0' /*! 'X' */, BUFFER_SIZE);
+  memset(last_msg, /*!*/ '0' /*! 'X' */, BUFFER_SIZE); 
   // memset(last_msg, '0', BUFFER_SIZE);
 }
 
 int main(int argc, char** argv) {
+
+#if DEBUG
+  START_LOG();
+  PRINT("main: New server\n");
+#endif
 
   socket_fd fd;
   int r;
@@ -568,6 +597,9 @@ int main(int argc, char** argv) {
   
   fd = socket(AF_INET, SOCK_STREAM, 0);
   if (fd < 0) {
+#if DEBUG
+    PERROR("socket() failed");
+#endif
     exit(0);
   }
 
@@ -578,14 +610,22 @@ int main(int argc, char** argv) {
   int port = 8000;
   r = bind_socket(fd, port);
   if (r < 0) {
+#if DEBUG
+    PERROR("bind() failed");
+#endif
     exit(0);
   } 
 
   r = listen(fd, SOMAXCONN);
   if (r < 0) {
+#if DEBUG
+    PERROR("listen() failed");
+#endif
     exit(0);
   }
 
-  // printf("Entering loop...\n");
+#if DEBUG
+  PRINT("main: Entering loop...\n");
+#endif
   select_loop(fd, last_msg_store);
 }

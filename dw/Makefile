@@ -49,6 +49,8 @@ html:
 
 clean:
 	-rm -rf ../_qc_dw.tmp/
+	find . -name "*.vo" -print -exec rm -rf {} \;
+	find . -name "*.glob" -print -exec rm -rf {} \;
 	$(MAKE) -f Makefile.coq clean
 
 .PHONY: html clean coq-qc test coq
@@ -58,6 +60,5 @@ bcp:
 	$(MAKE) -C $(HOME)/dw/src dsss18
 	$(MAKE) -j
 	$(MAKE) -j html COQDOCFLAGS="-interpolate -utf8 --parse-comments"
-	osascript $(HOME)/s/tools/safari-reload.as
 	$(MAKE) -j test
-
+#	osascript $(HOME)/s/tools/safari-reload.as

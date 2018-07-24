@@ -20,6 +20,7 @@ Require Import DeepWeb.Free.Monad.Spec.
 From DeepWeb Require Import
      Lib.Util
      Lib.SimpleSpec_NetworkInterface
+     Lib.SimpleSpec_Traces
      Lib.SimpleSpec_Observer
      Lib.SimpleSpec_Descramble.
 
@@ -46,7 +47,7 @@ Definition shuffle {A} (xs : list A) : G (list A) :=
 (* We use the following effect to annotate a tree with traces. *)
 (* TODO: put in [Free]? *)
 Inductive note_traceE : Type -> Type :=
-| NoteTrace : trace -> note_traceE unit.
+| NoteTrace : real_trace -> note_traceE unit.
 
 (* We keep track of a counter to generate fresh connection IDs. *)
 Definition network_state := nat.
@@ -67,7 +68,7 @@ Definition itree_traces := M traceE unit.
 
 (* Main body of [enum_traces_handler]. *)
 Definition enum_traces_handler :
-  forall X, network_state * trace ->
+  forall X, network_state * real_trace ->
             serverE X -> M traceE (_ * X) :=
   fun X '(st, cur_trace) e =>
     match e with
@@ -79,14 +80,12 @@ Definition enum_traces_handler :
       match e in networkE X' return (X' -> X) -> _ with
       | Accept => fun id =>
         let '(st, c) := new_connection st in
-        new_event (Event ObsConnect c) (id c) st
+        new_event (NewConnection c) (id c) st
       | RecvByte c => fun id =>
         b <- arb;;
-        new_event (Event (ObsToServer c) b) (id b) st
+        new_event (ToServer c b) (id b) st
       | SendByte c b => fun id =>
-        (* TODO: mutate this *)
-        (* new_event (Event (ObsFromServer c) (Some "c"%char)) (id tt) st *)
-        new_event (Event (ObsFromServer c) (Some b)) (id tt) st
+        new_event (FromServer c b) (id tt) st
       end (fun x => x)
     | ( _Or |) => x <- embed _Or;; ret ((st, cur_trace), x)
     end.
@@ -139,7 +138,7 @@ Fixpoint traverseG' {A B} (xs : list A)
 
 (* Generate random traces up to a given depth in the tree. *)
 Fixpoint random_trace' (max_depth : nat) (t : itree_traces) :
-  G' trace :=
+  G' real_trace :=
   match max_depth with
   | O => emptyG'
   | S max_depth =>
@@ -170,7 +169,7 @@ Fixpoint random_trace' (max_depth : nat) (t : itree_traces) :
 
 Definition random_trace (max_depth : nat) (fuel : nat)
            (t : itree_server) :
-  G (list trace) :=
+  G (list real_trace) :=
   runG' fuel (random_trace' max_depth (enum_traces t)).
 
 (**)
@@ -211,7 +210,7 @@ Fixpoint traverse_qc {A} (xs : list A)
   end.
 
 Fixpoint forall_traces (max_depth : nat)
-         (check_trace : trace -> result) (t : itree_traces)
+         (check_trace : real_trace -> result) (t : itree_traces)
   : Checker' :=
   match max_depth with
   | O => ok
