@@ -46,7 +46,7 @@ coq-qc: $(SERVER)
 	@perl -i -p0e 's/^(Separate Extraction)(\s+\S+)*?((\s+test\S+)*)\s*\.$$/\1\3./m' QuickChickTop.v
 	@echo "-Q . ''" > _CoqProject.tmp
 	@cat _CoqProject >> _CoqProject.tmp
-	@coq_makefile -f _CoqProject.tmp -o Makefile.tmp
+	@coq_makefile -f _CoqProject.tmp -o Makefile.tmp 2>> /tmp/client_error
 	@make -f Makefile.tmp QuickChickTop.vo
 	@echo 'let _ = print_endline "done"' >> QuickChickTop.ml
 
