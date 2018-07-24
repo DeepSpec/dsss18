@@ -160,6 +160,10 @@ Fixpoint listrep (il: list Z) (p: val) : mpred :=
  | nil => !! (p = nullval) && emp
  end.
 
+(** Proof automation for user-defined separation predicates works better
+  if you disable automatic simplification, as follows: *)
+Arguments listrep il p : simpl never.
+
 (** As usual, we should populate the Hint databases
     [saturate_local] and [valid_pointer] *)
 
@@ -203,6 +207,7 @@ Definition stack (il: list Z) (p: val) :=
   data_at Tsh (Tstruct _stack noattr) q p *
   listrep il q.
 
+Arguments stack il p : simpl never.
 (** **** Exercise: 1 star (stack_properties)  *)
 
 Lemma stack_local_prop: forall il p, stack il p |--  !! (isptr p).

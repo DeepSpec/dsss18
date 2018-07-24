@@ -68,9 +68,9 @@ Definition copy_string_spec : ident * funspec :=
 
 Definition hash_spec : ident * funspec :=
   DECLARE _hash
-  WITH s: val, sh : share, contents : string
+  WITH s: val, contents : string
   PRE [ _s OF (tptr tschar) ]
-          PROP  (readable_share sh)
+          PROP  ()
           LOCAL (temp _s s)
           SEP   (cstring Tsh contents s)
   POST [ tuint ]

@@ -23,7 +23,6 @@
 <ul id='menu'>
    <a href='toc.html'><li class='section_name'>Table of Contents</li></a>
    <a href='coqindex.html'><li class='section_name'>Index</li></a>
-   <a href='deps.html'><li class='section_name'>Roadmap</li></a>
 </ul>
 </a></div>
 
@@ -36,7 +35,7 @@
 
 <div class="paragraph"> </div>
 
-<a name="lab72"></a><h2 class="section">This C program, <span class="inlinecode"><span class="id" type="var">hash.c</span></span>, implements a hash table with</h2>
+<a name="lab73"></a><h2 class="section">This C program, <span class="inlinecode"><span class="id" type="var">hash.c</span></span>, implements a hash table with</h2>
 
    external chaining.  See <a href="http://www.cs.princeton.edu/~appel/HashTables.pdf"><span class="inlineref">http://www.cs.princeton.edu/~appel/HashTables.pdf</span></a>
    for an introduction to hash tables.  
@@ -139,7 +138,7 @@ void incr (struct hashtable *table, char *s) {
 
 <div class="paragraph"> </div>
 
-<a name="lab73"></a><h2 class="section">A functional model</h2>
+<a name="lab74"></a><h2 class="section">A functional model</h2>
 
 <div class="paragraph"> </div>
 
@@ -195,7 +194,7 @@ void incr (struct hashtable *table, char *s) {
 </div>
 
 <div class="doc">
-<a name="lab74"></a><h4 class="section">Exercise: 2 stars (hashfun_inrange)</h4>
+<a name="lab75"></a><h4 class="section">Exercise: 2 stars (hashfun_inrange)</h4>
 
 </div>
 <div class="code code-space">
@@ -208,7 +207,7 @@ void incr (struct hashtable *table, char *s) {
 <div class="doc less-space">
 <div class="paragraph"> </div>
 
-<a name="lab75"></a><h4 class="section">Exercise: 1 star (hashfun_get_unfold)</h4>
+<a name="lab76"></a><h4 class="section">Exercise: 1 star (hashfun_get_unfold)</h4>
 
 </div>
 <div class="code code-space">
@@ -224,7 +223,7 @@ void incr (struct hashtable *table, char *s) {
 <div class="doc less-space">
 <div class="paragraph"> </div>
 
-<a name="lab76"></a><h4 class="section">Exercise: 2 stars (Zlength_hashtable_incr)</h4>
+<a name="lab77"></a><h4 class="section">Exercise: 2 stars (Zlength_hashtable_incr)</h4>
 
 </div>
 <div class="code code-space">
@@ -241,10 +240,25 @@ void incr (struct hashtable *table, char *s) {
 <div class="doc less-space">
 <div class="paragraph"> </div>
 
-<a name="lab77"></a><h4 class="section">Exercise: 3 stars (hashfun_snoc)</h4>
+<a name="lab78"></a><h4 class="section">Exercise: 3 stars (hashfun_snoc)</h4>
 
 </div>
 <div class="code code-space">
+
+<br/>
+<span class="id" type="keyword">Lemma</span> <a name="Int_repr_eq_mod"><span class="id" type="lemma">Int_repr_eq_mod</span></a>:<br/>
+&nbsp;&nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">a</span>,  <span class="id" type="definition">Int.repr</span> (<a class="idref" href="Hashfun.html#a"><span class="id" type="variable">a</span></a> <span class="id" type="var">mod</span> <span class="id" type="definition">Int.modulus</span>) = <span class="id" type="definition">Int.repr</span> <a class="idref" href="Hashfun.html#a"><span class="id" type="variable">a</span></a>.<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+<span class="id" type="keyword">Print</span> <span class="id" type="definition">Int.eqm</span>. <span class="comment">(*&nbsp;This&nbsp;is&nbsp;a&nbsp;hint&nbsp;about&nbsp;how&nbsp;to&nbsp;prove&nbsp;the&nbsp;lemma&nbsp;*)</span><br/>
+<span class="id" type="var">Search</span> <span class="id" type="definition">Int.eqm</span>. <span class="comment">(*&nbsp;This&nbsp;is&nbsp;a&nbsp;hint&nbsp;about&nbsp;how&nbsp;to&nbsp;prove&nbsp;the&nbsp;lemma&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<div class="doc">
+Use <span class="inlinecode"><span class="id" type="var">Int_repr_eq_mod</span></span> in the proof of <span class="inlinecode"><span class="id" type="var">hashfun_snoc</span></span>. 
+</div>
+<div class="code code-tight">
+
 <span class="id" type="keyword">Lemma</span> <a name="hashfun_snoc"><span class="id" type="lemma">hashfun_snoc</span></a>:<br/>
 &nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">sigma</span> <span class="id" type="var">h</span> <span class="id" type="var">lo</span> <span class="id" type="var">i</span>,<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;0 ≤ <a class="idref" href="Hashfun.html#lo"><span class="id" type="variable">lo</span></a> →<br/>
@@ -259,7 +273,7 @@ void incr (struct hashtable *table, char *s) {
 <div class="doc less-space">
 <div class="paragraph"> </div>
 
-<a name="lab78"></a><h2 class="section">Functional model satisfies the high-level specification</h2>
+<a name="lab79"></a><h2 class="section">Functional model satisfies the high-level specification</h2>
 
 <div class="paragraph"> </div>
 
@@ -297,11 +311,11 @@ This means:  in any <span class="inlinecode"><span class="id" type="keyword">Mod
    <span class="inlinecode"><span class="id" type="var">gempty</span></span>, <span class="inlinecode"><span class="id" type="var">gss</span></span>, and <span class="inlinecode"><span class="id" type="var">gso</span></span>. 
 <div class="paragraph"> </div>
 
-<a name="lab79"></a><h3 class="section">A "reference" implementation of COUNT_TABLE</h3>
+<a name="lab80"></a><h3 class="section">A "reference" implementation of COUNT_TABLE</h3>
 
 <div class="paragraph"> </div>
 
-<a name="lab80"></a><h4 class="section">Exercise: 2 stars (FunTable)</h4>
+<a name="lab81"></a><h4 class="section">Exercise: 2 stars (FunTable)</h4>
   It's easy to make a slow implementation of <span class="inlinecode"><span class="id" type="var">COUNT_TABLE</span></span>, using functions. 
 </div>
 <div class="code code-tight">
@@ -326,11 +340,11 @@ This means:  in any <span class="inlinecode"><span class="id" type="keyword">Mod
 <div class="doc less-space">
 <div class="paragraph"> </div>
 
-<a name="lab81"></a><h3 class="section">Demonstration that hash tables implement COUNT_TABLE</h3>
+<a name="lab82"></a><h3 class="section">Demonstration that hash tables implement COUNT_TABLE</h3>
 
 <div class="paragraph"> </div>
 
-<a name="lab82"></a><h4 class="section">Exercise: 3 stars (IntHashTable)</h4>
+<a name="lab83"></a><h4 class="section">Exercise: 3 stars (IntHashTable)</h4>
   Now we make a "fast" implementation using hash tables.  We
   put "fast" in quotes because, unlike the imperative implementation,
  the purely functional implementation takes linear time, not constant time,

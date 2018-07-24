@@ -23,7 +23,6 @@
 <ul id='menu'>
    <a href='toc.html'><li class='section_name'>Table of Contents</li></a>
    <a href='coqindex.html'><li class='section_name'>Index</li></a>
-   <a href='deps.html'><li class='section_name'>Roadmap</li></a>
 </ul>
 </a></div>
 
@@ -172,23 +171,26 @@ When you define a Function, you must provide a <span class="inlinecode"><span cl
 <div class="code code-space">
 
 <br/>
-<span class="id" type="keyword">Definition</span> <a name="add_list"><span class="id" type="definition">add_list</span></a> : <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a> → <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a> := <a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#fold_right"><span class="id" type="definition">fold_right</span></a> <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.add"><span class="id" type="definition">Z.add</span></a> 0.<br/>
+<span class="id" type="keyword">Definition</span> <a name="add_list"><span class="id" type="definition">add_list</span></a>: <a class="idref" href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list"><span class="id" type="inductive">list</span></a> <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a> → <a class="idref" href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z"><span class="id" type="inductive">Z</span></a> := <a class="idref" href="http://coq.inria.fr/library/Coq.Lists.List.html#fold_right"><span class="id" type="definition">fold_right</span></a> <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.add"><span class="id" type="definition">Z.add</span></a> 0.<br/>
 </div>
 
 <div class="doc">
-Theorem:  the sum of the list  <span class="inlinecode">(<span class="id" type="var">n</span>)::(<span class="id" type="var">n</span>-1)::</span> <span class="inlinecode">...</span> <span class="inlinecode">::</span> <span class="inlinecode">2::1</span> is the triangular number of <span class="inlinecode"><span class="id" type="var">n</span></span>. 
+<a name="lab52"></a><h4 class="section">Exercise: 2 stars (add_list_decreasing)</h4>
+
+<div class="paragraph"> </div>
+
+ Theorem:  the sum of the list  <span class="inlinecode">(<span class="id" type="var">n</span>)::(<span class="id" type="var">n</span>-1)::</span> <span class="inlinecode">...</span> <span class="inlinecode">::</span> <span class="inlinecode">2::1</span> is the triangular number of <span class="inlinecode"><span class="id" type="var">n</span></span>. 
 </div>
 <div class="code code-tight">
-<span class="id" type="keyword">Lemma</span> <a name="add_list_decreasing_eq"><span class="id" type="lemma">add_list_decreasing_eq</span></a>: <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">n</span>,<br/>
+
+<span class="id" type="keyword">Lemma</span> <a name="add_list_decreasing_eq_alt"><span class="id" type="lemma">add_list_decreasing_eq_alt</span></a>: <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">n</span>,<br/>
 &nbsp;&nbsp;0 ≤ <a class="idref" href="Verif_triang.html#n"><span class="id" type="variable">n</span></a> →<br/>
-&nbsp;&nbsp;<a class="idref" href="Verif_triang.html#add_list"><span class="id" type="definition">add_list</span></a> (<a class="idref" href="Verif_triang.html#decreasing"><span class="id" type="lemma">decreasing</span></a> <a class="idref" href="Verif_triang.html#n"><span class="id" type="variable">n</span></a>) = <a class="idref" href="Verif_triang.html#n"><span class="id" type="variable">n</span></a> * (<a class="idref" href="Verif_triang.html#n"><span class="id" type="variable">n</span></a>+1) / 2.<br/>
+&nbsp;&nbsp;(2 * (<a class="idref" href="Verif_triang.html#add_list"><span class="id" type="definition">add_list</span></a> (<a class="idref" href="Verif_triang.html#decreasing"><span class="id" type="lemma">decreasing</span></a> <a class="idref" href="Verif_triang.html#n"><span class="id" type="variable">n</span></a>)))%<span class="id" type="var">Z</span> = (<a class="idref" href="Verif_triang.html#n"><span class="id" type="variable">n</span></a> * (<a class="idref" href="Verif_triang.html#n"><span class="id" type="variable">n</span></a>+1))%<span class="id" type="var">Z</span>.<br/>
 <span class="id" type="keyword">Proof</span>.<br/>
-<span class="id" type="tactic">intros</span>.<br/>
-<span class="id" type="tactic">pattern</span> <span class="id" type="var">n</span>; <span class="id" type="tactic">apply</span> <a class="idref" href="Verif_triang.html#Zinduction"><span class="id" type="axiom">Zinduction</span></a>.<br/>
-*<br/>
-<span class="id" type="tactic">reflexivity</span>.<br/>
-*<br/>
-<span class="id" type="tactic">intros</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">intros</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">pattern</span> <span class="id" type="var">n</span>; <span class="id" type="tactic">apply</span> <a class="idref" href="Verif_triang.html#Zinduction"><span class="id" type="axiom">Zinduction</span></a>.<br/>
+&nbsp;&nbsp;- <span class="id" type="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" type="tactic">intros</span>.<br/>
 </div>
 
 <div class="doc">
@@ -204,30 +206,39 @@ Instead of unfolding <span class="inlinecode"><span class="id" type="var">decrea
    for the Function.  Go back up and reprocess the <span class="inlinecode"><span class="id" type="keyword">Defined</span>.</span> line that terminated
    <span class="inlinecode"><span class="id" type="var">Function</span></span> <span class="inlinecode"><span class="id" type="var">decreasing</span></span>, and notice what happens in Coq's error-message window:
    it says that lots of additional reasoning principles are defined for the new <span class="inlinecode"><span class="id" type="var">Function</span></span>.
-   (For some reason, Coq 8.7 and 8.8 do not mention <span class="inlinecode"><span class="id" type="var">decreasing_equation</span></span>, but it is
+   (For some reason, Coq 8.8 does not mention <span class="inlinecode"><span class="id" type="var">decreasing_equation</span></span>, but it is
     defined at the same time as the others.)  
 </div>
 <div class="code code-tight">
-<span class="id" type="keyword">Check</span> <a class="idref" href="Verif_triang.html#decreasing_equation"><span class="id" type="lemma">decreasing_equation</span></a>.<br/>
-<span class="id" type="tactic">rewrite</span> <a class="idref" href="Verif_triang.html#decreasing_equation"><span class="id" type="lemma">decreasing_equation</span></a>.<br/>
-<span class="id" type="tactic">rewrite</span> <span class="id" type="lemma">if_true</span> <span class="id" type="tactic">by</span> <span class="id" type="tactic">omega</span>.<br/>
-<span class="id" type="tactic">simpl</span>.<br/>
-<span class="id" type="tactic">rewrite</span> <span class="id" type="var">H<sub>1</sub></span>; <span class="id" type="tactic">clear</span> <span class="id" type="var">H<sub>1</sub></span>.<br/>
-<span class="id" type="tactic">rewrite</span> <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.sub_add"><span class="id" type="lemma">Z.sub_add</span></a>.<br/>
-<span class="id" type="tactic">rewrite</span> <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.mul_comm"><span class="id" type="lemma">Z.mul_comm</span></a>.<br/>
-<span class="id" type="tactic">rewrite</span> <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.add_comm"><span class="id" type="lemma">Z.add_comm</span></a>.<br/>
-<span class="id" type="tactic">rewrite</span> &lt;- <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.div_add"><span class="id" type="lemma">Z.div_add</span></a> <span class="id" type="tactic">by</span> <span class="id" type="tactic">omega</span>.<br/>
-<span class="id" type="tactic">f_equal</span>.<br/>
-<span class="id" type="tactic">rewrite</span> &lt;- <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.mul_add_distr_l"><span class="id" type="lemma">Z.mul_add_distr_l</span></a>.<br/>
-<span class="id" type="tactic">f_equal</span>.<br/>
-<span class="id" type="tactic">omega</span>.<br/>
-*<br/>
-<span class="id" type="tactic">omega</span>.<br/>
-<span class="id" type="keyword">Qed</span>.<br/>
+<span class="id" type="keyword">Check</span> <a class="idref" href="Verif_triang.html#decreasing_equation"><span class="id" type="lemma">decreasing_equation</span></a>.<br/><hr class='doublespaceincode'/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="tactic">rewrite</span> <a class="idref" href="Verif_triang.html#decreasing_equation"><span class="id" type="lemma">decreasing_equation</span></a>.<br/>
 </div>
 
 <div class="doc">
-<a name="lab52"></a><h3 class="section">Definitions copied from Verif_stack.v</h3>
+during the proof of this lemma, you may
+find the <span class="inlinecode"><span class="id" type="var">ring_simplify</span></span> tactic useful.  Read
+about it in the Coq reference manual.  Basically,
+it takes formulas with multiplication and addition,
+and simplifies them.  But you can do this without
+<span class="inlinecode"><span class="id" type="var">ring_simplify</span></span>, using just ordinary rewriting
+with lemmas about Z.add and Z.mul.  
+</div>
+<div class="code code-tight">
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="keyword">Lemma</span> <a name="add_list_decreasing_eq"><span class="id" type="lemma">add_list_decreasing_eq</span></a>: <span style='font-size:120%;'>&forall;</span> <span class="id" type="var">n</span>,<br/>
+&nbsp;&nbsp;0 ≤ <a class="idref" href="Verif_triang.html#n"><span class="id" type="variable">n</span></a> →<br/>
+&nbsp;&nbsp;<a class="idref" href="Verif_triang.html#add_list"><span class="id" type="definition">add_list</span></a> (<a class="idref" href="Verif_triang.html#decreasing"><span class="id" type="lemma">decreasing</span></a> <a class="idref" href="Verif_triang.html#n"><span class="id" type="variable">n</span></a>) = <a class="idref" href="Verif_triang.html#n"><span class="id" type="variable">n</span></a> * (<a class="idref" href="Verif_triang.html#n"><span class="id" type="variable">n</span></a>+1) / 2.<br/>
+<span class="id" type="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">intros</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.div_unique_exact"><span class="id" type="lemma">Z.div_unique_exact</span></a>.<br/>
+<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
+</div>
+
+<span class="proofbox">&#9744;</span> 
+<div class="doc less-space">
+<div class="paragraph"> </div>
+
+<a name="lab53"></a><h3 class="section">Definitions copied from Verif_stack.v</h3>
  We repeat here some material from Verif_stack.v.  
    Normally we would break the .c file into separate modules,
   and do our Verifiable C proofs in separate modules;
@@ -315,7 +326,7 @@ Specification of stack data structure
 (End of the material repeated from Verif_stack.v) 
 <div class="paragraph"> </div>
 
-<a name="lab53"></a><h2 class="section">Specification of the stack-client functions</h2>
+<a name="lab54"></a><h2 class="section">Specification of the stack-client functions</h2>
 
 </div>
 <div class="code code-space">
@@ -364,11 +375,11 @@ Putting all the funspecs together
 </div>
 
 <div class="doc">
-<a name="lab54"></a><h2 class="section">Proofs of the stack-client function-bodies</h2>
+<a name="lab55"></a><h2 class="section">Proofs of the stack-client function-bodies</h2>
 
 <div class="paragraph"> </div>
 
-<a name="lab55"></a><h4 class="section">Exercise: 3 stars (body_push_increasing)</h4>
+<a name="lab56"></a><h4 class="section">Exercise: 3 stars (body_push_increasing)</h4>
 
 </div>
 <div class="code code-space">
@@ -380,7 +391,7 @@ Putting all the funspecs together
 <div class="doc less-space">
 <div class="paragraph"> </div>
 
-<a name="lab56"></a><h4 class="section">Exercise: 2 stars (add_list_lemmas)</h4>
+<a name="lab57"></a><h4 class="section">Exercise: 2 stars (add_list_lemmas)</h4>
 
 </div>
 <div class="code code-space">
@@ -398,7 +409,7 @@ Putting all the funspecs together
 <div class="doc less-space">
 <div class="paragraph"> </div>
 
-<a name="lab57"></a><h4 class="section">Exercise: 2 stars (add_list_sublist_bounds)</h4>
+<a name="lab58"></a><h4 class="section">Exercise: 2 stars (add_list_sublist_bounds)</h4>
 
 </div>
 <div class="code code-space">
@@ -425,25 +436,17 @@ Hint: you don't need induction.  Useful lemmas are,
 <div class="doc less-space">
 <div class="paragraph"> </div>
 
-<a name="lab58"></a><h4 class="section">Exercise: 3 stars (add_another)</h4>
+<a name="lab59"></a><h4 class="section">Exercise: 3 stars (add_another)</h4>
  Suppose we have a list <span class="inlinecode"><span class="id" type="var">il</span></span> of integers, <span class="inlinecode"><span class="id" type="var">il</span></span> <span class="inlinecode">=</span> <span class="inlinecode">[5;4;3;2;1]</span>,
    with <span class="inlinecode"><span class="id" type="var">Znth</span></span> <span class="inlinecode">0</span> <span class="inlinecode"><span class="id" type="var">il</span></span> <span class="inlinecode">=</span> <span class="inlinecode">5</span>, <span class="inlinecode"><span class="id" type="var">Znth</span></span> <span class="inlinecode">4</span> <span class="inlinecode"><span class="id" type="var">il</span></span> <span class="inlinecode">=</span> <span class="inlinecode">1</span>, and <span class="inlinecode"><span class="id" type="var">Zlength</span></span> <span class="inlinecode"><span class="id" type="var">il</span></span> <span class="inlinecode">=</span> <span class="inlinecode">5</span>,
    and we want to add them all up,  5+4+3+2+1=15.
   Suppose we've already added up the first <span class="inlinecode"><span class="id" type="var">i</span></span> of them  (let <span class="inlinecode"><span class="id" type="var">i</span>=2</span> for example),
   that is, 5+4=9, and we want to add the next one, that is, the <span class="inlinecode"><span class="id" type="var">ith</span></span> one.
   That is, we want to add <span class="inlinecode">9+3</span>.  How do we know that won't overflow
-  the range of C-language signed integer arithmetic?  We assume that
-  one integer variable holds <span class="inlinecode"><span class="id" type="var">Vint</span></span> <span class="inlinecode">(<span class="id" type="var">Int.repr</span></span> <span class="inlinecode">(<span class="id" type="var">sublist</span></span> <span class="inlinecode">0</span> <span class="inlinecode"><span class="id" type="var">i</span></span> <span class="inlinecode"><span class="id" type="var">il</span>))</span>, that is, <span class="inlinecode">5+4</span>,
-  and another integer variables holds <span class="inlinecode"><span class="id" type="var">Vint</span></span> <span class="inlinecode">(<span class="id" type="var">Int.repr</span></span> <span class="inlinecode">(<span class="id" type="var">Znth</span></span> <span class="inlinecode"><span class="id" type="var">i</span></span> <span class="inlinecode"><span class="id" type="var">il</span>)</span>, that is, <span class="inlinecode">3</span>.
-  Then we need to ensure that
-  <span class="inlinecode"><span class="id" type="var">Int.min_signed</span></span> <span class="inlinecode">≤</span> 
-   <span class="inlinecode"><span class="id" type="var">Int.signed</span></span> <span class="inlinecode">(<span class="id" type="var">Int.repr</span></span> <span class="inlinecode">(<span class="id" type="var">add_list</span></span> <span class="inlinecode">(<span class="id" type="var">sublist</span></span> <span class="inlinecode">0</span> <span class="inlinecode"><span class="id" type="var">i</span></span> <span class="inlinecode"><span class="id" type="var">il</span>)))</span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" type="var">Int.signed</span></span> <span class="inlinecode">(<span class="id" type="var">Int.repr</span></span> <span class="inlinecode">(<span class="id" type="var">Znth</span></span> <span class="inlinecode"><span class="id" type="var">i</span></span> <span class="inlinecode"><span class="id" type="var">il</span>))</span>
-   <span class="inlinecode">≤</span> <span class="inlinecode"><span class="id" type="var">Int.max_signed</span></span>.
-
-<div class="paragraph"> </div>
-
-   What we know is that every element of the list is nonnegative, and the whole
-   list adds up to a number &lt;= Int.max_signed.
+  the range of C-language signed integer arithmetic?  
+    The proof goes:  Every element of the list is nonnegative; the whole
+   list adds up to a number &lt;= Int.max_signed; and any sublist of an
+   all-nonnegative list adds up to less-or-equal to the total of the whole list.
 
 </div>
 <div class="code code-tight">
@@ -523,7 +526,7 @@ To do the next proof, split up <span class="inlinecode"><span class="id" type="v
 <div class="doc less-space">
 <div class="paragraph"> </div>
 
-<a name="lab59"></a><h4 class="section">Exercise: 3 stars (body_pop_and_add)</h4>
+<a name="lab60"></a><h4 class="section">Exercise: 3 stars (body_pop_and_add)</h4>
 
 </div>
 <div class="code code-space">
@@ -582,7 +585,7 @@ oops!  we can't go <span class="inlinecode"><span class="id" type="var">forward<
 <div class="doc less-space">
 <div class="paragraph"> </div>
 
-<a name="lab60"></a><h4 class="section">Exercise: 3 stars (body_main)</h4>
+<a name="lab61"></a><h4 class="section">Exercise: 3 stars (body_main)</h4>
 
 </div>
 <div class="code code-space">

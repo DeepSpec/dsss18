@@ -87,22 +87,24 @@ Print Z.succ.  (* Hint!  [Z.succ(x)] unfolds to [x+1] *)
 (* FILL IN HERE *) Admitted.
 (** [] *)
 
+
 (* ----------------------------------------------------------------- *)
 (** *** A theorem about the nth triangular number *)
 
-Definition add_list : list Z -> Z := fold_right Z.add 0.
+Definition add_list: list Z -> Z := fold_right Z.add 0.
+
+(** **** Exercise: 2 stars (add_list_decreasing)  *)
 
 (** Theorem:  the sum of the list  [(n)::(n-1):: ... :: 2::1] is the triangular number of [n]. *)
-Lemma add_list_decreasing_eq: forall n,
+
+Lemma add_list_decreasing_eq_alt: forall n,
   0 <= n ->
-  add_list (decreasing n) = n * (n+1) / 2.
+  (2 * (add_list (decreasing n)))%Z = (n * (n+1))%Z.
 Proof.
-intros.
-pattern n; apply Zinduction.
-*
-reflexivity.
-*
-intros.
+  intros.
+  pattern n; apply Zinduction.
+  - reflexivity.
+  - intros.
 (** WARNING!  When using functions defined by [Function], don't unfold them!
    Temporarily remove the (* comment *) brackets from the next line to see what happens! *)
 (*  unfold decreasing. *)
@@ -111,24 +113,29 @@ intros.
    for the Function.  Go back up and reprocess the [Defined.] line that terminated
    [Function decreasing], and notice what happens in Coq's error-message window:
    it says that lots of additional reasoning principles are defined for the new [Function].
-   (For some reason, Coq 8.7 and 8.8 do not mention [decreasing_equation], but it is
+   (For some reason, Coq 8.8 does not mention [decreasing_equation], but it is
     defined at the same time as the others.)  *)
 Check decreasing_equation.
-rewrite decreasing_equation.
-rewrite if_true by omega.
-simpl.
-rewrite H1; clear H1.
-rewrite Z.sub_add.
-rewrite Z.mul_comm.
-rewrite Z.add_comm.
-rewrite <- Z.div_add by omega.
-f_equal.
-rewrite <- Z.mul_add_distr_l.
-f_equal.
-omega.
-*
-omega.
-Qed.
+
+    rewrite decreasing_equation.
+
+(** during the proof of this lemma, you may
+find the [ring_simplify] tactic useful.  Read
+about it in the Coq reference manual.  Basically,
+it takes formulas with multiplication and addition,
+and simplifies them.  But you can do this without
+[ring_simplify], using just ordinary rewriting
+with lemmas about Z.add and Z.mul.  *)
+(* FILL IN HERE *) Admitted.
+
+Lemma add_list_decreasing_eq: forall n,
+  0 <= n ->
+  add_list (decreasing n) = n * (n+1) / 2.
+Proof.
+  intros.
+  apply Z.div_unique_exact.
+(* FILL IN HERE *) Admitted.
+(** [] *)
 
 (* ----------------------------------------------------------------- *)
 (** *** Definitions copied from Verif_stack.v *)
@@ -300,16 +307,10 @@ Proof.
   Suppose we've already added up the first [i] of them  (let [i=2] for example),
   that is, 5+4=9, and we want to add the next one, that is, the [ith] one.
   That is, we want to add [9+3].  How do we know that won't overflow
-  the range of C-language signed integer arithmetic?  We assume that
-  one integer variable holds [Vint (Int.repr (sublist 0 i il))], that is, [5+4],
-  and another integer variables holds [Vint (Int.repr (Znth i il)], that is, [3].
-  Then we need to ensure that
-  [Int.min_signed <= 
-   Int.signed (Int.repr (add_list (sublist 0 i il))) + Int.signed (Int.repr (Znth i il))
-   <= Int.max_signed].
-
-   What we know is that every element of the list is nonnegative, and the whole
-   list adds up to a number <= Int.max_signed.
+  the range of C-language signed integer arithmetic?  
+    The proof goes:  Every element of the list is nonnegative; the whole
+   list adds up to a number <= Int.max_signed; and any sublist of an
+   all-nonnegative list adds up to less-or-equal to the total of the whole list.
 *)
 
 Lemma add_another:

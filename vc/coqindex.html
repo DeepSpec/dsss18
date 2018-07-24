@@ -23,7 +23,6 @@
 <ul id='menu'>
    <a href='toc.html'><li class='section_name'>Table of Contents</li></a>
    <a href='coqindex.html'><li class='section_name'>Index</li></a>
-   <a href='deps.html'><li class='section_name'>Roadmap</li></a>
 </ul>
 </a></div>
 
@@ -59,7 +58,7 @@
 <td>Y</td>
 <td><a href="coqindex.html#global_Z">Z</a></td>
 <td>_</td>
-<td>(199 entries)</td>
+<td>(201 entries)</td>
 </tr>
 <tr>
 <td>Module Index</td>
@@ -152,7 +151,7 @@
 <td>Y</td>
 <td><a href="coqindex.html#lemma_Z">Z</a></td>
 <td>_</td>
-<td>(81 entries)</td>
+<td>(83 entries)</td>
 </tr>
 <tr>
 <td>Axiom Index</td>
@@ -255,6 +254,7 @@
 <a href="Verif_triang.html#add_list">add_list</a> [definition, in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <a href="Verif_triang.html#add_list_app">add_list_app</a> [lemma, in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <a href="Verif_triang.html#add_list_decreasing_eq">add_list_decreasing_eq</a> [lemma, in <a href="Verif_triang.html">Verif_triang</a>]<br/>
+<a href="Verif_triang.html#add_list_decreasing_eq_alt">add_list_decreasing_eq_alt</a> [lemma, in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <a href="Verif_triang.html#add_list_nonneg">add_list_nonneg</a> [lemma, in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <a href="Verif_triang.html#add_list_sublist_bounds">add_list_sublist_bounds</a> [lemma, in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <a href="Verif_append.html#append_spec">append_spec</a> [definition, in <a href="Verif_append.html">Verif_append</a>]<br/>
@@ -264,8 +264,8 @@
 <a href="Verif_hash.html#body_hash">body_hash</a> [lemma, in <a href="Verif_hash.html">Verif_hash</a>]<br/>
 <a href="Verif_hash.html#body_incr">body_incr</a> [lemma, in <a href="Verif_hash.html">Verif_hash</a>]<br/>
 <a href="Verif_hash.html#body_incr_list">body_incr_list</a> [lemma, in <a href="Verif_hash.html">Verif_hash</a>]<br/>
-<a href="Verif_sumarray.html#body_main">body_main</a> [lemma, in <a href="Verif_sumarray.html">Verif_sumarray</a>]<br/>
 <a href="Verif_triang.html#body_main">body_main</a> [lemma, in <a href="Verif_triang.html">Verif_triang</a>]<br/>
+<a href="Verif_sumarray.html#body_main">body_main</a> [lemma, in <a href="Verif_sumarray.html">Verif_sumarray</a>]<br/>
 <a href="Verif_stack.html#body_newstack">body_newstack</a> [lemma, in <a href="Verif_stack.html">Verif_stack</a>]<br/>
 <a href="Verif_hash.html#body_new_cell">body_new_cell</a> [lemma, in <a href="Verif_hash.html">Verif_hash</a>]<br/>
 <a href="Verif_hash.html#body_new_table">body_new_table</a> [lemma, in <a href="Verif_hash.html">Verif_hash</a>]<br/>
@@ -328,11 +328,11 @@
 <a href="Verif_hash.html#get_spec">get_spec</a> [definition, in <a href="Verif_hash.html">Verif_hash</a>]<br/>
 <a href="Verif_sumarray.html#Gprog">Gprog</a> [definition, in <a href="Verif_sumarray.html">Verif_sumarray</a>]<br/>
 <a href="Verif_strlib.html#Gprog">Gprog</a> [definition, in <a href="Verif_strlib.html">Verif_strlib</a>]<br/>
-<a href="Verif_stack.html#Gprog">Gprog</a> [definition, in <a href="Verif_stack.html">Verif_stack</a>]<br/>
+<a href="Verif_hash.html#Gprog">Gprog</a> [definition, in <a href="Verif_hash.html">Verif_hash</a>]<br/>
 <a href="Verif_reverse.html#Gprog">Gprog</a> [definition, in <a href="Verif_reverse.html">Verif_reverse</a>]<br/>
 <a href="Verif_append.html#Gprog">Gprog</a> [definition, in <a href="Verif_append.html">Verif_append</a>]<br/>
-<a href="Verif_hash.html#Gprog">Gprog</a> [definition, in <a href="Verif_hash.html">Verif_hash</a>]<br/>
 <a href="Verif_triang.html#Gprog">Gprog</a> [definition, in <a href="Verif_triang.html">Verif_triang</a>]<br/>
+<a href="Verif_stack.html#Gprog">Gprog</a> [definition, in <a href="Verif_stack.html">Verif_stack</a>]<br/>
 <br/><br/><a name="global_H"></a><h2>H </h2>
 <a href="Hashfun.html#hashfun">hashfun</a> [definition, in <a href="Hashfun.html">Hashfun</a>]<br/>
 <a href="Hashfun.html">Hashfun</a> [library]<br/>
@@ -362,31 +362,32 @@
 <a href="Hashfun.html#IntHashTable.incr_invariant">IntHashTable.incr_invariant</a> [lemma, in <a href="Hashfun.html">Hashfun</a>]<br/>
 <a href="Hashfun.html#IntHashTable.key">IntHashTable.key</a> [definition, in <a href="Hashfun.html">Hashfun</a>]<br/>
 <a href="Hashfun.html#IntHashTable.table">IntHashTable.table</a> [definition, in <a href="Hashfun.html">Hashfun</a>]<br/>
+<a href="Hashfun.html#Int_repr_eq_mod">Int_repr_eq_mod</a> [lemma, in <a href="Hashfun.html">Hashfun</a>]<br/>
 <a href="Verif_hash.html#iter_sepcon_listrep_local_facts">iter_sepcon_listrep_local_facts</a> [lemma, in <a href="Verif_hash.html">Verif_hash</a>]<br/>
 <a href="Verif_hash.html#iter_sepcon_split3">iter_sepcon_split3</a> [lemma, in <a href="Verif_hash.html">Verif_hash</a>]<br/>
 <br/><br/><a name="global_L"></a><h2>L </h2>
 <a href="Verif_hash.html#listboxrep">listboxrep</a> [definition, in <a href="Verif_hash.html">Verif_hash</a>]<br/>
 <a href="Verif_hash.html#listboxrep_traverse">listboxrep_traverse</a> [lemma, in <a href="Verif_hash.html">Verif_hash</a>]<br/>
 <a href="Verif_hash.html#listcell_fold">listcell_fold</a> [lemma, in <a href="Verif_hash.html">Verif_hash</a>]<br/>
+<a href="Verif_hash.html#listrep">listrep</a> [definition, in <a href="Verif_hash.html">Verif_hash</a>]<br/>
 <a href="Verif_reverse.html#listrep">listrep</a> [definition, in <a href="Verif_reverse.html">Verif_reverse</a>]<br/>
 <a href="Verif_append.html#listrep">listrep</a> [definition, in <a href="Verif_append.html">Verif_append</a>]<br/>
-<a href="Verif_triang.html#listrep">listrep</a> [definition, in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <a href="Verif_stack.html#listrep">listrep</a> [definition, in <a href="Verif_stack.html">Verif_stack</a>]<br/>
-<a href="Verif_hash.html#listrep">listrep</a> [definition, in <a href="Verif_hash.html">Verif_hash</a>]<br/>
+<a href="Verif_triang.html#listrep">listrep</a> [definition, in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <a href="Verif_reverse.html#listrep_facts_example">listrep_facts_example</a> [lemma, in <a href="Verif_reverse.html">Verif_reverse</a>]<br/>
 <a href="Verif_reverse.html#listrep_facts_example">listrep_facts_example</a> [lemma, in <a href="Verif_reverse.html">Verif_reverse</a>]<br/>
 <a href="Verif_hash.html#listrep_fold">listrep_fold</a> [lemma, in <a href="Verif_hash.html">Verif_hash</a>]<br/>
 <a href="Verif_append.html#listrep_local_facts">listrep_local_facts</a> [lemma, in <a href="Verif_append.html">Verif_append</a>]<br/>
 <a href="Verif_reverse.html#listrep_local_facts">listrep_local_facts</a> [lemma, in <a href="Verif_reverse.html">Verif_reverse</a>]<br/>
-<a href="Verif_stack.html#listrep_local_prop">listrep_local_prop</a> [lemma, in <a href="Verif_stack.html">Verif_stack</a>]<br/>
-<a href="Verif_triang.html#listrep_local_prop">listrep_local_prop</a> [lemma, in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <a href="Verif_hash.html#listrep_local_prop">listrep_local_prop</a> [lemma, in <a href="Verif_hash.html">Verif_hash</a>]<br/>
+<a href="Verif_triang.html#listrep_local_prop">listrep_local_prop</a> [lemma, in <a href="Verif_triang.html">Verif_triang</a>]<br/>
+<a href="Verif_stack.html#listrep_local_prop">listrep_local_prop</a> [lemma, in <a href="Verif_stack.html">Verif_stack</a>]<br/>
 <a href="Verif_hash.html#listrep_traverse">listrep_traverse</a> [lemma, in <a href="Verif_hash.html">Verif_hash</a>]<br/>
-<a href="Verif_triang.html#listrep_valid_pointer">listrep_valid_pointer</a> [lemma, in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <a href="Verif_reverse.html#listrep_valid_pointer">listrep_valid_pointer</a> [lemma, in <a href="Verif_reverse.html">Verif_reverse</a>]<br/>
 <a href="Verif_stack.html#listrep_valid_pointer">listrep_valid_pointer</a> [lemma, in <a href="Verif_stack.html">Verif_stack</a>]<br/>
 <a href="Verif_append.html#listrep_valid_pointer">listrep_valid_pointer</a> [lemma, in <a href="Verif_append.html">Verif_append</a>]<br/>
 <a href="Verif_hash.html#listrep_valid_pointer">listrep_valid_pointer</a> [lemma, in <a href="Verif_hash.html">Verif_hash</a>]<br/>
+<a href="Verif_triang.html#listrep_valid_pointer">listrep_valid_pointer</a> [lemma, in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <a href="Verif_reverse.html#listrep_valid_pointer_example">listrep_valid_pointer_example</a> [lemma, in <a href="Verif_reverse.html">Verif_reverse</a>]<br/>
 <a href="Verif_hash.html#list_cell">list_cell</a> [definition, in <a href="Verif_hash.html">Verif_hash</a>]<br/>
 <a href="Verif_hash.html#list_cell_local_facts">list_cell_local_facts</a> [definition, in <a href="Verif_hash.html">Verif_hash</a>]<br/>
@@ -411,21 +412,21 @@
 <a href="Hashfun.html#N_eq">N_eq</a> [lemma, in <a href="Hashfun.html">Hashfun</a>]<br/>
 <br/><br/><a name="global_P"></a><h2>P </h2>
 <a href="Verif_triang.html#pop_and_add_spec">pop_and_add_spec</a> [definition, in <a href="Verif_triang.html">Verif_triang</a>]<br/>
-<a href="Verif_stack.html#pop_spec">pop_spec</a> [definition, in <a href="Verif_stack.html">Verif_stack</a>]<br/>
 <a href="Verif_triang.html#pop_spec">pop_spec</a> [definition, in <a href="Verif_triang.html">Verif_triang</a>]<br/>
+<a href="Verif_stack.html#pop_spec">pop_spec</a> [definition, in <a href="Verif_stack.html">Verif_stack</a>]<br/>
 <a href="Preface.html">Preface</a> [library]<br/>
 <a href="Verif_sumarray.html#prog_correct">prog_correct</a> [lemma, in <a href="Verif_sumarray.html">Verif_sumarray</a>]<br/>
 <a href="Verif_triang.html#push_increasing_spec">push_increasing_spec</a> [definition, in <a href="Verif_triang.html">Verif_triang</a>]<br/>
-<a href="Verif_triang.html#push_spec">push_spec</a> [definition, in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <a href="Verif_stack.html#push_spec">push_spec</a> [definition, in <a href="Verif_stack.html">Verif_stack</a>]<br/>
+<a href="Verif_triang.html#push_spec">push_spec</a> [definition, in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <br/><br/><a name="global_R"></a><h2>R </h2>
 <a href="Verif_reverse.html#reverse_spec">reverse_spec</a> [definition, in <a href="Verif_reverse.html">Verif_reverse</a>]<br/>
 <br/><br/><a name="global_S"></a><h2>S </h2>
 <a href="Verif_strlib.html#split_data_at_app_tschar">split_data_at_app_tschar</a> [lemma, in <a href="Verif_strlib.html">Verif_strlib</a>]<br/>
 <a href="Verif_triang.html#stack">stack</a> [definition, in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <a href="Verif_stack.html#stack">stack</a> [definition, in <a href="Verif_stack.html">Verif_stack</a>]<br/>
-<a href="Verif_triang.html#stack_local_prop">stack_local_prop</a> [lemma, in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <a href="Verif_stack.html#stack_local_prop">stack_local_prop</a> [lemma, in <a href="Verif_stack.html">Verif_stack</a>]<br/>
+<a href="Verif_triang.html#stack_local_prop">stack_local_prop</a> [lemma, in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <a href="Verif_stack.html#stack_valid_pointer">stack_valid_pointer</a> [lemma, in <a href="Verif_stack.html">Verif_stack</a>]<br/>
 <a href="Verif_triang.html#stack_valid_pointer">stack_valid_pointer</a> [lemma, in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <a href="Verif_hash.html#strcmp_spec">strcmp_spec</a> [definition, in <a href="Verif_hash.html">Verif_hash</a>]<br/>
@@ -496,6 +497,7 @@
 <a href="Verif_triang.html#add_another">add_another</a> [in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <a href="Verif_triang.html#add_list_app">add_list_app</a> [in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <a href="Verif_triang.html#add_list_decreasing_eq">add_list_decreasing_eq</a> [in <a href="Verif_triang.html">Verif_triang</a>]<br/>
+<a href="Verif_triang.html#add_list_decreasing_eq_alt">add_list_decreasing_eq_alt</a> [in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <a href="Verif_triang.html#add_list_nonneg">add_list_nonneg</a> [in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <a href="Verif_triang.html#add_list_sublist_bounds">add_list_sublist_bounds</a> [in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <br/><br/><a name="lemma_B"></a><h2>B </h2>
@@ -504,8 +506,8 @@
 <a href="Verif_hash.html#body_hash">body_hash</a> [in <a href="Verif_hash.html">Verif_hash</a>]<br/>
 <a href="Verif_hash.html#body_incr">body_incr</a> [in <a href="Verif_hash.html">Verif_hash</a>]<br/>
 <a href="Verif_hash.html#body_incr_list">body_incr_list</a> [in <a href="Verif_hash.html">Verif_hash</a>]<br/>
-<a href="Verif_sumarray.html#body_main">body_main</a> [in <a href="Verif_sumarray.html">Verif_sumarray</a>]<br/>
 <a href="Verif_triang.html#body_main">body_main</a> [in <a href="Verif_triang.html">Verif_triang</a>]<br/>
+<a href="Verif_sumarray.html#body_main">body_main</a> [in <a href="Verif_sumarray.html">Verif_sumarray</a>]<br/>
 <a href="Verif_stack.html#body_newstack">body_newstack</a> [in <a href="Verif_stack.html">Verif_stack</a>]<br/>
 <a href="Verif_hash.html#body_new_cell">body_new_cell</a> [in <a href="Verif_hash.html">Verif_hash</a>]<br/>
 <a href="Verif_hash.html#body_new_table">body_new_table</a> [in <a href="Verif_hash.html">Verif_hash</a>]<br/>
@@ -543,6 +545,7 @@
 <a href="Hashfun.html#IntHashTable.gso">IntHashTable.gso</a> [in <a href="Hashfun.html">Hashfun</a>]<br/>
 <a href="Hashfun.html#IntHashTable.gss">IntHashTable.gss</a> [in <a href="Hashfun.html">Hashfun</a>]<br/>
 <a href="Hashfun.html#IntHashTable.incr_invariant">IntHashTable.incr_invariant</a> [in <a href="Hashfun.html">Hashfun</a>]<br/>
+<a href="Hashfun.html#Int_repr_eq_mod">Int_repr_eq_mod</a> [in <a href="Hashfun.html">Hashfun</a>]<br/>
 <a href="Verif_hash.html#iter_sepcon_listrep_local_facts">iter_sepcon_listrep_local_facts</a> [in <a href="Verif_hash.html">Verif_hash</a>]<br/>
 <a href="Verif_hash.html#iter_sepcon_split3">iter_sepcon_split3</a> [in <a href="Verif_hash.html">Verif_hash</a>]<br/>
 <br/><br/><a name="lemma_L"></a><h2>L </h2>
@@ -553,15 +556,15 @@
 <a href="Verif_hash.html#listrep_fold">listrep_fold</a> [in <a href="Verif_hash.html">Verif_hash</a>]<br/>
 <a href="Verif_append.html#listrep_local_facts">listrep_local_facts</a> [in <a href="Verif_append.html">Verif_append</a>]<br/>
 <a href="Verif_reverse.html#listrep_local_facts">listrep_local_facts</a> [in <a href="Verif_reverse.html">Verif_reverse</a>]<br/>
-<a href="Verif_stack.html#listrep_local_prop">listrep_local_prop</a> [in <a href="Verif_stack.html">Verif_stack</a>]<br/>
-<a href="Verif_triang.html#listrep_local_prop">listrep_local_prop</a> [in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <a href="Verif_hash.html#listrep_local_prop">listrep_local_prop</a> [in <a href="Verif_hash.html">Verif_hash</a>]<br/>
+<a href="Verif_triang.html#listrep_local_prop">listrep_local_prop</a> [in <a href="Verif_triang.html">Verif_triang</a>]<br/>
+<a href="Verif_stack.html#listrep_local_prop">listrep_local_prop</a> [in <a href="Verif_stack.html">Verif_stack</a>]<br/>
 <a href="Verif_hash.html#listrep_traverse">listrep_traverse</a> [in <a href="Verif_hash.html">Verif_hash</a>]<br/>
-<a href="Verif_triang.html#listrep_valid_pointer">listrep_valid_pointer</a> [in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <a href="Verif_reverse.html#listrep_valid_pointer">listrep_valid_pointer</a> [in <a href="Verif_reverse.html">Verif_reverse</a>]<br/>
 <a href="Verif_stack.html#listrep_valid_pointer">listrep_valid_pointer</a> [in <a href="Verif_stack.html">Verif_stack</a>]<br/>
 <a href="Verif_append.html#listrep_valid_pointer">listrep_valid_pointer</a> [in <a href="Verif_append.html">Verif_append</a>]<br/>
 <a href="Verif_hash.html#listrep_valid_pointer">listrep_valid_pointer</a> [in <a href="Verif_hash.html">Verif_hash</a>]<br/>
+<a href="Verif_triang.html#listrep_valid_pointer">listrep_valid_pointer</a> [in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <a href="Verif_reverse.html#listrep_valid_pointer_example">listrep_valid_pointer_example</a> [in <a href="Verif_reverse.html">Verif_reverse</a>]<br/>
 <a href="Verif_append.html#lseg_app">lseg_app</a> [in <a href="Verif_append.html">Verif_append</a>]<br/>
 <a href="Verif_append.html#lseg_listrep">lseg_listrep</a> [in <a href="Verif_append.html">Verif_append</a>]<br/>
@@ -573,8 +576,8 @@
 <a href="Verif_sumarray.html#prog_correct">prog_correct</a> [in <a href="Verif_sumarray.html">Verif_sumarray</a>]<br/>
 <br/><br/><a name="lemma_S"></a><h2>S </h2>
 <a href="Verif_strlib.html#split_data_at_app_tschar">split_data_at_app_tschar</a> [in <a href="Verif_strlib.html">Verif_strlib</a>]<br/>
-<a href="Verif_triang.html#stack_local_prop">stack_local_prop</a> [in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <a href="Verif_stack.html#stack_local_prop">stack_local_prop</a> [in <a href="Verif_stack.html">Verif_stack</a>]<br/>
+<a href="Verif_triang.html#stack_local_prop">stack_local_prop</a> [in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <a href="Verif_stack.html#stack_valid_pointer">stack_valid_pointer</a> [in <a href="Verif_stack.html">Verif_stack</a>]<br/>
 <a href="Verif_triang.html#stack_valid_pointer">stack_valid_pointer</a> [in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <a href="Verif_reverse.html#struct_list_valid_pointer_example">struct_list_valid_pointer_example</a> [in <a href="Verif_reverse.html">Verif_reverse</a>]<br/>
@@ -633,11 +636,11 @@
 <a href="Verif_hash.html#get_spec">get_spec</a> [in <a href="Verif_hash.html">Verif_hash</a>]<br/>
 <a href="Verif_sumarray.html#Gprog">Gprog</a> [in <a href="Verif_sumarray.html">Verif_sumarray</a>]<br/>
 <a href="Verif_strlib.html#Gprog">Gprog</a> [in <a href="Verif_strlib.html">Verif_strlib</a>]<br/>
-<a href="Verif_stack.html#Gprog">Gprog</a> [in <a href="Verif_stack.html">Verif_stack</a>]<br/>
+<a href="Verif_hash.html#Gprog">Gprog</a> [in <a href="Verif_hash.html">Verif_hash</a>]<br/>
 <a href="Verif_reverse.html#Gprog">Gprog</a> [in <a href="Verif_reverse.html">Verif_reverse</a>]<br/>
 <a href="Verif_append.html#Gprog">Gprog</a> [in <a href="Verif_append.html">Verif_append</a>]<br/>
-<a href="Verif_hash.html#Gprog">Gprog</a> [in <a href="Verif_hash.html">Verif_hash</a>]<br/>
 <a href="Verif_triang.html#Gprog">Gprog</a> [in <a href="Verif_triang.html">Verif_triang</a>]<br/>
+<a href="Verif_stack.html#Gprog">Gprog</a> [in <a href="Verif_stack.html">Verif_stack</a>]<br/>
 <br/><br/><a name="definition_H"></a><h2>H </h2>
 <a href="Hashfun.html#hashfun">hashfun</a> [in <a href="Hashfun.html">Hashfun</a>]<br/>
 <a href="Hashfun.html#hashfun_aux">hashfun_aux</a> [in <a href="Hashfun.html">Hashfun</a>]<br/>
@@ -657,11 +660,11 @@
 <a href="Hashfun.html#IntHashTable.table">IntHashTable.table</a> [in <a href="Hashfun.html">Hashfun</a>]<br/>
 <br/><br/><a name="definition_L"></a><h2>L </h2>
 <a href="Verif_hash.html#listboxrep">listboxrep</a> [in <a href="Verif_hash.html">Verif_hash</a>]<br/>
+<a href="Verif_hash.html#listrep">listrep</a> [in <a href="Verif_hash.html">Verif_hash</a>]<br/>
 <a href="Verif_reverse.html#listrep">listrep</a> [in <a href="Verif_reverse.html">Verif_reverse</a>]<br/>
 <a href="Verif_append.html#listrep">listrep</a> [in <a href="Verif_append.html">Verif_append</a>]<br/>
-<a href="Verif_triang.html#listrep">listrep</a> [in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <a href="Verif_stack.html#listrep">listrep</a> [in <a href="Verif_stack.html">Verif_stack</a>]<br/>
-<a href="Verif_hash.html#listrep">listrep</a> [in <a href="Verif_hash.html">Verif_hash</a>]<br/>
+<a href="Verif_triang.html#listrep">listrep</a> [in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <a href="Verif_hash.html#list_cell">list_cell</a> [in <a href="Verif_hash.html">Verif_hash</a>]<br/>
 <a href="Verif_hash.html#list_cell_local_facts">list_cell_local_facts</a> [in <a href="Verif_hash.html">Verif_hash</a>]<br/>
 <a href="Verif_hash.html#list_cell_valid_pointer">list_cell_valid_pointer</a> [in <a href="Verif_hash.html">Verif_hash</a>]<br/>
@@ -680,11 +683,11 @@
 <a href="Verif_hash.html#new_table_spec">new_table_spec</a> [in <a href="Verif_hash.html">Verif_hash</a>]<br/>
 <br/><br/><a name="definition_P"></a><h2>P </h2>
 <a href="Verif_triang.html#pop_and_add_spec">pop_and_add_spec</a> [in <a href="Verif_triang.html">Verif_triang</a>]<br/>
-<a href="Verif_stack.html#pop_spec">pop_spec</a> [in <a href="Verif_stack.html">Verif_stack</a>]<br/>
 <a href="Verif_triang.html#pop_spec">pop_spec</a> [in <a href="Verif_triang.html">Verif_triang</a>]<br/>
+<a href="Verif_stack.html#pop_spec">pop_spec</a> [in <a href="Verif_stack.html">Verif_stack</a>]<br/>
 <a href="Verif_triang.html#push_increasing_spec">push_increasing_spec</a> [in <a href="Verif_triang.html">Verif_triang</a>]<br/>
-<a href="Verif_triang.html#push_spec">push_spec</a> [in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <a href="Verif_stack.html#push_spec">push_spec</a> [in <a href="Verif_stack.html">Verif_stack</a>]<br/>
+<a href="Verif_triang.html#push_spec">push_spec</a> [in <a href="Verif_triang.html">Verif_triang</a>]<br/>
 <br/><br/><a name="definition_R"></a><h2>R </h2>
 <a href="Verif_reverse.html#reverse_spec">reverse_spec</a> [in <a href="Verif_reverse.html">Verif_reverse</a>]<br/>
 <br/><br/><a name="definition_S"></a><h2>S </h2>
@@ -746,7 +749,7 @@
 <td>Y</td>
 <td><a href="coqindex.html#global_Z">Z</a></td>
 <td>_</td>
-<td>(199 entries)</td>
+<td>(201 entries)</td>
 </tr>
 <tr>
 <td>Module Index</td>
@@ -839,7 +842,7 @@
 <td>Y</td>
 <td><a href="coqindex.html#lemma_Z">Z</a></td>
 <td>_</td>
-<td>(81 entries)</td>
+<td>(83 entries)</td>
 </tr>
 <tr>
 <td>Axiom Index</td>

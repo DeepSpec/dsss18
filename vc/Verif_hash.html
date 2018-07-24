@@ -23,7 +23,6 @@
 <ul id='menu'>
    <a href='toc.html'><li class='section_name'>Table of Contents</li></a>
    <a href='coqindex.html'><li class='section_name'>Index</li></a>
-   <a href='deps.html'><li class='section_name'>Roadmap</li></a>
 </ul>
 </a></div>
 
@@ -47,8 +46,8 @@
 </div>
 
 <div class="doc">
-<a name="lab83"></a><h2 class="section">Function specifications</h2>
-<a name="lab84"></a><h3 class="section">Imports from the C string library</h3>
+<a name="lab84"></a><h2 class="section">Function specifications</h2>
+<a name="lab85"></a><h3 class="section">Imports from the C string library</h3>
 
 </div>
 <div class="code code-space">
@@ -91,7 +90,7 @@
 </div>
 
 <div class="doc">
-<a name="lab85"></a><h3 class="section">String functions:  copy, hash</h3>
+<a name="lab86"></a><h3 class="section">String functions:  copy, hash</h3>
 
 </div>
 <div class="code code-space">
@@ -107,9 +106,9 @@
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span> (<span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#sigma"><span class="id" type="variable">sigma</span></a> <a class="idref" href="Verif_hash.html#s"><span class="id" type="variable">s</span></a>; <span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#sigma"><span class="id" type="variable">sigma</span></a> <a class="idref" href="Verif_hash.html#p"><span class="id" type="variable">p</span></a>).<br/><hr class='doublespaceincode'/>
 <span class="id" type="keyword">Definition</span> <a name="hash_spec"><span class="id" type="definition">hash_spec</span></a> : <span class="id" type="definition">ident</span> * <span class="id" type="inductive">funspec</span> :=<br/>
 &nbsp;&nbsp;<span class="id" type="notation">DECLARE</span> <span class="id" type="definition">_hash</span><br/>
-&nbsp;&nbsp;<span class="id" type="notation">WITH</span> <span class="id" type="var">s</span>: <span class="id" type="inductive">val</span>, <span class="id" type="var">sh</span> : <span class="id" type="definition">share</span>, <span class="id" type="var">contents</span> : <a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a><br/>
+&nbsp;&nbsp;<span class="id" type="notation">WITH</span> <span class="id" type="var">s</span>: <span class="id" type="inductive">val</span>, <span class="id" type="var">contents</span> : <a class="idref" href="Hashfun.html#string"><span class="id" type="definition">string</span></a><br/>
 &nbsp;&nbsp;<span class="id" type="var">PRE</span> [ <span class="id" type="definition">_s</span> <span class="id" type="var">OF</span> (<span class="id" type="definition">tptr</span> <span class="id" type="definition">tschar</span>) ]<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span>  (<span class="id" type="definition">readable_share</span> <a class="idref" href="Verif_hash.html#sh"><span class="id" type="variable">sh</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">PROP</span>  ()<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">LOCAL</span> (<span class="id" type="constructor">temp</span> <span class="id" type="definition">_s</span> <a class="idref" href="Verif_hash.html#s"><span class="id" type="variable">s</span></a>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="notation">SEP</span>   (<span class="id" type="definition">cstring</span> <span class="id" type="definition">Tsh</span> <a class="idref" href="Verif_hash.html#contents"><span class="id" type="variable">contents</span></a> <a class="idref" href="Verif_hash.html#s"><span class="id" type="variable">s</span></a>)<br/>
 &nbsp;&nbsp;<span class="id" type="var">POST</span> [ <span class="id" type="definition">tuint</span> ]<br/>
@@ -119,7 +118,7 @@
 </div>
 
 <div class="doc">
-<a name="lab86"></a><h3 class="section">Data structures for hash table</h3>
+<a name="lab87"></a><h3 class="section">Data structures for hash table</h3>
 
 </div>
 <div class="code code-space">
@@ -141,7 +140,7 @@
 </div>
 
 <div class="doc">
-<a name="lab87"></a><h4 class="section">Exercise: 1 star (listcell_fold)</h4>
+<a name="lab88"></a><h4 class="section">Exercise: 1 star (listcell_fold)</h4>
 
 </div>
 <div class="code code-space">
@@ -164,7 +163,7 @@
 </div>
 
 <div class="doc">
-<a name="lab88"></a><h4 class="section">Exercise: 2 stars (listrep_hints)</h4>
+<a name="lab89"></a><h4 class="section">Exercise: 2 stars (listrep_hints)</h4>
 
 </div>
 <div class="code code-space">
@@ -200,7 +199,7 @@
 </div>
 
 <div class="doc">
-<a name="lab89"></a><h4 class="section">Exercise: 2 stars (hashtable_rep_hints)</h4>
+<a name="lab90"></a><h4 class="section">Exercise: 2 stars (hashtable_rep_hints)</h4>
 
 </div>
 <div class="code code-space">
@@ -218,7 +217,7 @@
 <div class="doc less-space">
 <div class="paragraph"> </div>
 
-<a name="lab90"></a><h3 class="section">Function specifications for hash table</h3>
+<a name="lab91"></a><h3 class="section">Function specifications for hash table</h3>
 
 </div>
 <div class="code code-space">
@@ -292,7 +291,7 @@
 </div>
 
 <div class="doc">
-<a name="lab91"></a><h2 class="section">Proofs of the function bodies</h2>
+<a name="lab92"></a><h2 class="section">Proofs of the function bodies</h2>
 
 <div class="paragraph"> </div>
 
@@ -387,7 +386,7 @@ Here is another demonstration.  When your loop on the
 </div>
 
 <div class="doc">
-<a name="lab92"></a><h4 class="section">Exercise: 3 stars (body_hash)</h4>
+<a name="lab93"></a><h4 class="section">Exercise: 3 stars (body_hash)</h4>
 
 </div>
 <div class="code code-space">
@@ -437,7 +436,7 @@ Before doing this proof, study some of the proofs in VST/progs/verif_strlib.v.
 <div class="doc less-space">
 <div class="paragraph"> </div>
 
-<a name="lab93"></a><h4 class="section">Exercise: 3 stars (body_new_cell)</h4>
+<a name="lab94"></a><h4 class="section">Exercise: 3 stars (body_new_cell)</h4>
 
 </div>
 <div class="code code-space">
@@ -450,11 +449,11 @@ Before doing this proof, study some of the proofs in VST/progs/verif_strlib.v.
 <div class="doc less-space">
 <div class="paragraph"> </div>
 
-<a name="lab94"></a><h2 class="section">Auxiliary lemmas about data-structure predicates</h2>
+<a name="lab95"></a><h2 class="section">Auxiliary lemmas about data-structure predicates</h2>
 
 <div class="paragraph"> </div>
 
-<a name="lab95"></a><h4 class="section">Exercise: 2 stars (iter_sepcon_hints)</h4>
+<a name="lab96"></a><h4 class="section">Exercise: 2 stars (iter_sepcon_hints)</h4>
 
 </div>
 <div class="code code-space">
@@ -471,7 +470,7 @@ Before doing this proof, study some of the proofs in VST/progs/verif_strlib.v.
 <div class="doc less-space">
 <div class="paragraph"> </div>
 
-<a name="lab96"></a><h4 class="section">Exercise: 2 stars (iter_sepcon_split3)</h4>
+<a name="lab97"></a><h4 class="section">Exercise: 2 stars (iter_sepcon_split3)</h4>
 
 </div>
 <div class="code code-space">
@@ -493,7 +492,7 @@ Before doing this proof, study some of the proofs in VST/progs/verif_strlib.v.
 <div class="doc less-space">
 <div class="paragraph"> </div>
 
-<a name="lab97"></a><h4 class="section">Exercise: 3 stars (body_new_table)</h4>
+<a name="lab98"></a><h4 class="section">Exercise: 3 stars (body_new_table)</h4>
 
 </div>
 <div class="code code-space">
@@ -549,7 +548,7 @@ The loop invariant in this function describes a partially initialized array.
 <div class="doc less-space">
 <div class="paragraph"> </div>
 
-<a name="lab98"></a><h4 class="section">Exercise: 3 stars (body_get)</h4>
+<a name="lab99"></a><h4 class="section">Exercise: 3 stars (body_get)</h4>
  The <span class="inlinecode"><span class="id" type="var">get</span></span> function traverses a linked list.  We will reason about linked-list traversal
    in separation logic using "Magic Wand as Frame" http://www.cs.princeton.edu/~appel/papers/wand-frame.pdf
    When the loop is partway down the linked list, we can view the original list
@@ -586,7 +585,7 @@ The loop invariant in this function describes a partially initialized array.
 <div class="doc less-space">
 <div class="paragraph"> </div>
 
-<a name="lab99"></a><h4 class="section">Exercise: 3 stars (listboxrep_traverse)</h4>
+<a name="lab100"></a><h4 class="section">Exercise: 3 stars (listboxrep_traverse)</h4>
 
 </div>
 <div class="code code-space">
@@ -634,7 +633,7 @@ Sometime during the proof below, you will have
 <div class="doc less-space">
 <div class="paragraph"> </div>
 
-<a name="lab100"></a><h4 class="section">Exercise: 2 stars (body_incr_list)</h4>
+<a name="lab101"></a><h4 class="section">Exercise: 2 stars (body_incr_list)</h4>
 
 </div>
 <div class="code code-space">
@@ -711,7 +710,7 @@ Here (array_with_hole sh t lo hi n al p) means
 </div>
 
 <div class="doc">
-<a name="lab101"></a><h4 class="section">Exercise: 4 stars (body_incr)</h4>
+<a name="lab102"></a><h4 class="section">Exercise: 4 stars (body_incr)</h4>
 
 </div>
 <div class="code code-space">

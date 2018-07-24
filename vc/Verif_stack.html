@@ -23,7 +23,6 @@
 <ul id='menu'>
    <a href='toc.html'><li class='section_name'>Table of Contents</li></a>
    <a href='coqindex.html'><li class='section_name'>Index</li></a>
-   <a href='deps.html'><li class='section_name'>Roadmap</li></a>
 </ul>
 </a></div>
 
@@ -242,6 +241,14 @@ If your source program says <span class="inlinecode"><span class="id" type="var"
 </div>
 
 <div class="doc">
+Proof automation for user-defined separation predicates works better
+  if you disable automatic simplification, as follows: 
+</div>
+<div class="code code-tight">
+<span class="id" type="var">Arguments</span> <a class="idref" href="Verif_stack.html#listrep"><span class="id" type="definition">listrep</span></a> <span class="id" type="var">il</span> <span class="id" type="var">p</span> : <span class="id" type="tactic">simpl</span> <span class="id" type="var">never</span>.<br/>
+</div>
+
+<div class="doc">
 As usual, we should populate the Hint databases
     <span class="inlinecode"><span class="id" type="var">saturate_local</span></span> and <span class="inlinecode"><span class="id" type="var">valid_pointer</span></span> 
 <div class="paragraph"> </div>
@@ -302,7 +309,8 @@ See if you can remember how to prove this; or look again
 &nbsp;<span class="id" type="notation">EX</span> <span class="id" type="var">q</span>: <span class="id" type="inductive">val</span>,<br/>
 &nbsp;&nbsp;<span class="id" type="axiom">malloc_token</span> <span class="id" type="definition">Tsh</span> (<span class="id" type="constructor">Tstruct</span> <span class="id" type="definition">_stack</span> <span class="id" type="definition">noattr</span>) <a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a> * <br/>
 &nbsp;&nbsp;<span class="id" type="definition">data_at</span> <span class="id" type="definition">Tsh</span> (<span class="id" type="constructor">Tstruct</span> <span class="id" type="definition">_stack</span> <span class="id" type="definition">noattr</span>) <a class="idref" href="Verif_stack.html#q"><span class="id" type="variable">q</span></a> <a class="idref" href="Verif_stack.html#p"><span class="id" type="variable">p</span></a> *<br/>
-&nbsp;&nbsp;<a class="idref" href="Verif_stack.html#listrep"><span class="id" type="definition">listrep</span></a> <a class="idref" href="Verif_stack.html#il"><span class="id" type="variable">il</span></a> <a class="idref" href="Verif_stack.html#q"><span class="id" type="variable">q</span></a>.<br/>
+&nbsp;&nbsp;<a class="idref" href="Verif_stack.html#listrep"><span class="id" type="definition">listrep</span></a> <a class="idref" href="Verif_stack.html#il"><span class="id" type="variable">il</span></a> <a class="idref" href="Verif_stack.html#q"><span class="id" type="variable">q</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="id" type="var">Arguments</span> <a class="idref" href="Verif_stack.html#stack"><span class="id" type="definition">stack</span></a> <span class="id" type="var">il</span> <span class="id" type="var">p</span> : <span class="id" type="tactic">simpl</span> <span class="id" type="var">never</span>.<br/>
 </div>
 
 <div class="doc">

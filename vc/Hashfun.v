@@ -185,6 +185,16 @@ Hint Rewrite Zlength_hashtable_incr using list_solve : sublist.
 (** [] *)
 
 (** **** Exercise: 3 stars (hashfun_snoc)  *)
+
+Lemma Int_repr_eq_mod:
+   forall a,  Int.repr (a mod Int.modulus) = Int.repr a.
+Proof.
+Print Int.eqm.  (* This is a hint about how to prove the lemma *)
+Search Int.eqm. (* This is a hint about how to prove the lemma *)
+(* FILL IN HERE *) Admitted.
+
+(** Use [Int_repr_eq_mod] in the proof of [hashfun_snoc]. *)
+
 Lemma hashfun_snoc:
   forall sigma h lo i,
     0 <= lo ->
