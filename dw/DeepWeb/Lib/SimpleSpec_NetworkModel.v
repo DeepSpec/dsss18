@@ -7,35 +7,6 @@ Import ListNotations.
 From DeepWeb Require Import
      Lib.Util.
 
-Module Type NetworkModelInterface.
-
-(* The complete state of the network. *)
-Parameter network_state : Type.
-
-(* The initial state. *)
-Parameter initial_ns : network_state.
-
-(* State transitions.
-   - The result is [None] when a transition is not defined.
-   - Transitions may carry some output (in this case, a byte
-     for [recv] transitions. *)
-Definition transition (output : Type) : Type :=
-  network_state -> option (network_state * output).
-
-(* Server-side transitions *)
-Parameter server_accept : connection_id -> transition unit.
-Parameter server_send : connection_id -> byte -> transition unit.
-Parameter server_recv : connection_id -> transition byte.
-
-(* Client-side transitions *)
-Parameter client_connect : connection_id -> transition unit.
-Parameter client_send : connection_id -> byte -> transition unit.
-Parameter client_recv : connection_id -> transition byte.
-
-End NetworkModelInterface.
-
-Module Export NetworkModel <: NetworkModelInterface.
-
 (* The network state is a map from [connection_id]
    to the state of the connection ([connection_state]). *)
 
@@ -224,5 +195,3 @@ Definition client_send
       Some (Map.update c cs ns, tt)
     | CLOSED => None
     end.
-
-End NetworkModel.

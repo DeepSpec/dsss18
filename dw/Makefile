@@ -15,7 +15,7 @@ Makefile.coq: _CoqProject
 	coq_makefile -f $< -o $@ 2>> /tmp/client_error
 
 build-with-vst:
-	make -f Makefile.vst build HIDE=
+	make -f Makefile.vst build VERBOSE=true
 
 test:
 	$V$(MAKE) 
@@ -56,22 +56,22 @@ coq-qc: $(SERVER)
 	$Vecho 'let _ = print_endline "done"' >> QuickChickTop.ml
 
 docs: build-with-vst
-	$(MAKE) -f Makefile.coq.vst html HIDE=
+	$(MAKE) -f Makefile.coq.vst html VERBOSE=true
 	rm -rf docs
 	mv html docs
 
 clean:
 	find . -name "*.vo" -print -exec rm -rf {} \;
 	find . -name "*.glob" -print -exec rm -rf {} \;
+	find . -name ".*.aux" -print -exec rm -rf {} \;
 	-$(MAKE) -f Makefile.coq clean
-	-rm -rf ../_qc_dw.tmp html Makefile.coq* _CoqProject.Vst
+	-rm -rf ../_qc_dw.tmp html Makefile.coq* _CoqProject.Vst .coqdeps.d
 
 .PHONY: docs clean coq-qc test coq
 
 # Just for BCP
 bcp:
 	$(MAKE) -C $(HOME)/dw/src dsss18 -j
-	$(MAKE) -j
 	$(MAKE) -j docs COQDOCFLAGS="-interpolate -utf8 --parse-comments"
 	osascript $(HOME)/s/tools/safari-reload.as
 	$(MAKE) -j test

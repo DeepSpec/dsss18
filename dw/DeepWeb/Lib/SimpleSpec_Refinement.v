@@ -27,14 +27,14 @@ Set Bullet Behavior "Strict Subproofs".
    a server implementation, and an itree of "linear traces"
    as a specification. The [ScramblingFacts] that the
    theorems below depend on are defined and proved in
-   [Lib/SimpleSpec_Scramble.v]. *)
+   [Lib.SimpleSpec_Scramble]. *)
 
 (* A server ([server : ServerM unit]) refines a "linear spec"
    ([observer : ObserverM unit]) if, for every trace [tr] that the
    server can produce, and every trace [str] that can be observed
    from it via the network, it can be explained by a "descrambled
    trace" [dstr] in the "linear spec".
-   Some examples can be found in [Spec/Swap_ExampleServers.v].
+   Some examples can be found in [Spec.Descramble_Examples].
  *)
 Definition refines_mod_network observer server : Prop :=
   forall tr : real_trace,
@@ -61,7 +61,7 @@ Definition strong_refines_mod_network observer server : Prop :=
 (* [strong_sound] and [strong_complete] rely on two properties
    of the [network_scrambled] relation: it is reflexive
    ([scrambled_reflexive]) and transitive ([scrambled_transitive]).
-   (These are shown in [Lib/SimpleSpec_Scramble.v].)
+   (These are shown in [Lib.SimpleSpec_Scramble].)
  *)
 
 Definition strong_sound :
@@ -92,4 +92,4 @@ Proof.
 Qed.
 
 (* [refines_mod_network] is part of the toplevel property
-   about the swap server, stated in [Spec/TopLevelSpec.v]. *)
+   about the swap server, stated in [Spec.TopLevelSpec]. *)

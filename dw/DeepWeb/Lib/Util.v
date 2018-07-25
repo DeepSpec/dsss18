@@ -134,3 +134,8 @@ Notation "x <|> y" := (or_option x (fun _ => y))
 (at level 30) : option_scope.
 
 Delimit Scope option_scope with option.
+
+(* Trick extraction for big numbers. *)
+Definition _10 : nat := 5 * 2.
+Definition _100 : nat := _10 * _10.
+Definition _1000 : nat := _100 * _10.

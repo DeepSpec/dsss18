@@ -1,13 +1,25 @@
 -Q Custom/ Custom
 -R DeepWeb/ DeepWeb
 
+# The top-level linear spec
 DeepWeb/Spec/Swap_SimpleSpec.v
+DeepWeb/Spec/main.v
+# Also show main.c!
+DeepWeb/Spec/Swap_CLikeSpec.v
+DeepWeb/Spec/TopLevelSpec.v
+
+# Interaction trees and traces
 DeepWeb/Free/Monad/Free.v
 DeepWeb/Free/Monad/Effect.v
-DeepWeb/Spec/Swap_CLikeSpec.v
-DeepWeb/Lib/SimpleSpec.v
-DeepWeb/Spec/Swap_Examples.v
-DeepWeb/Spec/TopLevelSpec.v
+DeepWeb/Lib/SimpleSpec.v  
+DeepWeb/Spec/Trace_Examples.v
+# Then show example traces of the top-level spec
+
+# Descrambling
+DeepWeb/Spec/Descramble_Examples.v
+# Show the top-level property again
+
+# Testing
 DeepWeb/Test/TestInternal.v
 
 #####################
@@ -56,8 +68,6 @@ Custom/String.v
 # VST stuff
 
 DeepWeb/Lib/VstLib.v
-
-DeepWeb/Spec/main.v
 
 DeepWeb/Spec/Vst/MonadExports.v
 DeepWeb/Spec/Vst/MainInit.v

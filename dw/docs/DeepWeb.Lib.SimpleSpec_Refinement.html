@@ -55,7 +55,7 @@
 &nbsp;&nbsp;&nbsp;a&nbsp;server&nbsp;implementation,&nbsp;and&nbsp;an&nbsp;itree&nbsp;of&nbsp;"linear&nbsp;traces"<br/>
 &nbsp;&nbsp;&nbsp;as&nbsp;a&nbsp;specification.&nbsp;The&nbsp;<span class="inlinecode"><span class="id" title="var">ScramblingFacts</span></span>&nbsp;that&nbsp;the<br/>
 &nbsp;&nbsp;&nbsp;theorems&nbsp;below&nbsp;depend&nbsp;on&nbsp;are&nbsp;defined&nbsp;and&nbsp;proved&nbsp;in<br/>
-&nbsp;&nbsp;&nbsp;<span class="inlinecode"><span class="id" title="var">Lib</span>/<span class="id" title="var">SimpleSpec_Scramble.v</span></span>.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;<span class="inlinecode"><span class="id" title="var">Lib.SimpleSpec_Scramble</span></span>.&nbsp;*)</span><br/>
 
 <br/>
 <span class="comment">(*&nbsp;A&nbsp;server&nbsp;(<span class="inlinecode"><span class="id" title="var">server</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">ServerM</span></span> <span class="inlinecode"><span class="id" title="var">unit</span></span>)&nbsp;refines&nbsp;a&nbsp;"linear&nbsp;spec"<br/>
@@ -63,7 +63,7 @@
 &nbsp;&nbsp;&nbsp;server&nbsp;can&nbsp;produce,&nbsp;and&nbsp;every&nbsp;trace&nbsp;<span class="inlinecode"><span class="id" title="var">str</span></span>&nbsp;that&nbsp;can&nbsp;be&nbsp;observed<br/>
 &nbsp;&nbsp;&nbsp;from&nbsp;it&nbsp;via&nbsp;the&nbsp;network,&nbsp;it&nbsp;can&nbsp;be&nbsp;explained&nbsp;by&nbsp;a&nbsp;"descrambled<br/>
 &nbsp;&nbsp;&nbsp;trace"&nbsp;<span class="inlinecode"><span class="id" title="var">dstr</span></span>&nbsp;in&nbsp;the&nbsp;"linear&nbsp;spec".<br/>
-&nbsp;&nbsp;&nbsp;Some&nbsp;examples&nbsp;can&nbsp;be&nbsp;found&nbsp;in&nbsp;<span class="inlinecode"><span class="id" title="var">Spec</span>/<span class="id" title="var">Swap_ExampleServers.v</span></span>.<br/>
+&nbsp;&nbsp;&nbsp;Some&nbsp;examples&nbsp;can&nbsp;be&nbsp;found&nbsp;in&nbsp;<span class="inlinecode"><span class="id" title="var">Spec.Descramble_Examples</span></span>.<br/>
 &nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="refines_mod_network"><span class="id" title="definition">refines_mod_network</span></a> <span class="id" title="var">observer</span> <span class="id" title="var">server</span> : <span class="id" title="keyword">Prop</span> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">∀</span> <span class="id" title="var">tr</span> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#real_trace"><span class="id" title="definition">real_trace</span></a>,<br/>
@@ -92,7 +92,7 @@
 <span class="comment">(*&nbsp;<span class="inlinecode"><span class="id" title="var">strong_sound</span></span>&nbsp;and&nbsp;<span class="inlinecode"><span class="id" title="var">strong_complete</span></span>&nbsp;rely&nbsp;on&nbsp;two&nbsp;properties<br/>
 &nbsp;&nbsp;&nbsp;of&nbsp;the&nbsp;<span class="inlinecode"><span class="id" title="var">network_scrambled</span></span>&nbsp;relation:&nbsp;it&nbsp;is&nbsp;reflexive<br/>
 &nbsp;&nbsp;&nbsp;(<span class="inlinecode"><span class="id" title="var">scrambled_reflexive</span></span>)&nbsp;and&nbsp;transitive&nbsp;(<span class="inlinecode"><span class="id" title="var">scrambled_transitive</span></span>).<br/>
-&nbsp;&nbsp;&nbsp;(These&nbsp;are&nbsp;shown&nbsp;in&nbsp;<span class="inlinecode"><span class="id" title="var">Lib</span>/<span class="id" title="var">SimpleSpec_Scramble.v</span></span>.)<br/>
+&nbsp;&nbsp;&nbsp;(These&nbsp;are&nbsp;shown&nbsp;in&nbsp;<span class="inlinecode"><span class="id" title="var">Lib.SimpleSpec_Scramble</span></span>.)<br/>
 &nbsp;*)</span><br/>
 
 <br/>
@@ -126,7 +126,7 @@
 
 <br/>
 <span class="comment">(*&nbsp;<span class="inlinecode"><span class="id" title="var">refines_mod_network</span></span>&nbsp;is&nbsp;part&nbsp;of&nbsp;the&nbsp;toplevel&nbsp;property<br/>
-&nbsp;&nbsp;&nbsp;about&nbsp;the&nbsp;swap&nbsp;server,&nbsp;stated&nbsp;in&nbsp;<span class="inlinecode"><span class="id" title="var">Spec</span>/<span class="id" title="var">TopLevelSpec.v</span></span>.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;about&nbsp;the&nbsp;swap&nbsp;server,&nbsp;stated&nbsp;in&nbsp;<span class="inlinecode"><span class="id" title="var">Spec.TopLevelSpec</span></span>.&nbsp;*)</span><br/>
 </div>
 </div>
 

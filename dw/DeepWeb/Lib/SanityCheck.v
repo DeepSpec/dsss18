@@ -42,31 +42,25 @@ Definition obs_msg_to_server := @obs_msg_to_server E _.
 Definition obs_msg_from_server := @obs_msg_from_server E _ _ _.
 End Observer.
 
-Module Traces : TracesIface.
+Module NetworkModel <: NetworkModelIface.
+Include SimpleSpec_NetworkModel.
+End NetworkModel.
 
+Module Traces : TracesIface NetworkModel.
   Include SimpleSpec_Traces.
 
-  Definition real_to_hypo := real_to_hypo_trace.
   Definition is_server_trace := SimpleSpec_Server.is_server_trace.
   Definition is_observer_trace := SimpleSpec_Observer.is_observer_trace.
-  Definition is_observer_trace_test := SimpleSpec_Observer.is_observer_trace_test.
-  (* Property that a real trace [tr] is a scrambled trace of some
-   spec trace. *)
-  Definition is_scrambled_trace : ObserverM unit -> real_trace -> Prop :=
-    fun observer tr =>
-      exists str,
-        network_scrambled str tr /\
-        is_observer_trace observer (real_to_hypo str).
 
-  Definition descrambled_result := Lib.Util.result hypo_trace unit.
-
-  Definition is_scrambled_trace_test :=
-    SimpleSpec_Descramble.is_scrambled_trace_test.
-
-  Definition refines_mod_network_test
-    := SimpleSpec_ServerTrace.refines_mod_network_test.
-
+  Definition is_scrambled_trace
+    := SimpleSpec_Observer.is_scrambled_trace.
   Definition refines_mod_network
     := SimpleSpec_Refinement.refines_mod_network.
 
+  Definition descrambled_result := Lib.Util.result hypo_trace unit.
+  Definition is_observer_trace_test := SimpleSpec_Observer.is_observer_trace_test.
+  Definition is_scrambled_trace_test
+    := SimpleSpec_Descramble.is_scrambled_trace_test.
+  Definition refines_mod_network_test
+    := SimpleSpec_ServerTrace.refines_mod_network_test.
 End Traces.

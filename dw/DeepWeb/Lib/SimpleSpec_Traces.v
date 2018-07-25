@@ -6,8 +6,8 @@
    of the network.
 
    The network is defined as a state machine with transitions
-   visible either by the server or by the client,
-   see [Lib/SimpleSpec_NetworkModel.v].
+   visible either by the server or by the client;
+   see [Lib.SimpleSpec_NetworkModel].
  *)
 
 Require Import Relations.
@@ -37,106 +37,20 @@ Inductive event (byte' : Type) :=
 | FromServer : connection_id -> byte' -> event byte'
 .
 
+(* ... In the real world, this output is a concrete byte.
+   (the other event type is [hypo_event], down below). *)
+Definition real_event := event byte.
+
 Arguments NewConnection {byte'}.
 Arguments ToServer {byte'}.
 Arguments FromServer {byte'}.
 
 (* A trace is a sequence of events. *)
 Definition trace byte' := list (event byte').
-
-(* ... In the real world, this output is a concrete byte. *)
-Definition real_event := event byte.
-
-(* ... but it will also be useful for testing to insert hypothetical
-   bytes of unknown values in a trace, representing values that the
-   server may have output but which have not reached the client yet. *)
-Definition hypo_event := event (option byte).
-
-Definition show_real_event (ev : real_event) :=
-  match ev with
-  | NewConnection c => (show c ++ " !")%string
-  | ToServer c b =>
-    (show c ++ " <-- " ++ show b)%string
-  | FromServer c b =>
-    (show c ++ " --> " ++ show b)%string
-  end.
-
-Instance Show_real_event: Show real_event :=
-  { show := show_real_event }.
-
-Definition show_hypo_event (ev : hypo_event) :=
-  match ev with
-  | NewConnection c => (show c ++ " !")%string
-  | ToServer c b =>
-    (show c ++ " <-- " ++ show b)%string
-  | FromServer c ob =>
-    (show c ++ " --> " ++ match ob with
-                          | Some b => show b
-                          | None => "?"
-                          end)%string
-  end.
-
-Instance Show_hypo_event: Show hypo_event :=
-  { show := show_hypo_event }.
-
-(* Lists of events are traces. Again, we have two kinds of traces
-   corresponding to the two kinds of events. *)
 Definition real_trace := list real_event.
-Definition hypo_trace := list hypo_event.
 
-(* We can convert real things to hypothetical things. *)
-
-Definition real_to_hypo_event : real_event -> hypo_event :=
-  fun ev =>
-    match ev with
-    | NewConnection c => NewConnection c
-    | ToServer c b => ToServer c b
-    | FromServer c b => FromServer c (Some b)
-    end.
-
-Coercion real_to_hypo_event : real_event >-> hypo_event.
-
-Definition real_to_hypo_trace : real_trace -> hypo_trace :=
-  map real_to_hypo_event.
-
-Coercion real_to_hypo_trace : real_trace >-> hypo_trace.
-
-(* We relate events to effects as follows: an event is a pair of
-   an effect (of type [eff X] for some [X]) and a result (of
-   type [X]). *)
-Class EventType (event : Type) (eff : Type -> Type) :=
-  Build_EventType {
-    from_event : event -> { X : Type & (eff X * X)%type };
-  }.
-
-Definition event_eff
-           {event} {eff} `{EventType event eff} (ev : event) :
-  eff (projT1 (from_event ev)) :=
-  fst (projT2 (from_event ev)).
-
-Definition event_res
-           {event} {eff} `{EventType event eff} (ev : event) :
-  projT1 (from_event ev) :=
-  snd (projT2 (from_event ev)).
-
-(* [E +' F] is a signature of _visible_ effects [F] and _invisible_
-   effects [E]. The trace (of type [list event]) is a sequence of
-   visible effects [F] with their results. *)
-Inductive is_trace
-          {event : Type} {E F : Type -> Type} {R : Type}
-          `{EventType event F} :
-  M (E +' F) R -> list event -> Prop :=
-| ServerEmpty : forall s, is_trace s []
-| ServerVis : forall ev k tr,
-    is_trace (k (event_res ev)) tr ->
-    is_trace (Vis (| event_eff ev) k) (ev :: tr)
-| ServerInvis : forall X e k (x : X) tr,
-    is_trace (k x) tr ->
-    is_trace (Vis (e |) k) tr
-.
-
-Definition server_transition (ev : real_event) :
-  network_state -> network_state -> Prop :=
+Definition server_transition (ev : real_event) 
+                           : network_state -> network_state -> Prop :=
   fun ns ns' =>
     match ev with
     | NewConnection c => server_accept c ns = Some (ns', tt)
@@ -155,8 +69,8 @@ Definition client_transition (ev : real_event) :
 
 (* The main "scrambling" relation. *)
 (* Corresponding "server-side" and "client-side" traces. *)
-Inductive network_scrambled_ :
-  network_state -> real_trace -> real_trace -> Prop :=
+Inductive network_scrambled_ 
+                : network_state -> real_trace -> real_trace -> Prop :=
 | ScrambleEmpty : forall ns, network_scrambled_ ns [] []
 | ScrambleServer : forall ns ns' e tr_server tr_client,
     server_transition e ns ns' ->
@@ -221,5 +135,121 @@ End EventNotations.
 (* With the [network_scrambled] relation we defined here, we
    can state the correctness property we generally want to test
    and verify about server itrees, in
-   [Lib/SimpleSpec_Refinement.v]. It is specialized to the
-   swap server in [Spec/TopLevelSpec.v]. *)
+   [Lib.SimpleSpec_Refinement]. It is specialized to the
+   swap server in [Spec.TopLevelSpec]. *)
+
+
+
+
+(*************** Internals ******************)
+
+(* Basic predicates *)
+
+Definition is_Connect {byte' : Type} (ev : event byte') :=
+  match ev with
+  | NewConnection _ => true
+  | _ => false
+  end.
+
+Definition is_FromServer {byte' : Type} (ev : event byte') :=
+  match ev with
+  | FromServer _ _ => true
+  | _ => false
+  end.
+
+Definition is_ToServer {byte' : Type} (ev : event byte') :=
+  match ev with
+  | ToServer _ _ => true
+  | _ => false
+  end.
+
+(* Traces with holes. *)
+
+(* It will also be useful for testing to insert hypothetical
+   bytes of unknown values in a trace, representing values that the
+   server may have output but which have not reached the client yet. *)
+Definition hypo_event := event (option byte).
+Definition hypo_trace := list hypo_event.
+
+(* We can convert real things to hypothetical things. *)
+
+Definition real_to_hypo_event : real_event -> hypo_event :=
+  fun ev =>
+    match ev with
+    | NewConnection c => NewConnection c
+    | ToServer c b => ToServer c b
+    | FromServer c b => FromServer c (Some b)
+    end.
+
+Coercion real_to_hypo_event : real_event >-> hypo_event.
+
+Definition real_to_hypo_trace : real_trace -> hypo_trace :=
+  map real_to_hypo_event.
+
+Coercion real_to_hypo_trace : real_trace >-> hypo_trace.
+
+(* Events and effects *)
+
+(* We relate events to effects as follows: an event is a pair of
+   an effect (of type [eff X] for some [X]) and a result (of
+   type [X]). *)
+Class EventType (event : Type) (eff : Type -> Type) :=
+  Build_EventType {
+    from_event : event -> { X : Type & (eff X * X)%type };
+  }.
+
+Definition event_eff
+           {event} {eff} `{EventType event eff} (ev : event) :
+  eff (projT1 (from_event ev)) :=
+  fst (projT2 (from_event ev)).
+
+Definition event_res
+           {event} {eff} `{EventType event eff} (ev : event) :
+  projT1 (from_event ev) :=
+  snd (projT2 (from_event ev)).
+
+(* [E +' F] is a signature of _visible_ effects [F] and _invisible_
+   effects [E]. The trace (of type [list event]) is a sequence of
+   visible effects [F] with their results. *)
+Inductive is_trace
+          {event : Type} {E F : Type -> Type} {R : Type}
+          `{EventType event F} :
+  M (E +' F) R -> list event -> Prop :=
+| ServerEmpty : forall s, is_trace s []
+| ServerVis : forall ev k tr,
+    is_trace (k (event_res ev)) tr ->
+    is_trace (Vis (| event_eff ev) k) (ev :: tr)
+| ServerInvis : forall X e k (x : X) tr,
+    is_trace (k x) tr ->
+    is_trace (Vis (e |) k) tr
+.
+
+
+(* Show instances *)
+
+Definition show_real_event (ev : real_event) :=
+  match ev with
+  | NewConnection c => (show c ++ " !")%string
+  | ToServer c b =>
+    (show c ++ " <-- " ++ show b)%string
+  | FromServer c b =>
+    (show c ++ " --> " ++ show b)%string
+  end.
+
+Instance Show_real_event: Show real_event :=
+  { show := show_real_event }.
+
+Definition show_hypo_event (ev : hypo_event) :=
+  match ev with
+  | NewConnection c => (show c ++ " !")%string
+  | ToServer c b =>
+    (show c ++ " <-- " ++ show b)%string
+  | FromServer c ob =>
+    (show c ++ " --> " ++ match ob with
+                          | Some b => show b
+                          | None => "?"
+                          end)%string
+  end.
+
+Instance Show_hypo_event: Show hypo_event :=
+  { show := show_hypo_event }.

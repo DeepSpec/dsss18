@@ -105,18 +105,6 @@ CoFixpoint pick_event' (t_prev t : real_trace) : M eventE' real_trace :=
 Definition pick_event : real_trace -> M eventE' real_trace :=
   pick_event' [].
 
-Definition is_Connect {T : Type} (ev : event T) :=
-  match ev with
-  | NewConnection _ => true
-  | _ => false
-  end.
-
-Definition is_FromServer {T : Type} (ev : event T) :=
-  match ev with
-  | FromServer _ _ => true
-  | _ => false
-  end.
-
 (* Once the only things left are messages sent to the server,
    we drop them, since there is no response to compare them
    against. *)
@@ -317,18 +305,22 @@ Fixpoint to_result (fuel : nat) (m : M emptyE (option hypo_trace)) :
   end.
 
 (* SHOW *)
-Definition is_scrambled_trace_test
+Definition is_scrambled_trace_test_
            (fuel : nat) (s : ObserverM unit) (t : real_trace) :
   result hypo_trace unit :=
   to_result fuel (find' [([], intersect_trace s t)]).
+
+Definition is_scrambled_trace_test :
+           ObserverM unit -> real_trace -> result hypo_trace unit :=
+  is_scrambled_trace_test_ (5 * _1000).
 
 (* We will then generate traces produced by a server to test them
    with [is_scrambled_trace_test].
    There are two ways:
    - We can compile and run the actual C server,
      talking to it over actual sockets. This is implemented in
-     [Test/ExternalTest.v].
+     [Test.TestExternal].
    - We can generate traces by walking through the itree model of
-     the C program. [Lib/SimpleSpec_ServerTrace.v]
+     the C program. [Lib.SimpleSpec_ServerTrace]
  *)
 (* /SHOW *)

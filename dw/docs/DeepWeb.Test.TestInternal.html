@@ -22,7 +22,15 @@
 <span class="comment">(*!&nbsp;Section&nbsp;CLikeTest&nbsp;*)</span><span class="comment">(*!&nbsp;extends&nbsp;BaseTest&nbsp;*)</span><br/>
 
 <br/>
-<span class="comment">(*&nbsp;BCP:&nbsp;Reword&nbsp;/&nbsp;expand!&nbsp;*)</span><br/>
+</div>
+
+<div class="doc">
+<a name="lab29"></a><h1 class="section">Top-level "internal" test of the CLike spec against the simple spec</h1>
+
+</div>
+<div class="code">
+
+<br/>
 <span class="comment">(*&nbsp;Simulate&nbsp;a&nbsp;server&nbsp;(defined&nbsp;in&nbsp;Coq,&nbsp;hence&nbsp;"internal"),<br/>
 &nbsp;&nbsp;&nbsp;nondeterministically&nbsp;returning&nbsp;the&nbsp;new&nbsp;state&nbsp;of&nbsp;the&nbsp;network.&nbsp;*)</span><br/>
 
@@ -51,14 +59,6 @@
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_SimpleSpec.html#swap_observer_def"><span class="id" title="definition">Swap_SimpleSpec.swap_observer_def</span></a>.<br/>
 
 <br/>
-<span class="comment">(*&nbsp;Enumerate&nbsp;the&nbsp;traces&nbsp;of&nbsp;the&nbsp;<span class="inlinecode"><span class="id" title="var">server'</span></span>&nbsp;itree&nbsp;(swap&nbsp;server).&nbsp;*)</span><br/>
-<span class="id" title="keyword">Definition</span> <a name="random_trace_server"><span class="id" title="definition">random_trace_server</span></a> :=<br/>
-&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#random_trace"><span class="id" title="definition">random_trace</span></a> 500 10 <a class="idref" href="DeepWeb.Test.TestInternal.html#swap_server"><span class="id" title="definition">swap_server</span></a>.<br/>
-
-<br/>
-<span class="comment">(*<br/>
-Sample&nbsp;random_trace_server.<br/>
-*)</span><br/>
 
 <br/>
 <span class="id" title="keyword">Definition</span> <a name="test"><span class="id" title="definition">test</span></a> :=<br/>

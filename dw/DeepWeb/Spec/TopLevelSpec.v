@@ -35,4 +35,4 @@ Definition swap_server_correct :=
     refines_mod_network swap_observer (simplify_network tree) /\
     semax_prog_ext prog tree Vprog Gprog.
 
-(* (The proof can be found in [Proofs/TopLevelProof.v]) *)
+(* (The proof can be found in [Proofs.TopLevelProof]) *)

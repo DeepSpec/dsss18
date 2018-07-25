@@ -41,7 +41,6 @@ Definition shuffle {A} (xs : list A) : G (list A) :=
 (* Here we traverse the [server'] tree to generate its traces. *)
 
 (* We use the following effect to annotate a tree with traces. *)
-(* TODO: put in [Free]? *)
 Inductive note_traceE : Type -> Type :=
 | NoteTrace : real_trace -> note_traceE unit.
 
@@ -257,11 +256,11 @@ Definition refines_mod_network_test_
            (descramble_fuel : nat)
            (observer : ObserverM unit)
            (server : ServerM unit) :=
-  let check_trace := is_scrambled_trace_test descramble_fuel observer in
+  let check_trace := is_scrambled_trace_test_ descramble_fuel observer in
   run_checker' backtrack_fuel
                (forall_traces max_depth check_trace (enum_traces server)).
 
 Definition refines_mod_network_test
            (observer : ObserverM unit)
            (server : ServerM unit) :=
-  refines_mod_network_test_ 1000 100 1000 observer server.
+  refines_mod_network_test_ _1000 _100 (5 * _1000) observer server.

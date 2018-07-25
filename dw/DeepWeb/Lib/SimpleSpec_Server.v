@@ -1,14 +1,14 @@
 (* Effects for servers *)
 
-(* If you come from [SimpleSpec.v] the types here will look
+(* If you come from [SimpleSpec] the types here will look
    different from those over there.
    The functions below are actually more polymorphic, so that
    they can be used with different effect types.
    You actually use the functions below when you import
-   [SimpleSpec.v]; the module types with simpler signatures
+   [SimpleSpec]; the module types with simpler signatures
    are only for the sake of exposition.
 
-   This is also the case for [SimpleSpec_Observer.v].
+   This is also the case for [SimpleSpec_Observer].
  *)
 
 From Custom Require Import String.

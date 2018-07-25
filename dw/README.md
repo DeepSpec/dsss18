@@ -4,6 +4,9 @@ DeepSpec Swap Server Demo
 Directory Structure
 -------------------
 
+    docs/            HTML files 
+                     (docs/toc.html gives a reasonable order for reading)
+
     Custom/          Miscellaneous standard library extensions
     DeepWeb/         Swap server demo
        Free/Monad/     Interaction trees 

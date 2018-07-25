@@ -137,8 +137,8 @@ Definition network_scrambled_wf_ ns (tr0 tr1 : real_trace) :=
 
 Definition network_scrambled_wf := network_scrambled_wf_ initial_ns.
 
-(* TODO: we can always append ServerSend and ClientSend
-   and preserve the [network_scrambled] property. *)
+(* Unproved. *)
+Section TransitivityProof.
 
 Definition combined_networks (ns01 ns12 ns02 : network_state) : Prop :=
   forall c,
@@ -191,10 +191,15 @@ Lemma scrambled_transitive_
 
 Admitted.
 
-Instance scrambled_transitive : Transitive network_scrambled.
+Global Instance scrambled_transitive : Transitive network_scrambled.
 Proof.
   unfold Transitive.
 Admitted.
+
+End TransitivityProof.
+
+(* Proved. *)
+Section ReflexivityProof.
 
 (* The notion of "open" connection is not quite the same
    depending on whether we're on the client side or server side. *)
@@ -335,7 +340,7 @@ Proof.
       apply Hns_clean. }
 Qed.
 
-Instance scrambled_reflexive : Reflexive network_scrambled_wf.
+Global Instance scrambled_reflexive : Reflexive network_scrambled_wf.
 Proof.
   unfold Reflexive.
   intros tr Htr_wf _H. clear _H.
@@ -347,5 +352,21 @@ Proof.
     simpl.
     split; discriminate + intros []. }
 Qed.
+
+End ReflexivityProof.
+
+(* We can always add sends to the end of a trace. *)
+Conjecture trailing_sends_preserve_scrambled :
+  forall ns tr str,
+    network_scrambled_ ns tr str ->
+    forall tr' str',
+      (* No [server_accept] or [server_recv]. *)
+      is_true (forallb is_FromServer tr') ->
+      (* No [client_recv] *)
+      is_true (forallb (fun ev => negb (is_FromServer ev)) tr') ->
+      (* Make sure the extended traces are well-formed. *)
+      wf_trace (tr ++ tr') ->
+      wf_trace (str ++ str') ->
+      network_scrambled_ ns (tr ++ tr') (str ++ str').
 
 End ScramblingFacts.

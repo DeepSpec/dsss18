@@ -1,14 +1,14 @@
 (* Observer effects *)
 
-(* If you come from [SimpleSpec.v] the types here will look
+(* If you come from [Lib.SimpleSpec] the types here will look
    different from those over there.
    The functions below are actually more polymorphic, so that
    they can be used with different effect types.
    You actually use the functions below when you import
-   [SimpleSpec.v]; the module types with simpler signatures
+   [Lib.SimpleSpec]; the module types with simpler signatures
    are only for the sake of exposition.
 
-   This is also the case for [SimpleSpec_Server.v].
+   This is also the case for [Lib.SimpleSpec_Server].
  *)
 
 (* Our specifications are itrees whose effects allow them to
@@ -121,6 +121,32 @@ Fixpoint obs_msg_from_server
     obs_msg_from_server c msg
   end.
 
+(* Relating [event] and [observerE] effects. *)
+
+Definition event_to_observerE (e : hypo_event) :
+  { X : Type & (observerE X * X)%type } :=
+  match e with
+  | NewConnection c => existT _ _ (ObsConnect, c)
+  | ToServer c b => existT _ _ (ObsToServer c, b)
+  | FromServer c ob => existT _ _ (ObsFromServer c, ob)
+  end.
+
+Instance EventType_observerE : EventType hypo_event observerE := {|
+    from_event := event_to_observerE;
+  |}.
+
+Definition is_observer_trace : ObserverM unit -> hypo_trace -> Prop :=
+  is_trace.
+
+(* A trace [str] is "consistent" with an [observer] if it can be
+   descrambled to an [observer] trace. We say that [str] is a
+   scrambled trace of [observer]. *)
+Definition is_scrambled_trace : ObserverM unit -> real_trace -> Prop :=
+    fun observer tr =>
+      exists str,
+        network_scrambled str tr /\
+        is_observer_trace observer str.
+
 (**)
 
 (* Equality comparison, return a proof of equality of the
@@ -176,21 +202,6 @@ Definition nondet_exists {X : Type}
     (k (id false) || k (id true))%result
   end (fun x => x).
 
-Definition event_to_observerE (e : hypo_event) :
-  { X : Type & (observerE X * X)%type } :=
-  match e with
-  | NewConnection c => existT _ _ (ObsConnect, c)
-  | ToServer c b => existT _ _ (ObsToServer c, b)
-  | FromServer c ob => existT _ _ (ObsFromServer c, ob)
-  end.
-
-Instance EventType_observerE : EventType hypo_event observerE := {|
-    from_event := event_to_observerE;
-  |}.
-
-Definition is_observer_trace : ObserverM unit -> hypo_trace -> Prop :=
-  is_trace.
-
 (* SHOW *)
 (* Basically, a trace [t] belongs to a tree if there is a path
    through the tree (a list of [E0] effects) such that its
@@ -201,29 +212,35 @@ Definition is_observer_trace : ObserverM unit -> hypo_trace -> Prop :=
    Thus we add a [fuel] parameter assumed to be "big enough"
    for the result to be reliable. *)
 
-Fixpoint is_observer_trace_test
+Fixpoint is_observer_trace_test_
          (max_depth : nat) (s : ObserverM unit) (t : hypo_trace) :
   simple_result :=
   match max_depth with
   | O => DONTKNOW
   | S max_depth =>
     match s, t with
-    | Tau s, t => is_observer_trace_test max_depth s t
+    | Tau s, t => is_observer_trace_test_ max_depth s t
     | Ret tt, [] => OK tt
     | Ret tt, _ :: _ => FAIL tt
     | Vis _ (| e1 ) k, x :: t =>
       match event_to_observerE x with
       | existT T1 (e0, y) => 
-        match_obs e0 e1 (fun s => is_observer_trace_test max_depth s t)
+        match_obs e0 e1 (fun s => is_observer_trace_test_ max_depth s t)
                   (FAIL tt) y k
       end
     | Vis _ (| e1 ) k, [] => OK tt
     (* The trace belongs to the tree [s] *)
     | Vis _ (| _Or |) k, t =>
-      nondet_exists _Or (fun b => is_observer_trace_test max_depth (k b) t)
+      nondet_exists _Or (fun b => is_observer_trace_test_ max_depth (k b) t)
     | Vis _ ( _Fail ||) _, _ => FAIL tt
     end
   end.
+
+(* It seems we can set the max depth as high as possible,
+   at least for the spec we have now. *)
+Definition is_observer_trace_test :
+  ObserverM unit -> hypo_trace -> simple_result :=
+  is_observer_trace_test_ _1000.
 
 (* The traces produced by the tree [swap_observer] are very structured,
    with sequences of bytes sent and received alternating tidily.
@@ -238,6 +255,6 @@ Fixpoint is_observer_trace_test
      distinguished over the network from a server that actually
      produces the same traces as the observer above. *)
 
-(* The network's behavior is defined in [Lib/SimpleSpec_Traces.v]
-   and is accounted for in testing in [Lib/SimpleSpec_Descramble.v]. *)
+(* The network's behavior is defined in [Lib.SimpleSpec_Traces]
+   and is accounted for in testing in [Lib.SimpleSpec_Descramble]. *)
 (* /SHOW *)

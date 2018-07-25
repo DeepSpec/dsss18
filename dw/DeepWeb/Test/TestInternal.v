@@ -1,8 +1,6 @@
 (*! Section CLikeTest *)(*! extends BaseTest *)
 
-(* BCP: Reword / expand! *)
-(* Simulate a server (defined in Coq, hence "internal"),
-   nondeterministically returning the new state of the network. *)
+(** * Top-level "internal" test *)
 
 Typeclasses eauto := 6.
 
@@ -16,6 +14,7 @@ From DeepWeb.Spec Require
      Swap_CLikeSpec
      Swap_SimpleSpec.
 
+(* begin hide *)
 Definition swap_server : ServerM unit :=
   Swap_CLikeSpec.test_server.
 
@@ -26,13 +25,12 @@ Definition swap_observer : ObserverM unit :=
 Definition random_trace_server :=
   random_trace 500 10 swap_server.
 
-(*
-Sample random_trace_server.
-*)
+(* Sample random_trace_server. *)
+(* end hide *)
 
 Definition test :=
   refines_mod_network_test
     Swap_SimpleSpec.swap_observer_def
-    swap_server.
+    Swap_CLikeSpec.test_server.
 
 (*! QuickChick test. *)
