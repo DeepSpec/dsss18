@@ -127,30 +127,6 @@ Module NetSem (P : SystemParams).
              (ms ++ remove_one p (net w))
              (trace_io (dest p) None outs ++ trace w)).
 
-  (* semantics with reordering, delay, and duplicates *)
-  Inductive dup_step : world -> world -> Prop :=
-  | dup_input :
-      forall w i n st' ms outs,
-        handle_input n i (locals w n)
-          = (st', ms, outs) ->
-        dup_step
-          w
-          (mkworld
-             (update (locals w) n st')
-             (ms ++ net w)
-             (trace_io n (Some i) outs ++ trace w))
-  | dup_msg :
-      forall w p st' ms outs,
-        In p (net w) ->
-        handle_msg (dest p) (payload p) (locals w (dest p))
-          = (st', ms, outs) ->
-        dup_step
-          w
-          (mkworld
-             (update (locals w) (dest p) st')
-             (net w ++ ms)
-             (trace_io (dest p) None outs ++ trace w)).
-
   (* what the world looks like at the beginning of time *)
   Definition init_world : world :=
     mkworld init_state [] [].
