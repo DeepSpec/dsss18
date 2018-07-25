@@ -127,7 +127,62 @@ Parameter obs_msg_from_server : connection_id -> bytes -> ObserverM unit.
 End ObserverIface.
 (* Implemented in [Lib.SimpleSpec_Observer]. *)
 
+(** ** Event traces *)
+
+Module Type TracesIface.
+
+(* The refinement relation between ITrees is stated in terms of _event
+   traces_, which are simply lists of events.
+
+   Events are parameterized by the type to represent the server's
+   output. For specification purposes, an output is a plain
+   [byte] ([real_event]). But for testing it will be useful to insert
+   holes by instantiating [byte' := option byte]. *)
+
+Inductive event (byte' : Type) :=
+| NewConnection : connection_id -> event byte'
+| ToServer : connection_id -> byte -> event byte'
+| FromServer : connection_id -> byte' -> event byte'.
+
+(* Traces are sequences of events. *)
+Definition trace byte' := list (event byte').
+
+(* In the real world, events carry concrete bytes. *)
+Definition real_event := event byte.
+Definition real_trace := list real_event.
+
+(* For testing, it is useful to insert "hypothetical bytes" of unknown
+   values in a trace, representing values that the server may have
+   output but which have not reached the client yet. *)
+Definition hypo_event := event (option byte).
+Definition hypo_trace := list hypo_event.
+
+(* Traces with holes are a superset of real traces. *)
+Parameter real_to_hypo_trace : real_trace -> hypo_trace.
+Coercion real_to_hypo_trace : real_trace >-> hypo_trace.
+
+(* [is_server_trace server tr] holds if [tr] is a trace of the [server].  *)
+Parameter is_server_trace : ServerM unit -> real_trace -> Prop.
+
+(* [is_observer_trace observer tr] holds if [tr] is a trace of
+   the [observer]; [tr] may contain holes. *)
+Parameter is_observer_trace : ObserverM unit -> hypo_trace -> Prop.
+
+(* [Lib.Util.result] (from which [Lib.Util.simple_result] and
+   [descrambled_result] are derived) is a type with three
+   constructors representing success, failure, or "don't know",
+   possibly with a (counter)example. *)
+
+(* QuickChick test for [is_observer_trace]. *)
+Parameter is_observer_trace_test :
+  ObserverM unit -> hypo_trace -> simple_result.
+
+End TracesIface.
+(* This is implemented in [Lib.SimpleSpec_Traces]. *)
+
 (** Pause here and look at examples! *)
+
+(* *)
 
 (** ** Network Model *)
 
@@ -206,51 +261,13 @@ Parameter client_recv : connection_id -> transition byte.
 End NetworkModelIface.
 (* Implemented in [Lib.SimpleSpec_NetworkModel]. *)
 
-(** ** Event traces *)
-
-Module Type TracesIface (NetworkModel : NetworkModelIface).
-
-(* The refinement relation between ITrees is stated in terms of _event
-   traces_, which are simply lists of events.
-
-   Events are parameterized by the type to represent the server's
-   output. For specification purposes, an output is a plain
-   [byte] ([real_event]). But for testing it will be useful to insert
-   holes by instantiating [byte' := option byte]. *)
-
-Inductive event (byte' : Type) :=
-| NewConnection : connection_id -> event byte'
-| ToServer : connection_id -> byte -> event byte'
-| FromServer : connection_id -> byte' -> event byte'.
-
-(* Traces are sequences of events. *)
-Definition trace byte' := list (event byte').
-
-(* In the real world, events carry concrete bytes. *)
-Definition real_event := event byte.
-Definition real_trace := list real_event.
-
-(* For testing, it is useful to insert "hypothetical bytes" of unknown
-   values in a trace, representing values that the server may have
-   output but which have not reached the client yet. *)
-Definition hypo_event := event (option byte).
-Definition hypo_trace := list hypo_event.
-
-(* Traces with holes are a superset of real traces. *)
-Parameter real_to_hypo_trace : real_trace -> hypo_trace.
-Coercion real_to_hypo_trace : real_trace >-> hypo_trace.
-
-(* [is_server_trace server tr] holds if [tr] is a trace of the [server].  *)
-Parameter is_server_trace : ServerM unit -> real_trace -> Prop.
-
-(* [is_observer_trace observer tr] holds if [tr] is a trace of
-   the [observer]; [tr] may contain holes. *)
-Parameter is_observer_trace : ObserverM unit -> hypo_trace -> Prop.
+Module Type DescramblingIface
+       (Traces : TracesIface) (NetworkModel : NetworkModelIface).
+Import Traces.
+Import NetworkModel.
 
 (* These events label transitions in the network state machine
    defined above in [NetworkModelIface]. *)
-
-Import NetworkModel.
 
 (* Server-side interpretation of an event. *)
 Definition server_transition (ev : real_event)
@@ -325,15 +342,6 @@ Definition refines_mod_network observer server : Prop :=
 
 (* Tests *)
 
-(* [Lib.Util.result] (from which [Lib.Util.simple_result] and
-   [descrambled_result] are derived) is a type with three
-   constructors representing success, failure, or "don't know",
-   possibly with a (counter)example. *)
-
-(* QuickChick test for [is_observer_trace]. *)
-Parameter is_observer_trace_test :
-  ObserverM unit -> hypo_trace -> simple_result.
-
 (* Test result of descrambling: success is witnessed by a
    descrambled [hypo_trace]. *)
 Definition descrambled_result := result hypo_trace unit.
@@ -348,11 +356,10 @@ Parameter is_scrambled_trace_test :
 Parameter refines_mod_network_test :
   ObserverM unit -> ServerM unit -> Checker.
 
-End TracesIface.
+End DescramblingIface.
 (* The implementation of this interface is split in a couple of modules.
    The most important parts:
-   - the definition of events and descrambling is in
-     [Lib.SimpleSpec_Traces];
+   - the definition of descrambling is in [Lib.SimpleSpec_Traces];
    - the general property [refines_mod_network] is defined in
      [Lib.SimpleSpec_Refinement];
    - the descrambling function for a single trace,

@@ -69,32 +69,35 @@
 <span class="id" title="keyword">End</span> <a class="idref" href="DeepWeb.Lib.SanityCheck.html#Observer"><span class="id" title="module">Observer</span></a>.<br/>
 
 <br/>
+<span class="id" title="keyword">Module</span> <a name="Traces"><span class="id" title="module">Traces</span></a> &lt;: <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface"><span class="id" title="module">TracesIface</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Include</span> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#"><span class="id" title="module">SimpleSpec_Traces</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="Traces.is_server_trace"><span class="id" title="definition">is_server_trace</span></a> := <a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#is_server_trace"><span class="id" title="definition">SimpleSpec_Server.is_server_trace</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="Traces.is_observer_trace"><span class="id" title="definition">is_observer_trace</span></a> := <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#is_observer_trace"><span class="id" title="definition">SimpleSpec_Observer.is_observer_trace</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="Traces.is_observer_trace_test"><span class="id" title="definition">is_observer_trace_test</span></a> := <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#is_observer_trace_test"><span class="id" title="definition">SimpleSpec_Observer.is_observer_trace_test</span></a>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="DeepWeb.Lib.SanityCheck.html#Traces"><span class="id" title="module">Traces</span></a>.<br/>
+
+<br/>
 <span class="id" title="keyword">Module</span> <a name="NetworkModel"><span class="id" title="module">NetworkModel</span></a> &lt;: <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#NetworkModelIface"><span class="id" title="module">NetworkModelIface</span></a>.<br/>
-<span class="id" title="keyword">Include</span> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#"><span class="id" title="module">SimpleSpec_NetworkModel</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Include</span> <a class="idref" href="DeepWeb.Lib.SimpleSpec_NetworkModel.html#"><span class="id" title="module">SimpleSpec_NetworkModel</span></a>.<br/>
 <span class="id" title="keyword">End</span> <a class="idref" href="DeepWeb.Lib.SanityCheck.html#NetworkModel"><span class="id" title="module">NetworkModel</span></a>.<br/>
 
 <br/>
-<span class="id" title="keyword">Module</span> <a name="Traces"><span class="id" title="module">Traces</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface"><span class="id" title="module">TracesIface</span></a> <a class="idref" href="DeepWeb.Lib.SanityCheck.html#NetworkModel"><span class="id" title="module">NetworkModel</span></a>.<br/>
-&nbsp;&nbsp;<span class="id" title="keyword">Include</span> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#"><span class="id" title="module">SimpleSpec_Traces</span></a>.<br/>
+<span class="id" title="keyword">Module</span> <a name="Descrambling"><span class="id" title="module">Descrambling</span></a> &lt;: <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#DescramblingIface"><span class="id" title="module">DescramblingIface</span></a> <a class="idref" href="DeepWeb.Lib.SanityCheck.html#Traces"><span class="id" title="module">Traces</span></a> <a class="idref" href="DeepWeb.Lib.SanityCheck.html#NetworkModel"><span class="id" title="module">NetworkModel</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Include</span> <a class="idref" href="DeepWeb.Lib.SanityCheck.html#Traces"><span class="id" title="module">Traces</span></a>.<br/>
 
 <br/>
-&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="Traces.is_server_trace"><span class="id" title="definition">is_server_trace</span></a> := <a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#is_server_trace"><span class="id" title="definition">SimpleSpec_Server.is_server_trace</span></a>.<br/>
-&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="Traces.is_observer_trace"><span class="id" title="definition">is_observer_trace</span></a> := <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#is_observer_trace"><span class="id" title="definition">SimpleSpec_Observer.is_observer_trace</span></a>.<br/>
-
-<br/>
-&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="Traces.is_scrambled_trace"><span class="id" title="definition">is_scrambled_trace</span></a><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="Descrambling.is_scrambled_trace"><span class="id" title="definition">is_scrambled_trace</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;:= <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#is_scrambled_trace"><span class="id" title="definition">SimpleSpec_Observer.is_scrambled_trace</span></a>.<br/>
-&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="Traces.refines_mod_network"><span class="id" title="definition">refines_mod_network</span></a><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="Descrambling.refines_mod_network"><span class="id" title="definition">refines_mod_network</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;:= <a class="idref" href="DeepWeb.Lib.SimpleSpec_Refinement.html#refines_mod_network"><span class="id" title="definition">SimpleSpec_Refinement.refines_mod_network</span></a>.<br/>
 
 <br/>
-&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="Traces.descrambled_result"><span class="id" title="definition">descrambled_result</span></a> := <a class="idref" href="DeepWeb.Lib.Util.html#result"><span class="id" title="inductive">Lib.Util.result</span></a> <a class="idref" href="DeepWeb.Lib.SanityCheck.html#Traces.hypo_trace"><span class="id" title="definition">hypo_trace</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>.<br/>
-&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="Traces.is_observer_trace_test"><span class="id" title="definition">is_observer_trace_test</span></a> := <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#is_observer_trace_test"><span class="id" title="definition">SimpleSpec_Observer.is_observer_trace_test</span></a>.<br/>
-&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="Traces.is_scrambled_trace_test"><span class="id" title="definition">is_scrambled_trace_test</span></a><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="Descrambling.descrambled_result"><span class="id" title="definition">descrambled_result</span></a> := <a class="idref" href="DeepWeb.Lib.Util.html#result"><span class="id" title="inductive">Lib.Util.result</span></a> <a class="idref" href="DeepWeb.Lib.SanityCheck.html#Descrambling.hypo_trace"><span class="id" title="definition">hypo_trace</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="Descrambling.is_scrambled_trace_test"><span class="id" title="definition">is_scrambled_trace_test</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;:= <a class="idref" href="DeepWeb.Lib.SimpleSpec_Descramble.html#is_scrambled_trace_test"><span class="id" title="definition">SimpleSpec_Descramble.is_scrambled_trace_test</span></a>.<br/>
-&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="Traces.refines_mod_network_test"><span class="id" title="definition">refines_mod_network_test</span></a><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="Descrambling.refines_mod_network_test"><span class="id" title="definition">refines_mod_network_test</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;:= <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#refines_mod_network_test"><span class="id" title="definition">SimpleSpec_ServerTrace.refines_mod_network_test</span></a>.<br/>
-<span class="id" title="keyword">End</span> <a class="idref" href="DeepWeb.Lib.SanityCheck.html#Traces"><span class="id" title="module">Traces</span></a>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="DeepWeb.Lib.SanityCheck.html#Descrambling"><span class="id" title="module">Descrambling</span></a>.<br/>
 </div>
 </div>
 

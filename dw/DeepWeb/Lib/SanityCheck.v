@@ -42,15 +42,19 @@ Definition obs_msg_to_server := @obs_msg_to_server E _.
 Definition obs_msg_from_server := @obs_msg_from_server E _ _ _.
 End Observer.
 
-Module NetworkModel <: NetworkModelIface.
-Include SimpleSpec_NetworkModel.
-End NetworkModel.
-
-Module Traces : TracesIface NetworkModel.
+Module Traces <: TracesIface.
   Include SimpleSpec_Traces.
-
   Definition is_server_trace := SimpleSpec_Server.is_server_trace.
   Definition is_observer_trace := SimpleSpec_Observer.is_observer_trace.
+  Definition is_observer_trace_test := SimpleSpec_Observer.is_observer_trace_test.
+End Traces.
+
+Module NetworkModel <: NetworkModelIface.
+  Include SimpleSpec_NetworkModel.
+End NetworkModel.
+
+Module Descrambling <: DescramblingIface Traces NetworkModel.
+  Include Traces.
 
   Definition is_scrambled_trace
     := SimpleSpec_Observer.is_scrambled_trace.
@@ -58,9 +62,8 @@ Module Traces : TracesIface NetworkModel.
     := SimpleSpec_Refinement.refines_mod_network.
 
   Definition descrambled_result := Lib.Util.result hypo_trace unit.
-  Definition is_observer_trace_test := SimpleSpec_Observer.is_observer_trace_test.
   Definition is_scrambled_trace_test
     := SimpleSpec_Descramble.is_scrambled_trace_test.
   Definition refines_mod_network_test
     := SimpleSpec_ServerTrace.refines_mod_network_test.
-End Traces.
+End Descrambling.

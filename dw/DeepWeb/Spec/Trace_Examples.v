@@ -44,6 +44,8 @@ Open Scope string_scope.
 
 Import EventNotations.
 
+(** * Example traces *)
+
 (** _Traces_ are lists of "observed events" of the following forms
     (plus one more that we'll see below):
 <<
@@ -52,8 +54,6 @@ Import EventNotations.
        c --> b    Server sends byte b on connection c
 >>
 *)
-
-(** * Example traces *)
 
 (** The [is_observer_trace_test] property checks that some trace
     of events belongs to some sequential specification [ObserverM]. *)
