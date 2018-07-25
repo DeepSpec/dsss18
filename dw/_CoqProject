@@ -7,6 +7,7 @@ DeepWeb/Spec/Swap_CLikeSpec.v
 DeepWeb/Free/Monad/Effect.v
 DeepWeb/Lib/SimpleSpec.v
 DeepWeb/Spec/Swap_Examples.v
+DeepWeb/Test/TestExternal.v
 
 #####################
 # Internal stuff
@@ -19,7 +20,6 @@ DeepWeb/Free/Monad/Verif.v
 DeepWeb/Free/Monad/Spec.v
 DeepWeb/Free/Monad/Semantics.v
 DeepWeb/Free/Monad/Debug.v
-DeepWeb/Free/Monad/OpenUnion.v
 
 -I DeepWeb/Test
 
@@ -29,7 +29,6 @@ DeepWeb/Lib/NetworkInterface.v
 DeepWeb/Lib/SocketConstants.v
 DeepWeb/Lib/SocketInterface.v
 DeepWeb/Lib/Socket.v
-DeepWeb/Lib/SanityCheck.v
 
 DeepWeb/Lib/SimpleSpec_Server.v
 DeepWeb/Lib/SimpleSpec_Observer.v
@@ -44,7 +43,6 @@ DeepWeb/Lib/SanityCheck.v
 DeepWeb/Spec/ServerDefs.v
 
 DeepWeb/Test/Client.v
-DeepWeb/Test/TestExternal.v
 DeepWeb/Test/TestInternal.v
 
 Custom/Map.v

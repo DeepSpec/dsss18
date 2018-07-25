@@ -12,7 +12,7 @@ coq: Makefile.coq $(EXTR_BIN)
 	$V$(MAKE) -f $<
 
 Makefile.coq: _CoqProject
-	coq_makefile -f $< -o $@
+	coq_makefile -f $< -o $@ 2>> /tmp/client_error
 
 build-with-vst:
 	make -f Makefile.vst build HIDE=
