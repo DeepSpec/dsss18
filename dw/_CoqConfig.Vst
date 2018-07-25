@@ -12,6 +12,7 @@ DeepWeb/Spec/TopLevelSpec.v
 #####################
 # Internals
 
+DeepWeb/Free/Monad/OpenUnion.v
 DeepWeb/Free/Monad/Event.v
 DeepWeb/Free/Monad/Common.v
 DeepWeb/Free/Monad/Internal.v
