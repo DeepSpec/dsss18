@@ -66,16 +66,12 @@
 <span class="comment">(*&nbsp;A&nbsp;server&nbsp;is&nbsp;a&nbsp;program&nbsp;with&nbsp;internal&nbsp;nondeterminism&nbsp;and<br/>
 &nbsp;&nbsp;&nbsp;external&nbsp;network&nbsp;effects.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Inductive</span> <a name="ServerIface.serverE"><span class="id" title="inductive">serverE</span></a> : <span class="id" title="keyword">Type</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Type</span> :=<br/>
-<br/>
-<span class="comment">(*&nbsp;Accept&nbsp;a&nbsp;new&nbsp;connection.&nbsp;*)</span><br/>
-| <a name="ServerIface.Accept"><span class="id" title="constructor">Accept</span></a>   : <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#serverE"><span class="id" title="inductive">serverE</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a><br/>
-<br/>
-<span class="comment">(*&nbsp;Receive&nbsp;one&nbsp;byte&nbsp;from&nbsp;a&nbsp;connection.&nbsp;*)</span><br/>
-| <a name="ServerIface.RecvByte"><span class="id" title="constructor">RecvByte</span></a> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#serverE"><span class="id" title="inductive">serverE</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a><br/>
-<br/>
-<span class="comment">(*&nbsp;Send&nbsp;one&nbsp;byte&nbsp;to&nbsp;a&nbsp;connection.&nbsp;*)</span><br/>
-| <a name="ServerIface.SendByte"><span class="id" title="constructor">SendByte</span></a> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#serverE"><span class="id" title="inductive">serverE</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a><br/>
-.<br/>
+&nbsp;&nbsp;| <span class="comment">(*&nbsp;Accept&nbsp;a&nbsp;new&nbsp;connection.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a name="ServerIface.Accept"><span class="id" title="constructor">Accept</span></a>   : <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#serverE"><span class="id" title="inductive">serverE</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a><br/>
+&nbsp;&nbsp;| <span class="comment">(*&nbsp;Receive&nbsp;one&nbsp;byte&nbsp;from&nbsp;a&nbsp;connection.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a name="ServerIface.RecvByte"><span class="id" title="constructor">RecvByte</span></a> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#serverE"><span class="id" title="inductive">serverE</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a><br/>
+&nbsp;&nbsp;| <span class="comment">(*&nbsp;Send&nbsp;one&nbsp;byte&nbsp;to&nbsp;a&nbsp;connection.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a name="ServerIface.SendByte"><span class="id" title="constructor">SendByte</span></a> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#serverE"><span class="id" title="inductive">serverE</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>.<br/>
 
 <br/>
 <span class="comment">(*&nbsp;The&nbsp;server&nbsp;monad&nbsp;to&nbsp;write&nbsp;implementations&nbsp;in.<br/>
@@ -95,8 +91,7 @@
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#ServerIface.ServerM"><span class="id" title="definition">ServerM</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> := <a class="idref" href="DeepWeb.Free.Monad.OpenUnion.html#embed"><span class="id" title="method">embed</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#ServerIface.SendByte"><span class="id" title="constructor">SendByte</span></a>.<br/>
 
 <br/>
-<span class="comment">(*&nbsp;Here&nbsp;are&nbsp;a&nbsp;few&nbsp;more&nbsp;useful&nbsp;operations&nbsp;written&nbsp;using&nbsp;those<br/>
-&nbsp;&nbsp;&nbsp;above.&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;A&nbsp;few&nbsp;more&nbsp;useful&nbsp;operations,&nbsp;written&nbsp;using&nbsp;those&nbsp;above.&nbsp;*)</span><br/>
 
 <br/>
 <span class="comment">(*&nbsp;Receive&nbsp;up&nbsp;to&nbsp;<span class="inlinecode"><span class="id" title="var">n</span></span>&nbsp;bytes,&nbsp;nondeterministically.&nbsp;*)</span><br/>
@@ -124,46 +119,43 @@
 <div class="code">
 
 <br/>
-<span class="comment">(*&nbsp;Module&nbsp;to&nbsp;define&nbsp;specifications&nbsp;as&nbsp;"observer"&nbsp;ITrees.&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;Types&nbsp;and&nbsp;operations&nbsp;for&nbsp;defining&nbsp;specifications&nbsp;as&nbsp;"observer"<br/>
+&nbsp;&nbsp;&nbsp;ITrees.&nbsp;*)</span><br/>
+
+<br/>
 <span class="id" title="keyword">Module</span> <span class="id" title="keyword">Type</span> <a name="ObserverIface"><span class="id" title="module">ObserverIface</span></a>.<br/>
 
 <br/>
-</div>
+<span class="comment">(*&nbsp;The&nbsp;interface&nbsp;of&nbsp;observers&nbsp;is&nbsp;similar&nbsp;to&nbsp;servers;&nbsp;the&nbsp;difference&nbsp;is<br/>
+&nbsp;&nbsp;&nbsp;that&nbsp;observer&nbsp;ITrees&nbsp;only&nbsp;_consume_&nbsp;bytes&nbsp;(the&nbsp;types&nbsp;of&nbsp;their<br/>
+&nbsp;&nbsp;&nbsp;events&nbsp;return&nbsp;bytes&nbsp;as&nbsp;outputs,&nbsp;rather&nbsp;than&nbsp;taking&nbsp;them&nbsp;as&nbsp;inputs),<br/>
+&nbsp;&nbsp;&nbsp;while&nbsp;servers&nbsp;can&nbsp;produce&nbsp;bytes&nbsp;with&nbsp;<span class="inlinecode"><span class="id" title="var">send</span></span>.&nbsp;In&nbsp;particular,&nbsp;the<br/>
+&nbsp;&nbsp;&nbsp;<span class="inlinecode"><span class="id" title="var">ObsToServer</span></span>&nbsp;effect&nbsp;observes&nbsp;a&nbsp;particular&nbsp;byte&nbsp;being&nbsp;sent&nbsp;to&nbsp;the<br/>
+&nbsp;&nbsp;&nbsp;server&nbsp;(by&nbsp;a&nbsp;test&nbsp;trace&nbsp;generator,&nbsp;intuitively).&nbsp;*)</span><br/>
 
-<div class="doc">
-The type of observations that can be made. 
-</div>
-<div class="code">
-<span class="comment">(*&nbsp;The&nbsp;interface&nbsp;of&nbsp;observers&nbsp;is&nbsp;similar&nbsp;to&nbsp;servers;<br/>
-&nbsp;&nbsp;&nbsp;the&nbsp;difference&nbsp;is&nbsp;that&nbsp;observers&nbsp;only&nbsp;consume&nbsp;bytes,<br/>
-&nbsp;&nbsp;&nbsp;while&nbsp;servers&nbsp;can&nbsp;produce&nbsp;bytes&nbsp;with&nbsp;<span class="inlinecode"><span class="id" title="var">send</span></span>.&nbsp;*)</span><br/>
+<br/>
 <span class="id" title="keyword">Inductive</span> <a name="ObserverIface.observerE"><span class="id" title="inductive">observerE</span></a> : <span class="id" title="keyword">Type</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Type</span> :=<br/>
-| <span class="comment">(*&nbsp;Observe&nbsp;the&nbsp;creation&nbsp;of&nbsp;a&nbsp;new&nbsp;connection&nbsp;*)</span><br/>
-&nbsp;&nbsp;<a name="ObserverIface.ObsConnect"><span class="id" title="constructor">ObsConnect</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#observerE"><span class="id" title="inductive">observerE</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a><br/>
-<br/>
-| <span class="comment">(*&nbsp;Observe&nbsp;a&nbsp;byte&nbsp;going&nbsp;into&nbsp;the&nbsp;server&nbsp;on&nbsp;a&nbsp;particular<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;connection&nbsp;*)</span><br/>
-&nbsp;&nbsp;<a name="ObserverIface.ObsToServer"><span class="id" title="constructor">ObsToServer</span></a> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#observerE"><span class="id" title="inductive">observerE</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a><br/>
-<br/>
-&nbsp;&nbsp;<span class="comment">(*&nbsp;Observe&nbsp;a&nbsp;byte&nbsp;going&nbsp;out&nbsp;of&nbsp;the&nbsp;server.&nbsp;*)</span><br/>
-| <a name="ObserverIface.ObsFromServer"><span class="id" title="constructor">ObsFromServer</span></a> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#observerE"><span class="id" title="inductive">observerE</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#option"><span class="id" title="inductive">option</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a>).<br/>
+&nbsp;&nbsp;| <span class="comment">(*&nbsp;Observe&nbsp;the&nbsp;creation&nbsp;of&nbsp;a&nbsp;new&nbsp;connection&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a name="ObserverIface.ObsConnect"><span class="id" title="constructor">ObsConnect</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#observerE"><span class="id" title="inductive">observerE</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a><br/>
+&nbsp;&nbsp;| <span class="comment">(*&nbsp;Observe&nbsp;a&nbsp;byte&nbsp;going&nbsp;into&nbsp;the&nbsp;server&nbsp;on&nbsp;a&nbsp;particular<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;connection&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a name="ObserverIface.ObsToServer"><span class="id" title="constructor">ObsToServer</span></a> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#observerE"><span class="id" title="inductive">observerE</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;Observe&nbsp;a&nbsp;byte&nbsp;going&nbsp;out&nbsp;of&nbsp;the&nbsp;server.&nbsp;*)</span><br/>
+&nbsp;&nbsp;| <a name="ObserverIface.ObsFromServer"><span class="id" title="constructor">ObsFromServer</span></a> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#observerE"><span class="id" title="inductive">observerE</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#option"><span class="id" title="inductive">option</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a>).<br/>
 
 <br/>
-<span class="comment">(*&nbsp;The&nbsp;<span class="inlinecode"><span class="id" title="var">ObsFromServer</span></span>&nbsp;effect&nbsp;returns&nbsp;an&nbsp;<span class="inlinecode"><span class="id" title="var">option</span></span>.<br/>
-&nbsp;&nbsp;&nbsp;<span class="inlinecode"><span class="id" title="var">None</span></span>&nbsp;is&nbsp;a&nbsp;"hole"&nbsp;in&nbsp;the&nbsp;observed&nbsp;trace,&nbsp;it&nbsp;represents&nbsp;a<br/>
-&nbsp;&nbsp;&nbsp;message&nbsp;hypothetically&nbsp;sent&nbsp;by&nbsp;the&nbsp;server&nbsp;and&nbsp;that&nbsp;we&nbsp;haven't<br/>
-&nbsp;&nbsp;&nbsp;yet&nbsp;received.&nbsp;These&nbsp;holes&nbsp;allow&nbsp;us&nbsp;to&nbsp;keep&nbsp;exploring&nbsp;an<br/>
-&nbsp;&nbsp;&nbsp;observer&nbsp;even&nbsp;in&nbsp;the&nbsp;presence&nbsp;of&nbsp;partial&nbsp;outputs&nbsp;from&nbsp;the<br/>
-&nbsp;&nbsp;&nbsp;server.&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;The&nbsp;<span class="inlinecode"><span class="id" title="var">ObsFromServer</span></span>&nbsp;effect&nbsp;returns&nbsp;an&nbsp;<span class="inlinecode"><span class="id" title="var">option</span></span>,&nbsp;where&nbsp;<span class="inlinecode"><span class="id" title="var">None</span></span>&nbsp;is&nbsp;a<br/>
+&nbsp;&nbsp;&nbsp;"hole"&nbsp;in&nbsp;the&nbsp;observed&nbsp;trace:&nbsp;it&nbsp;represents&nbsp;a&nbsp;message<br/>
+&nbsp;&nbsp;&nbsp;hypothetically&nbsp;sent&nbsp;by&nbsp;the&nbsp;server&nbsp;and&nbsp;that&nbsp;we&nbsp;haven't&nbsp;yet<br/>
+&nbsp;&nbsp;&nbsp;received.&nbsp;These&nbsp;holes&nbsp;allow&nbsp;us&nbsp;to&nbsp;keep&nbsp;exploring&nbsp;an&nbsp;observer&nbsp;even<br/>
+&nbsp;&nbsp;&nbsp;in&nbsp;the&nbsp;presence&nbsp;of&nbsp;partial&nbsp;outputs&nbsp;from&nbsp;the&nbsp;server.&nbsp;*)</span><br/>
 
 <br/>
-<span class="comment">(*&nbsp;The&nbsp;observer&nbsp;monad&nbsp;we&nbsp;write&nbsp;specifications&nbsp;in.&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;The&nbsp;main&nbsp;"observer&nbsp;monad"&nbsp;for&nbsp;writing&nbsp;specifications:&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="ObserverIface.ObserverM"><span class="id" title="definition">ObserverM</span></a> := <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> (<a class="idref" href="DeepWeb.Free.Monad.Effect.html#Failure.failureE"><span class="id" title="inductive">failureE</span></a> <a class="idref" href="DeepWeb.Free.Monad.OpenUnion.html#a713615ae89f5e79b81b3a5662d0793f"><span class="id" title="notation">+'</span></a> <a class="idref" href="DeepWeb.Free.Monad.Effect.html#NonDeterminism.nondetE"><span class="id" title="inductive">nondetE</span></a> <a class="idref" href="DeepWeb.Free.Monad.OpenUnion.html#a713615ae89f5e79b81b3a5662d0793f"><span class="id" title="notation">+'</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#ObserverIface.observerE"><span class="id" title="inductive">observerE</span></a>).<br/>
 
 <br/>
-<span class="comment">(*&nbsp;As&nbsp;usual,&nbsp;we&nbsp;provide&nbsp;some&nbsp;itree&nbsp;wrappers&nbsp;for&nbsp;these&nbsp;constructors.&nbsp;*)</span><br/>
-
-<br/>
+<span class="comment">(*&nbsp;ITree&nbsp;wrappers&nbsp;for&nbsp;the&nbsp;constructors:&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="ObserverIface.obs_connect"><span class="id" title="definition">obs_connect</span></a> :<br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec.html#ObserverIface.ObserverM"><span class="id" title="definition">ObserverM</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> := <a class="idref" href="DeepWeb.Free.Monad.OpenUnion.html#embed"><span class="id" title="method">embed</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#ObserverIface.ObsConnect"><span class="id" title="constructor">ObsConnect</span></a>.<br/>
 <span class="id" title="keyword">Definition</span> <a name="ObserverIface.obs_to_server"><span class="id" title="definition">obs_to_server</span></a> :<br/>
@@ -202,13 +194,13 @@ The type of observations that can be made.
 </div>
 
 <div class="doc">
+Pause here and look at examples! 
+<div class="paragraph"> </div>
+
 <a name="lab17"></a><h2 class="section">Network Model</h2>
 
 </div>
 <div class="code">
-
-<br/>
-<span class="comment">(*&nbsp;BCP:&nbsp;From&nbsp;here&nbsp;on,&nbsp;the&nbsp;"narrative&nbsp;flow"&nbsp;gets&nbsp;a&nbsp;little&nbsp;wobbly...&nbsp;*)</span><br/>
 
 <br/>
 <span class="comment">(*&nbsp;The&nbsp;above&nbsp;interfaces&nbsp;describe&nbsp;servers&nbsp;and&nbsp;observers&nbsp;that&nbsp;interact<br/>
@@ -345,7 +337,6 @@ The type of observations that can be made.
 
 <br/>
 <span class="comment">(*&nbsp;Traces&nbsp;with&nbsp;holes&nbsp;are&nbsp;a&nbsp;superset&nbsp;of&nbsp;real&nbsp;traces.&nbsp;*)</span><br/>
-<span class="comment">(*&nbsp;BCP:&nbsp;Do&nbsp;we&nbsp;need&nbsp;these&nbsp;in&nbsp;the&nbsp;interface?&nbsp;*)</span><br/>
 <span class="id" title="keyword">Parameter</span> <a name="TracesIface.real_to_hypo_trace"><span class="id" title="axiom">real_to_hypo_trace</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.real_trace"><span class="id" title="definition">real_trace</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.hypo_trace"><span class="id" title="definition">hypo_trace</span></a>.<br/>
 <span class="id" title="keyword">Coercion</span> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.real_to_hypo_trace"><span class="id" title="axiom">real_to_hypo_trace</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.real_to_hypo_trace"><span class="id" title="axiom">:</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.real_to_hypo_trace"><span class="id" title="axiom">real_trace</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.real_to_hypo_trace"><span class="id" title="axiom">&gt;-&gt;</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.real_to_hypo_trace"><span class="id" title="axiom">hypo_trace</span></a>.<br/>
 
@@ -453,7 +444,7 @@ The type of observations that can be made.
 &nbsp;&nbsp;&nbsp;possibly&nbsp;with&nbsp;a&nbsp;(counter)example.&nbsp;*)</span><br/>
 
 <br/>
-<span class="comment">(*&nbsp;A&nbsp;test&nbsp;for&nbsp;<span class="inlinecode"><span class="id" title="var">is_observer_trace</span></span>.&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;QuickChick&nbsp;test&nbsp;for&nbsp;<span class="inlinecode"><span class="id" title="var">is_observer_trace</span></span>.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Parameter</span> <a name="TracesIface.is_observer_trace_test"><span class="id" title="axiom">is_observer_trace_test</span></a> :<br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#ObserverM"><span class="id" title="definition">ObserverM</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.hypo_trace"><span class="id" title="definition">hypo_trace</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#simple_result"><span class="id" title="definition">simple_result</span></a>.<br/>
 
@@ -469,9 +460,8 @@ The type of observations that can be made.
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#ObserverM"><span class="id" title="definition">ObserverM</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.real_trace"><span class="id" title="definition">real_trace</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.descrambled_result"><span class="id" title="definition">descrambled_result</span></a>.<br/>
 
 <br/>
-<span class="comment">(*&nbsp;A&nbsp;test&nbsp;for&nbsp;<span class="inlinecode"><span class="id" title="var">refines_mod_network</span></span>.<br/>
-&nbsp;&nbsp;&nbsp;Check&nbsp;that&nbsp;every&nbsp;trace&nbsp;of&nbsp;the&nbsp;server&nbsp;can&nbsp;be&nbsp;descrambled&nbsp;into<br/>
-&nbsp;&nbsp;&nbsp;a&nbsp;trace&nbsp;of&nbsp;the&nbsp;observer.&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;QuickChick&nbsp;test&nbsp;for&nbsp;<span class="inlinecode"><span class="id" title="var">refines_mod_network</span></span>.&nbsp;&nbsp;Checks&nbsp;that&nbsp;every&nbsp;trace<br/>
+&nbsp;&nbsp;&nbsp;of&nbsp;the&nbsp;server&nbsp;can&nbsp;be&nbsp;descrambled&nbsp;into&nbsp;a&nbsp;trace&nbsp;of&nbsp;the&nbsp;observer.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Parameter</span> <a name="TracesIface.refines_mod_network_test"><span class="id" title="axiom">refines_mod_network_test</span></a> :<br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#ObserverM"><span class="id" title="definition">ObserverM</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#ServerM"><span class="id" title="definition">ServerM</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="definition">Checker</span>.<br/>
 

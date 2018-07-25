@@ -13,8 +13,8 @@ From DeepWeb Require Import
 From DeepWeb.Spec Require
      Swap_CLikeSpec
      Swap_SimpleSpec.
-
 (* begin hide *)
+
 Definition swap_server : ServerM unit :=
   Swap_CLikeSpec.test_server.
 

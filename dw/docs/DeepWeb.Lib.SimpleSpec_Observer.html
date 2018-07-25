@@ -79,7 +79,6 @@
 The type of observations that can be made by the spec. 
 </div>
 <div class="code">
-<span class="comment">(*&nbsp;SHOW&nbsp;*)</span><br/>
 <span class="id" title="keyword">Inductive</span> <a name="ObserverType.observerE"><span class="id" title="inductive">observerE</span></a> : <span class="id" title="keyword">Type</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Type</span> :=<br/>
 | <span class="comment">(*&nbsp;Observe&nbsp;the&nbsp;creation&nbsp;of&nbsp;a&nbsp;new&nbsp;connection&nbsp;*)</span><br/>
 &nbsp;&nbsp;<a name="ObserverType.ObsConnect"><span class="id" title="constructor">ObsConnect</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#observerE"><span class="id" title="inductive">observerE</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a><br/>
@@ -125,7 +124,6 @@ The type of observations that can be made by the spec.
 <span class="id" title="keyword">Definition</span> <a name="obs_from_server"><span class="id" title="definition">obs_from_server</span></a> {<span class="id" title="var">E</span>} `{<a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#observerE"><span class="id" title="inductive">observerE</span></a> <a class="idref" href="DeepWeb.Free.Monad.OpenUnion.html#2800906c13e5a3b8a4720448ab367ce9"><span class="id" title="notation">-&lt;</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#E"><span class="id" title="variable">E</span></a>} :<br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#E"><span class="id" title="variable">E</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#option"><span class="id" title="inductive">option</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a>) :=<br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.OpenUnion.html#embed"><span class="id" title="method">embed</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#ObsFromServer"><span class="id" title="constructor">ObsFromServer</span></a>.<br/>
-<span class="comment">(*&nbsp;/SHOW&nbsp;*)</span><br/>
 
 <br/>
 <span class="comment">(*&nbsp;Make&nbsp;an&nbsp;assertion&nbsp;on&nbsp;a&nbsp;value,&nbsp;if&nbsp;it&nbsp;exists.&nbsp;*)</span><br/>
@@ -165,9 +163,8 @@ The type of observations that can be made by the spec.
 &nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
 
 <br/>
-<span class="comment">(*&nbsp;Relating&nbsp;<span class="inlinecode"><span class="id" title="var">event</span></span>&nbsp;and&nbsp;<span class="inlinecode"><span class="id" title="var">observerE</span></span>&nbsp;effects.&nbsp;*)</span><br/>
-
-<br/>
+<span class="comment">(*&nbsp;A&nbsp;<span class="inlinecode"><span class="id" title="var">hypo_event</span></span>&nbsp;is&nbsp;an&nbsp;<span class="inlinecode"><span class="id" title="var">observerE</span></span>&nbsp;effect&nbsp;(<span class="inlinecode"><span class="id" title="var">observerE</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span>)<br/>
+&nbsp;&nbsp;&nbsp;together&nbsp;with&nbsp;its&nbsp;result&nbsp;(<span class="inlinecode"><span class="id" title="var">X</span></span>)&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="event_to_observerE"><span class="id" title="definition">event_to_observerE</span></a> (<span class="id" title="var">e</span> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#hypo_event"><span class="id" title="definition">hypo_event</span></a>) :<br/>
 &nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Specif.html#50b5d8dd6be4fba768e35617e518ad76"><span class="id" title="notation">{</span></a> <span class="id" title="var">X</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Specif.html#50b5d8dd6be4fba768e35617e518ad76"><span class="id" title="notation">:</span></a> <span class="id" title="keyword">Type</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Specif.html#50b5d8dd6be4fba768e35617e518ad76"><span class="id" title="notation">&amp;</span></a> (<a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#observerE"><span class="id" title="inductive">observerE</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#X"><span class="id" title="variable">X</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#d19c7eafd0e2d195d10df94b392087b5"><span class="id" title="notation">×</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#X"><span class="id" title="variable">X</span></a>)%<span class="id" title="keyword">type</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Specif.html#50b5d8dd6be4fba768e35617e518ad76"><span class="id" title="notation">}</span></a> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#e"><span class="id" title="variable">e</span></a> <span class="id" title="keyword">with</span><br/>
@@ -182,6 +179,8 @@ The type of observations that can be made by the spec.
 &nbsp;&nbsp;|}.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;<span class="inlinecode"><span class="id" title="var">is_observer_trace</span></span> <span class="inlinecode"><span class="id" title="var">observer</span></span> <span class="inlinecode"><span class="id" title="var">tr</span></span>&nbsp;holds&nbsp;if&nbsp;<span class="inlinecode"><span class="id" title="var">tr</span></span>&nbsp;is&nbsp;a&nbsp;trace&nbsp;of<br/>
+&nbsp;&nbsp;&nbsp;the&nbsp;<span class="inlinecode"><span class="id" title="var">observer</span></span>;&nbsp;<span class="inlinecode"><span class="id" title="var">tr</span></span>&nbsp;may&nbsp;contain&nbsp;holes.&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="is_observer_trace"><span class="id" title="definition">is_observer_trace</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#ObserverM"><span class="id" title="definition">ObserverM</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#hypo_trace"><span class="id" title="definition">hypo_trace</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Prop</span> :=<br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Traces.html#is_trace"><span class="id" title="inductive">is_trace</span></a>.<br/>
 
@@ -258,7 +257,6 @@ The type of observations that can be made by the spec.
 &nbsp;&nbsp;<span class="id" title="keyword">end</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> ⇒ <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#x"><span class="id" title="variable">x</span></a>).<br/>
 
 <br/>
-<span class="comment">(*&nbsp;SHOW&nbsp;*)</span><br/>
 <span class="comment">(*&nbsp;Basically,&nbsp;a&nbsp;trace&nbsp;<span class="inlinecode"><span class="id" title="var">t</span></span>&nbsp;belongs&nbsp;to&nbsp;a&nbsp;tree&nbsp;if&nbsp;there&nbsp;is&nbsp;a&nbsp;path<br/>
 &nbsp;&nbsp;&nbsp;through&nbsp;the&nbsp;tree&nbsp;(a&nbsp;list&nbsp;of&nbsp;<span class="inlinecode"><span class="id" title="var">E0</span></span>&nbsp;effects)&nbsp;such&nbsp;that&nbsp;its<br/>
 &nbsp;&nbsp;&nbsp;restriction&nbsp;to&nbsp;<span class="inlinecode"><span class="id" title="var">observerE</span></span>&nbsp;events&nbsp;is&nbsp;<span class="inlinecode"><span class="id" title="var">t</span></span>.<br/>
@@ -317,7 +315,6 @@ The type of observations that can be made by the spec.
 <br/>
 <span class="comment">(*&nbsp;The&nbsp;network's&nbsp;behavior&nbsp;is&nbsp;defined&nbsp;in&nbsp;<span class="inlinecode"><span class="id" title="var">Lib.SimpleSpec_Traces</span></span><br/>
 &nbsp;&nbsp;&nbsp;and&nbsp;is&nbsp;accounted&nbsp;for&nbsp;in&nbsp;testing&nbsp;in&nbsp;<span class="inlinecode"><span class="id" title="var">Lib.SimpleSpec_Descramble</span></span>.&nbsp;*)</span><br/>
-<span class="comment">(*&nbsp;/SHOW&nbsp;*)</span><br/>
 </div>
 </div>
 

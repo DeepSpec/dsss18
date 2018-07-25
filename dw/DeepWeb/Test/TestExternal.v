@@ -178,23 +178,6 @@ Instance showResult {A CE : Type} `{Show A} `{Show CE}: Show (result A CE) :=
        | DONTKNOW => "Out of Fuel"
        end |}.
 
-Definition collectResult {A CE} (r : result A CE) : string :=
-  match r with
-  | OK _    => "Found"
-  | FAIL _ => "Not Found"
-  | DONTKNOW  => "Out of Fuel"
-  end.
-
-Instance Checkable_result {A CE : Type} `{Show A} `{Show CE}
-  : Checkable (@result A CE)  :=
-  {| checker r :=
-       collect (collectResult r)
-       match r with
-       | OK _ => checker true
-       | FAIL _ => checker false
-       | DONTKNOW => checker tt
-       end |}.
-
 Require DeepWeb.Spec.Swap_SimpleSpec.
 
 Instance genMoreBytes : GenSized (list byte) :=

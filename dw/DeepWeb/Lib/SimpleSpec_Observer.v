@@ -45,7 +45,6 @@ Open Scope string_scope.
 
 Module Export ObserverType.
 (** The type of observations that can be made by the spec. *)
-(* SHOW *)
 Inductive observerE : Type -> Type :=
 | (* Observe the creation of a new connection *)
   ObsConnect : observerE connection_id
@@ -85,7 +84,6 @@ Definition obs_to_server {E} `{observerE -< E} :
 Definition obs_from_server {E} `{observerE -< E} :
   connection_id -> M E (option byte) :=
   embed ObsFromServer.
-(* /SHOW *)
 
 (* Make an assertion on a value, if it exists. *)
 Definition assert_on {E A} `{failureE -< E} `{nondetE -< E}
@@ -121,8 +119,8 @@ Fixpoint obs_msg_from_server
     obs_msg_from_server c msg
   end.
 
-(* Relating [event] and [observerE] effects. *)
-
+(* A [hypo_event] is an [observerE] effect ([observerE X])
+   together with its result ([X]) *)
 Definition event_to_observerE (e : hypo_event) :
   { X : Type & (observerE X * X)%type } :=
   match e with
@@ -135,6 +133,8 @@ Instance EventType_observerE : EventType hypo_event observerE := {|
     from_event := event_to_observerE;
   |}.
 
+(* [is_observer_trace observer tr] holds if [tr] is a trace of
+   the [observer]; [tr] may contain holes. *)
 Definition is_observer_trace : ObserverM unit -> hypo_trace -> Prop :=
   is_trace.
 
@@ -202,7 +202,6 @@ Definition nondet_exists {X : Type}
     (k (id false) || k (id true))%result
   end (fun x => x).
 
-(* SHOW *)
 (* Basically, a trace [t] belongs to a tree if there is a path
    through the tree (a list of [E0] effects) such that its
    restriction to [observerE] events is [t].
@@ -257,4 +256,3 @@ Definition is_observer_trace_test :
 
 (* The network's behavior is defined in [Lib.SimpleSpec_Traces]
    and is accounted for in testing in [Lib.SimpleSpec_Descramble]. *)
-(* /SHOW *)

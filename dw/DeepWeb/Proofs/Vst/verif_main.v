@@ -149,7 +149,7 @@ Proof.
 
   rewrite listen_res_eq.
 
-  forward_call (ret tt, st_post_listen,
+  forward_call (@ret SocketM _ _ tt, st_post_listen,
                 SERVER_PORT,
                 server_fd,
                 INIT_MSG,

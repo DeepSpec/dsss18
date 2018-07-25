@@ -9,7 +9,7 @@ Import TracePred.
 
 Definition select_loop_spec :=
   DECLARE _select_loop
-  WITH k : SocketMonad unit,
+  WITH k : SocketM unit,
        st : SocketMap,
        server_addr : endpoint_id,
        server_fd : sockfd,

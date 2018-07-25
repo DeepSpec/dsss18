@@ -120,6 +120,30 @@ Notation "x || y" := (or_result x (fun _ => y)) : result_scope.
 
 Delimit Scope result_scope with result.
 
+From QuickChick Require QuickChick.
+
+Section CheckableResult.
+Import QuickChick.
+
+Definition collectResult {A CE} (r : result A CE) : string :=
+  match r with
+  | OK _    => "Found"
+  | FAIL _ => "Not Found"
+  | DONTKNOW  => "Out of Fuel"
+  end.
+
+Global Instance Checkable_result {A CE : Type} `{Show A} `{Show CE}
+  : Checkable (@result A CE)  :=
+  {| checker r :=
+       collect (collectResult r)
+       match r with
+       | OK _ => checker true
+       | FAIL _ => checker false
+       | DONTKNOW => checker tt
+       end |}.
+
+End CheckableResult.
+
 (* Option type *)
 
 Definition or_option {A : Type} :

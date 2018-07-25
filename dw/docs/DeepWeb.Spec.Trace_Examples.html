@@ -47,6 +47,27 @@
 <br/>
 
 <br/>
+<span class="comment">(*&nbsp;The&nbsp;swap&nbsp;server&nbsp;spec&nbsp;(for&nbsp;easy&nbsp;reference):<br/>
+<br/>
+<span class="inlinecode">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">CoFixpoint</span> <span class="id" title="var">swap_observer_loop</span> (<span class="id" title="var">buffer_size</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">conns</span> : <span class="id" title="var">list</span> <span class="id" title="var">connection_id</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">last_msg</span> : <span class="id" title="var">bytes</span>) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">ObserverM</span> <span class="id" title="var">unit</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">disj</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;( <span class="comment">(*&nbsp;Accept&nbsp;a&nbsp;new&nbsp;connection.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">c</span> &lt;- <span class="id" title="var">obs_connect</span>;;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">swap_observer_loop</span> <span class="id" title="var">buffer_size</span> (<span class="id" title="var">c</span> :: <span class="id" title="var">conns</span>) <span class="id" title="var">last_msg</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="comment">(*&nbsp;Exchange&nbsp;a&nbsp;pair&nbsp;of&nbsp;messages&nbsp;on&nbsp;a&nbsp;connection.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">c</span> &lt;- <span class="id" title="var">choose</span> <span class="id" title="var">conns</span>;;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">msg</span> &lt;- <span class="id" title="var">obs_msg_to_server</span> <span class="id" title="var">buffer_size</span> <span class="id" title="var">c</span>;;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">obs_msg_from_server</span> <span class="id" title="var">c</span> <span class="id" title="var">last_msg</span>;;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">swap_observer_loop</span> <span class="id" title="var">buffer_size</span> <span class="id" title="var">conns</span> <span class="id" title="var">msg</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)%<span class="id" title="var">nondet</span>.
+<div class="paragraph"> </div>
+
+</span>*)</span><br/>
+
+<br/>
 <span class="id" title="keyword">Import</span> <span class="id" title="var">EventNotations</span>.<br/>
 
 <br/>

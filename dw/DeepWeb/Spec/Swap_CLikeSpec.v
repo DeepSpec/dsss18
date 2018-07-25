@@ -127,7 +127,9 @@ Definition conn_read (buffer_size : Z)
            bytes previously received on that connection. *)
       | Some msg =>
         let msg_len := Z.of_nat (String.length msg) in
-        let msg' := (*!*) (conn_request conn ++ msg)%string (*! "BAD" *) in
+        let msg' := (*!*) (conn_request conn ++ msg)%string
+                    (*!! Respond too quickly *)
+                    (*! "BAD" *) in
         if is_complete buffer_size msg' then
           (* If the client's message is complete (i.e., of
              length [buffer_size]) we prepare to respond with

@@ -23,6 +23,25 @@ Set Warnings "-extraction-opaque-accessed,-extraction".
 Open Scope string_scope.
 (* end hide *)
 
+(* The swap server spec (for easy reference):
+[[
+     CoFixpoint swap_observer_loop (buffer_size : nat)
+                               (conns : list connection_id)
+                               (last_msg : bytes) 
+                             : ObserverM unit :=
+       disj
+         ( (* Accept a new connection. *)
+           c <- obs_connect;;
+           swap_observer_loop buffer_size (c :: conns) last_msg
+         | (* Exchange a pair of messages on a connection. *)
+           c <- choose conns;;
+           msg <- obs_msg_to_server buffer_size c;;
+           obs_msg_from_server c last_msg;;
+           swap_observer_loop buffer_size conns msg
+         )%nondet.
+]]
+*)
+
 Import EventNotations.
 
 (** _Traces_ are lists of "observed events" of the following forms

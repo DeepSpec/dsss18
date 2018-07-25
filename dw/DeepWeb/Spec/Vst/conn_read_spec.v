@@ -11,7 +11,7 @@ Import TracePred.
 
 Definition conn_read_spec (T : Type) (buffer_size : Z) :=
   DECLARE _conn_read
-  WITH k : (connection * string) -> SocketMonad T,
+  WITH k : (connection * string) -> SocketM T,
        st : SocketMap,
        conn : connection,
        fd : sockfd,

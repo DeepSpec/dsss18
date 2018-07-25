@@ -10,7 +10,7 @@ Import TracePred.
 
 Definition process_connections_spec (buffer_size : Z) :=
   DECLARE _process_connections
-  WITH k : SocketMonad unit,
+  WITH k : SocketM unit,
        st : SocketMap,
        server_addr : endpoint_id,
        server_fd : sockfd, 

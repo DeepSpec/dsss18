@@ -23,7 +23,6 @@ Require Import DeepWeb.Lib.SimpleSpec_Traces.
 
 Module Export ServerType.
 (* A simple interface of server effects. *)
-(* SHOW *)
 Inductive serverE : Type -> Type :=
 | Accept   : serverE connection_id
 | RecvByte : connection_id -> serverE byte
@@ -35,7 +34,6 @@ End ServerType.
    A server is a program with internal nondeterminism and
    external network effects. *)
 Definition ServerM := M (failureE +' nondetE +' serverE).
-(* /SHOW *)
 
 (* Accept a new connection. *)
 Definition accept {E} `{serverE -< E}
@@ -70,6 +68,8 @@ Fixpoint send {E} `{serverE -< E}
          (c : connection_id) (bs : bytes) : M E unit :=
   for_bytes bs (send_byte c).
 
+(* A [real_event] is a [serverE] effect ([serverE X])
+   together with its result ([X]) *)
 Definition event_to_serverE (ev : real_event) :
   { X : Type & (serverE X * X)%type } :=
   match ev with
@@ -82,5 +82,6 @@ Instance EventType_serverE : EventType real_event serverE := {|
     from_event := event_to_serverE;
   |}.
 
+(* [is_server_trace server tr] holds if [tr] is a trace of the [server]. *)
 Definition is_server_trace : ServerM unit -> real_trace -> Prop :=
   is_trace.

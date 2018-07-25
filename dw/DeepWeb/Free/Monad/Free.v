@@ -24,8 +24,8 @@ CoInductive M (Event : Type -> Type) X :=
 | Vis {Y: Type} (e : Event Y) (k : Y -> M Event X)
 | Tau (k: M Event X).
 
-(* [M] is known as the "Freer monad" -- see _Freer Monads, More
-   Extensible Effects_, by Oleg Kiselyov and Hiromi Ishii. *)
+(* [M] is commonly known as the "Freer monad" -- see _Freer Monads,
+   More Extensible Effects_, by Oleg Kiselyov and Hiromi Ishii. *)
 
 (* begin hide *)
 (* Abstract nonsense: The [Vis] constructor corresponds to a free
@@ -115,26 +115,13 @@ Definition bindM {E X Y} (s: M E X) (t: X -> M E Y) : M E Y :=
 
 Instance Monad_M E : Monad (M E) := { ret X x := Ret x; bind := @bindM E }.
 
-(** ** Handy Utilities *)
-
-(* We next define a number of useful combinators for interaction trees. *)
-
-(* Wrap a function around the results returned from an ITree *)
-Definition mapM {E X Y} (f: X -> Y) (s: M E X) : M E Y :=
-let cofix go (s : M E X) := 
-    match s with
-    | Ret x => Ret (f x)
-    | Vis e k => Vis e (fun y => go (k y))
-    | Tau k => Tau (go k)
-    end
-in go s.
-
 (* Lift a single event to an [M] action. *)
 Definition liftE Event X (e : Event X) : M Event X :=
   Vis e (fun x => Ret x).
 
-(* Ignore the results from an ITree (changing it to have [unit] result type) *)
-Definition ignore {E X} : M E X -> M E unit := mapM (fun _ => tt).
+(** ** Handy Utilities *)
+
+(* A number of useful ITrees and ITree combinators *)
 
 (* An ITree representing an infinite loop *)
 CoFixpoint spin {E} {X} : M E X := Tau spin.
@@ -152,21 +139,22 @@ CoFixpoint forever {E} {X} (x : M E X) : M E void :=
 
 (* A one-sided conditional. *)
 Definition when {E} (b : bool) (body : M E unit)
-  : M E unit :=
+                : M E unit :=
   if b then body else ret tt.
 
-(* An imperative loop over a list. *)
+(* An imperative "for each" loop over a list. *)
 CoFixpoint for_each {E A} (bs : list A) (body : A -> M E unit)
-  : M E unit :=
+                  : M E unit :=
   match bs with
   | [] => ret tt
   | b :: bs' => body b;; for_each bs' body
   end.
 
-(* An imperative while-loop. *)
+(* An imperative while-loop combinator. *)
 CoFixpoint while {E : Type -> Type} {T : Type}
-           (cond : T -> bool)
-           (body : T -> M E T) : T -> M E T :=
+                 (cond : T -> bool)
+                 (body : T -> M E T) 
+               : T -> M E T :=
   fun t =>
     match cond t with
     | true =>
@@ -174,4 +162,17 @@ CoFixpoint while {E : Type -> Type} {T : Type}
       while cond body r
     | false => ret t
     end.
+
+(* Wrap a function around the results returned from an ITree *)
+Definition mapM {E X Y} (f: X -> Y) (s: M E X) : M E Y :=
+let cofix go (s : M E X) := 
+    match s with
+    | Ret x => Ret (f x)
+    | Vis e k => Vis e (fun y => go (k y))
+    | Tau k => Tau (go k)
+    end
+in go s.
+
+(* Ignore the results from an ITree (changing it to have [unit] result type) *)
+Definition ignore {E X} : M E X -> M E unit := mapM (fun _ => tt).
 

@@ -30,16 +30,12 @@ Module Type ServerIface.
 (* A server is a program with internal nondeterminism and
    external network effects. *)
 Inductive serverE : Type -> Type :=
-
-(* Accept a new connection. *)
-| Accept   : serverE connection_id
-
-(* Receive one byte from a connection. *)
-| RecvByte : connection_id -> serverE byte
-
-(* Send one byte to a connection. *)
-| SendByte : connection_id -> byte -> serverE unit
-.
+  | (* Accept a new connection. *)
+    Accept   : serverE connection_id
+  | (* Receive one byte from a connection. *)
+    RecvByte : connection_id -> serverE byte
+  | (* Send one byte to a connection. *)
+    SendByte : connection_id -> byte -> serverE unit.
 
 (* The server monad to write implementations in.
    A server is a program with internal nondeterminism and
@@ -55,8 +51,7 @@ Definition recv_byte :
 Definition send_byte :
   connection_id -> byte -> ServerM unit := embed SendByte.
 
-(* Here are a few more useful operations written using those
-   above. *)
+(* A few more useful operations, written using those above. *)
 
 (* Receive up to [n] bytes, nondeterministically. *)
 Parameter recv : connection_id -> nat -> ServerM bytes.
@@ -72,37 +67,37 @@ End ServerIface.
 
 (** ** Observer *)
 
-(* Module to define specifications as "observer" ITrees. *)
+(* Types and operations for defining specifications as "observer"
+   ITrees. *)
+
 Module Type ObserverIface.
 
-(** The type of observations that can be made. *)
-(* The interface of observers is similar to servers;
-   the difference is that observers only consume bytes,
-   while servers can produce bytes with [send]. *)
+(* The interface of observers is similar to servers; the difference is
+   that observer ITrees only _consume_ bytes (the types of their
+   events return bytes as outputs, rather than taking them as inputs),
+   while servers can produce bytes with [send]. In particular, the
+   [ObsToServer] effect observes a particular byte being sent to the
+   server (by a test trace generator, intuitively). *)
+
 Inductive observerE : Type -> Type :=
-| (* Observe the creation of a new connection *)
-  ObsConnect : observerE connection_id
+  | (* Observe the creation of a new connection *)
+    ObsConnect : observerE connection_id
+  | (* Observe a byte going into the server on a particular
+       connection *)
+    ObsToServer : connection_id -> observerE byte
+    (* Observe a byte going out of the server. *)
+  | ObsFromServer : connection_id -> observerE (option byte).
 
-| (* Observe a byte going into the server on a particular
-     connection *)
-  ObsToServer : connection_id -> observerE byte
+(* The [ObsFromServer] effect returns an [option], where [None] is a
+   "hole" in the observed trace: it represents a message
+   hypothetically sent by the server and that we haven't yet
+   received. These holes allow us to keep exploring an observer even
+   in the presence of partial outputs from the server. *)
 
-  (* Observe a byte going out of the server. *)
-| ObsFromServer : connection_id -> observerE (option byte).
-
-(* The [ObsFromServer] effect returns an [option].
-   [None] is a "hole" in the observed trace, it represents a
-   message hypothetically sent by the server and that we haven't
-   yet received. These holes allow us to keep exploring an
-   observer even in the presence of partial outputs from the
-   server. *)
-
-
-(* The observer monad we write specifications in. *)
+(* The main "observer monad" for writing specifications: *)
 Definition ObserverM := M (failureE +' nondetE +' observerE).
 
-(* As usual, we provide some itree wrappers for these constructors. *)
-
+(* ITree wrappers for the constructors: *)
 Definition obs_connect :
   ObserverM connection_id := embed ObsConnect.
 Definition obs_to_server :
@@ -132,9 +127,9 @@ Parameter obs_msg_from_server : connection_id -> bytes -> ObserverM unit.
 End ObserverIface.
 (* Implemented in [Lib.SimpleSpec_Observer]. *)
 
-(** ** Network Model *)
+(** Pause here and look at examples! *)
 
-(* BCP: From here on, the "narrative flow" gets a little wobbly... *)
+(** ** Network Model *)
 
 (* The above interfaces describe servers and observers that interact
    over a network, which we model as the following state machine... *)
@@ -242,7 +237,6 @@ Definition hypo_event := event (option byte).
 Definition hypo_trace := list hypo_event.
 
 (* Traces with holes are a superset of real traces. *)
-(* BCP: Do we need these in the interface? *)
 Parameter real_to_hypo_trace : real_trace -> hypo_trace.
 Coercion real_to_hypo_trace : real_trace >-> hypo_trace.
 
@@ -336,7 +330,7 @@ Definition refines_mod_network observer server : Prop :=
    constructors representing success, failure, or "don't know",
    possibly with a (counter)example. *)
 
-(* A test for [is_observer_trace]. *)
+(* QuickChick test for [is_observer_trace]. *)
 Parameter is_observer_trace_test :
   ObserverM unit -> hypo_trace -> simple_result.
 
@@ -349,9 +343,8 @@ Definition descrambled_result := result hypo_trace unit.
 Parameter is_scrambled_trace_test :
   ObserverM unit -> real_trace -> descrambled_result.
 
-(* A test for [refines_mod_network].
-   Check that every trace of the server can be descrambled into
-   a trace of the observer. *)
+(* QuickChick test for [refines_mod_network].  Checks that every trace
+   of the server can be descrambled into a trace of the observer. *)
 Parameter refines_mod_network_test :
   ObserverM unit -> ServerM unit -> Checker.
 

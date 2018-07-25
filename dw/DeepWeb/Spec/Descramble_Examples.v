@@ -25,17 +25,15 @@ Set Warnings "-extraction-opaque-accessed,-extraction".
 Open Scope string_scope.
 (* end hide *)
 
-(* BCP: Too much boilerplate!
-
-    refines_mod_network_test
-      swap_observer_def (bounded_server Def.buffer_size [] Def.init_message).
-*)
-
 Import EventNotations.
+
+(* Instantiate a server with default values [buffer_size] and
+   [init_message]. *)
+Definition def (f : nat -> bytes -> ServerM unit) : ServerM unit :=
+  f Def.buffer_size Def.init_message.
 
 (** * Example scrambled traces *)
 
-(* BCP: linear -> server *) (* LY: is this better? *)
 (* "Scrambled traces" describe what the clients _across the network_
    can observe, given that the server is behaving according to the
    given sequential specification.
@@ -215,30 +213,30 @@ Proof. reflexivity. Qed.
 
 (* A swap server that trivially follows the specification. *)
 
-CoFixpoint swap_server_loop (buffer_size : nat)
-                          (conns : list connection_id)
-                          (last_msg : bytes) 
-                        : ServerM unit :=
+CoFixpoint swap_server_loop
+           (conns : list connection_id)
+           (buffer_size : nat)
+           (last_msg : bytes)
+         : ServerM unit :=
   disj
     ( (* Accept a new connection. *)
       c <- accept;;
-      swap_server_loop buffer_size (c :: conns) last_msg
+      swap_server_loop (c :: conns) buffer_size last_msg
     | (* Exchange a pair of messages on a connection. *)
       c <- choose conns;;
       msg <- recv c buffer_size;;
       send c last_msg;;
-      swap_server_loop buffer_size conns msg
+      swap_server_loop conns buffer_size msg
     )%nondet.
 
-Definition swap_server_def : ServerM unit :=
-  swap_server_loop Def.buffer_size [] Def.init_message.
-
 Definition test_swap := refines_mod_network_test
-                          swap_observer_def swap_server_def.
+                          swap_observer_def
+                          (def (swap_server_loop [])).
 
 (*! QuickChick test_swap. *)
-
-(* QuickChecking test_swap +++ Passed 10000 tests (0 discards) *)
+(* ===>
+     Checking Descramble_Examples.test_swap...
+     +++ Passed 100 tests (0 discards) *)
 
 (** ** Trivial server *)
 
@@ -249,11 +247,13 @@ CoFixpoint eager_server (tt : unit) : ServerM unit :=
   eager_server tt.
 
 Definition test_eager := refines_mod_network_test
-                           swap_observer_def (eager_server tt).
+                           swap_observer_def
+                           (eager_server tt).
 
 (*! QuickChick test_eager. *)
-
-(* QuickChecking test_eager ++ Passed 10000 tests (0 discards) *)
+(* ===>
+     Checking Descramble_Examples.test_eager...
+     +++ Passed 100 tests (0 discards) *)
 
 (** ** Bad server *)
 
@@ -268,11 +268,12 @@ CoFixpoint const_server (buffer_size : nat) : ServerM unit :=
 Definition test_const :=
   expectFailure
     (refines_mod_network_test
-       swap_observer_def (const_server Def.buffer_size)).
+       swap_observer_def
+       (const_server Def.buffer_size)).
 
 (*! QuickChick test_const. *)
 (* ===>
-     QuickChecking test_const
+     Checking Descramble_Examples.test_const...
 [[
      [1 !; 1 <-- "C"; 1 <-- "\022"; 1 <-- "\003"; 1 --> "0"; 
       2 !; 2 <-- "P"; 2 <-- "o"; 2 <-- "n"; 2 --> "0"]
@@ -283,82 +284,102 @@ Definition test_const :=
 
 (* A (correct) server that only accepts up to two connections *)
 
-CoFixpoint bounded_server (buffer_size : nat) 
-                          (conns : list connection_id)
+CoFixpoint bounded_server (conns : list connection_id)
+                          (buffer_size : nat)
                           (last_msg : string)
                         : ServerM unit :=
   disj
      ( if (length conns <= 2)? then
-         c <- accept ;; bounded_server buffer_size (c :: conns) last_msg
+         c <- accept ;; bounded_server (c :: conns) buffer_size last_msg
        else
-         ret tt ;; bounded_server buffer_size conns last_msg
+         ret tt ;; bounded_server conns buffer_size last_msg
      | c <- choose conns;;
        msg <- recv c buffer_size ;;
        send c last_msg ;;
-       bounded_server buffer_size conns msg 
+       bounded_server conns buffer_size msg
      )%nondet.
 
 Definition test_bounded_server :=
   refines_mod_network_test
-    swap_observer_def (bounded_server Def.buffer_size [] Def.init_message).
+    swap_observer_def
+    (def (bounded_server [])).
 
 (*! QuickChick test_bounded_server. *)
+
+(* ===>
+     Checking Descramble_Examples.test_bounded_server...
+     +++ Passed 100 tests (0 discards) *)
 
 (** ** Terminating server *)
 
 (* A server that works for a while and then stops. *)
 
-CoFixpoint terminating_server (buffer_size : nat) (conns : list connection_id)
-                              (last_msg : string) (num_sends : nat) 
+CoFixpoint terminating_server (conns : list connection_id)
+                              (num_sends : nat)
+                              (buffer_size : nat)
+                              (last_msg : string)
                             : ServerM unit :=
   if num_sends < 3 ? then 
     disj
       ( c <- accept;;
-        terminating_server buffer_size (c :: conns) last_msg num_sends
+        terminating_server (c :: conns) num_sends buffer_size last_msg
       | c <- choose conns;;
         msg <- recv c buffer_size;;
         send c last_msg;;
-        terminating_server buffer_size conns msg (num_sends + 1)
+        terminating_server conns (num_sends + 1) buffer_size msg
       )%nondet
   else ret tt.
 
 Definition test_terminating_server :=
   refines_mod_network_test
     swap_observer_def
-    (terminating_server Def.buffer_size [] Def.init_message 0).
+    (def (terminating_server [] 0)).
 
 (*! QuickChick test_terminating_server. *)
-
-(* BCP: Put in all QC results in comments, with ===>.  Comment on lack
-   of shrinking. *)
 
 (** ** Eventually bad server *)
 
 (* A server that behaves properly at first, then malfunctions. *)
-Definition malfunctioning_server 
-                 (buffer_size : nat) (conns : list connection_id)
-                 (last_msg : string) (num_sends : nat) 
-               : ServerM unit :=
-  terminating_server buffer_size conns last_msg num_sends ;;
+Definition malfunctioning_server (conns : list connection_id)
+                                 (num_sends : nat)
+                                 (buffer_size : nat)
+                                 (last_msg : string)
+                               : ServerM unit :=
+  terminating_server conns num_sends buffer_size last_msg ;;
   const_server buffer_size.
   
 Definition test_malfunctioning_server :=
   expectFailure
     (refines_mod_network_test
       swap_observer_def
-      (malfunctioning_server Def.buffer_size [] Def.init_message 0)).
+      (def (malfunctioning_server [] 0))).
 
 (*! QuickChick test_malfunctioning_server. *)
+(* ===>
+     Checking Descramble_Examples.test_malfunctioning_server...
+[[
+     [1 !;
+      1 <-- "i"; 1 <-- "Z"; 1 <-- "|";
+      1 --> "0"; 1 --> "0"; 1 --> "0";
+      2 !; 3 !; 4 !;
+      2 <-- "\001"; 2 <-- "="; 2 <-- "`";
+      2 --> "i"; 2 --> "Z"; 2 --> "|";
+      4 <-- "]"; 4 <-- "l"; 4 <-- "}";
+      4 --> "\001"; 4 --> "="; 4 --> "`";
+      5 !;
+      5 <-- "J"; 5 <-- "_"; 5 <-- "z";
+      5 --> "0"]
+]]
+     +++ Failed (as expected) after 1 tests and 0 shrinks. (0 discards) *)
 
 (** ** Echo server *)
-
-(* BCP: Why the unit arguments?  For extraction?? *)
 
 (* Finally, just to show that we can specify things besides swap
    servers (;-), here is a simple echo server that repeatedly accepts
    a connection, receives up to 2 bytes, and sends them back along the
    same connection. *)
 
+(* The [unit] argument is there for extraction to OCaml. *)
 CoFixpoint echo (tt : unit) : ServerM unit :=
   c <- accept ;;
   msg <- recv c 2 ;;
@@ -371,7 +392,11 @@ CoFixpoint echo_spec (tt : unit) : ObserverM unit :=
   obs_msg_from_server c msg ;;
   echo_spec tt.
 
-Definition test_echo := refines_mod_network_test (echo_spec tt) (echo tt).
+Definition test_echo := refines_mod_network_test
+                          (echo_spec tt)
+                          (echo tt).
 
 (*! QuickChick test_echo. *)
-
+(* ===>
+     Checking Descramble_Examples.test_echo...
+     +++ Passed 100 tests (0 discards) *)

@@ -35,7 +35,7 @@ Definition timeval_rep
         Vlong (Int64.repr (Int.signed (Int.repr 0)))) *)
 
 Definition main_loop_invar
-           (k : SocketMonad unit)
+           (k : SocketM unit)
            (server_addr : endpoint_id)
            (server_fd : sockfd)
            (v_head : val)

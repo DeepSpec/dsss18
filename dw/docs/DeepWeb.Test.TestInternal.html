@@ -25,14 +25,10 @@
 </div>
 
 <div class="doc">
-<a name="lab29"></a><h1 class="section">Top-level "internal" test of the CLike spec against the simple spec</h1>
+<a name="lab29"></a><h1 class="section">Top-level "internal" test</h1>
 
 </div>
 <div class="code">
-
-<br/>
-<span class="comment">(*&nbsp;Simulate&nbsp;a&nbsp;server&nbsp;(defined&nbsp;in&nbsp;Coq,&nbsp;hence&nbsp;"internal"),<br/>
-&nbsp;&nbsp;&nbsp;nondeterministically&nbsp;returning&nbsp;the&nbsp;new&nbsp;state&nbsp;of&nbsp;the&nbsp;network.&nbsp;*)</span><br/>
 
 <br/>
 <span class="id" title="keyword">Type</span><span class="id" title="var">classes</span> <span class="id" title="tactic">eauto</span> := 6.<br/>
@@ -51,20 +47,10 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_SimpleSpec.html#"><span class="id" title="library">Swap_SimpleSpec</span></a>.<br/>
 
 <br/>
-<span class="id" title="keyword">Definition</span> <a name="swap_server"><span class="id" title="definition">swap_server</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#ServerM"><span class="id" title="definition">ServerM</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> :=<br/>
-&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#test_server"><span class="id" title="definition">Swap_CLikeSpec.test_server</span></a>.<br/>
-
-<br/>
-<span class="id" title="keyword">Definition</span> <a name="swap_observer"><span class="id" title="definition">swap_observer</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#ObserverM"><span class="id" title="definition">ObserverM</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> :=<br/>
-&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_SimpleSpec.html#swap_observer_def"><span class="id" title="definition">Swap_SimpleSpec.swap_observer_def</span></a>.<br/>
-
-<br/>
-
-<br/>
 <span class="id" title="keyword">Definition</span> <a name="test"><span class="id" title="definition">test</span></a> :=<br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#refines_mod_network_test"><span class="id" title="definition">refines_mod_network_test</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_SimpleSpec.html#swap_observer_def"><span class="id" title="definition">Swap_SimpleSpec.swap_observer_def</span></a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Test.TestInternal.html#swap_server"><span class="id" title="definition">swap_server</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_CLikeSpec.html#test_server"><span class="id" title="definition">Swap_CLikeSpec.test_server</span></a>.<br/>
 
 <br/>
 <span class="comment">(*!&nbsp;QuickChick&nbsp;test.&nbsp;*)</span><br/>

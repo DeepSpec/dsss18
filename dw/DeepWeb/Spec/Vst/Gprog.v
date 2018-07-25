@@ -40,16 +40,16 @@ Definition socket_ext_spec
   :=
   add_funspecs_rec
     ext_link
-    (ok_void_spec (SocketMonad unit)).(@OK_ty)
-    (ok_void_spec (SocketMonad unit)).(@OK_spec)
+    (ok_void_spec (SocketM unit)).(@OK_ty)
+    (ok_void_spec (SocketM unit)).(@OK_spec)
     socket_specs.
 
 Instance Socket_Espec : OracleKind :=
   Build_OracleKind
-    (SocketMonad unit)
+    (SocketM unit)
     (socket_ext_spec).
 
-Definition main_spec (tree : SocketMonad unit) :=
+Definition main_spec (tree : SocketM unit) :=
   DECLARE _main
   WITH gv : globals
   PRE [ ]

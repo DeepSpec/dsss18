@@ -15,24 +15,26 @@ Definition swap_observer := swap_observer_ (Z.to_nat BUFFER_SIZE) INIT_MSG.
 
 (** * The top-level correctness property. *)
 
-(* BCP: Every word in the following definition needs some explanation!
-
-   - simplify_network translates between two different variants of the
-     network effect type (the Vst proofs use a richer variant with
-     Shutdown and Listen events, which are not (yet!) handled by our
-     high-level spec)
-   - refines_mod_network needs explanation and maybe examples (in a
-     separate file)
-   - semax_prog_ext - i.e., valid hoare triple (from Vst)
-   - prog - the program (as a CompCert AST, from MainInit - ultimately
-     from main.v)
-   - Vprog - the variables for prog
-   - Gprog - the function specifications for prog
-*)
-
 Definition swap_server_correct :=
-  exists (tree : M socketE unit),
+  exists (tree : SocketM unit),
     refines_mod_network swap_observer (simplify_network tree) /\
     semax_prog_ext prog tree Vprog Gprog.
 
-(* (The proof can be found in [Proofs.TopLevelProof]) *)
+(* Notes:
+   - [tree] will be instantiated with the intermediate "C-like"
+     interaction tree found in Swap_CLikeSpec.v
+   - [simplify_network] translates between two different variants of
+     the network effect type (the Vst proofs use a richer variant with
+     Shutdown and Listen events, which are not yet considered by our
+     high-level spec).
+   - [refines_mod_network] is "refinement modulo scrambling by the
+     network".
+   - [semax_prog_ext] is the Vst property for Valid Hoare triples
+   - [prog] is the C program (as a CompCert AST: it is imported from
+     MainInit.v, which gets it from main.v)
+   - [Vprog] is the set of variables for [prog]
+   - [Gprog] is the function specifications for prog
+
+  The proof of this theorem can be found in [Proofs.TopLevelProof]. *)
+
+

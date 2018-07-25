@@ -68,25 +68,6 @@ Module Failure.
 
 End Failure.
 
-(** ** Mutable state *)
-Module State.
-Section StateSection.
-
-Variable (S : Type).
-
-Inductive stateE : Type -> Type :=
-| Get : stateE S
-| Put : S -> stateE unit.
-
-Definition get `{stateE -< E} : M E S := embed Get.
-Definition put `{stateE -< E} : S -> M E unit := embed Put.
-End StateSection.
-
-Arguments Get {S}.
-Arguments Put {S}.
-
-End State.
-
 (** ** Nondeterminism *)
 Module NonDeterminism.
 Import Failure.
@@ -113,6 +94,25 @@ Global Notation "'disj' ( x | .. | y | z )" :=
 Delimit Scope nondet_scope with nondet.
 
 End NonDeterminism.
+
+(** ** Mutable state *)
+Module State.
+Section StateSection.
+
+Variable (S : Type).
+
+Inductive stateE : Type -> Type :=
+| Get : stateE S
+| Put : S -> stateE unit.
+
+Definition get `{stateE -< E} : M E S := embed Get.
+Definition put `{stateE -< E} : S -> M E unit := embed Put.
+End StateSection.
+
+Arguments Get {S}.
+Arguments Put {S}.
+
+End State.
 
 (** ** Immutable State ([Reader]) *)
 

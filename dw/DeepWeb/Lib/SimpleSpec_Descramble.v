@@ -304,7 +304,6 @@ Fixpoint to_result (fuel : nat) (m : M emptyE (option hypo_trace)) :
     end
   end.
 
-(* SHOW *)
 Definition is_scrambled_trace_test_
            (fuel : nat) (s : ObserverM unit) (t : real_trace) :
   result hypo_trace unit :=
@@ -323,4 +322,3 @@ Definition is_scrambled_trace_test :
    - We can generate traces by walking through the itree model of
      the C program. [Lib.SimpleSpec_ServerTrace]
  *)
-(* /SHOW *)

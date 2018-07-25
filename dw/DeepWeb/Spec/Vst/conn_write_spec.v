@@ -11,7 +11,7 @@ Import TracePred.
 
 Definition conn_write_spec (T : Type) (buffer_size : Z) :=
   DECLARE _conn_write
-  WITH k : connection -> SocketMonad T,
+  WITH k : connection -> SocketM T,
        st : SocketMap,
        conn : connection,
        fd : sockfd, 

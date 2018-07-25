@@ -22,6 +22,8 @@ test:
 	@echo
 	@echo ------------------- Internal tests ----------------------
 	$V$(MAKE) testcoq
+	@echo
+	@echo ------------------- Examples ----------------------
 	$V$(MAKE) testcoq-examples
 	@echo
 	@echo ------------------- External tests ----------------------

@@ -116,13 +116,13 @@ Module TracePred.
 
   Import TraceIncl.
 
-  Definition SocketMonad := M socketE.
+  Definition SocketM := M socketE.
 
-  Definition ITREE {T} (t : SocketMonad T) :=
-    EX t' : SocketMonad T, !!(trace_incl t t') && has_ext t'.
+  Definition ITREE {T} (t : SocketM T) :=
+    EX t' : SocketM T, !!(trace_incl t t') && has_ext t'.
 
   Lemma trace_pred_incl:
-    forall {T : Type} (t1 t2 : SocketMonad T),
+    forall {T : Type} (t1 t2 : SocketM T),
       trace_incl t2 t1 ->
       ITREE t1 |-- ITREE t2.
   Proof.
@@ -135,7 +135,7 @@ Module TracePred.
   Qed.    
   
   Lemma trace_pred_eq:
-    forall {T : Type} (t1 t2 : SocketMonad T),
+    forall {T : Type} (t1 t2 : SocketM T),
       trace_eq t1 t2 ->
       ITREE t1 = ITREE t2.
   Proof.
@@ -147,7 +147,7 @@ Module TracePred.
   (* Interface *)
   
   Lemma internal_nondet1: 
-    forall {T1 T2 : Type} (k1 k2 : SocketMonad T1) (k3 : T1 -> SocketMonad T2),
+    forall {T1 T2 : Type} (k1 k2 : SocketM T1) (k3 : T1 -> SocketM T2),
       ITREE (r <- or k1 k2 ;; k3 r) |--
       ITREE (r <- k1 ;; k3 r).
   Proof.
@@ -156,7 +156,7 @@ Module TracePred.
   Qed.
 
   Lemma internal_nondet2:
-    forall {T1 T2 : Type} (k1 k2 : SocketMonad T1) (k3 : T1 -> SocketMonad T2),
+    forall {T1 T2 : Type} (k1 k2 : SocketM T1) (k3 : T1 -> SocketM T2),
       ITREE (r <- or k1 k2 ;; k3 r) |--
       ITREE (r <- k2 ;; k3 r).
   Proof.
@@ -165,7 +165,7 @@ Module TracePred.
   Qed.
     
   Lemma internal_nondet3:
-    forall {T1 T2 : Type} (k : T1 -> SocketMonad T2) (xs : list T1) (x : T1),
+    forall {T1 T2 : Type} (k : T1 -> SocketM T2) (xs : list T1) (x : T1),
       In x xs ->
       ITREE (r <- choose xs ;; k r) |--
       ITREE (k x).
@@ -177,7 +177,7 @@ Module TracePred.
   Qed.
 
   Lemma trace_bind_ret :
-    forall {A B} a (f : A -> SocketMonad B),
+    forall {A B} a (f : A -> SocketM B),
       ITREE (r <- ret a ;; f r) = ITREE (f a).
   Proof.
     intros.
@@ -188,8 +188,8 @@ Module TracePred.
   Qed.
   
   Lemma trace_bind_assoc:
-    forall {A B C : Type} (m : SocketMonad A) (f : A -> SocketMonad B)
-      (g : B -> SocketMonad C),
+    forall {A B C : Type} (m : SocketM A) (f : A -> SocketM B)
+      (g : B -> SocketM C),
       ITREE ( b <- (a <- m ;; f a) ;; g b ) =
       ITREE ( a <- m ;; b <- f a ;; g b ).
   Proof.
@@ -201,7 +201,7 @@ Module TracePred.
   Qed.
   
   Lemma trace_drop_tau:
-    forall (T : Type) (k : SocketMonad T), 
+    forall (T : Type) (k : SocketM T), 
       ITREE (Tau k) = ITREE k.
   Proof.
     intros.
@@ -212,7 +212,7 @@ Module TracePred.
   Qed.
   
   Lemma trace_bind_cancel:
-    forall {A B : Type} (m : SocketMonad A) (f g : SocketMonad B),
+    forall {A B : Type} (m : SocketM A) (f g : SocketM B),
       EquivUpToTau f g ->
       ITREE ( m ;; f ) = ITREE ( m ;; g ).
   Proof.
@@ -367,8 +367,8 @@ Definition socket_spec :=
 (* shutdown never fails for now *)
 Definition shutdown_spec (T : Type) :=
   DECLARE _shutdown
-  WITH t: SocketMonad T,
-       k: SocketMonad T,
+  WITH t: SocketM T,
+       k: SocketM T,
        client_conn : connection_id,
        st: SocketMap,
        fd: sockfd
@@ -446,8 +446,8 @@ Definition bind_spec :=
 
 Definition listen_spec (T : Type) :=
   DECLARE _listen
-  WITH t : SocketMonad T, 
-       k : SocketMonad T,
+  WITH t : SocketM T, 
+       k : SocketM T,
        addr : endpoint_id,
        st : SocketMap,
        fd : sockfd,
@@ -478,8 +478,8 @@ Definition listen_spec (T : Type) :=
 
 Definition accept_spec (T : Type) :=
   DECLARE _accept
-  WITH t : SocketMonad T,
-       k : connection_id -> SocketMonad T,
+  WITH t : SocketM T,
+       k : connection_id -> SocketM T,
        server_addr : endpoint_id,
        st : SocketMap,
        fd : sockfd
@@ -523,8 +523,8 @@ Definition accept_spec (T : Type) :=
 
 Definition send_spec (T : Type) :=
   DECLARE _send
-  WITH t : SocketMonad T,
-       k : nat -> SocketMonad T,
+  WITH t : SocketM T,
+       k : nat -> SocketM T,
        client_conn : connection_id,
        st : SocketMap,
        fd: sockfd,
@@ -575,8 +575,8 @@ Definition send_spec (T : Type) :=
 
 Definition recv_spec (T : Type) :=
   DECLARE _recv
-  WITH t : SocketMonad T,
-       k : option string -> SocketMonad T,
+  WITH t : SocketM T,
+       k : option string -> SocketM T,
        client_conn : connection_id,
        st : SocketMap,
        fd: sockfd,

@@ -15,7 +15,7 @@ Import TracePred.
 
 Definition accept_connection_spec (T : Type) :=
   DECLARE _accept_connection
-  WITH k : option connection -> SocketMonad T,
+  WITH k : option connection -> SocketM T,
        addr : endpoint_id,
        st : SocketMap,
        fd : sockfd,

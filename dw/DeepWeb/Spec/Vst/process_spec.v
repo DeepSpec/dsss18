@@ -12,7 +12,7 @@ Import TracePred.
 
 Definition process_spec (T : Type) (buffer_size : Z) :=
   DECLARE _process
-  WITH k : connection * string -> SocketMonad T,
+  WITH k : connection * string -> SocketM T,
        st : SocketMap,
        conn : connection,
        fd : sockfd,
