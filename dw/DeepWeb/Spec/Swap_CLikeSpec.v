@@ -10,9 +10,12 @@ From QuickChick Require Import Decidability.
 From Custom Require Import List.
 Import ListNotations.
 
-Require Import DeepWeb.Spec.ServerDefs.
-Require Import DeepWeb.Lib.Socket.
-Require Import DeepWeb.Lib.NetworkInterface.
+From DeepWeb Require Import
+     Lib.NetworkInterface
+     Lib.NetworkAdapter
+     Lib.SimpleSpec
+     Lib.Socket
+     Spec.ServerDefs.
 
 Require Import String.
 Require Import ZArith.
@@ -79,7 +82,7 @@ Definition upd_conn_state (conn : connection) (state : connection_state)
   |}.
 
 Definition accept_connection (addr : endpoint_id):
-  M SocketE (option connection) :=
+  M socketE (option connection) :=
   or (client_conn <- accept addr ;;
       or (* possible internal malloc failure *)
         (ret (Some {| conn_id := client_conn ;
@@ -111,7 +114,7 @@ Definition is_complete (buffer_size : Z) (msg : string) :=
 
 Definition conn_read (buffer_size : Z)
            (conn: connection) (last_full_msg : string)
-  : M SocketE (connection * string) :=
+  : M socketE (connection * string) :=
   let req_len := Z.of_nat (String.length (conn_request conn)) in
   or (r <- recv (conn_id conn) (Z.to_nat (buffer_size - req_len)) ;;
       match r with
@@ -139,7 +142,7 @@ Definition conn_read (buffer_size : Z)
      )
      (ret (conn, last_full_msg)).
 
-Definition conn_write (conn: connection) : M SocketE connection :=
+Definition conn_write (conn: connection) : M socketE connection :=
   or (let num_bytes_sent := Z.to_nat (conn_response_bytes_sent conn) in
       r <- send_any_prefix
             (conn_id conn)
@@ -168,7 +171,7 @@ Definition conn_write (conn: connection) : M SocketE connection :=
 
 Definition process_conn 
              (buffer_size : Z) (conn: connection) (last_full_msg : string)
-          : M SocketE (connection * string) :=
+          : M socketE (connection * string) :=
   match conn_state conn with
   | RECVING => conn_read  buffer_size conn last_full_msg
   | SENDING =>
@@ -181,7 +184,7 @@ Definition select_loop_body
            (server_addr : endpoint_id)
            (buffer_size : Z)
            (server_st : list connection * string)
-         : M SocketE (bool * (list connection * string)) :=
+         : M socketE (bool * (list connection * string)) :=
   let '(connections, last_full_msg) := server_st in
   or
     (r <- accept_connection server_addr ;;
@@ -212,12 +215,11 @@ Definition select_loop_body
 Definition select_loop 
                 (server_addr : endpoint_id) (buffer_size : Z)
               : (bool * (list connection * string))
-                  -> M SocketE (bool * (list connection * string)) :=
+                  -> M socketE (bool * (list connection * string)) :=
   while fst
         (fun '(_, server_st) =>
            select_loop_body server_addr buffer_size server_st).
 
-(* TODO: Don't do [Z.to_nat port], just use the port as a binary constant. *)
 Definition server_
            (endpoint : endpoint_id)
            (buffer_size : Z)
@@ -229,11 +231,14 @@ Definition server_
 
 Definition server := server_ SERVER_PORT BUFFER_SIZE INIT_MSG.
 
-(* Alternative instantiation with smaller constants for testing. *)
+(* Alternative instantiation with smaller constants for testing,
+   and using a simplified version of server effects.
+ *)
 
 Module Def := DeepWeb.Lib.Util.TestDefault.
 
-Definition test_server := server_
-                            dummy_endpoint
-                            (Z.of_nat Def.buffer_size)
-                            Def.init_message.
+Definition test_server : ServerM unit := simplify_network
+    (server_
+       dummy_endpoint
+       (Z.of_nat Def.buffer_size)
+       Def.init_message).

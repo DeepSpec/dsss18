@@ -11,7 +11,7 @@ From DeepWeb.Spec.Vst Require Import
 
 Import TracePred.
 
-Definition swap_spec := swap_spec_ (Z.to_nat BUFFER_SIZE) INIT_MSG.
+Definition swap_observer := swap_observer_ (Z.to_nat BUFFER_SIZE) INIT_MSG.
 
 (** * The top-level correctness property. *)
 
@@ -31,8 +31,8 @@ Definition swap_spec := swap_spec_ (Z.to_nat BUFFER_SIZE) INIT_MSG.
 *)
 
 Definition swap_server_correct :=
-  exists (tree : M SocketE unit),
-    refines_mod_network (simplify_network tree) swap_spec /\
+  exists (tree : M socketE unit),
+    refines_mod_network swap_observer (simplify_network tree) /\
     semax_prog_ext prog tree Vprog Gprog.
 
-(* (The proof can be found in Proofs/TopLevelProof.v) *)
+(* (The proof can be found in [Proofs/TopLevelProof.v]) *)

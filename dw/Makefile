@@ -22,12 +22,16 @@ test:
 	@echo
 	@echo ------------------- Internal tests ----------------------
 	$V$(MAKE) testcoq
+	$V$(MAKE) testcoq-examples
 	@echo
 	@echo ------------------- External tests ----------------------
 	$V$(MAKE) testexternal --quiet
 
 testcoq:
 	$V$(QC) -s CLikeTest -exclude $(EXCLUDE)
+
+testcoq-examples:
+	$V$(QC) -s SwapExamples -N 100 -exclude $(EXCLUDE)
 
 testexternal: $(SERVER)
 	$V$(RM) /tmp/server_log /tmp/client_log /tmp/server_error /tmp/client_error

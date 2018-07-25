@@ -88,7 +88,7 @@ Definition init_message : bytes
 
 End TestDefault.
 
-(**)
+(* Testing *)
 
 (* Partial test result type. *)
 
@@ -105,3 +105,32 @@ Arguments DONTKNOW {W} {CE}.
 (* A result with no meaningful witnesses of success or
    counterexamples. *)
 Definition simple_result := result unit unit.
+
+(* We restrict this to [unit] counterexamples to
+   avoid losing information accidentally. *)
+Definition or_result {W : Type} :
+  result W unit -> (unit -> result W unit) -> result W unit :=
+  fun r1 r2 =>
+    match r1 with
+    | OK w => OK w
+    | FAIL tt | DONTKNOW => r2 tt
+    end.
+
+Notation "x || y" := (or_result x (fun _ => y)) : result_scope.
+
+Delimit Scope result_scope with result.
+
+(* Option type *)
+
+Definition or_option {A : Type} :
+  option A -> (unit -> option A) -> option A :=
+  fun r1 r2 =>
+    match r1 with
+    | None => r2 tt
+    | Some a => Some a
+    end.
+
+Notation "x <|> y" := (or_option x (fun _ => y))
+(at level 30) : option_scope.
+
+Delimit Scope option_scope with option.

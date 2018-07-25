@@ -11,16 +11,19 @@ Fixpoint take_while {A} (f : A -> bool) (xs : list A) : list A :=
       []
   end.
 
-(* All ways of picking one element in a list apart from the others. *)
-Definition select {X} : list X -> list (X * list X) :=
-  let fix select' pre xs :=
-      match xs with
-      | [] => []
-      | x :: xs' => (x, rev pre ++ xs') :: select' (x :: pre) xs'
-      end in
-  select' [].
+(* Helper for [picks]. *)
+Fixpoint picks' {A} (xs1 xs2 : list A) : list (A * list A) :=
+  match xs2 with
+  | [] => []
+  | x2 :: xs2' =>
+    (x2, rev_append xs1 xs2') :: picks' (x2 :: xs1) xs2'
+  end.
 
-Example select_example : select [1;2] = [(1,[2]); (2,[1])].
+(* List of ways to pick an element out of a list. *)
+Definition picks {A} (xs : list A) : list (A * list A) :=
+  picks' [] xs.
+
+Example picks_example : picks [1;2] = [(1,[2]); (2,[1])].
 Proof. reflexivity. Qed.
 
 Fixpoint filter_opt {A B} (f : A -> option B) (xs : list A) : list B :=

@@ -48,22 +48,21 @@ Module SocketAPI.
     reflexivity.
   Qed.
       
-  Definition SocketE : Type -> Type := (nondetE +' failureE +' networkE).
-  (* BCP: Shouldn't it be spelled [socketE], for consistency?  (Yes.) *)
+  Definition socketE : Type -> Type := (nondetE +' failureE +' networkE).
 
-  Instance SocketE_networkE : networkE -< SocketE.
+  Instance socketE_networkE : networkE -< socketE.
   constructor.
   intros.
-  unfold SocketE.
+  unfold socketE.
   apply inr.
   trivial.
   Defined.
 
-  Instance SocketE_nondetE: nondetE -< SocketE.
+  Instance socketE_nondetE: nondetE -< socketE.
   repeat constructor; trivial.
   Defined.
 
-  Instance SocketE_failureE: failureE -< SocketE.
+  Instance socketE_failureE: failureE -< socketE.
   constructor.
   intros.
   apply inl.
@@ -110,7 +109,7 @@ Module SocketAPI.
   Module TraceIncl.
   Section TraceIncl.
 
-  Definition M_ := M SocketE.
+  Definition M_ := M socketE.
 
   Definition trace := list (sigT (fun Y => networkE Y * Y)%type).
 

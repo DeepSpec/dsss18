@@ -3,19 +3,14 @@ Typeclasses eauto := 6.
 From QuickChick Require Import QuickChick.
 From ExtLib Require Monad.
 
-Require Import Ascii.
-Require Import String.
-Require Import List.
-Require Import PArith.
-Require Fin.
-Import ListNotations.
+From Custom Require Import
+     List.
 
 Require Import DeepWeb.Free.Monad.Free.
 Require Import DeepWeb.Free.Monad.Internal.
 Import MonadNotations.
 Require Import DeepWeb.Free.Monad.Common.
 Import SumNotations.
-Import NonDeterminismBis.
 Require Import DeepWeb.Free.Monad.Spec.
 
 From DeepWeb Require Import
@@ -57,10 +52,8 @@ Definition new_connection (st : network_state) :
   network_state * connection_id :=
   (S st, Connection (S st)).
 
-Definition traceE := nondetE +' arbitraryE +' note_traceE.
-
-(* Type of trees annotated with traces. *)
-Definition itree_traces := M traceE unit.
+Definition traceM :=
+  M (failureE +' nondetE +' arbitraryE +' note_traceE).
 
 (* We traverse the tree, accumulating a trace and outputing
    it every time a new event gets added. The traces that the
@@ -70,7 +63,7 @@ Definition itree_traces := M traceE unit.
 (* Main body of [enum_traces_handler]. *)
 Definition enum_traces_handler :
   forall X, network_state * real_trace ->
-            serverE X -> M traceE (_ * X) :=
+            (failureE +' nondetE +' serverE) X -> traceM (_ * X) :=
   fun X '(st, cur_trace) e =>
     match e with
     | (| e ) =>
@@ -78,7 +71,7 @@ Definition enum_traces_handler :
           let cur_trace := (e :: cur_trace) in
           ^ NoteTrace (rev cur_trace) ;;
           ret ((st, cur_trace), x) in
-      match e in networkE X' return (X' -> X) -> _ with
+      match e in serverE X' return (X' -> X) -> _ with
       | Accept => fun id =>
         let '(st, c) := new_connection st in
         new_event (NewConnection c) (id c) st
@@ -88,10 +81,11 @@ Definition enum_traces_handler :
       | SendByte c b => fun id =>
         new_event (FromServer c b) (id tt) st
       end (fun x => x)
-    | ( _Or |) => x <- embed _Or;; ret ((st, cur_trace), x)
+    | (| _Or |) => x <- embed _Or;; ret ((st, cur_trace), x)
+    | ( Fail reason ||) => fail reason
     end.
 
-Definition enum_traces (t : itree_server) : itree_traces :=
+Definition enum_traces (t : ServerM unit) : traceM unit :=
   mapM snd (hom_state enum_traces_handler (0, []) t).
 
 (**)
@@ -138,7 +132,7 @@ Fixpoint traverseG' {A B} (xs : list A)
 (**)
 
 (* Generate random traces up to a given depth in the tree. *)
-Fixpoint random_trace' (max_depth : nat) (t : itree_traces) :
+Fixpoint random_trace' (max_depth : nat) (t : traceM unit) :
   G' real_trace :=
   match max_depth with
   | O => emptyG'
@@ -158,18 +152,19 @@ Fixpoint random_trace' (max_depth : nat) (t : itree_traces) :
         x <- arbitrary;;
         random_trace' max_depth (k (id x)) cont fuel
       end id
-    | Vis _ ( _Or ||) k =>
+    | Vis _ (| _Or ||) k =>
       match _Or in nondetE X return (X -> _) -> G' _ with
-      | Or _ _ => fun id cont fuel =>
-        xs <- shuffle (every_fin _);;
+      | Or => fun id cont fuel =>
+        xs <- shuffle [false; true];;
         traverseG' xs (fun x =>
           random_trace' max_depth (k (id x))) cont fuel
       end id
+    | Vis _ ( Fail reason |||) k => emptyG'
     end
   end.
 
 Definition random_trace (max_depth : nat) (fuel : nat)
-           (t : itree_server) :
+           (t : ServerM unit) :
   G (list real_trace) :=
   runG' fuel (random_trace' max_depth (enum_traces t)).
 
@@ -191,8 +186,10 @@ Definition burn (cont : nat -> Checker) (fuel : nat) : Checker :=
   | S fuel => cont fuel
   end.
 
+Notation eta f := (fun x => f (id x)).
+
 Definition or_ck (c1 c2 : Checker') : Checker' :=
-  fun cont => c1 (burn (c2 cont)).
+  fun cont => c1 (burn (eta (c2 cont))).
 
 Notation "a ||? b" := (fun x => or_ck a b (id x))
 (at level 50).
@@ -206,8 +203,12 @@ Fixpoint traverse_qc {A} (xs : list A)
   | x :: xs => ck x ||? traverse_qc xs ck
   end.
 
+Definition count_from_server (tr : hypo_trace) :=
+  length (filter is_FromServer tr).
+
 Fixpoint forall_traces (max_depth : nat)
-         (check_trace : real_trace -> result hypo_trace unit) (t : itree_traces)
+         (check_trace : real_trace -> result hypo_trace unit)
+         (t : traceM unit)
   : Checker' :=
   match max_depth with
   | O => ok
@@ -222,7 +223,9 @@ Fixpoint forall_traces (max_depth : nat)
         | NoteTrace tr => fun id cont fuel =>
           match check_trace tr with
           | DONTKNOW => ok cont fuel
-          | OK _ => forall_traces max_depth check_trace (k (id tt)) cont fuel
+          | OK tr =>
+            (* collect (count_from_server tr) *)
+                    (forall_traces max_depth check_trace (k (id tt)) cont fuel)
           | FAIL _ => whenFail' (fun _ => show tr) false
           end
         end id
@@ -234,15 +237,16 @@ Fixpoint forall_traces (max_depth : nat)
             ret (forall_traces max_depth check_trace (k (id x))
                                cont fuel))
         end id
-      | ( _Or ||) =>
+      | (| _Or ||) =>
         match _Or in nondetE X return (X -> _) -> _ with
-        | Or _ n => fun id cont fuel =>
+        | Or => fun id cont fuel =>
           let check x :=
               forall_traces max_depth check_trace (k (id x)) in
           checker (
-            xs <- shuffle (every_fin _);;
+            xs <- shuffle [false; true];;
             ret (traverse_qc xs check cont fuel))
         end id
+      | ( Fail reason |||) => ok
       end
     end
   end.
@@ -251,13 +255,13 @@ Definition refines_mod_network_test_
            (max_depth : nat)
            (backtrack_fuel : nat)
            (descramble_fuel : nat)
-           (spec : itree_spec)
-           (impl : itree_server) :=
-  let check_trace := is_scrambled_trace_of descramble_fuel spec in
+           (observer : ObserverM unit)
+           (server : ServerM unit) :=
+  let check_trace := is_scrambled_trace_test descramble_fuel observer in
   run_checker' backtrack_fuel
-               (forall_traces max_depth check_trace (enum_traces impl)).
+               (forall_traces max_depth check_trace (enum_traces server)).
 
 Definition refines_mod_network_test
-           (spec : itree_spec)
-           (impl : itree_server) :=
-  refines_mod_network_test_ 100 100 1000 spec impl.
+           (observer : ObserverM unit)
+           (server : ServerM unit) :=
+  refines_mod_network_test_ 1000 100 1000 observer server.

@@ -34,7 +34,6 @@ CONFIGURE
 vc/Makefile.conf
 vc/_CoqProject
 vfa/Makefile.conf
-dw/Makefile.coq*
 _qc_*.tmp
 vst
 dw/_CoqProject.Vst

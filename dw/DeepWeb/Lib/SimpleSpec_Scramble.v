@@ -8,7 +8,6 @@ From Custom Require Map.
 
 Require Import DeepWeb.Free.Monad.Free.
 Require Import DeepWeb.Free.Monad.Common.
-Import NonDeterminismBis.
 Import SumNotations.
 
 Require Import DeepWeb.Lib.Util.
@@ -28,25 +27,25 @@ Parameter wf_trace : forall {byte'}, list (event byte') -> Prop.
 
 (* We restrict the relation [network_scrambled] to well-formed
    traces, by making this vacuously true on bad traces. *)
-Definition network_scrambled_wf ns (tr0 tr1 : real_trace) :=
+Definition network_scrambled_wf_ ns (tr0 tr1 : real_trace) :=
   wf_trace tr0 ->
   wf_trace tr1 ->
-  network_scrambled ns tr0 tr1.
+  network_scrambled_ ns tr0 tr1.
 
 (* We consider scramblings of well-formed traces from the
    initial state. *)
-Definition network_scrambled_wf0 := network_scrambled_wf initial_ns.
+Definition network_scrambled_wf := network_scrambled_wf_ initial_ns.
 
 (* Then [network_scrambled_wf0] is reflexive. *)
-Declare Instance scrambled_reflexive : Reflexive network_scrambled_wf0.
+Declare Instance scrambled_reflexive : Reflexive network_scrambled_wf.
 
 (* And [network_scrambled0] is transitive. *)
-Declare Instance scrambled_transitive : Transitive network_scrambled0.
+Declare Instance scrambled_transitive : Transitive network_scrambled.
 
 (* Note that the "well-formedness" precondition is implicit
    in the two preconditions of transitivity. *)
 Parameter scrambled_preserves_wf : forall tr str : real_trace,
-    network_scrambled0 tr str ->
+    network_scrambled tr str ->
     wf_trace tr /\ wf_trace str.
 
 End ScramblingTypes.
@@ -126,17 +125,17 @@ Axiom equiv_open_wf :
     open_trace (fun _ => False) tr <-> wf_trace tr.
 
 Lemma scrambled_preserves_wf : forall tr str : real_trace,
-    network_scrambled0 tr str ->
+    network_scrambled tr str ->
     wf_trace tr /\ wf_trace str.
 Proof.
 Admitted.
 
-Definition network_scrambled_wf ns (tr0 tr1 : real_trace) :=
+Definition network_scrambled_wf_ ns (tr0 tr1 : real_trace) :=
   wf_trace tr0 ->
   wf_trace tr1 ->
-  network_scrambled ns tr0 tr1.
+  network_scrambled_ ns tr0 tr1.
 
-Definition network_scrambled_wf0 := network_scrambled_wf initial_ns.
+Definition network_scrambled_wf := network_scrambled_wf_ initial_ns.
 
 (* TODO: we can always append ServerSend and ClientSend
    and preserve the [network_scrambled] property. *)
@@ -167,16 +166,16 @@ Definition combined_networks (ns01 ns12 ns02 : network_state) : Prop :=
 Lemma scrambled_transitive_empty
       (ns12 ns02 ns01 : network_state) tr2 :
   combined_networks ns01 ns12 ns02 ->
-  network_scrambled ns12 [] tr2 ->
-  network_scrambled ns02 [] tr2.
+  network_scrambled_ ns12 [] tr2 ->
+  network_scrambled_ ns02 [] tr2.
 Proof.
 Admitted.
 
 Lemma scrambled_transitive_ ns01 ns12 ns02 tr0 tr1 tr2 :
   combined_networks ns01 ns12 ns02 ->
-  network_scrambled ns01 tr0 tr1 ->
-  network_scrambled ns12 tr1 tr2 ->
-  network_scrambled ns02 tr0 tr2.
+  network_scrambled_ ns01 tr0 tr1 ->
+  network_scrambled_ ns12 tr1 tr2 ->
+  network_scrambled_ ns02 tr0 tr2.
 Proof.
   intros Hcombined H01_scrambled.
   generalize dependent tr2.
@@ -192,7 +191,7 @@ Lemma scrambled_transitive_
 
 Admitted.
 
-Instance scrambled_transitive : Transitive network_scrambled0.
+Instance scrambled_transitive : Transitive network_scrambled.
 Proof.
   unfold Transitive.
 Admitted.
@@ -234,7 +233,7 @@ Lemma open_scrambled_reflexive :
   forall ns tr,
     clean_state ns ->
     open_trace (is_open_conns_server ns) tr ->
-    network_scrambled ns tr tr.
+    network_scrambled_ ns tr tr.
 Proof.
   intros ns tr.
   generalize dependent ns.
@@ -336,7 +335,7 @@ Proof.
       apply Hns_clean. }
 Qed.
 
-Instance scrambled_reflexive : Reflexive network_scrambled_wf0.
+Instance scrambled_reflexive : Reflexive network_scrambled_wf.
 Proof.
   unfold Reflexive.
   intros tr Htr_wf _H. clear _H.

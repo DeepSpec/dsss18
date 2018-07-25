@@ -116,7 +116,7 @@ Module TracePred.
 
   Import TraceIncl.
 
-  Definition SocketMonad := M SocketE.
+  Definition SocketMonad := M socketE.
 
   Definition ITREE {T} (t : SocketMonad T) :=
     EX t' : SocketMonad T, !!(trace_incl t t') && has_ext t'.

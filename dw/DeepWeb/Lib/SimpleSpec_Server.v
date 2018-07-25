@@ -1,43 +1,56 @@
+(* Effects for servers *)
+
+(* If you come from [SimpleSpec.v] the types here will look
+   different from those over there.
+   The functions below are actually more polymorphic, so that
+   they can be used with different effect types.
+   You actually use the functions below when you import
+   [SimpleSpec.v]; the module types with simpler signatures
+   are only for the sake of exposition.
+
+   This is also the case for [SimpleSpec_Observer.v].
+ *)
+
 From Custom Require Import String.
 
 Require Import DeepWeb.Free.Monad.Free.
 Require Import DeepWeb.Free.Monad.Common.
-Import NonDeterminismBis.
 Import SumNotations.
 Import MonadNotations.
 
 Require Import DeepWeb.Lib.Util.
 Require Import DeepWeb.Lib.SimpleSpec_Traces.
 
-Module Export Network.
-
-(* A simple interface of server-side network effects. *)
+Module Export ServerType.
+(* A simple interface of server effects. *)
 (* SHOW *)
-Inductive networkE : Type -> Type :=
-| Accept   : networkE connection_id
-| RecvByte : connection_id -> networkE byte
-| SendByte : connection_id -> byte -> networkE unit
+Inductive serverE : Type -> Type :=
+| Accept   : serverE connection_id
+| RecvByte : connection_id -> serverE byte
+| SendByte : connection_id -> byte -> serverE unit
 .
+End ServerType.
 
-(* A server is a program with internal nondeterminism and
+(* The server monad we write implementations in.
+   A server is a program with internal nondeterminism and
    external network effects. *)
-Definition serverE := nondetE +' networkE.
+Definition ServerM := M (failureE +' nondetE +' serverE).
 (* /SHOW *)
 
-(* The server itree type. *)
-Definition itree_server := M (nondetE +' networkE) unit.
-
-Definition accept {E} `{networkE -< E}
+(* Accept a new connection. *)
+Definition accept {E} `{serverE -< E}
   : M E connection_id := embed Accept.
 
-Definition recv_byte {E} `{networkE -< E}
+(* Receive one byte from a connection. *)
+Definition recv_byte {E} `{serverE -< E}
   : connection_id -> M E byte := embed RecvByte.
 
-Definition send_byte {E} `{networkE -< E}
+(* Send one byte to a connection. *)
+Definition send_byte {E} `{serverE -< E}
   : connection_id -> byte -> M E unit := embed SendByte.
 
 (* Receive up to [n] bytes. *)
-Fixpoint recv {E} `{networkE -< E} `{nondetE -< E}
+Fixpoint recv {E} `{serverE -< E} `{nondetE -< E}
            (c : connection_id) (n : nat) : M E bytes :=
   match n with
   | O => ret ""
@@ -48,29 +61,26 @@ Fixpoint recv {E} `{networkE -< E} `{nondetE -< E}
   end%string.
 
 (* Receive a bytestring of length [n] exactly. *)
-Definition recv_full {E} `{networkE -< E}
+Definition recv_full {E} `{serverE -< E}
            (c : connection_id) (n : nat) : M E bytes :=
   replicate_bytes n (recv_byte c).
 
 (* Send all bytes in a bytestring. *)
-Fixpoint send {E} `{networkE -< E}
+Fixpoint send {E} `{serverE -< E}
          (c : connection_id) (bs : bytes) : M E unit :=
   for_bytes bs (send_byte c).
 
-
-Definition event_to_networkE (ev : real_event) :
-  { X : Type & (networkE X * X)%type } :=
+Definition event_to_serverE (ev : real_event) :
+  { X : Type & (serverE X * X)%type } :=
   match ev with
   | NewConnection c => existT _ _ (Accept, c)
   | ToServer c b => existT _ _ (RecvByte c, b)
   | FromServer c b => existT _ _ (SendByte c b, tt)
   end.
 
-Instance EventType_networkE : EventType real_event networkE := {|
-    from_event := event_to_networkE;
+Instance EventType_serverE : EventType real_event serverE := {|
+    from_event := event_to_serverE;
   |}.
 
-Definition is_server_trace : itree_server -> real_trace -> Prop :=
+Definition is_server_trace : ServerM unit -> real_trace -> Prop :=
   is_trace.
-
-End Network.

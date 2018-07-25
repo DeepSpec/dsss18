@@ -6,6 +6,7 @@ DeepWeb/Free/Monad/Free.v
 DeepWeb/Free/Monad/Effect.v
 DeepWeb/Spec/Swap_CLikeSpec.v
 DeepWeb/Lib/SimpleSpec.v
+DeepWeb/Spec/Swap_Examples.v
 DeepWeb/Spec/TopLevelSpec.v
 
 #####################
@@ -18,6 +19,7 @@ DeepWeb/Free/Monad/Verif.v
 DeepWeb/Free/Monad/Spec.v
 DeepWeb/Free/Monad/Semantics.v
 DeepWeb/Free/Monad/Debug.v
+DeepWeb/Free/Monad/OpenUnion.v
 
 -I DeepWeb/Test
 
@@ -36,12 +38,13 @@ DeepWeb/Lib/SimpleSpec_Scramble.v
 DeepWeb/Lib/SimpleSpec_Descramble.v
 DeepWeb/Lib/SimpleSpec_Refinement.v
 DeepWeb/Lib/SimpleSpec_ServerTrace.v
+DeepWeb/Lib/SanityCheck.v
 
 DeepWeb/Spec/ServerDefs.v
 
 DeepWeb/Test/Client.v
-DeepWeb/Test/ExternalTest.v
-DeepWeb/Test/TestCLikeSpec.v
+DeepWeb/Test/TestExternal.v
+DeepWeb/Test/TestInternal.v
 
 Custom/Map.v
 Custom/List.v

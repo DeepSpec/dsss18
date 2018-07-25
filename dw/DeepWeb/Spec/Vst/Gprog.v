@@ -52,7 +52,7 @@ Instance Socket_Espec : OracleKind :=
 Definition main_spec (tree : SocketMonad unit) :=
   DECLARE _main
   WITH gv : globals
-  PRE [ _argc OF tint, _argv OF (tptr (tptr tschar)) ]
+  PRE [ ]
   (PROP ( )
    LOCAL (gvars gv)
    SEP (SOCKAPI {| lookup_socket := fun _ : sockfd => ClosedSocket |} ;

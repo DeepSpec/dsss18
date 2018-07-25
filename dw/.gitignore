@@ -1,7 +1,6 @@
 CONFIGURE
 .coqdeps.d
-Makefile.coq
-Makefile.coq.conf
+Makefile.coq*
 out
 _CoqProject.Vst
 html

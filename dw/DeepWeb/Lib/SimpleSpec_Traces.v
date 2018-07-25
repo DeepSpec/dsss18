@@ -20,7 +20,6 @@ From Custom Require Map.
 
 Require Import DeepWeb.Free.Monad.Free.
 Require Import DeepWeb.Free.Monad.Common.
-Import NonDeterminismBis.
 Import SumNotations.
 
 Require Import DeepWeb.Lib.Util.
@@ -57,9 +56,9 @@ Definition show_real_event (ev : real_event) :=
   match ev with
   | NewConnection c => (show c ++ " !")%string
   | ToServer c b =>
-    (show c ++ " <-- """ ++ pretty_char b ++ """")%string
+    (show c ++ " <-- " ++ show b)%string
   | FromServer c b =>
-    (show c ++ " --> " ++ pretty_char b ++ """")%string
+    (show c ++ " --> " ++ show b)%string
   end.
 
 Instance Show_real_event: Show real_event :=
@@ -69,12 +68,12 @@ Definition show_hypo_event (ev : hypo_event) :=
   match ev with
   | NewConnection c => (show c ++ " !")%string
   | ToServer c b =>
-    (show c ++ " <-- """ ++ pretty_char b ++ """")%string
+    (show c ++ " <-- " ++ show b)%string
   | FromServer c ob =>
     (show c ++ " --> " ++ match ob with
-                          | Some b => pretty_char b
+                          | Some b => show b
                           | None => "?"
-                          end ++ """")%string
+                          end)%string
   end.
 
 Instance Show_hypo_event: Show hypo_event :=
@@ -156,20 +155,20 @@ Definition client_transition (ev : real_event) :
 
 (* The main "scrambling" relation. *)
 (* Corresponding "server-side" and "client-side" traces. *)
-Inductive network_scrambled :
+Inductive network_scrambled_ :
   network_state -> real_trace -> real_trace -> Prop :=
-| ScrambleEmpty : forall ns, network_scrambled ns [] []
+| ScrambleEmpty : forall ns, network_scrambled_ ns [] []
 | ScrambleServer : forall ns ns' e tr_server tr_client,
     server_transition e ns ns' ->
-    network_scrambled ns'       tr_server  tr_client ->
-    network_scrambled ns  (e :: tr_server) tr_client
+    network_scrambled_ ns'       tr_server  tr_client ->
+    network_scrambled_ ns  (e :: tr_server) tr_client
 | ScrambleClient : forall ns ns' e tr_server tr_client,
     client_transition e ns ns' ->
-    network_scrambled ns' tr_server       tr_client ->
-    network_scrambled ns  tr_server (e :: tr_client)
+    network_scrambled_ ns' tr_server       tr_client ->
+    network_scrambled_ ns  tr_server (e :: tr_client)
 .
 
-Definition network_scrambled0 := network_scrambled initial_ns.
+Definition network_scrambled := network_scrambled_ initial_ns.
 
 Definition event_connection {byte'} (ev : event byte') :
   connection_id :=

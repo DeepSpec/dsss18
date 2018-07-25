@@ -578,7 +578,7 @@ static void init_store (store* last_msg_store) {
   // memset(last_msg, '0', BUFFER_SIZE);
 }
 
-int main(int argc, char** argv) {
+int main() {
 
 #if DEBUG
   START_LOG();

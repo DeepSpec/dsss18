@@ -1,5 +1,8 @@
 (*! Section ExternalTest *)
 
+(* Run the C server ("external" to Coq) to get traces for
+   testing. *)
+
 Typeclasses eauto := 3.
 
 From Coq Require Import Basics String List ZArith.
@@ -204,7 +207,8 @@ Definition execute_prop' (msgs : list byte) : Checker :=
     match filter is_FromServer tr with
     | [] => collect "No Response" (checker tt) (* If the server never said anything, no point checking. *)
     | _ :: _ => whenFail (show tr)
-      (is_scrambled_trace_of 5000 (Swap_SimpleSpec.swap_spec_def) tr)
+      (is_scrambled_trace_test
+         5000 Swap_SimpleSpec.swap_observer_def tr)
     end
   end.
 

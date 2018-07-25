@@ -21,7 +21,6 @@ Require Import DeepWeb.Free.Monad.Free.
 Import MonadNotations.
 Require Import DeepWeb.Free.Monad.Common.
 Import SumNotations.
-Import NonDeterminismBis.
 
 Require Import DeepWeb.Lib.Util.
 
@@ -51,7 +50,7 @@ Inductive eventE : Type -> Type :=
 (* We enumerate descramblings in a tree structure, using
    [nondetE] to branch, so that each successful pat (i.e., not
    leading to failure) is a descrambling of a given trace. *)
-Definition eventE' := nondetE +' eventE.
+Definition eventE' := failureE +' nondetE +' eventE.
 
 (* Helper for [pick_event]. *)
 CoFixpoint pick_event' (t_prev t : real_trace) : M eventE' real_trace :=
@@ -61,7 +60,7 @@ CoFixpoint pick_event' (t_prev t : real_trace) : M eventE' real_trace :=
     let pick_this :=
         _ <- ^ Happened ev;;
        ret (List.rev t_prev ++ t)%list in
-    disj "pick_event'"
+    disj
       ( match ev with
         | NewConnection c =>
           if forallb (fun ev =>
@@ -98,7 +97,7 @@ CoFixpoint pick_event' (t_prev t : real_trace) : M eventE' real_trace :=
         end
       | pick_event' (ev :: t_prev) t
       )
-  end.
+  end%nondet.
 
 (* Given a scrambled trace, remove one event that could potentially
    be the next one in a descrambling.
@@ -146,19 +145,13 @@ Fixpoint list_eventE' (fuel : nat) (s : M eventE' unit)
       | Happened ev => fun k =>
         list_eventE' fuel (k tt) acc (fun t => new (ev :: t))
       end k
-    | Vis X ( _Or |) k =>
+    | Vis _ (| _Or |) k =>
       match _Or in nondetE X' return (X' -> _) -> _ with
-      | Or n _ =>
-        (fix go n0 : (Fin.t n0 -> X) -> _ :=
-           match n0 with
-           | O => fun _ => Some acc
-           | S n0 => fun f =>
-             match list_eventE' fuel (k (f Fin.F1)) acc new with
-             | None => None
-             | Some acc => go n0 (fun m => f (Fin.FS m))
-             end
-           end) n
+      | Or => fun id =>
+        let go b := list_eventE' fuel (k (id b)) acc new in
+        (go true <|> go false)%option
       end (fun x => x)
+    | Vis _ ( _Fail ||) _ => None
     end
   end.
 
@@ -193,7 +186,7 @@ Definition select_input_events : real_trace -> list (real_event * real_trace) :=
   fun tr =>
     take_while
       (fun '(ev, _) => negb (is_FromServer ev))
-      (select tr).
+      (picks tr).
 
 Definition select_connect :
   real_trace -> list (hypo_event * real_trace * connection_id) :=
@@ -226,17 +219,17 @@ Definition select_from_server :
                            | FromServer c' b =>
                              if c = c' ? then Some (ev, tr, b) else None
                            | _ => None
-                           end) (select tr) in
+                           end) (picks tr) in
     match res with
     | Some (ev, tr, b) => (real_to_hypo_event ev, tr, Some b)
     | None => (FromServer c None, tr, None)
     end.
 
 Definition select_event {X} (e : observerE X) (tr : real_trace) :
-  M (nondetE +' eventE) (X * real_trace) :=
+  M eventE' (X * real_trace) :=
   match e with
   | ObsConnect =>
-    '(ev, tr, c) <- choose "select_connect" (select_connect tr);;
+    '(ev, tr, c) <- choose (select_connect tr);;
     ^ Happened ev;;
     ret (c, tr)
   | ObsToServer c =>
@@ -259,9 +252,9 @@ Definition select_event {X} (e : observerE X) (tr : real_trace) :
    trace accepted by [s] ([is_trace_of]).
  *)
 CoFixpoint intersect_trace
-            (s : M (nondetE +' observerE) unit)
+            (s : ObserverM unit)
             (t : real_trace) :
-  M (nondetE +' eventE) unit :=
+  M (failureE +' nondetE +' eventE) unit :=
   match s with
   | Tau s => Tau (intersect_trace s t)
   | Ret tt =>
@@ -280,7 +273,7 @@ CoFixpoint intersect_trace
     end
   end.
 
-CoFixpoint find' (ts : list (hypo_trace * M (nondetE +' eventE) unit)) :
+CoFixpoint find' (ts : list (hypo_trace * M eventE' unit)) :
   M emptyE (option hypo_trace) :=
   match ts with
   | [] => ret None
@@ -294,11 +287,12 @@ CoFixpoint find' (ts : list (hypo_trace * M (nondetE +' eventE) unit)) :
         match e in eventE X' return (X' -> X) -> _ with
         | Happened ev => fun id => Tau (find' ((ev :: tr, k (id tt)) :: ts))
         end (fun x => x)
-      | ( _Or |) =>
+      | (| _Or |) =>
         match _Or in nondetE X' return (X' -> X) -> _ with
-        | Or n _ => fun id =>
-          Tau (find' (map (fun n => (tr, k (id n))) (every_fin _) ++ ts)%list)
+        | Or => fun id =>
+          Tau (find' ((tr, k (id true)) :: (tr, k (id false)) :: ts)%list)
         end (fun x => x)
+      | ( _Fail ||) => Tau (find' ts)
       end
     end
   end.
@@ -323,12 +317,13 @@ Fixpoint to_result (fuel : nat) (m : M emptyE (option hypo_trace)) :
   end.
 
 (* SHOW *)
-Definition is_scrambled_trace_of
-           (fuel : nat) (s : itree_spec) (t : real_trace) : result hypo_trace unit :=
+Definition is_scrambled_trace_test
+           (fuel : nat) (s : ObserverM unit) (t : real_trace) :
+  result hypo_trace unit :=
   to_result fuel (find' [([], intersect_trace s t)]).
 
 (* We will then generate traces produced by a server to test them
-   with [is_scrambled_trace_of].
+   with [is_scrambled_trace_test].
    There are two ways:
    - We can compile and run the actual C server,
      talking to it over actual sockets. This is implemented in

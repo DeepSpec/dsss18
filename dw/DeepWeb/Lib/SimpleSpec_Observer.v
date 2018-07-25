@@ -1,3 +1,16 @@
+(* Observer effects *)
+
+(* If you come from [SimpleSpec.v] the types here will look
+   different from those over there.
+   The functions below are actually more polymorphic, so that
+   they can be used with different effect types.
+   You actually use the functions below when you import
+   [SimpleSpec.v]; the module types with simpler signatures
+   are only for the sake of exposition.
+
+   This is also the case for [SimpleSpec_Server.v].
+ *)
+
 (* Our specifications are itrees whose effects allow them to
    _observe_ events and make assertions to define what makes a
    valid interaction.
@@ -18,8 +31,8 @@ From Custom Require Import Show String.
 Require Import DeepWeb.Free.Monad.Free.
 Import MonadNotations.
 Require Import DeepWeb.Free.Monad.Common.
+
 Import SumNotations.
-Import NonDeterminismBis.
 
 Require Import DeepWeb.Lib.Util.
 
@@ -30,10 +43,8 @@ Set Warnings "-extraction-opaque-accessed,-extraction".
 Open Scope string_scope.
 (* end hide *)
 
+Module Export ObserverType.
 (** The type of observations that can be made by the spec. *)
-(* The observations are parameterized by a type of "hints" that
-   can be used to help generating test cases. *)
-(* TODO: decide whether to restore hints. *)
 (* SHOW *)
 Inductive observerE : Type -> Type :=
 | (* Observe the creation of a new connection *)
@@ -46,10 +57,23 @@ Inductive observerE : Type -> Type :=
   (* Observe a byte going out of the server.  This action can return
      [None], indicating a "hole" as a way to hypothesize that the
      server sent some message we haven't yet received, so we can keep
-     testing the rest of the trace.  (The spec writer must be careful
-     that, if a trace with holes is rejected, then it must also be for
-     any substitution of actual values for those holes.) *)
+     testing the rest of the trace. *)
 | ObsFromServer : connection_id -> observerE (option byte).
+
+(* The [ObsFromServer] effect returns an [option].
+   [None] is a "hole" in the observed trace, it represents a
+   message hypothetically sent by the server and that we haven't
+   yet received. These holes allow us to keep exploring an
+   observer even in the presence of partial outputs from the
+   server. *)
+
+(* Note: The spec writer must be careful that, if a trace with
+   holes is rejected, then it must also be for any substitution
+   of actual values for those holes. *)
+End ObserverType.
+
+(* The observer monad we write specifications in. *)
+Definition ObserverM := M (failureE +' nondetE +' observerE).
 
 Definition obs_connect {E} `{observerE -< E} : M E connection_id :=
   embed ObsConnect.
@@ -64,7 +88,7 @@ Definition obs_from_server {E} `{observerE -< E} :
 (* /SHOW *)
 
 (* Make an assertion on a value, if it exists. *)
-Definition assert_on {E A} `{nondetE -< E}
+Definition assert_on {E A} `{failureE -< E} `{nondetE -< E}
            (r : string) (oa : option A) (check : A -> bool) :
   M E unit :=
   match oa with
@@ -85,8 +109,9 @@ Fixpoint obs_msg_to_server `{observerE -< E}
   end.
 
 (* Observe a message of length [n] received from the server. *)
-Fixpoint obs_msg_from_server `{observerE -< E} `{nondetE -< E}
-           (c : connection_id) (msg : bytes) :
+Fixpoint obs_msg_from_server
+         `{observerE -< E} `{failureE -< E} `{nondetE -< E}
+         (c : connection_id) (msg : bytes) :
   M E unit :=
   match msg with
   | "" => ret tt
@@ -95,6 +120,8 @@ Fixpoint obs_msg_from_server `{observerE -< E} `{nondetE -< E}
     assert_on "bytes must match" ob (fun b1 => b1 = b0 ?);;
     obs_msg_from_server c msg
   end.
+
+(**)
 
 (* Equality comparison, return a proof of equality of the
    indices (this could be generalized to a complete decision
@@ -114,10 +141,6 @@ Definition coerce {X Y : Type} (p : X = Y) (x : X) : Y :=
   match p in eq _ Y return Y with
   | eq_refl => x
   end.
-
-Definition specE := nondetE +' observerE.
-
-Definition itree_spec := M specE unit.
 
 (* The spec can be viewed as a set of traces. *)
 
@@ -145,23 +168,13 @@ Definition match_obs {X Y R S : Type}
   | _, _ => fun _ _ => fail_
   end.
 
-
 (* [exists x, k x = true] *)
 Definition nondet_exists {X : Type}
            (e : nondetE X) (k : X -> simple_result) : simple_result :=
   match e in nondetE X' return (X' -> X) -> _ with
-  | Or n _ =>
-    (fix go n0 : (Fin.t n0 -> X) -> simple_result :=
-       match n0 with
-       | O => fun _ => FAIL tt
-       | S n0 => fun f =>
-                  match k (f Fin.F1) with
-                  | OK tt => OK tt
-                  | DONTKNOW
-                  | FAIL tt => go n0 (fun m => f (Fin.FS m))
-                  end
-       end) n
-  end%bool (fun x => x).
+  | Or => fun id =>
+    (k (id false) || k (id true))%result
+  end (fun x => x).
 
 Definition event_to_observerE (e : hypo_event) :
   { X : Type & (observerE X * X)%type } :=
@@ -175,7 +188,7 @@ Instance EventType_observerE : EventType hypo_event observerE := {|
     from_event := event_to_observerE;
   |}.
 
-Definition is_spec_trace : itree_spec -> hypo_trace -> Prop :=
+Definition is_observer_trace : ObserverM unit -> hypo_trace -> Prop :=
   is_trace.
 
 (* SHOW *)
@@ -188,40 +201,42 @@ Definition is_spec_trace : itree_spec -> hypo_trace -> Prop :=
    Thus we add a [fuel] parameter assumed to be "big enough"
    for the result to be reliable. *)
 
-Fixpoint is_spec_trace_test
-         (max_depth : nat) (s : itree_spec) (t : hypo_trace) : simple_result :=
+Fixpoint is_observer_trace_test
+         (max_depth : nat) (s : ObserverM unit) (t : hypo_trace) :
+  simple_result :=
   match max_depth with
   | O => DONTKNOW
   | S max_depth =>
     match s, t with
-    | Tau s, t => is_spec_trace_test max_depth s t
+    | Tau s, t => is_observer_trace_test max_depth s t
     | Ret tt, [] => OK tt
     | Ret tt, _ :: _ => FAIL tt
     | Vis _ (| e1 ) k, x :: t =>
       match event_to_observerE x with
       | existT T1 (e0, y) => 
-        match_obs e0 e1 (fun s => is_spec_trace_test max_depth s t)
+        match_obs e0 e1 (fun s => is_observer_trace_test max_depth s t)
                   (FAIL tt) y k
       end
     | Vis _ (| e1 ) k, [] => OK tt
     (* The trace belongs to the tree [s] *)
-    | Vis _ ( _Or |) k, t =>
-      nondet_exists _Or (fun b => is_spec_trace_test max_depth (k b) t)
+    | Vis _ (| _Or |) k, t =>
+      nondet_exists _Or (fun b => is_observer_trace_test max_depth (k b) t)
+    | Vis _ ( _Fail ||) _, _ => FAIL tt
     end
   end.
 
-(* The traces produced by the tree [swap_spec] are very structured,
+(* The traces produced by the tree [swap_observer] are very structured,
    with sequences of bytes sent and received alternating tidily.
    However, in general:
-   - the network may reorder some messages, so the traces
-     we actually see during testing will not be directly
-     checkable using [is_trace_of], they must be descrambled
-     first;
+   - the network may reorder some messages, so the traces we
+     actually see during testing will not be directly checkable
+     using [is_observer_trace_test], they must be descrambled first;
    - a server implementation may also want to reorder responses
-     differently for performance and other practical reasons;
+     differently for performance and other practical reasons
+     (e.g., avoiding "head-of-line blocking");
      here we will consider a server correct if it cannot be
      distinguished over the network from a server that actually
-     produces the same traces as the spec above. *)
+     produces the same traces as the observer above. *)
 
 (* The network's behavior is defined in [Lib/SimpleSpec_Traces.v]
    and is accounted for in testing in [Lib/SimpleSpec_Descramble.v]. *)

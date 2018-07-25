@@ -5,18 +5,19 @@ From DeepWeb.Free.Monad Require Import
      Free Common Internal.
 Import MonadNotations.
 Import SumNotations.
-Import NonDeterminismBis.
 
 From DeepWeb.Lib Require Import
      NetworkInterface
      SimpleSpec_Server.
 
 Module N0 := NetworkInterface.Network.
-Module N1 := SimpleSpec_Server.Network.
+Module N1 := SimpleSpec_Server.
 
-Definition E0 := Basic.nondetE +' failureE +' N0.networkE.
+Definition E0 := nondetE +' failureE +' N0.networkE.
+Definition serverE1 := N1.ServerType.serverE.
 
-Definition simplify_network' {E} `{nondetE -< E} `{N1.networkE -< E} :
+Definition simplify_network' {E}
+           `{failureE -< E} `{nondetE -< E} `{serverE1 -< E} :
   forall X, E0 X -> M E X :=
   fun _ e =>
     match e with
@@ -29,11 +30,12 @@ Definition simplify_network' {E} `{nondetE -< E} `{N1.networkE -< E} :
       | N0.Shutdown c => fail "not implemented"
       end
     | (| Fail reason |) => fail reason
-    | ( _Or ||) => upgrade_or _Or
+    | ( _Or ||) => liftE (convert _Or)
     end.
 
-Definition simplify_network {E} `{nondetE -< E} `{N1.networkE -< E} :
+Definition simplify_network {E}
+           `{failureE -< E} `{nondetE -< E} `{serverE1 -< E} :
   forall X, M E0 X -> M E X :=
   fun _ => hom simplify_network'.
 
-Arguments simplify_network {E _ _} [X].
+Arguments simplify_network {E _ _ _} [X].

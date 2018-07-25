@@ -12,7 +12,6 @@ From Custom Require Import String.
 Require Import DeepWeb.Free.Monad.Free.
 Import MonadNotations.
 Require Import DeepWeb.Free.Monad.Common.
-Import SumNotations NonDeterminismBis.
 
 Require Import DeepWeb.Lib.Util DeepWeb.Lib.SimpleSpec.
 
@@ -30,32 +29,32 @@ Open Scope string_scope.
      connection or doing a receive and then a send on some existing
      connection picked in the list [conns]. *)
 
-CoFixpoint swap_spec_loop (buffer_size : nat)
+CoFixpoint swap_observer_loop (buffer_size : nat)
                           (conns : list connection_id)
                           (last_msg : bytes) 
-                        : itree_spec :=
-  disj "swap_spec"
+                        : ObserverM unit :=
+  disj
     ( (* Accept a new connection. *)
       c <- obs_connect;;
-      swap_spec_loop buffer_size (c :: conns) last_msg
+      swap_observer_loop buffer_size (c :: conns) last_msg
     | (* Exchange a pair of messages on a connection. *)
-      c <- choose "do swap" conns;;
+      c <- choose conns;;
       msg <- obs_msg_to_server buffer_size c;;
       obs_msg_from_server c last_msg;;
-      swap_spec_loop buffer_size conns msg
-    ).
+      swap_observer_loop buffer_size conns msg
+    )%nondet.
 
 (* Top-level spec *)
-Definition swap_spec_ (buffer_size : nat)
+Definition swap_observer_ (buffer_size : nat)
                       (init_msg : bytes) 
-                    : itree_spec :=
-  swap_spec_loop buffer_size [] init_msg.
+                    : ObserverM unit :=
+  swap_observer_loop buffer_size [] init_msg.
 
 Module Def := Lib.Util.TestDefault.
 
 (* A variant for testing *)
-Definition swap_spec_def : itree_spec :=
-  swap_spec_ Def.buffer_size Def.init_message.
+Definition swap_observer_def : ObserverM unit :=
+  swap_observer_ Def.buffer_size Def.init_message.
 
 (** * Examples *)
 
@@ -72,12 +71,12 @@ Import EventNotations.
 
 (** ** Example traces *)
 
-(** The [is_trace_of] property checks that some trace of events
-    belongs to some sequential specification [itree_spec]. *)
+(** The [is_observer_trace_test] property checks that some trace
+    of events belongs to some sequential specification [ObserverM]. *)
 
 (* A simple example illustrated the behavior described by the spec: *)
 Example trace_example :
-  OK tt = is_spec_trace_test 100 swap_spec_def [
+  OK tt = is_observer_trace_test 100 swap_observer_def [
     0 !;
     1 !;
     0 <-- "a";
@@ -98,7 +97,7 @@ Proof. reflexivity. Qed.
 (* An example of a behavior _not_ described by the spec (the first
    byte sent back should be ["0"], not ["1"]): *)
 Example trace_example2 :
-  FAIL tt = is_spec_trace_test 100 swap_spec_def [
+  FAIL tt = is_observer_trace_test 100 swap_observer_def [
     0 !;
     0 <-- "a";
     0 <-- "b";
@@ -113,14 +112,14 @@ Proof. reflexivity. Qed.
     can observe, given that the server is behaving according to the
     given sequential specification.
 
-    The [is_scrambled_trace_of] function checks whether a given
+    The [is_scrambled_trace_test] function checks whether a given
     "observed trace" is a scrambled version of some "linear trace"
     belonging to a given specification.  If so, it returns the linear
     trace that explains the observed trace. *)
 
 (* Every actual trace of the server is also a scrambled trace: *)
 Example scrambled_trace_example_1 :
-  is_scrambled_trace_of 1000 swap_spec_def [
+  is_scrambled_trace_test 1000 swap_observer_def [
     0 !;
     1 !;
     0 <-- "a";
@@ -151,14 +150,14 @@ Example scrambled_trace_example_1 :
     1 --> "b"; 
     1 --> "c"
   ]%hypo.
-Proof. reflexivity. Qed.
+Proof. cbn. reflexivity. Qed.
 
 (* The "scrambling" of messages in the network can result in responses
    on different connections being received out of order.  The
    resulting "explanation" shows the order that they must have been
    sent by the server. *)
 Example scrambled_trace_example_2 :
-  is_scrambled_trace_of 1000 swap_spec_def [
+  is_scrambled_trace_test 1000 swap_observer_def [
     0 !;
     1 !;
     0 <-- "a";
@@ -193,7 +192,7 @@ Proof. reflexivity. Qed.
 (* A bad trace, where the server sends back a response that was never
    sent to it by any client: *)
 Example bad_scrambled_trace_example_1 :
-  is_scrambled_trace_of 1000 swap_spec_def [
+  is_scrambled_trace_test 1000 swap_observer_def [
     0 !;
     0 <-- "a";
     0 <-- "b";
@@ -206,7 +205,7 @@ Proof. reflexivity. Qed.
    requests from connection 1 as responses along connection 2 _and
    vice versa_.  (This one requires quite a bit of fuel to reject...) *)
 Example bad_scrambled_trace_example_2 :
-  is_scrambled_trace_of 2000 swap_spec_def [
+  is_scrambled_trace_test 2000 swap_observer_def [
     0 !;
     1 !;
     2 !;
@@ -234,7 +233,7 @@ Proof. reflexivity. Qed.
    events" on connection 1, marking places where a client is still
    expecting messages from the server. *)
 Example scrambled_trace_example_3 :
-  is_scrambled_trace_of 1000 swap_spec_def [
+  is_scrambled_trace_test 1000 swap_observer_def [
     0 !;
     1 !;
     0 <-- "a";
@@ -268,7 +267,7 @@ Proof. reflexivity. Qed.
    this, where three "missing" events are followed by one that is
    clearly impossible: *)
 Example bad_scrambled_trace_example_3 :
-  is_scrambled_trace_of 1000 swap_spec_def [
+  is_scrambled_trace_test 1000 swap_observer_def [
     0 !;
     1 !;
     0 <-- "a";
@@ -281,4 +280,3 @@ Example bad_scrambled_trace_example_3 :
     1 --> "X"
   ]%real = FAIL tt.
 Proof. reflexivity. Qed.
-
