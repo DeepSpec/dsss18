@@ -25,6 +25,11 @@ Set Warnings "-extraction-opaque-accessed,-extraction".
 Open Scope string_scope.
 (* end hide *)
 
+(* BCP: This whole file needs comments. Also, if these are supposed to
+   be checkable properties, shouldn't we actually check them?? *)
+
+(* BCP: Why the unit arguments?  For extraction?? *)
+
 (* A simple echo server that receives up to 2 bytes. *)
 CoFixpoint echo (tt : unit) : ServerM unit :=
   c <- accept ;;

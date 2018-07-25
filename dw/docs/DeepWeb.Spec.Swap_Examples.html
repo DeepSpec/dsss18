@@ -1,0 +1,234 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>DeepWeb.Spec.Swap_Examples</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library DeepWeb.Spec.Swap_Examples</h1>
+
+<div class="code">
+<span class="comment">(*!&nbsp;Section&nbsp;SwapExamples&nbsp;*)</span><br/>
+
+<br/>
+<span class="id" title="keyword">Generalizable</span> <span class="id" title="keyword">Variable</span> <span class="id" title="var">E</span>.<br/>
+<span class="id" title="keyword">Type</span><span class="id" title="var">classes</span> <span class="id" title="tactic">eauto</span> := 6.<br/>
+
+<br/>
+<span class="id" title="var">From</span> <span class="id" title="var">QuickChick</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="library">QuickChick</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.Ascii.html#"><span class="id" title="library">Ascii</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#"><span class="id" title="library">String</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#"><span class="id" title="library">List</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.PArith.PArith.html#"><span class="id" title="library">PArith</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Vectors.Fin.html#"><span class="id" title="library">Fin</span></a>.<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">ListNotations</span>.<br/>
+
+<br/>
+<span class="id" title="var">From</span> <span class="id" title="var">Custom</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="Custom.String.html#"><span class="id" title="library">String</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="DeepWeb.Free.Monad.Free.html#"><span class="id" title="library">DeepWeb.Free.Monad.Free</span></a>.<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">MonadNotations</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="DeepWeb.Free.Monad.Common.html#"><span class="id" title="library">DeepWeb.Free.Monad.Common</span></a>.<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">SumNotations</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="DeepWeb.Lib.Util.html#"><span class="id" title="library">DeepWeb.Lib.Util</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#"><span class="id" title="library">DeepWeb.Lib.SimpleSpec</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="DeepWeb.Spec.Swap_SimpleSpec.html#"><span class="id" title="library">DeepWeb.Spec.Swap_SimpleSpec</span></a>.<br/>
+
+<br/>
+
+<br/>
+<span class="comment">(*&nbsp;BCP:&nbsp;This&nbsp;whole&nbsp;file&nbsp;needs&nbsp;comments.&nbsp;Also,&nbsp;if&nbsp;these&nbsp;are&nbsp;supposed&nbsp;to<br/>
+&nbsp;&nbsp;&nbsp;be&nbsp;checkable&nbsp;properties,&nbsp;shouldn't&nbsp;we&nbsp;actually&nbsp;check&nbsp;them??&nbsp;*)</span><br/>
+
+<br/>
+<span class="comment">(*&nbsp;BCP:&nbsp;Why&nbsp;the&nbsp;unit&nbsp;arguments?&nbsp;&nbsp;For&nbsp;extraction??&nbsp;*)</span><br/>
+
+<br/>
+<span class="comment">(*&nbsp;A&nbsp;simple&nbsp;echo&nbsp;server&nbsp;that&nbsp;receives&nbsp;up&nbsp;to&nbsp;2&nbsp;bytes.&nbsp;*)</span><br/>
+<span class="id" title="keyword">CoFixpoint</span> <a name="echo"><span class="id" title="definition">echo</span></a> (<span class="id" title="var">tt</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>) : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#ServerM"><span class="id" title="definition">ServerM</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">c</span> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">&lt;-</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#accept"><span class="id" title="definition">accept</span></a> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">;;</span></a><br/>
+&nbsp;&nbsp;<span class="id" title="var">msg</span> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">&lt;-</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#recv"><span class="id" title="definition">recv</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#c"><span class="id" title="variable">c</span></a> 2 <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">;;</span></a><br/>
+&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#send"><span class="id" title="definition">send</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#c"><span class="id" title="variable">c</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#msg"><span class="id" title="variable">msg</span></a> <a class="idref" href="Custom.Monad.html#617d4c2635d7166c8606c5fbf0f2733e"><span class="id" title="notation">;;</span></a><br/>
+&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_Examples.html#echo"><span class="id" title="definition">echo</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#tt"><span class="id" title="variable">tt</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">CoFixpoint</span> <a name="echo_spec"><span class="id" title="definition">echo_spec</span></a> (<span class="id" title="var">tt</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>) : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#ObserverM"><span class="id" title="definition">ObserverM</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">c</span> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">&lt;-</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#obs_connect"><span class="id" title="definition">obs_connect</span></a> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">;;</span></a><br/>
+&nbsp;&nbsp;<span class="id" title="var">msg</span> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">&lt;-</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#obs_msg_to_server"><span class="id" title="definition">obs_msg_to_server</span></a> 2 <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#c"><span class="id" title="variable">c</span></a><a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">;;</span></a><br/>
+&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#obs_msg_from_server"><span class="id" title="definition">obs_msg_from_server</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#c"><span class="id" title="variable">c</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#msg"><span class="id" title="variable">msg</span></a> <a class="idref" href="Custom.Monad.html#617d4c2635d7166c8606c5fbf0f2733e"><span class="id" title="notation">;;</span></a><br/>
+&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_Examples.html#echo_spec"><span class="id" title="definition">echo_spec</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#tt"><span class="id" title="variable">tt</span></a>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;A&nbsp;test&nbsp;*)</span><br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="test_echo"><span class="id" title="definition">test_echo</span></a> := <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#refines_mod_network_test"><span class="id" title="definition">refines_mod_network_test</span></a> (<a class="idref" href="DeepWeb.Spec.Swap_Examples.html#echo_spec"><span class="id" title="definition">echo_spec</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#tt"><span class="id" title="constructor">tt</span></a>) (<a class="idref" href="DeepWeb.Spec.Swap_Examples.html#echo"><span class="id" title="definition">echo</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#tt"><span class="id" title="constructor">tt</span></a>).<br/>
+
+<br/>
+<span class="comment">(*!&nbsp;QuickChick&nbsp;test_echo.&nbsp;*)</span><br/>
+
+<br/>
+<span class="comment">(*&nbsp;Now&nbsp;on&nbsp;to&nbsp;the&nbsp;swap&nbsp;server&nbsp;*)</span><br/>
+
+<br/>
+<span class="comment">(*&nbsp;A&nbsp;swap&nbsp;server&nbsp;that&nbsp;trivially&nbsp;follows&nbsp;the&nbsp;specification.&nbsp;*)</span><br/>
+<span class="id" title="keyword">CoFixpoint</span> <a name="swap_server_loop"><span class="id" title="definition">swap_server_loop</span></a> (<span class="id" title="var">buffer_size</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">conns</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">last_msg</span> : <a class="idref" href="DeepWeb.Lib.Util.html#bytes"><span class="id" title="definition">bytes</span></a>) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#ServerM"><span class="id" title="definition">ServerM</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> :=<br/>
+&nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Effect.html#2ba5f0356576594e1cb2da187b3d6c09"><span class="id" title="notation">disj</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Effect.html#2ba5f0356576594e1cb2da187b3d6c09"><span class="id" title="notation">(</span></a> <span class="comment">(*&nbsp;Accept&nbsp;a&nbsp;new&nbsp;connection.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">c</span> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">&lt;-</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#accept"><span class="id" title="definition">accept</span></a><a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">;;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_Examples.html#swap_server_loop"><span class="id" title="definition">swap_server_loop</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#buffer_size"><span class="id" title="variable">buffer_size</span></a> (<a class="idref" href="DeepWeb.Spec.Swap_Examples.html#c"><span class="id" title="variable">c</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#0a8150c3c4df34d205c5ed9a427e2ed5"><span class="id" title="notation">::</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#conns"><span class="id" title="variable">conns</span></a>) <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#last_msg"><span class="id" title="variable">last_msg</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Effect.html#2ba5f0356576594e1cb2da187b3d6c09"><span class="id" title="notation">|</span></a> <span class="comment">(*&nbsp;Exchange&nbsp;a&nbsp;pair&nbsp;of&nbsp;messages&nbsp;on&nbsp;a&nbsp;connection.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">c</span> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">&lt;-</span></a> <a class="idref" href="DeepWeb.Free.Monad.Effect.html#NonDeterminism.choose"><span class="id" title="definition">choose</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#conns"><span class="id" title="variable">conns</span></a><a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">;;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">msg</span> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">&lt;-</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#recv"><span class="id" title="definition">recv</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#c"><span class="id" title="variable">c</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#buffer_size"><span class="id" title="variable">buffer_size</span></a><a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">;;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#send"><span class="id" title="definition">send</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#c"><span class="id" title="variable">c</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#last_msg"><span class="id" title="variable">last_msg</span></a><a class="idref" href="Custom.Monad.html#617d4c2635d7166c8606c5fbf0f2733e"><span class="id" title="notation">;;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_Examples.html#swap_server_loop"><span class="id" title="definition">swap_server_loop</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#buffer_size"><span class="id" title="variable">buffer_size</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#conns"><span class="id" title="variable">conns</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#msg"><span class="id" title="variable">msg</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Effect.html#2ba5f0356576594e1cb2da187b3d6c09"><span class="id" title="notation">)</span></a>%<span class="id" title="var">nondet</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="swap_server_def"><span class="id" title="definition">swap_server_def</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#ServerM"><span class="id" title="definition">ServerM</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> :=<br/>
+&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_Examples.html#swap_server_loop"><span class="id" title="definition">swap_server_loop</span></a> <a class="idref" href="DeepWeb.Spec.Swap_SimpleSpec.html#Def.buffer_size"><span class="id" title="definition">Def.buffer_size</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#145bedf8a5d4a541831f3f70db03085c"><span class="id" title="notation">[]</span></a> <a class="idref" href="DeepWeb.Spec.Swap_SimpleSpec.html#Def.init_message"><span class="id" title="definition">Def.init_message</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="test_swap"><span class="id" title="definition">test_swap</span></a> := <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#refines_mod_network_test"><span class="id" title="definition">refines_mod_network_test</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_SimpleSpec.html#swap_observer_def"><span class="id" title="definition">swap_observer_def</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#swap_server_def"><span class="id" title="definition">swap_server_def</span></a>.<br/>
+
+<br/>
+<span class="comment">(*!&nbsp;QuickChick&nbsp;test_swap.&nbsp;*)</span><br/>
+
+<br/>
+<span class="comment">(*&nbsp;QuickChecking&nbsp;test_swap&nbsp;+++&nbsp;Passed&nbsp;10000&nbsp;tests&nbsp;(0&nbsp;discards)&nbsp;*)</span><br/>
+
+<br/>
+<span class="comment">(*&nbsp;A&nbsp;server&nbsp;that&nbsp;actually&nbsp;does&nbsp;no&nbsp;useful&nbsp;work&nbsp;*)</span><br/>
+<span class="id" title="keyword">CoFixpoint</span> <a name="eager_server"><span class="id" title="definition">eager_server</span></a> (<span class="id" title="var">tt</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a>) : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#ServerM"><span class="id" title="definition">ServerM</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">c</span> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">&lt;-</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#accept"><span class="id" title="definition">accept</span></a> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">;;</span></a><br/>
+&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_Examples.html#eager_server"><span class="id" title="definition">eager_server</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#tt"><span class="id" title="variable">tt</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="test_eager"><span class="id" title="definition">test_eager</span></a> := <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#refines_mod_network_test"><span class="id" title="definition">refines_mod_network_test</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_SimpleSpec.html#swap_observer_def"><span class="id" title="definition">swap_observer_def</span></a> (<a class="idref" href="DeepWeb.Spec.Swap_Examples.html#eager_server"><span class="id" title="definition">eager_server</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#tt"><span class="id" title="constructor">tt</span></a>).<br/>
+
+<br/>
+<span class="comment">(*!&nbsp;QuickChick&nbsp;test_eager.&nbsp;*)</span><br/>
+
+<br/>
+<span class="comment">(*&nbsp;QuickChecking&nbsp;test_eager&nbsp;++&nbsp;Passed&nbsp;10000&nbsp;tests&nbsp;(0&nbsp;discards)&nbsp;*)</span><br/>
+
+<br/>
+<span class="comment">(*&nbsp;A&nbsp;server&nbsp;that's&nbsp;plainly&nbsp;wrong.&nbsp;*)</span><br/>
+
+<br/>
+<span class="id" title="keyword">CoFixpoint</span> <a name="const_server"><span class="id" title="definition">const_server</span></a> (<span class="id" title="var">buffer_size</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#ServerM"><span class="id" title="definition">ServerM</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">c</span> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">&lt;-</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#accept"><span class="id" title="definition">accept</span></a> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">;;</span></a><br/>
+&nbsp;&nbsp;<span class="id" title="var">msg</span> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">&lt;-</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#recv"><span class="id" title="definition">recv</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#c"><span class="id" title="variable">c</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#buffer_size"><span class="id" title="variable">buffer_size</span></a> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">;;</span></a><br/>
+&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#send"><span class="id" title="definition">send</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#c"><span class="id" title="variable">c</span></a> "0"<a class="idref" href="Custom.Monad.html#617d4c2635d7166c8606c5fbf0f2733e"><span class="id" title="notation">;;</span></a><br/>
+&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_Examples.html#const_server"><span class="id" title="definition">const_server</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#buffer_size"><span class="id" title="variable">buffer_size</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="test_const"><span class="id" title="definition">test_const</span></a> := <span class="id" title="definition">expectFailure</span><br/>
+&nbsp;&nbsp;(<a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#refines_mod_network_test"><span class="id" title="definition">refines_mod_network_test</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_SimpleSpec.html#swap_observer_def"><span class="id" title="definition">swap_observer_def</span></a> (<a class="idref" href="DeepWeb.Spec.Swap_Examples.html#const_server"><span class="id" title="definition">const_server</span></a> <a class="idref" href="DeepWeb.Spec.Swap_SimpleSpec.html#Def.buffer_size"><span class="id" title="definition">Def.buffer_size</span></a>)).<br/>
+
+<br/>
+<span class="comment">(*!&nbsp;QuickChick&nbsp;test_const.&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;QuickChecking&nbsp;test_const<br/>
+<span class="inlinecode">1</span> <span class="inlinecode">!;</span> <span class="inlinecode">1</span> <span class="inlinecode">&lt;--</span> <span class="inlinecode">&quot;<span class="id" title="var">C</span>&quot;;</span> <span class="inlinecode">1</span> <span class="inlinecode">&lt;--</span> <span class="inlinecode">&quot;\022&quot;;</span> <span class="inlinecode">1</span> <span class="inlinecode">&lt;--</span> <span class="inlinecode">&quot;\003&quot;;</span> <span class="inlinecode">1</span> <span class="inlinecode">--&gt;</span> <span class="inlinecode">0&quot;;</span> <span class="inlinecode">2</span> <span class="inlinecode">!;</span> <span class="inlinecode">2</span> <span class="inlinecode">&lt;--</span> <span class="inlinecode">&quot;<span class="id" title="var">P</span>&quot;;</span> <span class="inlinecode">2</span> <span class="inlinecode">&lt;--</span> <span class="inlinecode">&quot;<span class="id" title="var">o</span>&quot;;</span> <span class="inlinecode">2</span> <span class="inlinecode">&lt;--</span> <span class="inlinecode">&quot;<span class="id" title="var">n</span>&quot;;</span> <span class="inlinecode">2</span> <span class="inlinecode">--&gt;</span> <span class="inlinecode">0&quot;</span><br/>
+***&nbsp;Failed&nbsp;after&nbsp;1&nbsp;tests&nbsp;and&nbsp;0&nbsp;shrinks.&nbsp;(0&nbsp;discards)&nbsp;*)</span><br/>
+
+<br/>
+<span class="comment">(*&nbsp;A&nbsp;server&nbsp;that&nbsp;only&nbsp;accepts&nbsp;up&nbsp;to&nbsp;two&nbsp;connections,&nbsp;but&nbsp;still&nbsp;correct.&nbsp;*)</span><br/>
+
+<br/>
+<span class="id" title="keyword">CoFixpoint</span> <a name="bounded_server"><span class="id" title="definition">bounded_server</span></a> (<span class="id" title="var">buffer_size</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) (<span class="id" title="var">conns</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">last_msg</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a>)<br/>
+&nbsp;&nbsp;: <a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#ServerM"><span class="id" title="definition">ServerM</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> :=<br/>
+&nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Effect.html#2ba5f0356576594e1cb2da187b3d6c09"><span class="id" title="notation">disj</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Effect.html#2ba5f0356576594e1cb2da187b3d6c09"><span class="id" title="notation">(</span></a> <span class="id" title="keyword">if</span> <span class="id" title="notation">(</span><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#length"><span class="id" title="abbreviation">length</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#conns"><span class="id" title="variable">conns</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Peano.html#9b077c369e19739ef880736ba34623ff"><span class="id" title="notation">≤</span></a> 2<span class="id" title="notation">)?</span> <span class="id" title="keyword">then</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">c</span> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">&lt;-</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#accept"><span class="id" title="definition">accept</span></a> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">;;</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#bounded_server"><span class="id" title="definition">bounded_server</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#buffer_size"><span class="id" title="variable">buffer_size</span></a> (<a class="idref" href="DeepWeb.Spec.Swap_Examples.html#c"><span class="id" title="variable">c</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#0a8150c3c4df34d205c5ed9a427e2ed5"><span class="id" title="notation">::</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#conns"><span class="id" title="variable">conns</span></a>) <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#last_msg"><span class="id" title="variable">last_msg</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">else</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Custom.Monad.html#ret"><span class="id" title="method">ret</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#tt"><span class="id" title="constructor">tt</span></a> <a class="idref" href="Custom.Monad.html#617d4c2635d7166c8606c5fbf0f2733e"><span class="id" title="notation">;;</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#bounded_server"><span class="id" title="definition">bounded_server</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#buffer_size"><span class="id" title="variable">buffer_size</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#conns"><span class="id" title="variable">conns</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#last_msg"><span class="id" title="variable">last_msg</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Effect.html#2ba5f0356576594e1cb2da187b3d6c09"><span class="id" title="notation">|</span></a> <span class="id" title="var">c</span> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">&lt;-</span></a> <a class="idref" href="DeepWeb.Free.Monad.Effect.html#NonDeterminism.choose"><span class="id" title="definition">choose</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#conns"><span class="id" title="variable">conns</span></a><a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">;;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">msg</span> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">&lt;-</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#recv"><span class="id" title="definition">recv</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#c"><span class="id" title="variable">c</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#buffer_size"><span class="id" title="variable">buffer_size</span></a> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">;;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#send"><span class="id" title="definition">send</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#c"><span class="id" title="variable">c</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#last_msg"><span class="id" title="variable">last_msg</span></a> <a class="idref" href="Custom.Monad.html#617d4c2635d7166c8606c5fbf0f2733e"><span class="id" title="notation">;;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_Examples.html#bounded_server"><span class="id" title="definition">bounded_server</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#buffer_size"><span class="id" title="variable">buffer_size</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#conns"><span class="id" title="variable">conns</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#msg"><span class="id" title="variable">msg</span></a> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Effect.html#2ba5f0356576594e1cb2da187b3d6c09"><span class="id" title="notation">)</span></a>%<span class="id" title="var">nondet</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="test_bounded_server"><span class="id" title="definition">test_bounded_server</span></a> :=<br/>
+&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#refines_mod_network_test"><span class="id" title="definition">refines_mod_network_test</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_SimpleSpec.html#swap_observer_def"><span class="id" title="definition">swap_observer_def</span></a> (<a class="idref" href="DeepWeb.Spec.Swap_Examples.html#bounded_server"><span class="id" title="definition">bounded_server</span></a> <a class="idref" href="DeepWeb.Spec.Swap_SimpleSpec.html#Def.buffer_size"><span class="id" title="definition">Def.buffer_size</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#145bedf8a5d4a541831f3f70db03085c"><span class="id" title="notation">[]</span></a> <a class="idref" href="DeepWeb.Spec.Swap_SimpleSpec.html#Def.init_message"><span class="id" title="definition">Def.init_message</span></a>).<br/>
+
+<br/>
+<span class="comment">(*!&nbsp;QuickChick&nbsp;test_bounded_server.&nbsp;*)</span><br/>
+
+<br/>
+<span class="comment">(*&nbsp;A&nbsp;server&nbsp;that&nbsp;works&nbsp;for&nbsp;a&nbsp;while&nbsp;and&nbsp;then&nbsp;stops.&nbsp;*)</span><br/>
+
+<br/>
+<span class="id" title="keyword">CoFixpoint</span> <a name="terminating_server"><span class="id" title="definition">terminating_server</span></a> (<span class="id" title="var">buffer_size</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) (<span class="id" title="var">conns</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">last_msg</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a>) (<span class="id" title="var">num_sends</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#ServerM"><span class="id" title="definition">ServerM</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">if</span> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#num_sends"><span class="id" title="variable">num_sends</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Peano.html#989c98e7ddd65d5bf37c334ff2076de8"><span class="id" title="notation">&lt;</span></a> 3 <span class="id" title="notation">?</span> <span class="id" title="keyword">then</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Effect.html#2ba5f0356576594e1cb2da187b3d6c09"><span class="id" title="notation">disj</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Effect.html#2ba5f0356576594e1cb2da187b3d6c09"><span class="id" title="notation">(</span></a> <span class="id" title="var">c</span> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">&lt;-</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#accept"><span class="id" title="definition">accept</span></a><a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">;;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_Examples.html#terminating_server"><span class="id" title="definition">terminating_server</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#buffer_size"><span class="id" title="variable">buffer_size</span></a> (<a class="idref" href="DeepWeb.Spec.Swap_Examples.html#c"><span class="id" title="variable">c</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#0a8150c3c4df34d205c5ed9a427e2ed5"><span class="id" title="notation">::</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#conns"><span class="id" title="variable">conns</span></a>) <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#last_msg"><span class="id" title="variable">last_msg</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#num_sends"><span class="id" title="variable">num_sends</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Effect.html#2ba5f0356576594e1cb2da187b3d6c09"><span class="id" title="notation">|</span></a> <span class="id" title="var">c</span> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">&lt;-</span></a> <a class="idref" href="DeepWeb.Free.Monad.Effect.html#NonDeterminism.choose"><span class="id" title="definition">choose</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#conns"><span class="id" title="variable">conns</span></a><a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">;;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">msg</span> <a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">&lt;-</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#recv"><span class="id" title="definition">recv</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#c"><span class="id" title="variable">c</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#buffer_size"><span class="id" title="variable">buffer_size</span></a><a class="idref" href="Custom.Monad.html#650755d8e17e459ba500e9885c94c24c"><span class="id" title="notation">;;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#send"><span class="id" title="definition">send</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#c"><span class="id" title="variable">c</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#last_msg"><span class="id" title="variable">last_msg</span></a><a class="idref" href="Custom.Monad.html#617d4c2635d7166c8606c5fbf0f2733e"><span class="id" title="notation">;;</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_Examples.html#terminating_server"><span class="id" title="definition">terminating_server</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#buffer_size"><span class="id" title="variable">buffer_size</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#conns"><span class="id" title="variable">conns</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#msg"><span class="id" title="variable">msg</span></a> (<a class="idref" href="DeepWeb.Spec.Swap_Examples.html#num_sends"><span class="id" title="variable">num_sends</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Peano.html#b3eea360671e1b32b18a26e15b3aace3"><span class="id" title="notation">+</span></a> 1)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Effect.html#2ba5f0356576594e1cb2da187b3d6c09"><span class="id" title="notation">)</span></a>%<span class="id" title="var">nondet</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">else</span> <a class="idref" href="Custom.Monad.html#ret"><span class="id" title="method">ret</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#tt"><span class="id" title="constructor">tt</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="test_terminating_server"><span class="id" title="definition">test_terminating_server</span></a> :=<br/>
+&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#refines_mod_network_test"><span class="id" title="definition">refines_mod_network_test</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_SimpleSpec.html#swap_observer_def"><span class="id" title="definition">swap_observer_def</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="DeepWeb.Spec.Swap_Examples.html#terminating_server"><span class="id" title="definition">terminating_server</span></a> <a class="idref" href="DeepWeb.Spec.Swap_SimpleSpec.html#Def.buffer_size"><span class="id" title="definition">Def.buffer_size</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#145bedf8a5d4a541831f3f70db03085c"><span class="id" title="notation">[]</span></a> <a class="idref" href="DeepWeb.Spec.Swap_SimpleSpec.html#Def.init_message"><span class="id" title="definition">Def.init_message</span></a> 0).<br/>
+
+<br/>
+<span class="comment">(*!&nbsp;QuickChick&nbsp;test_terminating_server.&nbsp;*)</span><br/>
+
+<br/>
+<span class="comment">(*&nbsp;A&nbsp;server&nbsp;that&nbsp;behaves&nbsp;properly&nbsp;at&nbsp;first,&nbsp;then&nbsp;malfunctions.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Definition</span> <a name="malfunctioning_server"><span class="id" title="definition">malfunctioning_server</span></a> (<span class="id" title="var">buffer_size</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) (<span class="id" title="var">conns</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">last_msg</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a>) (<span class="id" title="var">num_sends</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#ServerM"><span class="id" title="definition">ServerM</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a> :=<br/>
+&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_Examples.html#terminating_server"><span class="id" title="definition">terminating_server</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#buffer_size"><span class="id" title="variable">buffer_size</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#conns"><span class="id" title="variable">conns</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#last_msg"><span class="id" title="variable">last_msg</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#num_sends"><span class="id" title="variable">num_sends</span></a> <a class="idref" href="Custom.Monad.html#617d4c2635d7166c8606c5fbf0f2733e"><span class="id" title="notation">;;</span></a><br/>
+&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_Examples.html#const_server"><span class="id" title="definition">const_server</span></a> <a class="idref" href="DeepWeb.Spec.Swap_Examples.html#buffer_size"><span class="id" title="variable">buffer_size</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="test_malfunctioning_server"><span class="id" title="definition">test_malfunctioning_server</span></a> := <span class="id" title="definition">expectFailure</span><br/>
+&nbsp;&nbsp;(<a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#refines_mod_network_test"><span class="id" title="definition">refines_mod_network_test</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_SimpleSpec.html#swap_observer_def"><span class="id" title="definition">swap_observer_def</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="DeepWeb.Spec.Swap_Examples.html#malfunctioning_server"><span class="id" title="definition">malfunctioning_server</span></a> <a class="idref" href="DeepWeb.Spec.Swap_SimpleSpec.html#Def.buffer_size"><span class="id" title="definition">Def.buffer_size</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Lists.List.html#145bedf8a5d4a541831f3f70db03085c"><span class="id" title="notation">[]</span></a> <a class="idref" href="DeepWeb.Spec.Swap_SimpleSpec.html#Def.init_message"><span class="id" title="definition">Def.init_message</span></a> 0)).<br/>
+
+<br/>
+<span class="comment">(*!&nbsp;QuickChick&nbsp;test_malfunctioning_server.&nbsp;*)</span><br/>
+
+<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

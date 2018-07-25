@@ -1,5 +1,6 @@
 (*! Section CLikeTest *)(*! extends BaseTest *)
 
+(* BCP: Reword / expand! *)
 (* Simulate a server (defined in Coq, hence "internal"),
    nondeterministically returning the new state of the network. *)
 
@@ -17,6 +18,7 @@ From DeepWeb.Spec Require
 
 Definition swap_server : ServerM unit :=
   Swap_CLikeSpec.test_server.
+
 Definition swap_observer : ObserverM unit :=
   Swap_SimpleSpec.swap_observer_def.
 

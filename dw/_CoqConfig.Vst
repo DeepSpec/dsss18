@@ -8,6 +8,7 @@ DeepWeb/Spec/Swap_CLikeSpec.v
 DeepWeb/Lib/SimpleSpec.v
 DeepWeb/Spec/Swap_Examples.v
 DeepWeb/Spec/TopLevelSpec.v
+DeepWeb/Test/TestInternal.v
 
 #####################
 # Internals
@@ -20,7 +21,6 @@ DeepWeb/Free/Monad/Verif.v
 DeepWeb/Free/Monad/Spec.v
 DeepWeb/Free/Monad/Semantics.v
 DeepWeb/Free/Monad/Debug.v
-DeepWeb/Free/Monad/OpenUnion.v
 
 -I DeepWeb/Test
 
@@ -45,7 +45,6 @@ DeepWeb/Spec/ServerDefs.v
 
 DeepWeb/Test/Client.v
 DeepWeb/Test/TestExternal.v
-DeepWeb/Test/TestInternal.v
 
 Custom/Map.v
 Custom/List.v

@@ -15,7 +15,7 @@ Makefile.coq: _CoqProject
 	coq_makefile -f $< -o $@
 
 build-with-vst:
-	make -f Makefile.vst build
+	make -f Makefile.vst build HIDE=
 
 test:
 	$V$(MAKE) 
@@ -56,14 +56,14 @@ coq-qc: $(SERVER)
 	$Vecho 'let _ = print_endline "done"' >> QuickChickTop.ml
 
 docs: build-with-vst
-	$(MAKE) -f Makefile.coq.vst html
+	$(MAKE) -f Makefile.coq.vst html HIDE=
 	rm -rf docs
 	mv html docs
 
 clean:
 	find . -name "*.vo" -print -exec rm -rf {} \;
 	find . -name "*.glob" -print -exec rm -rf {} \;
-	$(MAKE) -f Makefile.coq clean
+	-$(MAKE) -f Makefile.coq clean
 	-rm -rf ../_qc_dw.tmp html Makefile.coq* _CoqProject.Vst
 
 .PHONY: docs clean coq-qc test coq

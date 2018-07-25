@@ -1,9 +1,9 @@
+(** Combinators for Extensible Event Types *)
+
 Generalizable Variables A B C D E.
 
 Require Import DeepWeb.Free.Monad.Free.
 Require Import DeepWeb.Free.Monad.Internal.
-
-(** * Combinators for Extensible Event Types *)
 
 (* Union of two effect types. *)
 Definition sum1 (E1 E2 : Type -> Type) (X : Type) : Type :=
@@ -16,6 +16,9 @@ Inductive emptyE : Type -> Type := .
 
    TODO: This is still quite fragile and prone to infinite instance
    resolution loops. *)
+(* BCP: This problem has been flagged for a while, and Gregory seems
+   to be very interested in using this stuff in the new ITree
+   repo... do we have ideas for how to make it more robust? *)
 
 Class Convertible (A B : Type -> Type) :=
   { convert : forall {X}, A X -> B X }.
