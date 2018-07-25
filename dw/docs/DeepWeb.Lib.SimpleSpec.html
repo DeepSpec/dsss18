@@ -133,7 +133,6 @@
 &nbsp;&nbsp;&nbsp;trace),&nbsp;intuitively&nbsp;meaning&nbsp;that&nbsp;no&nbsp;more&nbsp;bytes&nbsp;have<br/>
 &nbsp;&nbsp;&nbsp;been&nbsp;received&nbsp;from&nbsp;the&nbsp;server&nbsp;on&nbsp;this&nbsp;connection,&nbsp;but&nbsp;the<br/>
 &nbsp;&nbsp;&nbsp;server&nbsp;could&nbsp;have&nbsp;sent&nbsp;some.&nbsp;*)</span><br/>
-<span class="comment">(*&nbsp;BCP:&nbsp;We'll&nbsp;need&nbsp;some&nbsp;examples&nbsp;showing&nbsp;how&nbsp;the&nbsp;option&nbsp;is&nbsp;handled&nbsp;*)</span><br/>
 <span class="id" title="keyword">Parameter</span> <a name="ObserverIface.obs_from_server"><span class="id" title="axiom">obs_from_server</span></a> : <a class="idref" href="DeepWeb.Lib.Util.html#connection_id"><span class="id" title="inductive">connection_id</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#ObserverIface.specE"><span class="id" title="axiom">specE</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#option"><span class="id" title="inductive">option</span></a> <a class="idref" href="DeepWeb.Lib.Util.html#byte"><span class="id" title="definition">byte</span></a>).<br/>
 
 <br/>
@@ -221,6 +220,19 @@
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#84eb6d2849dbf3581b1c0c05add5f2d8"><span class="id" title="notation">∃</span></a> <span class="id" title="var">str</span><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#84eb6d2849dbf3581b1c0c05add5f2d8"><span class="id" title="notation">,</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.network_scrambled0"><span class="id" title="axiom">network_scrambled0</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#str"><span class="id" title="variable">str</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#tr"><span class="id" title="variable">tr</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d82a7d96d3659d805ffe732283716822"><span class="id" title="notation">∧</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.is_spec_trace"><span class="id" title="axiom">is_spec_trace</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#spec"><span class="id" title="variable">spec</span></a> (<a class="idref" href="DeepWeb.Lib.SimpleSpec.html#TracesIface.real_to_hypo"><span class="id" title="axiom">real_to_hypo</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#str"><span class="id" title="variable">str</span></a>).<br/>
+
+<br/>
+<span class="comment">(*&nbsp;A&nbsp;server&nbsp;(<span class="inlinecode"><span class="id" title="var">server</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">itree_server</span></span>)&nbsp;refines&nbsp;a&nbsp;"linear&nbsp;spec"<br/>
+&nbsp;&nbsp;&nbsp;(<span class="inlinecode"><span class="id" title="var">spec</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">itree_spec</span></span>)&nbsp;if,&nbsp;for&nbsp;every&nbsp;trace&nbsp;<span class="inlinecode"><span class="id" title="var">tr</span></span>&nbsp;that&nbsp;the<br/>
+&nbsp;&nbsp;&nbsp;server&nbsp;can&nbsp;produce,&nbsp;and&nbsp;every&nbsp;trace&nbsp;<span class="inlinecode"><span class="id" title="var">str</span></span>&nbsp;that&nbsp;can&nbsp;be&nbsp;observed<br/>
+&nbsp;&nbsp;&nbsp;from&nbsp;it&nbsp;via&nbsp;the&nbsp;network,&nbsp;it&nbsp;can&nbsp;be&nbsp;explained&nbsp;by&nbsp;a<br/>
+&nbsp;&nbsp;&nbsp;"descrambled&nbsp;trace"&nbsp;<span class="inlinecode"><span class="id" title="var">dstr</span></span>&nbsp;in&nbsp;the&nbsp;"linear&nbsp;spec".&nbsp;&nbsp;*)</span><br/>
+<span class="id" title="keyword">Parameter</span> <a name="TracesIface.refines_mod_network"><span class="id" title="axiom">refines_mod_network</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Server.html#Network.itree_server"><span class="id" title="definition">itree_server</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#itree_spec"><span class="id" title="definition">itree_spec</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Prop</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;BCP:&nbsp;Proposal:&nbsp;Define&nbsp;ServerM&nbsp;:=&nbsp;M&nbsp;(nondetE&nbsp;+'&nbsp;serverE)&nbsp;and<br/>
+&nbsp;&nbsp;&nbsp;ObserverM&nbsp;:=&nbsp;M&nbsp;(nondetE&nbsp;+'&nbsp;observerE),&nbsp;where&nbsp;observerE&nbsp;=&nbsp;current<br/>
+&nbsp;&nbsp;&nbsp;specE.&nbsp;&nbsp;Then&nbsp;replace&nbsp;itree_server&nbsp;with&nbsp;ServerM&nbsp;unit,&nbsp;etc..&nbsp;*)</span><br/>
 
 <br/>
 <span class="comment">(*&nbsp;Tests&nbsp;*)</span><br/>
@@ -324,6 +336,10 @@
 <br/>
 &nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="Traces.refines_mod_network_test"><span class="id" title="definition">refines_mod_network_test</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;:= <a class="idref" href="DeepWeb.Lib.SimpleSpec_ServerTrace.html#refines_mod_network_test"><span class="id" title="definition">SimpleSpec_ServerTrace.refines_mod_network_test</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="Traces.refines_mod_network"><span class="id" title="definition">refines_mod_network</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <a class="idref" href="DeepWeb.Lib.SimpleSpec_Refinement.html#ScramblingRefinement.refines_mod_network"><span class="id" title="definition">SimpleSpec_Refinement.ScramblingRefinement.refines_mod_network</span></a>.<br/>
 
 <br/>
 <span class="id" title="keyword">End</span> <a class="idref" href="DeepWeb.Lib.SimpleSpec.html#Traces"><span class="id" title="module">Traces</span></a>.<br/>

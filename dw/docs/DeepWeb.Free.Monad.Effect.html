@@ -42,13 +42,14 @@
 </div>
 
 <div class="doc">
-<a name="lab10"></a><h1 class="section">Combinators for Extensible Event Types</h1>
+<a name="lab9"></a><h1 class="section">Combinators for Extensible Event Types</h1>
 
 </div>
 <div class="code">
 
 <br/>
-<span class="comment">(*&nbsp;BCP:&nbsp;Explain&nbsp;a&nbsp;bit&nbsp;what&nbsp;this&nbsp;is&nbsp;all&nbsp;about...&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;BCP:&nbsp;Move&nbsp;all&nbsp;the&nbsp;Convertible&nbsp;stuff&nbsp;to&nbsp;another&nbsp;file.&nbsp;&nbsp;At&nbsp;the&nbsp;top&nbsp;of<br/>
+&nbsp;&nbsp;&nbsp;this&nbsp;file,&nbsp;but&nbsp;just&nbsp;an&nbsp;informal&nbsp;comment&nbsp;explaining&nbsp;+'&nbsp;and&nbsp;-&lt;&nbsp;*)</span><br/>
 
 <br/>
 <span class="comment">(*&nbsp;Union&nbsp;of&nbsp;two&nbsp;effect&nbsp;types.&nbsp;*)</span><br/>
@@ -120,7 +121,7 @@
 
 <br/>
 <span class="comment">(*&nbsp;Is&nbsp;this&nbsp;readable?&nbsp;*)</span><br/>
-<span class="comment">(*&nbsp;BCP:&nbsp;Readable,&nbsp;yes.&nbsp;&nbsp;Understandable&nbsp;(i.e.,&nbsp;can&nbsp;I&nbsp;guess&nbsp;what&nbsp;it's<br/>
+<span class="comment">(*&nbsp;Readable,&nbsp;yes.&nbsp;&nbsp;Understandable&nbsp;(i.e.,&nbsp;can&nbsp;I&nbsp;guess&nbsp;what&nbsp;it's<br/>
 &nbsp;&nbsp;&nbsp;for?),&nbsp;not&nbsp;really.&nbsp;*)</span><br/>
 
 <br/>
@@ -181,11 +182,11 @@
 </div>
 
 <div class="doc">
-<a name="lab11"></a><h1 class="section">Basic Effects</h1>
+<a name="lab10"></a><h1 class="section">Basic Effects</h1>
 
 <div class="paragraph"> </div>
 
-<a name="lab12"></a><h2 class="section">Failure</h2>
+<a name="lab11"></a><h2 class="section">Failure</h2>
 
 </div>
 <div class="code">
@@ -210,7 +211,7 @@
 </div>
 
 <div class="doc">
-<a name="lab13"></a><h2 class="section">Mutable state</h2>
+<a name="lab12"></a><h2 class="section">Mutable state</h2>
 
 </div>
 <div class="code">
@@ -241,7 +242,7 @@
 </div>
 
 <div class="doc">
-<a name="lab14"></a><h2 class="section">Nondeterminism</h2>
+<a name="lab13"></a><h2 class="section">Nondeterminism</h2>
 
 </div>
 <div class="code">
@@ -264,11 +265,13 @@
 &nbsp;&nbsp;<span class="id" title="keyword">Inductive</span> <a name="NonDeterminismSig.nondetE"><span class="id" title="inductive">nondetE</span></a> : <span class="id" title="keyword">Type</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <span class="id" title="keyword">Type</span> :=<br/>
 &nbsp;&nbsp;| <a name="NonDeterminismSig.Or"><span class="id" title="constructor">Or</span></a> : <span class="id" title="keyword">∀</span> (<span class="id" title="var">n</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>), <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Effect.html#nondetE"><span class="id" title="inductive">nondetE</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Vectors.Fin.html#t"><span class="id" title="inductive">Fin.t</span></a> <a class="idref" href="DeepWeb.Free.Monad.Effect.html#n"><span class="id" title="variable">n</span></a>).<br/>
 &nbsp;&nbsp;<span class="comment">(*&nbsp;BCP:&nbsp;What&nbsp;does&nbsp;the&nbsp;Fin.t&nbsp;do&nbsp;(why&nbsp;not&nbsp;just&nbsp;return&nbsp;nat)?&nbsp;&nbsp;Where&nbsp;do<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;we&nbsp;use&nbsp;it?&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;we&nbsp;use&nbsp;it?&nbsp;(Answer:&nbsp;It&nbsp;simplifies&nbsp;some&nbsp;proofs.&nbsp;&nbsp;Let's&nbsp;leave&nbsp;it<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;just&nbsp;explain&nbsp;what&nbsp;it&nbsp;means.)&nbsp;*)</span><br/>
 
 <br/>
-&nbsp;&nbsp;<span class="comment">(*&nbsp;<span class="inlinecode"><span class="id" title="var">Or</span></span>&nbsp;nodes&nbsp;can&nbsp;have&nbsp;no&nbsp;children&nbsp;(<span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">=</span> <span class="inlinecode">0</span>).&nbsp;*)</span><br/>
-&nbsp;&nbsp;<span class="comment">(*&nbsp;BCP:&nbsp;Needs&nbsp;a&nbsp;comment&nbsp;on&nbsp;the&nbsp;overlap&nbsp;with&nbsp;Fail&nbsp;above.&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;<span class="inlinecode"><span class="id" title="var">Or</span></span>&nbsp;nodes&nbsp;can&nbsp;have&nbsp;no&nbsp;children&nbsp;(<span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">=</span> <span class="inlinecode">0</span>).&nbsp;&nbsp;(We&nbsp;use&nbsp;only&nbsp;this<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;version&nbsp;of&nbsp;<span class="inlinecode"><span class="id" title="tactic">fail</span></span>&nbsp;in&nbsp;the&nbsp;swap&nbsp;server&nbsp;development&nbsp;--&nbsp;the&nbsp;one&nbsp;above<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;is&nbsp;just&nbsp;an&nbsp;example.)&nbsp;*)</span><br/>
 &nbsp;&nbsp;<span class="id" title="keyword">Parameter</span> <a name="NonDeterminismSig.fail"><span class="id" title="axiom">fail</span></a> :<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">∀</span> {<span class="id" title="var">E</span> <span class="id" title="var">A</span>} `{<a class="idref" href="DeepWeb.Free.Monad.Effect.html#NonDeterminismSig.nondetE"><span class="id" title="inductive">nondetE</span></a> <a class="idref" href="DeepWeb.Free.Monad.Effect.html#2800906c13e5a3b8a4720448ab367ce9"><span class="id" title="notation">-&lt;</span></a> <a class="idref" href="DeepWeb.Free.Monad.Effect.html#E"><span class="id" title="variable">E</span></a>},<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a> <span class="comment">(*&nbsp;reason&nbsp;*)</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Effect.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="DeepWeb.Free.Monad.Effect.html#A"><span class="id" title="variable">A</span></a>.<br/>
@@ -290,7 +293,6 @@
 <br/>
 &nbsp;&nbsp;<span class="comment">(*&nbsp;ITree&nbsp;that&nbsp;nondeterministically&nbsp;chooses&nbsp;an&nbsp;element&nbsp;from&nbsp;a&nbsp;list<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;returns&nbsp;it.&nbsp;*)</span><br/>
-&nbsp;&nbsp;<span class="comment">(*&nbsp;BCP:&nbsp;Can&nbsp;we&nbsp;make&nbsp;the&nbsp;reason&nbsp;parameter&nbsp;optional?&nbsp;*)</span><br/>
 &nbsp;&nbsp;<span class="id" title="keyword">Parameter</span> <a name="NonDeterminismSig.choose"><span class="id" title="axiom">choose</span></a> :<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">∀</span> {<span class="id" title="var">E</span> <span class="id" title="var">A</span>} `{<a class="idref" href="DeepWeb.Free.Monad.Effect.html#NonDeterminismSig.nondetE"><span class="id" title="inductive">nondetE</span></a> <a class="idref" href="DeepWeb.Free.Monad.Effect.html#2800906c13e5a3b8a4720448ab367ce9"><span class="id" title="notation">-&lt;</span></a> <a class="idref" href="DeepWeb.Free.Monad.Effect.html#E"><span class="id" title="variable">E</span></a>},<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a> <span class="comment">(*&nbsp;reason&nbsp;*)</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="DeepWeb.Free.Monad.Effect.html#A"><span class="id" title="variable">A</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d43e996736952df71ebeeae74d10a287"><span class="id" title="notation">→</span></a> <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Free.Monad.Effect.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="DeepWeb.Free.Monad.Effect.html#A"><span class="id" title="variable">A</span></a>.<br/>
@@ -304,14 +306,14 @@
 
 <br/>
 &nbsp;&nbsp;<span class="comment">(*&nbsp;BCP:&nbsp;The&nbsp;un-similarity&nbsp;of&nbsp;names&nbsp;between&nbsp;<span class="inlinecode"><span class="id" title="var">choose</span></span>&nbsp;and&nbsp;<span class="inlinecode"><span class="id" title="var">pick</span>-<span class="id" title="var">one</span></span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;is&nbsp;unfortunate!&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;is&nbsp;unfortunate!&nbsp;&nbsp;(Rename&nbsp;pick_one&nbsp;to&nbsp;choose_)&nbsp;*)</span><br/>
 <span class="id" title="keyword">End</span> <a class="idref" href="DeepWeb.Free.Monad.Effect.html#NonDeterminismSig"><span class="id" title="module">NonDeterminismSig</span></a>.<br/>
 
 <br/>
 </div>
 
 <div class="doc">
-<a name="lab15"></a><h2 class="section">Immutable State (<span class="inlinecode"><a class="idref" href="DeepWeb.Free.Monad.Effect.html#Reader"><span class="id" title="module">Reader</span></a></span>)</h2>
+<a name="lab14"></a><h2 class="section">Immutable State (<span class="inlinecode"><a class="idref" href="DeepWeb.Free.Monad.Effect.html#Reader"><span class="id" title="module">Reader</span></a></span>)</h2>
 
 </div>
 <div class="code">
@@ -361,7 +363,7 @@
 </div>
 
 <div class="doc">
-<a name="lab16"></a><h2 class="section">Output (<span class="inlinecode"><a class="idref" href="DeepWeb.Free.Monad.Effect.html#Writer"><span class="id" title="module">Writer</span></a></span>)</h2>
+<a name="lab15"></a><h2 class="section">Output (<span class="inlinecode"><a class="idref" href="DeepWeb.Free.Monad.Effect.html#Writer"><span class="id" title="module">Writer</span></a></span>)</h2>
 
 </div>
 <div class="code">

@@ -78,6 +78,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Effect.html#d1b55e6d9c58b7c6ee63bda61deaf093"><span class="id" title="notation">)</span></a>.<br/>
 
 <br/>
+<span class="comment">(*&nbsp;Top-level&nbsp;spec&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="swap_spec_"><span class="id" title="definition">swap_spec_</span></a> (<span class="id" title="var">buffer_size</span> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">init_msg</span> : <a class="idref" href="DeepWeb.Lib.Util.html#bytes"><span class="id" title="definition">bytes</span></a>) <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#itree_spec"><span class="id" title="definition">itree_spec</span></a> :=<br/>
@@ -87,7 +88,7 @@
 <span class="id" title="keyword">Module</span> <a name="Def"><span class="id" title="module">Def</span></a> := <a class="idref" href="DeepWeb.Lib.Util.html#TestDefault"><span class="id" title="module">Lib.Util.TestDefault</span></a>.<br/>
 
 <br/>
-<span class="comment">(*&nbsp;Top-level&nbsp;spec&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;A&nbsp;variant&nbsp;for&nbsp;testing&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="swap_spec_def"><span class="id" title="definition">swap_spec_def</span></a> : <a class="idref" href="DeepWeb.Lib.SimpleSpec_Observer.html#itree_spec"><span class="id" title="definition">itree_spec</span></a> :=<br/>
 &nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_SimpleSpec.html#swap_spec_"><span class="id" title="definition">swap_spec_</span></a> <a class="idref" href="DeepWeb.Spec.Swap_SimpleSpec.html#buffer_size"><span class="id" title="definition">Def.buffer_size</span></a> <a class="idref" href="DeepWeb.Spec.Swap_SimpleSpec.html#init_message"><span class="id" title="definition">Def.init_message</span></a>.<br/>
 
@@ -107,7 +108,8 @@
 </div>
 
 <div class="doc">
-<i>Traces</i> are lists of "observed events" of the following forms:
+<i>Traces</i> are lists of "observed events" of the following forms
+    (plus one more that we'll see below):
 <pre>
        c !        Connection c is opened
        c &lt;-- b    Server receives byte b on connection c

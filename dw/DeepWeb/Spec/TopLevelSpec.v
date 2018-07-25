@@ -1,4 +1,5 @@
 From DeepWeb Require Import
+     Free.Monad.Free
      Lib.SimpleSpec
      Lib.NetworkAdapter
      Spec.Swap_SimpleSpec.
@@ -15,14 +16,23 @@ Definition swap_spec := swap_spec_ (Z.to_nat BUFFER_SIZE) INIT_MSG.
 (** * The top-level correctness property. *)
 
 (* BCP: Every word in the following definition needs some explanation!
-   :-) *)
 
-(* BCP: Why is the result type unit instead of void? *)
+   - simplify_network translates between two different variants of the
+     network effect type (the Vst proofs use a richer variant with
+     Shutdown and Listen events, which are not (yet!) handled by our
+     high-level spec)
+   - refines_mod_network needs explanation and maybe examples (in a
+     separate file)
+   - semax_prog_ext - i.e., valid hoare triple (from Vst)
+   - prog - the program (as a CompCert AST, from MainInit - ultimately
+     from main.v)
+   - Vprog - the variables for prog
+   - Gprog - the function specifications for prog
+*)
+
 Definition swap_server_correct :=
-  exists (tree : SocketMonad unit),
+  exists (tree : M SocketE unit),
     refines_mod_network (simplify_network tree) swap_spec /\
     semax_prog_ext prog tree Vprog Gprog.
-(* BCP: Can we expand SocketMonad to [M SocketE] here, to avoid
-   defining it? *)
 
 (* (The proof can be found in Proofs/TopLevelProof.v) *)

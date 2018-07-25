@@ -49,9 +49,7 @@ Module SocketAPI.
   Qed.
       
   Definition SocketE : Type -> Type := (nondetE +' failureE +' networkE).
-  (* BCP: Can we move this definition (and perhaps some of its
-     friends) to SimpleSpec.v?  Also, shouldn't it be spelled
-     [socketE], for consistency? *)
+  (* BCP: Shouldn't it be spelled [socketE], for consistency?  (Yes.) *)
 
   Instance SocketE_networkE : networkE -< SocketE.
   constructor.

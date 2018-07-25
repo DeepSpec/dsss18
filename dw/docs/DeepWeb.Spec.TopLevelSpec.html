@@ -20,6 +20,7 @@
 
 <div class="code">
 <span class="id" title="var">From</span> <span class="id" title="var">DeepWeb</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Free.Monad.Free.html#"><span class="id" title="library">Free.Monad.Free</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec.html#"><span class="id" title="library">Lib.SimpleSpec</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.NetworkAdapter.html#"><span class="id" title="library">Lib.NetworkAdapter</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Spec.Swap_SimpleSpec.html#"><span class="id" title="library">Spec.Swap_SimpleSpec</span></a>.<br/>
@@ -47,16 +48,25 @@
 
 <br/>
 <span class="comment">(*&nbsp;BCP:&nbsp;Every&nbsp;word&nbsp;in&nbsp;the&nbsp;following&nbsp;definition&nbsp;needs&nbsp;some&nbsp;explanation!<br/>
-&nbsp;&nbsp;&nbsp;:-)&nbsp;*)</span><br/>
+<br/>
+&nbsp;&nbsp;&nbsp;-&nbsp;simplify_network&nbsp;translates&nbsp;between&nbsp;two&nbsp;different&nbsp;variants&nbsp;of&nbsp;the<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;network&nbsp;effect&nbsp;type&nbsp;(the&nbsp;Vst&nbsp;proofs&nbsp;use&nbsp;a&nbsp;richer&nbsp;variant&nbsp;with<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Shutdown&nbsp;and&nbsp;Listen&nbsp;events,&nbsp;which&nbsp;are&nbsp;not&nbsp;(yet!)&nbsp;handled&nbsp;by&nbsp;our<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;high-level&nbsp;spec)<br/>
+&nbsp;&nbsp;&nbsp;-&nbsp;refines_mod_network&nbsp;needs&nbsp;explanation&nbsp;and&nbsp;maybe&nbsp;examples&nbsp;(in&nbsp;a<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;separate&nbsp;file)<br/>
+&nbsp;&nbsp;&nbsp;-&nbsp;semax_prog_ext&nbsp;-&nbsp;i.e.,&nbsp;valid&nbsp;hoare&nbsp;triple&nbsp;(from&nbsp;Vst)<br/>
+&nbsp;&nbsp;&nbsp;-&nbsp;prog&nbsp;-&nbsp;the&nbsp;program&nbsp;(as&nbsp;a&nbsp;CompCert&nbsp;AST,&nbsp;from&nbsp;MainInit&nbsp;-&nbsp;ultimately<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;from&nbsp;main.v)<br/>
+&nbsp;&nbsp;&nbsp;-&nbsp;Vprog&nbsp;-&nbsp;the&nbsp;variables&nbsp;for&nbsp;prog<br/>
+&nbsp;&nbsp;&nbsp;-&nbsp;Gprog&nbsp;-&nbsp;the&nbsp;function&nbsp;specifications&nbsp;for&nbsp;prog<br/>
+*)</span><br/>
 
 <br/>
-<span class="comment">(*&nbsp;BCP:&nbsp;Why&nbsp;is&nbsp;the&nbsp;result&nbsp;type&nbsp;unit&nbsp;instead&nbsp;of&nbsp;void?&nbsp;*)</span><br/>
 <span class="id" title="keyword">Definition</span> <a name="swap_server_correct"><span class="id" title="definition">swap_server_correct</span></a> :=<br/>
-&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#84eb6d2849dbf3581b1c0c05add5f2d8"><span class="id" title="notation">∃</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#84eb6d2849dbf3581b1c0c05add5f2d8"><span class="id" title="notation">(</span></a><span class="id" title="var">tree</span> : <a class="idref" href="DeepWeb.Spec.Vst.SocketSpecs.html#TracePred.SocketMonad"><span class="id" title="definition">SocketMonad</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#84eb6d2849dbf3581b1c0c05add5f2d8"><span class="id" title="notation">),</span></a><br/>
+&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#84eb6d2849dbf3581b1c0c05add5f2d8"><span class="id" title="notation">∃</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#84eb6d2849dbf3581b1c0c05add5f2d8"><span class="id" title="notation">(</span></a><span class="id" title="var">tree</span> : <a class="idref" href="DeepWeb.Free.Monad.Free.html#M"><span class="id" title="inductive">M</span></a> <a class="idref" href="DeepWeb.Lib.SocketInterface.html#SocketAPI.SocketE"><span class="id" title="definition">SocketE</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Datatypes.html#unit"><span class="id" title="inductive">unit</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#84eb6d2849dbf3581b1c0c05add5f2d8"><span class="id" title="notation">),</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="DeepWeb.Lib.SimpleSpec_Refinement.html#ScramblingRefinement.refines_mod_network"><span class="id" title="definition">refines_mod_network</span></a> (<a class="idref" href="DeepWeb.Lib.NetworkAdapter.html#simplify_network"><span class="id" title="definition">simplify_network</span></a> <a class="idref" href="DeepWeb.Spec.TopLevelSpec.html#tree"><span class="id" title="variable">tree</span></a>) <a class="idref" href="DeepWeb.Spec.TopLevelSpec.html#swap_spec"><span class="id" title="definition">swap_spec</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.0/stdlib//Coq.Init.Logic.html#d82a7d96d3659d805ffe732283716822"><span class="id" title="notation">∧</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="definition">semax_prog_ext</span> <a class="idref" href="DeepWeb.Spec.main.html#prog"><span class="id" title="definition">prog</span></a> <a class="idref" href="DeepWeb.Spec.TopLevelSpec.html#tree"><span class="id" title="variable">tree</span></a> <a class="idref" href="DeepWeb.Spec.Vst.Gprog.html#Vprog"><span class="id" title="definition">Vprog</span></a> <a class="idref" href="DeepWeb.Spec.Vst.Gprog.html#Gprog"><span class="id" title="definition">Gprog</span></a>.<br/>
-<span class="comment">(*&nbsp;BCP:&nbsp;Can&nbsp;we&nbsp;expand&nbsp;SocketMonad&nbsp;to&nbsp;<span class="inlinecode"><span class="id" title="var">M</span></span> <span class="inlinecode"><span class="id" title="var">SocketE</span></span>&nbsp;here,&nbsp;to&nbsp;avoid<br/>
-&nbsp;&nbsp;&nbsp;defining&nbsp;it?&nbsp;*)</span><br/>
 
 <br/>
 <span class="comment">(*&nbsp;(The&nbsp;proof&nbsp;can&nbsp;be&nbsp;found&nbsp;in&nbsp;Proofs/TopLevelProof.v)&nbsp;*)</span></div>

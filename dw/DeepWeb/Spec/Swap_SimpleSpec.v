@@ -45,6 +45,7 @@ CoFixpoint swap_spec_loop (buffer_size : nat)
       swap_spec_loop buffer_size conns msg
     ).
 
+(* Top-level spec *)
 Definition swap_spec_ (buffer_size : nat)
                       (init_msg : bytes) 
                     : itree_spec :=
@@ -52,7 +53,7 @@ Definition swap_spec_ (buffer_size : nat)
 
 Module Def := Lib.Util.TestDefault.
 
-(* Top-level spec *)
+(* A variant for testing *)
 Definition swap_spec_def : itree_spec :=
   swap_spec_ Def.buffer_size Def.init_message.
 
@@ -60,7 +61,8 @@ Definition swap_spec_def : itree_spec :=
 
 Import EventNotations.
 
-(** _Traces_ are lists of "observed events" of the following forms:
+(** _Traces_ are lists of "observed events" of the following forms
+    (plus one more that we'll see below):
 <<
        c !        Connection c is opened
        c <-- b    Server receives byte b on connection c

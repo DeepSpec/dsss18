@@ -77,7 +77,6 @@ Parameter obs_to_server : connection_id -> M specE byte.
    trace), intuitively meaning that no more bytes have
    been received from the server on this connection, but the
    server could have sent some. *)
-(* BCP: We'll need some examples showing how the option is handled *)
 Parameter obs_from_server : connection_id -> M specE (option byte).
 
 (* Make an assertion on a value, if it exists. *)
@@ -143,6 +142,17 @@ Definition is_scrambled_trace : itree_spec -> real_trace -> Prop :=
     exists str,
       network_scrambled0 str tr /\
       is_spec_trace spec (real_to_hypo str).
+
+(* A server ([server : itree_server]) refines a "linear spec"
+   ([spec : itree_spec]) if, for every trace [tr] that the
+   server can produce, and every trace [str] that can be observed
+   from it via the network, it can be explained by a
+   "descrambled trace" [dstr] in the "linear spec".  *)
+Parameter refines_mod_network : itree_server -> itree_spec -> Prop.
+
+(* BCP: Proposal: Define ServerM := M (nondetE +' serverE) and
+   ObserverM := M (nondetE +' observerE), where observerE = current
+   specE.  Then replace itree_server with ServerM unit, etc.. *)
 
 (* Tests *)
 
@@ -222,6 +232,9 @@ Module Traces : TracesIface.
 
   Definition refines_mod_network_test
     := SimpleSpec_ServerTrace.refines_mod_network_test.
+  
+  Definition refines_mod_network
+    := SimpleSpec_Refinement.ScramblingRefinement.refines_mod_network.
   
 End Traces.
 

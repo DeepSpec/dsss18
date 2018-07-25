@@ -15,7 +15,8 @@ Section Extensible.
 
 (** * Combinators for Extensible Event Types *)
 
-(* BCP: Explain a bit what this is all about... *)
+(* BCP: Move all the Convertible stuff to another file.  At the top of
+   this file, but just an informal comment explaining +' and -< *)
 
 (* Union of two effect types. *)
 Definition sum1 (E1 E2 : Type -> Type) (X : Type) : Type :=
@@ -72,7 +73,7 @@ Notation "E -< F" := (Convertible E F)
 Module Import SumNotations.
 
 (* Is this readable? *)
-(* BCP: Readable, yes.  Understandable (i.e., can I guess what it's
+(* Readable, yes.  Understandable (i.e., can I guess what it's
    for?), not really. *)
 
 Delimit Scope sum_scope with sum.
@@ -171,10 +172,12 @@ Module Type NonDeterminismSig.
   Inductive nondetE : Type -> Type :=
   | Or : forall (n : nat), string -> nondetE (Fin.t n).
   (* BCP: What does the Fin.t do (why not just return nat)?  Where do
-     we use it? *)
+     we use it? (Answer: It simplifies some proofs.  Let's leave it
+     and just explain what it means.) *)
 
-  (* [Or] nodes can have no children ([n = 0]). *)
-  (* BCP: Needs a comment on the overlap with Fail above. *) 
+  (* [Or] nodes can have no children ([n = 0]).  (We use only this
+     version of [fail] in the swap server development -- the one above
+     is just an example.) *)
   Parameter fail :
     forall {E A} `{nondetE -< E},
       string (* reason *) -> M E A.
@@ -193,7 +196,6 @@ Module Type NonDeterminismSig.
 
   (* ITree that nondeterministically chooses an element from a list
      and returns it. *)
-  (* BCP: Can we make the reason parameter optional? *)
   Parameter choose :
     forall {E A} `{nondetE -< E},
       string (* reason *) -> list A -> M E A.
@@ -205,7 +207,7 @@ Module Type NonDeterminismSig.
       string -> list A -> M E (A * list A).
 
   (* BCP: The un-similarity of names between [choose] and [pick-one]
-     is unfortunate! *)
+     is unfortunate!  (Rename pick_one to choose_) *)
 End NonDeterminismSig.
 
 (** ** Immutable State ([Reader]) *)
