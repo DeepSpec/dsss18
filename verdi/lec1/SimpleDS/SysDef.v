@@ -3,16 +3,6 @@ Import ListNotations.
 
 Set Implicit Arguments.
 
-(* Note that we have to order definitions carefully when modules
-   are involved... *)
-
-(* a coarse abstraction of packets sent on the network *)
-Record packet (D: Set) (P: Set) : Set :=
-  mkpacket {
-    dest : D;
-    payload : P
-  }.
-
 (* Module types are just collections of parameters and axioms. *)
 Module Type BaseSystemParams.
   (* external client I/O *)
@@ -28,11 +18,12 @@ Module Type BaseSystemParams.
   (* internal messages between nodes *)
   Parameter msg : Set.
 
-  (* Here we use Notations because module types cannot contain
-     any definitions! *)
-  
-  Notation packet :=
-    (packet node msg).
+  (* a coarse abstraction of packets sent on the network *)
+  Record packet : Set :=
+    mkpacket {
+        dest : node;
+        payload : msg
+      }.
 
   Notation handler :=
     (state -> state * list packet * list output).

@@ -1,0 +1,11 @@
+-Q ../StructTact StructTact
+-Q . SimpleDS
+
+Counter.v
+CounterProof.v
+Fresh.v
+FreshProof.v
+NetSem.v
+SeqNum.v
+SeqNumProof.v
+SysDef.v

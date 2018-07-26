@@ -1,0 +1,33 @@
+opam-version: "1.2"
+version: "dev"
+maintainer: "palmskog@gmail.com"
+
+homepage: "https://github.com/DistributedComponents/verdi-lockserv"
+dev-repo: "https://github.com/DistributedComponents/verdi-lockserv.git"
+bug-reports: "https://github.com/DistributedComponents/verdi-lockserv/issues"
+license: "BSD"
+
+build: [
+  [ "./configure" ]
+  [ make "-j%{jobs}%" "lockserv-seqnum" ]
+]
+available: [ ocaml-version >= "4.02.3" ]
+depends: [
+  "coq" {((>= "8.6.1" & < "8.7~") | (>= "8.7" & < "8.8~"))}
+  "verdi" {= "dev"}
+  "StructTact" {= "dev"}
+  "cheerios" {= "dev"}
+  "verdi-runtime" {= "dev"}
+  "ocamlfind" {build}
+  "ocamlbuild" {build}
+]
+
+authors: [
+  "James Wilcox <>"
+  "Doug Woos <>"
+  "Pavel Panchekha <>"
+  "Zachary Tatlock <>"
+  "Steve Anton <>"
+  "Karl Palmskog <>"
+  "Ryan Doenges <>"
+]

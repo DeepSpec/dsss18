@@ -25,6 +25,9 @@ Module CounterBase <: BaseSystemParams.
   Definition node := node'.
   Definition msg := msg'.
 
+  Record packet : Set :=
+    mkpacket {dest : node; payload : msg}.
+
   Definition node_eq_dec :
     forall x y : node, {x = y} + {x <> y}.
   Proof.

@@ -1,0 +1,13 @@
+*.vo
+*.glob
+*.v.d
+*.buildtime
+Makefile.coq
+Makefile.coq.bak
+Makefile.coq.conf
+*~
+.coq-native/
+*.aux
+*.vio
+*.pyc
+.vagrant
