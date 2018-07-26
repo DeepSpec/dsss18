@@ -1,10 +1,11 @@
 Building with VST
 -----------------
 
-[Warning: You may need to install the upo-to-the-minute version of VST 
-from https://github.com/PrincetonUniversity/VST.git to do this]
+[Warning: You need to install the up-to-the-minute version of VST
+master branch from here:
+https://github.com/PrincetonUniversity/VST.git to do this]
 
-In this `dw/` directory, create a `CONFIGURE` file containing
+In this `charIO/` directory, create a `CONFIGURE` file containing
 
     VST_LOC= /file/path/to/VST
 
