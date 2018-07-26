@@ -58,17 +58,6 @@ Ltac lower_to_SEP :=
     intros _; simpl
   end.
 
-Ltac semax_func_cons' L :=
-  apply semax_func_cons;
-  [ subst; auto 
-  | repeat apply Forall_cons; try apply Forall_nil; computable
-  | unfold var_sizes_ok; repeat constructor
-  | reflexivity
-  | precondition_closed
-  | let H := fresh "body" in
-    pose proof L;
-    try solve [unify_spec]
-  | ].
 
 Lemma all_funcs_correct:
   semax_func Vprog Gprog (prog_funct prog) Gprog.
@@ -86,7 +75,6 @@ Proof.
   semax_func_cons_ext.
 
   { (* typechecking for memcpy *)
-
     extract_ret_val.
     subst v.
     lower_to_SEP.
@@ -128,64 +116,29 @@ Proof.
     intros e.
     entailer!.
     omega.
-    
   } 
 
   (* select *)
   semax_func_cons_ext.
   
-  semax_func_cons' body_fd_zero_macro.
-  semax_func_cons' body_fd_isset_macro.
-  semax_func_cons' body_fd_set_macro.
-  semax_func_cons' body_check_if_complete.
-  { 
-    unfold check_if_complete_spec in H.
-    unify_spec.
-  } 
-
-  semax_func_cons' body_new_connection.
-
-  semax_func_cons' body_new_store.
-
-  semax_func_cons' body_populate_response.
-
-  semax_func_cons' body_conn_read.
-  { unfold conn_read_spec in H.
-    unify_spec.
-  } 
-    
-  semax_func_cons' body_reset_connection.
-
-  semax_func_cons' body_conn_write.
-  { 
-    unfold conn_write_spec in H.
-    unify_spec.
-  } 
-
-  semax_func_cons' body_process.
-  { 
-    unfold process_spec in H.
-    unify_spec.
-  } 
-
-  semax_func_cons' body_accept_connection.
-  { 
-    unfold accept_connection_spec in H.
-    unify_spec.
-  } 
-  
-  semax_func_cons' body_add_to_fd_set.
-
-  semax_func_cons' body_monitor_connections.
-
-  semax_func_cons' body_process_connections.
-  { 
-    unfold process_connections_spec in H.
-    unify_spec.
-  } 
+  semax_func_cons body_fd_zero_macro.
+  semax_func_cons body_fd_isset_macro.
+  semax_func_cons body_fd_set_macro.
+  semax_func_cons body_check_if_complete.
+  semax_func_cons body_new_connection.
+  semax_func_cons body_new_store.
+  semax_func_cons body_populate_response.
+  semax_func_cons body_conn_read.
+  semax_func_cons body_reset_connection.
+  semax_func_cons body_conn_write.
+  semax_func_cons body_process.
+  semax_func_cons body_accept_connection.
+  semax_func_cons body_add_to_fd_set.
+  semax_func_cons body_monitor_connections.
+  semax_func_cons body_process_connections.
 
   apply semax_func_cons.
-  { subst; auto. }
+  { auto. }
   { apply Forall_cons; auto.
     apply Forall_cons; auto.
   } 
@@ -200,10 +153,10 @@ Proof.
     unify_spec.
   } 
 
-  semax_func_cons' body_zeroize_addr.
+  semax_func_cons body_zeroize_addr.
 
   apply semax_func_cons.
-  { subst; auto. }
+  { auto. }
   { apply Forall_cons; auto. } 
   { repeat (apply Forall_cons; [simpl; rep_omega | ]).
     constructor.
@@ -216,14 +169,7 @@ Proof.
     unify_spec.
   }
 
-  semax_func_cons' body_init_store.
-
-  semax_func_cons' body_main.
-  {
-    unfold main_spec in H.
-    unify_spec.
-  }
-
-  apply semax_func_nil.
+  semax_func_cons body_init_store.
+  semax_func_cons body_main.
   
 Qed.
