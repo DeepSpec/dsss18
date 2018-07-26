@@ -25,5 +25,7 @@ Theorem swap_server_is_correct : swap_server_correct.
 Proof.
   unfold swap_server_correct.
   exists server.
-  apply prog_correct.
-Qed.
+  split.
+  - admit.
+  - apply prog_correct.
+Admitted.
