@@ -1,2 +1,2 @@
--Q StructTact StructTact
+-Q ./StructTact StructTact
 -R SimpleDS SimpleDS

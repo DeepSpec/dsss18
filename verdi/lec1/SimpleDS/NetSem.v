@@ -9,6 +9,10 @@ Require Import SysDef.
    functor which takes a system as an argument and gives us back a
    module with a small step operational semantics for the system. *)
 
+Inductive client_event {N I O : Set} : Set :=
+| client_in : N -> I -> client_event
+| client_out : N -> O -> client_event.
+
 Module NetSem (P : SystemParams).
   Import P.
 
@@ -18,9 +22,8 @@ Module NetSem (P : SystemParams).
      the "trace" of all the interactions ("external events") any node
      has ever had with any client. *)
 
-  Inductive client_event : Type :=
-  | client_in : node -> input -> client_event
-  | client_out : node -> output -> client_event.
+  Notation client_event :=
+    (@client_event node input output).
 
   (* state of an entire system *)
   Record world : Type :=

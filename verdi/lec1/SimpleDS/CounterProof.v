@@ -18,13 +18,6 @@ Include NetSem(Counter).
 Definition backup_le_primary (w : world) : Prop :=
   locals w Backup <= locals w Primary.
 
-(* this tactic "runs" handlers in proofs *)
-Ltac do_handler :=
-    unfold handle_input, handle_msg,
-      do, nop, bind, ret, get, set in *;
-   repeat break_let; repeat tuple_inversion.
-
-
 (* first attempt at proof *)
 
 Theorem counter_correct :
@@ -47,14 +40,14 @@ Proof.
         omega.
     + (* msg *)
       unfold handle_msg in *.
-      destruct p; simpl in *.
-      destruct dest, payload; invc H1;
+      destruct p as [x y], x, y;
+        simpl in *; invc H1;
         unfold backup_le_primary, state in *;
         simpl; rewrite update_same, update_diff by congruence;
         auto.
-      
+
       (* ... huh? Backup can get ahead?!
-         
+
          Similar to our first attempt in Fresh, we are stuck again!
          This time the problem is that we didn't relate the local
          state of the nodes to the state of the network.  Again,
@@ -65,7 +58,13 @@ Abort.
 
 
 
-(* What we do know is that the Backup's state plus the number of
+(* This is what we want to prove, but it's not inductive!
+
+      forall w,
+        reachable' shuffle_step w ->
+        backup_le_primary w
+
+   What we do know is that the Backup's state plus the number of
    _pending_ Inc messages in the network is equal to the Primary's
    state.
 
@@ -116,11 +115,11 @@ Proof.
   induction l; simpl; intuition.
   - subst. break_if; try congruence.
     now rewrite count_cons_backup_inc.
-  - break_if.
-    + find_inversion.
-      now rewrite count_cons_backup_inc.
-    + destruct dest, payload; try congruence;
-        now rewrite ?count_cons_primary, ?count_cons_ack.
+  - break_if; subst.
+    + now rewrite count_cons_backup_inc.
+    + destruct a as [x y], x, y;
+      try congruence;
+      now rewrite ?count_cons_primary, ?count_cons_ack.
 Qed.
 
 Lemma count_remove_ack:
@@ -128,10 +127,10 @@ Lemma count_remove_ack:
     count (remove_one (mkpacket n Ack) l) = count l.
 Proof.
   induction l; intuition.
-  simpl count.
-  simpl. break_if.
-  + find_inversion. now rewrite count_cons_ack.
-  + destruct dest, payload.
+  simpl count. simpl.
+  break_if; subst.
+  + now rewrite count_cons_ack.
+  + destruct a as [x y], x, y.
     * now rewrite !count_cons_primary.
     * now rewrite !count_cons_primary.
     * rewrite !count_cons_backup_inc. auto.
@@ -143,12 +142,12 @@ Lemma count_remove_primary :
     count (remove_one (mkpacket Primary m) l) = count l.
 Proof.
   induction l; simpl; intuition.
-  break_if.
-  - find_inversion. now rewrite count_cons_primary.
-  - destruct dest, payload.
+  break_if; subst.
+  - now rewrite count_cons_primary.
+  - destruct a as [x y], x, y.
     * now rewrite !count_cons_primary.
     * now rewrite !count_cons_primary.
-    * rewrite !count_cons_backup_inc. auto.
+    * rewrite !count_cons_backup_inc; auto.
     * now rewrite !count_cons_ack.
 Qed.
 
@@ -172,7 +171,7 @@ Proof.
       * auto.
     + (* msg step *)
       unfold handle_msg in *.
-      destruct p. simpl in *.
+      destruct p as [dest payload]; simpl in *.
       destruct dest, payload;
         invc H1; unfold backup_plus_count_eq_primary, state in *;
           simpl; try rewrite update_same, update_diff by congruence.
@@ -182,10 +181,9 @@ Proof.
       * rewrite count_cons_primary.
         rewrite <- IHHreach.
         find_apply_lem_hyp count_remove_backup_inc.
-        (* sorry! -- omega. *)
-        admit.
+        omega.
       * now rewrite <- IHHreach, count_remove_ack.
-Admitted.
+Qed.
 
 Theorem backup_le_primary_true :
   forall w,
@@ -197,4 +195,3 @@ Proof.
   unfold backup_plus_count_eq_primary, backup_le_primary in *.
   omega.
 Qed.
-

@@ -14,7 +14,10 @@ Makefile.coq: Makefile $(VS)
 
 .PHONY: clean
 clean: Makefile.coq
-	$(MAKE) -C StructTact clean
 	$(MAKE) -f Makefile.coq clean
 	rm -f */*.v.d */*.glob */*.vo */*~ *~
 	rm -f Makefile.coq Makefile.coq.conf .coqdeps.d
+
+.PHONY: clean-all
+clean-all: clean
+	$(MAKE) -C StructTact clean

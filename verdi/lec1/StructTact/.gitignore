@@ -8,4 +8,3 @@ Makefile.coq.conf
 .coq-native/
 *.aux
 *.vio
-_CoqProject

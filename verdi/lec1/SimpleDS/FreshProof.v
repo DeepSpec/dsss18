@@ -64,15 +64,13 @@ Proof.
        *)
 Abort.
 
-
 (* since our system is single-node,
    we never need to reason about msg delivery *)
 Lemma packet_bogus :
   forall P, packet -> P.
 Proof.
-  intros P p.
-  destruct p.
-  destruct payload.
+  intros P [d m].
+  destruct m.
 Qed.
 
 Ltac packet_bogus :=
@@ -93,7 +91,7 @@ Proof.
     destruct n; invcs H0.
     unfold update; simpl.
     intuition.
-Qed.      
+Qed.
 
 (* easy consequence of above *)
 Lemma state_not_in_outputs :
