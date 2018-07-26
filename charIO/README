@@ -1,0 +1,16 @@
+Building with VST
+-----------------
+
+[Warning: You may need to install the upo-to-the-minute version of VST 
+from https://github.com/PrincetonUniversity/VST.git to do this]
+
+In this `dw/` directory, create a `CONFIGURE` file containing
+
+    VST_LOC= /file/path/to/VST
+
+where you replace `/file/path/to/VST` with the location of your VST
+installation.
+
+Then run
+
+    make

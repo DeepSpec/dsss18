@@ -1,0 +1,5 @@
+CONFIGURE
+.coqdeps.d
+Makefile.vst
+_CoqProject
+*~
