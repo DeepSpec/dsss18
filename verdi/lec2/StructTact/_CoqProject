@@ -1,0 +1,21 @@
+-Q . StructTact
+
+./StructTactics.v
+./BeforeAll.v
+./Util.v
+./Nth.v
+./Subseq.v
+./Prefix.v
+./StringOrders.v
+./Fin.v
+./Dedup.v
+./FilterMap.v
+./Update.v
+./RemoveAll.v
+./Update2.v
+./PropUtil.v
+./BoolUtil.v
+./Before.v
+./ListTactics.v
+./ListUtil.v
+./Assoc.v

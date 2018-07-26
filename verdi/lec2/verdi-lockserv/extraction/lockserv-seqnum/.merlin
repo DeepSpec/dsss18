@@ -1,0 +1,3 @@
+S ocaml
+B _build/**
+PKG verdi-runtime

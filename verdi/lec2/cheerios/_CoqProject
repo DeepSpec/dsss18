@@ -1,0 +1,24 @@
+-Q ../StructTact StructTact
+-Q core Cheerios
+-Q extraction Cheerios
+-Q runtime/coq Cheerios
+
+core/BasicSerializers.v
+core/Tactics.v
+core/Core.v
+core/ByteDecidable.v
+core/Types.v
+core/DeserializerMonad.v
+core/Cheerios.v
+core/Combinators.v
+core/Tree.v
+
+extraction/ExtrOcamlCheeriosNatInt.v
+extraction/ExtrOcamlCheeriosFinInt.v
+extraction/ExtrOcamlCheeriosBasic.v
+extraction/ExtrOcamlCheeriosString.v
+
+runtime/coq/ExtractPositiveSerializerDeps.v
+runtime/coq/ExtractTreeSerializer.v
+runtime/coq/ExtractTreeSerializerDeps.v
+runtime/coq/ExtractPositiveSerializer.v

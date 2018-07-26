@@ -1,0 +1,7 @@
+-Q . InfSeqExt
+
+./subseq.v
+./infseq.v
+./map.v
+./classical.v
+./exteq.v

@@ -1,0 +1,21 @@
+-Q ../verdi/core Verdi
+-Q ../verdi/lib Verdi
+-Q ../verdi/systems Verdi
+-Q ../verdi/extraction Verdi
+-Q ../StructTact StructTact
+-Q ../cheerios/core Cheerios
+-Q ../cheerios/extraction Cheerios
+-Q systems ''
+-Q extraction/lockserv/coq ''
+-Q extraction/lockserv-seqnum/coq ''
+-Q extraction/lockserv-serialized/coq ''
+
+systems/LockServ.v
+systems/LockServSerialized.v
+systems/LockServSeqNum.v
+
+extraction/lockserv/coq/ExtractLockServ.v
+
+extraction/lockserv-seqnum/coq/ExtractLockServSeqNum.v
+
+extraction/lockserv-serialized/coq/ExtractLockServSerialized.v
