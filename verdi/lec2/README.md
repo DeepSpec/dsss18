@@ -5,7 +5,7 @@
 
 Today we'll talk more about some verified systems and get into
 "verified system transformers" which are the mechanism Verdi
-modularizes fault-tolerance handling and reasoning.  We'll
+uses to modularize fault-tolerance handling and reasoning.  We'll
 walk through some solutions to yesterday's homework and then
 see how Verdi proper works by stepping through:
 
