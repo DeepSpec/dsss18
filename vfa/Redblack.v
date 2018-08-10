@@ -596,8 +596,8 @@ Definition elements (s: tree) : list (key * V) := elements' s nil.
 
 Definition elements_property (t: tree) (cts: total_map V) : Prop :=
    forall k v,
-    (In (k,v) (elements t) -> cts (int2Z k) = v) /\ 
-    (cts (int2Z k) <> default -> In (k, cts (int2Z k)) (elements t)).
+     (In (k,v) (elements t) -> cts (int2Z k) = v) /\
+     (cts (int2Z k) <> default -> exists k', int2Z k = int2Z k' /\ In (k', cts (int2Z k)) (elements t)).
 
 Theorem elements_relate:
   forall t cts,  
