@@ -83,12 +83,11 @@ Definition process_loop_sep_invar
            (last_msg : string)
            (curr_ptr : val)
   :=
-    [SOCKAPI st ;
-     ITREE ( (select_loop
+    [ITREE ( (select_loop
                 server_addr
                 BUFFER_SIZE
                 (true, (map proj_conn (prefix ++ suffix), last_msg)))
-               ;; k );
+               ;; k ) st;
      FD_SET Tsh read_set read_set_ptr;
      FD_SET Tsh write_set write_set_ptr;
      lseg LS Tsh Tsh (map rep_full_conn prefix) head_ptr curr_ptr;
@@ -230,7 +229,7 @@ Proof.
     Intros last_msg0.
     Intros curr_ptr.
 
-    focus_SEP 5; simpl.
+    focus_SEP 4; simpl.
     unfold process_loop_prop_invar.
 
     forward_if.
@@ -356,7 +355,7 @@ Proof.
       cancel.
     }
 
-    freeze [1; 2; 3; 4; 5; 8] FR1; simpl.
+    freeze [1; 2; 3; 4; 5; 7] FR1; simpl.
     
     set (tr conn last_msg :=
            select_loop
@@ -368,19 +367,19 @@ Proof.
 
     (* process if ready *)
 
-    gather_SEP 1 2 3 4.
+    gather_SEP 1 2 3.
     
     Local Ltac post_process prefix suffix tr :=
     match goal with
     | [H: lookup_socket _ ?server_fd = ListeningSocket ?server_addr
        |- context[LOCALx (?locs) (SEPx (?process_pred :: ?seps)) ]] =>
     match process_pred with 
-    | context[list_cell _ _ (rep_connection ?conn ?fd) ?ptr] =>
+    | context[list_cell _ _ (rep_connection ?conn ?fd) ?ptr] => 
     match process_pred with 
-    | context[SOCKAPI ?st] => 
+    | context[ITREE ?trrr ?st] =>  
     match process_pred with 
     | context[field_at _ (Tstruct _store noattr) _
-                       (rep_store ?last_msg) ?msg_store_ptr] => 
+                       (rep_store ?last_msg) ?msg_store_ptr] =>
       forward_if
       (EX conn' : connection,
        EX last_msg' : string,              
@@ -404,8 +403,8 @@ Proof.
                           (prefix ++ (conn', fd, ptr) :: suffix))))
          )
        (LOCALx locs
-       (SEPx ( SOCKAPI st' ::
-               ITREE (tr (conn', fd, ptr) last_msg') ::
+       (SEPx ( 
+               ITREE (tr (conn', fd, ptr) last_msg') st' ::
                list_cell LS Tsh (rep_connection conn' fd) ptr ::
                field_at Tsh (Tstruct _store noattr) []
                         (rep_store last_msg') msg_store_ptr ::
@@ -426,7 +425,7 @@ Proof.
       rewrite while_loop_unfold.
       simpl.
       rewrite trace_bind_assoc.
-      take_branch2 2.
+      take_branch2 1.
       rewrite trace_bind_assoc.
 
       assert (socket_ready = 1) by omega.
@@ -541,7 +540,7 @@ Proof.
 
       (* Choose conn in interaction tree. *)
       rem_trace_tail process_tr.
-      replace_SEP 2 (ITREE (process_tr conn)).
+      replace_SEP 1 (ITREE (process_tr conn) st0 ).
       {
         go_lower.
         apply internal_nondet3.
@@ -827,9 +826,9 @@ Proof.
 
     forward.    
 
-    gather_SEP 2 7 8.
+    gather_SEP 1 6 7.
     Intros.
-    gather_SEP 0 8 2 1.
+    gather_SEP 0 7 2 1.
     fold_conn_cell_into_prefix.
     Intros.    
 

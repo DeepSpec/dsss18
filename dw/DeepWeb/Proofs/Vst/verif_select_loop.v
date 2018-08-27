@@ -75,7 +75,7 @@ Definition main_loop_invar
     lvar _es (Tstruct _fd_set noattr) v_es;
     temp _last_msg_store msg_store_ptr
   )
-  SEP ( SOCKAPI st ;
+  SEP ( 
         FD_SET Tsh read_set v_rs;
         FD_SET Tsh write_set v_ws;
         FD_SET Tsh exception_set v_es;
@@ -88,7 +88,7 @@ Definition main_loop_invar
         malloc_tokens (Tstruct _connection noattr) (map proj_ptr connections);
         ITREE (r <- select_loop server_addr BUFFER_SIZE
                  (true, (map proj_conn connections, last_msg))
-               ;; k);
+               ;; k) st;
         field_at Tsh (Tstruct _store noattr) [] (rep_store last_msg)
                  msg_store_ptr
       ).
@@ -216,7 +216,7 @@ Proof.
     forward.
 
     unfold FD_SETSIZE in *. 
-    forward_call (st0,
+    forward_call (select_loop server_addr BUFFER_SIZE (true, (map proj_conn connections, last_msg));; k, st0,
                   max_fd2 + 1,
                   read_set2, write_set2, ([] : FD_Set),
                   v_rs, v_ws, v_es, v_timeout,
@@ -327,19 +327,16 @@ Proof.
     
     (* if (socket_ready) *)
     match goal with
-    | [|- context[SOCKAPI _]] =>
+    | [|- context[ITREE _ _]] =>
       match goal with 
       | [|- context[field_at _ _ _ head_ptr _]] =>
         match goal with
-        | [|- context[lseg _ _ _ _ head_ptr _]] =>
-          match goal with
-          | [|- context[ITREE _]] =>
+        | [|- context[lseg _ _ _ _ head_ptr _]] => 
             freeze [0; 2; 3; 5; 6; 10] FR1; simpl
-          end
         end
       end
     end.
-
+    focus_SEP 1.
     Ltac post_accept connections st head_ptr v_head loop_on := 
     match goal with
     | [|- context[LOCALx (?Locs) (SEPx (_ :: ?Frame)) ]] =>
@@ -371,14 +368,13 @@ Proof.
            )
          (LOCALx ( Locs )
          (SEPx (
-              SOCKAPI st' ::
               lseg LS Tsh Tsh (map rep_full_conn connections')
               head_ptr' nullval ::
               (field_at Tsh (tptr (Tstruct _connection noattr)) [] head_ptr'
                         v_head) ::
               (malloc_tokens (Tstruct _connection noattr)
                              (map proj_ptr connections')) :: 
-              ITREE (loop_on connections') ::
+              ITREE (loop_on connections') st' ::
               Frame
             )
          ))
@@ -386,7 +382,7 @@ Proof.
     end.
 
     rem_trace tr.
-    gather_SEP 1 2 3 4 5.
+    gather_SEP 0 2 3 4.
     post_accept connections st0 head_ptr v_head
                 (fun connections' =>
                    select_loop server_addr BUFFER_SIZE
@@ -402,7 +398,7 @@ Proof.
       rewrite while_loop_unfold.
       simpl.
       rewrite trace_bind_assoc.
-      take_branch1 4.
+      take_branch1 0.
       rewrite trace_bind_assoc.
 
       rem_trace_tail k_accept.

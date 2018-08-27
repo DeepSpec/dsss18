@@ -52,13 +52,13 @@ Proof.
 
   do 4 forward.
   
-  freeze [2; 3; 5; 6; 7; 8; 9] FR1.
+  freeze [1; 2; 4; 5; 6; 7; 8] FR1.
   simpl.
 
   (* recv *)
   
   (* Split at current end of msg to recv there *)
-  focus_SEP 3.
+  focus_SEP 2. 
   rewrite field_at_data_at.
   simpl.
   saturate_rep_msg_bounds.
@@ -119,7 +119,7 @@ Proof.
 
   (* Coalesce buffer first *)
   thaw FR2.
-  gather_SEP 3 2.
+  gather_SEP 2 1.
   subst buf_ptr.
   coalesce.
   
@@ -134,7 +134,7 @@ Proof.
 
     subst recv_res.
 
-    take_branch2 2.
+    take_branch2 1.
     trace_bind_ret.
     subst contents.
     fold_rep_msg.
@@ -390,7 +390,7 @@ Proof.
 
   field_at_rebase_ptr.
   
-  gather_SEP 3 4 0 5 6 7 8.
+  gather_SEP 2 3 0 4 5 6 7.
   repeat rewrite <- sepcon_assoc.
   rewrite <- connection_list_cell_eq; [| assumption].
 

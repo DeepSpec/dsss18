@@ -26,8 +26,7 @@ Definition process_spec (T : Type) (buffer_size : Z) :=
            consistent_state buffer_size st (conn, fd) )
     LOCAL ( temp _conn conn_ptr;
             temp _last_msg_store msg_store_ptr )
-    SEP ( SOCKAPI st ;
-            ITREE (r <- process_conn buffer_size conn last_msg ;; k r) ;
+    SEP ( ITREE (r <- process_conn buffer_size conn last_msg ;; k r) st;
             list_cell LS Tsh (rep_connection conn fd) conn_ptr;
             field_at Tsh (Tstruct _store noattr) []
                      (rep_store last_msg) msg_store_ptr
@@ -46,7 +45,7 @@ Definition process_spec (T : Type) (buffer_size : Z) :=
            consistent_world st'
          )
     LOCAL ( temp ret_temp (Vint (Int.repr r)) )
-    SEP ( SOCKAPI st' ; ITREE (k (conn', last_msg')) ;
+    SEP (ITREE (k (conn', last_msg')) st';
             list_cell LS Tsh (rep_connection conn' fd) conn_ptr;
             field_at Tsh (Tstruct _store noattr) []
                      (rep_store last_msg') msg_store_ptr

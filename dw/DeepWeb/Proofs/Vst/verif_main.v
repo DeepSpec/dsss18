@@ -27,8 +27,9 @@ Lemma body_main:
   semax_body Vprog Gprog f_main (main_spec server).
 Proof.
   start_function.
-
   remember ({| lookup_socket := _ |}) as st0.
+  (*apply semax_pre with (P' := PROP () LOCAL () SEP (ITREE server st0)).
+  { old_go_lower. entailer!. } *)
   assert_PROP (consistent_world st0).
   { entailer!.
     unfold consistent_world; intros.
@@ -75,7 +76,7 @@ Proof.
   
   unfold server, server_.
 
-  forward_call st0.
+  forward_call (disj (listen SERVER_PORT;; select_loop SERVER_PORT BUFFER_SIZE (true, ([], INIT_MSG));; ret tt | ret tt)%nondet, st0).
   Intro vret.
   destruct vret as [st_post_socket socket_ret].
   simpl.
@@ -103,7 +104,7 @@ Proof.
 
   remember 8000 as server_port.
   
-  forward_call (st_post_socket, server_fd, Endpoint server_port).
+  forward_call ((disj (listen SERVER_PORT;; select_loop SERVER_PORT BUFFER_SIZE (true, ([], INIT_MSG));; Ret tt | Ret tt)%nondet, st_post_socket), server_fd, Endpoint server_port).
   { split; auto; subst; simpl; omega. }
 
   Intro vret.

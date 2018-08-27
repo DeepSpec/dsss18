@@ -91,7 +91,7 @@ Proof.
 
       (* move to tactic *)
       match goal with
-      | [|- context[ITREE ?tr1 * _ |-- ITREE ?tr2 * _]] =>
+      | [|- context[ITREE ?tr1 ?st * _ |-- ITREE ?tr2 ?st * _]] =>
         replace tr1 with tr2 by reflexivity
       end.
 

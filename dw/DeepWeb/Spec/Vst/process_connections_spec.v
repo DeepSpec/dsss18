@@ -64,10 +64,9 @@ Definition process_connections_spec (buffer_size : Z) :=
           temp _ws write_set_ptr ;
           temp _last_msg_store msg_store_ptr
         )
-  SEP ( SOCKAPI st ;
-        ITREE (r <- select_loop server_addr buffer_size
+  SEP ( ITREE (r <- select_loop server_addr buffer_size
                  (true, (map proj_conn connections, last_msg))
-                 ;; k);
+                 ;; k) st;
         
         lseg LS Tsh Tsh
              (map rep_full_conn connections) conn_ptr nullval ;
@@ -108,10 +107,9 @@ Definition process_connections_spec (buffer_size : Z) :=
                                   || has_conn_state SENDING c)%bool) connections')))
          )
     LOCAL ( )
-    SEP ( SOCKAPI st' ;
-          ITREE (r <- select_loop server_addr buffer_size
+    SEP (ITREE (r <- select_loop server_addr buffer_size
                    (true, (map proj_conn connections', last_msg'))
-                 ;; k);
+                 ;; k) st';
           
           lseg LS Tsh Tsh
                (map rep_full_conn connections') conn_ptr nullval ;

@@ -30,7 +30,7 @@ Ltac prove_socket_map_eq initial_st updated_fd :=
   simpl in Heq;
   try rewrite <- Heq;
   auto.
-
+(*
 Ltac forward_recv fd buf_ptr alloc_len :=
   let HTrace := fresh "HTrace" in
   let left_tree := fresh "left_tree" in 
@@ -106,6 +106,86 @@ Ltac forward_listen fd backlog :=
   | [H: trace_incl (bind (listen ?addr) (fun _ => ?k)) ?t |- _] =>
     match goal with
     | [|- context[SOCKAPI ?st]] =>
+      forward_call (t, k, addr, st, fd, backlog)
+    end
+  end;
+  subst left_tree; clear HTrace.
+*)
+Ltac forward_recv fd buf_ptr alloc_len :=
+  let HTrace := fresh "HTrace" in
+  let left_tree := fresh "left_tree" in 
+  intro_trace_or_incl HTrace left_tree;
+  simpl_trace_incl HTrace;
+  match goal with
+  | [H: trace_incl (bind (recv ?client_conn _) ?k) ?t |- ?t1] =>
+    match goal with
+    | [|- context[ITREE ?t1 ?st]] =>
+      match goal with
+      | [|- context[data_at_ ?sh _ buf_ptr]] =>
+        forward_call (t, k, client_conn, st, fd, buf_ptr, alloc_len, sh)
+      | [|- context[data_at ?sh _ _ buf_ptr]] =>
+        forward_call (t, k, client_conn, st, fd, buf_ptr, alloc_len, sh)
+      end
+    end
+  end;
+  subst left_tree; clear HTrace.
+
+Ltac forward_send fd buf_ptr :=
+  let HTrace := fresh "HTrace" in
+  let left_tree := fresh "left_tree" in 
+  intro_trace_or_incl HTrace left_tree;
+  simpl_trace_incl HTrace;
+  match goal with
+  | [H: trace_incl (bind (send_any_prefix ?client_conn ?msg) ?k) ?t |- ?t1] =>
+    match goal with
+    | [|- context[ITREE ?t1 ?st]] =>
+      match goal with
+      | [|- context[data_at ?sh _ _ buf_ptr]] =>
+        forward_call (t, k, client_conn, st, fd, msg,
+                      buf_ptr, sh)
+      end
+    end
+  end;
+  subst left_tree; clear HTrace.
+
+Ltac forward_accept fd :=
+  let HTrace := fresh "HTrace" in
+  let left_tree := fresh "left_tree" in 
+  intro_trace_or_incl HTrace left_tree;
+  simpl_trace_incl HTrace;
+  match goal with
+  | [H: trace_incl (bind (accept ?server_addr) ?k) ?t |- ?t1] =>
+    match goal with
+    | [|- context[ITREE ?t1 ?st]] =>
+      forward_call (t, k, server_addr, st, fd)
+    end
+  end;
+  subst left_tree; clear HTrace.
+
+Ltac forward_shutdown fd :=
+  let HTrace := fresh "HTrace" in
+  (* expecting ITree to have no alternatives because [shutdown] never 
+     fails *)
+  intro_trace_refl_incl HTrace; 
+  simpl_trace_incl HTrace;
+  match goal with
+  | [H: trace_incl ((shutdown ?conn_id) ;; ?k) ?t |- ?t1] =>
+    match goal with
+    | [|- context[ITREE ?t1 ?st]] =>
+      forward_call (t, k, conn_id, st, fd)
+    end
+  end;
+  clear HTrace.
+
+Ltac forward_listen fd backlog :=
+  let HTrace := fresh "HTrace" in
+  let left_tree := fresh "left_tree" in 
+  intro_trace_or_incl HTrace left_tree;
+  simpl_trace_incl HTrace;
+  match goal with
+  | [H: trace_incl (bind (listen ?addr) (fun _ => ?k)) ?t |- ?t1] =>
+    match goal with
+    | [|- context[ITREE ?t1 ?st]] =>
       forward_call (t, k, addr, st, fd, backlog)
     end
   end;

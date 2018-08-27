@@ -18,7 +18,7 @@ Require Import DeepWeb.Spec.Vst.MainInit.
 
 Module SockAPIPred.
 
-  Parameter SOCKAPI: SocketMap -> mpred.
+  (*Lenb: not needed in the module, in fact Parameter SOCKAPI: SocketMap -> mpred.*)
 
   Definition update_socket_state
              (api_st: SocketMap)
@@ -118,16 +118,16 @@ Module TracePred.
 
   Definition SocketM := M socketE.
 
-  Definition ITREE {T} (t : SocketM T) :=
-    EX t' : SocketM T, !!(trace_incl t t') && has_ext t'.
+  Definition ITREE {T} (t : SocketM T) (st:SocketMap) :=
+    EX t' : SocketM T, !!(trace_incl t t') && has_ext (t',st).
 
   Lemma trace_pred_incl:
-    forall {T : Type} (t1 t2 : SocketM T),
+    forall {T : Type} (t1 t2 : SocketM T) st,
       trace_incl t2 t1 ->
-      ITREE t1 |-- ITREE t2.
+      ITREE t1 st |-- ITREE t2 st. 
   Proof.
     unfold ITREE.
-    intros.
+    intros. 
     Intro t'.
     Exists t'.
     entailer!.
@@ -135,40 +135,40 @@ Module TracePred.
   Qed.    
   
   Lemma trace_pred_eq:
-    forall {T : Type} (t1 t2 : SocketM T),
+    forall {T : Type} (t1 t2 : SocketM T) st,
       trace_eq t1 t2 ->
-      ITREE t1 = ITREE t2.
+      ITREE t1 st = ITREE t2 st.
   Proof.
     unfold TraceIncl.trace_eq.
-    intros T t1 t2 H.
+    intros T t1 t2 st H.
     apply pred_ext; apply trace_pred_incl; intros t r; apply H.
   Qed.
 
   (* Interface *)
   
   Lemma internal_nondet1: 
-    forall {T1 T2 : Type} (k1 k2 : SocketM T1) (k3 : T1 -> SocketM T2),
-      ITREE (r <- or k1 k2 ;; k3 r) |--
-      ITREE (r <- k1 ;; k3 r).
+    forall {T1 T2 : Type} (k1 k2 : SocketM T1) (k3 : T1 -> SocketM T2) st,
+      ITREE (r <- or k1 k2 ;; k3 r) st |--
+      ITREE (r <- k1 ;; k3 r) st.
   Proof.
     intros. apply trace_pred_incl.
     apply trace_or_incl_bind.
   Qed.
 
   Lemma internal_nondet2:
-    forall {T1 T2 : Type} (k1 k2 : SocketM T1) (k3 : T1 -> SocketM T2),
-      ITREE (r <- or k1 k2 ;; k3 r) |--
-      ITREE (r <- k2 ;; k3 r).
+    forall {T1 T2 : Type} (k1 k2 : SocketM T1) (k3 : T1 -> SocketM T2) st,
+      ITREE (r <- or k1 k2 ;; k3 r) st |--
+      ITREE (r <- k2 ;; k3 r) st.
   Proof.
     intros. apply trace_pred_incl.
     apply trace_or_incl_bind.
   Qed.
     
   Lemma internal_nondet3:
-    forall {T1 T2 : Type} (k : T1 -> SocketM T2) (xs : list T1) (x : T1),
+    forall {T1 T2 : Type} (k : T1 -> SocketM T2) (xs : list T1) (x : T1) st,
       In x xs ->
-      ITREE (r <- choose xs ;; k r) |--
-      ITREE (k x).
+      ITREE (r <- choose xs ;; k r) st |--
+      ITREE (k x) st.
   Proof.
     intros.
     apply trace_pred_incl.
@@ -177,8 +177,8 @@ Module TracePred.
   Qed.
 
   Lemma trace_bind_ret :
-    forall {A B} a (f : A -> SocketM B),
-      ITREE (r <- ret a ;; f r) = ITREE (f a).
+    forall {A B} a (f : A -> SocketM B) st,
+      ITREE (r <- ret a ;; f r) st = ITREE (f a) st.
   Proof.
     intros.
     apply trace_pred_eq.
@@ -189,9 +189,9 @@ Module TracePred.
   
   Lemma trace_bind_assoc:
     forall {A B C : Type} (m : SocketM A) (f : A -> SocketM B)
-      (g : B -> SocketM C),
-      ITREE ( b <- (a <- m ;; f a) ;; g b ) =
-      ITREE ( a <- m ;; b <- f a ;; g b ).
+      (g : B -> SocketM C) st,
+      ITREE ( b <- (a <- m ;; f a) ;; g b ) st =
+      ITREE ( a <- m ;; b <- f a ;; g b ) st.
   Proof.
     intros.
     apply trace_pred_eq.
@@ -201,8 +201,8 @@ Module TracePred.
   Qed.
   
   Lemma trace_drop_tau:
-    forall (T : Type) (k : SocketM T), 
-      ITREE (Tau k) = ITREE k.
+    forall (T : Type) (k : SocketM T) st, 
+      ITREE (Tau k) st = ITREE k st.
   Proof.
     intros.
     apply trace_pred_eq.
@@ -212,9 +212,9 @@ Module TracePred.
   Qed.
   
   Lemma trace_bind_cancel:
-    forall {A B : Type} (m : SocketM A) (f g : SocketM B),
+    forall {A B : Type} (m : SocketM A) (f g : SocketM B) st,
       EquivUpToTau f g ->
-      ITREE ( m ;; f ) = ITREE ( m ;; g ).
+      ITREE ( m ;; f ) st = ITREE ( m ;; g ) st.
   Proof.
     intros.
     apply trace_pred_eq.
@@ -343,14 +343,14 @@ Import SockAPIPred.
 Import SockAddr.
 
 Section HoareSocket.
-  
-Definition socket_spec :=
+
+Definition socket_spec (T:Type):=
   DECLARE _socket
-  WITH st : SocketMap
+  WITH t: SocketM T, st : SocketMap
   PRE [ 1%positive OF tint, 2%positive OF tint, 3%positive OF tint ]
     PROP ( consistent_world st )
     LOCAL ()
-    SEP ( SOCKAPI st )
+    SEP ( ITREE t st )
   POST [ tint ]
     EX st' : SocketMap,                   
     EX r : Z,
@@ -362,7 +362,7 @@ Definition socket_spec :=
            consistent_world st'
       )
     LOCAL ( temp ret_temp (Vint (Int.repr r)) )
-    SEP ( SOCKAPI st' ).
+    SEP ( ITREE t st' ).
 
 (* shutdown never fails for now *)
 Definition shutdown_spec (T : Type) :=
@@ -380,7 +380,7 @@ Definition shutdown_spec (T : Type) :=
     LOCAL ( temp 1%positive (Vint (Int.repr (descriptor fd))) ;
             temp 2%positive (Vint (Int.repr 2))
           )
-    SEP ( SOCKAPI st ; ITREE t )
+    SEP (ITREE t st)
   POST [ tint ]
     EX st': SocketMap,
     EX r : Z,
@@ -389,16 +389,17 @@ Definition shutdown_spec (T : Type) :=
              consistent_world st'
          )
     LOCAL ( temp ret_temp (Vint (Int.repr r)) )
-    SEP ( SOCKAPI st' ; ITREE (k) ).
+    SEP (ITREE k st').
 
 Definition close_spec (T : Type) :=
   DECLARE _close
-  WITH st: SocketMap,
+  WITH t: SocketM T,
+       st: SocketMap,
        fd: sockfd
   PRE [ 1%positive OF tint ]
     PROP ( consistent_world st )
     LOCAL ( temp 1%positive (Vint (Int.repr (descriptor fd))) )
-    SEP ( SOCKAPI st )
+    SEP (ITREE t st )
   POST [ tint ]
     EX st': SocketMap,
     EX r : Z,
@@ -407,11 +408,12 @@ Definition close_spec (T : Type) :=
            consistent_world st'  
          )
     LOCAL ( temp ret_temp (Vint (Int.repr r)) )
-    SEP ( SOCKAPI st' ).
+    SEP (ITREE t st' ).
 
-Definition bind_spec :=
+Definition bind_spec (T:Type) :=
   DECLARE _bind
-  WITH st : SocketMap,
+  WITH t: SocketM T,
+       st : SocketMap,
        fd : sockfd,
        addr : endpoint_id,
        addr_ptr : val,
@@ -424,7 +426,7 @@ Definition bind_spec :=
             temp 2%positive addr_ptr ;
             temp 3%positive (Vint (Int.repr addr_len))
           )
-    SEP ( SOCKAPI st ;
+    SEP ( ITREE t st ;
             data_at Tsh (Tstruct _sockaddr_in noattr) (rep_endpoint addr)
                     addr_ptr
         )
@@ -439,7 +441,7 @@ Definition bind_spec :=
            consistent_world st'
          )
     LOCAL ( temp ret_temp (Vint (Int.repr r)) )
-    SEP ( SOCKAPI st' ;
+    SEP ( ITREE t st' ;
             data_at Tsh (Tstruct _sockaddr_in noattr) (rep_endpoint addr)
                     addr_ptr
         ).
@@ -459,7 +461,7 @@ Definition listen_spec (T : Type) :=
     LOCAL ( temp 1%positive (Vint (Int.repr (descriptor fd)));
             temp 2%positive (Vint (Int.repr backlog))
           )
-    SEP ( SOCKAPI st; ITREE t )
+    SEP (ITREE t st )
   POST [ tint ]
     EX result : option unit,
     EX st' : SocketMap,
@@ -472,9 +474,7 @@ Definition listen_spec (T : Type) :=
            consistent_world st'
          )
     LOCAL ( temp ret_temp (Vint (Int.repr r)) )
-    SEP ( SOCKAPI st';
-          ITREE ( match result with Some tt => k | None => t end )
-        ).
+    SEP (ITREE (match result with Some tt => k | None => t end) st').
 
 Definition accept_spec (T : Type) :=
   DECLARE _accept
@@ -495,7 +495,7 @@ Definition accept_spec (T : Type) :=
             temp 2%positive nullval ;
             temp 3%positive nullval
           )
-    SEP ( SOCKAPI st ; ITREE t )
+    SEP (ITREE t st)
   POST [ tint ]
     EX result : option connection_id,
     EX st' : SocketMap,
@@ -512,13 +512,12 @@ Definition accept_spec (T : Type) :=
              consistent_world st'
          )
     LOCAL ( temp ret_temp (Vint (Int.repr r)) )
-    SEP ( SOCKAPI st' ;
-            ITREE (
+    SEP (ITREE (
                 match result with
                 | Some client_conn => k client_conn 
                 | None => t
                 end
-              )
+              ) st'
         ).
 
 Definition send_spec (T : Type) :=
@@ -546,7 +545,7 @@ Definition send_spec (T : Type) :=
             temp 3%positive (Vint (Int.repr (Zlength (val_of_string msg))));
             temp 4%positive (Vint (Int.repr 0))
           )
-    SEP ( SOCKAPI st; ITREE (t) ;
+    SEP ( ITREE t st;
             data_at sh
                     (tarray tuchar (Zlength (val_of_string msg)))
                     (val_of_string msg) buf_ptr )
@@ -563,12 +562,11 @@ Definition send_spec (T : Type) :=
              consistent_world st'
          )
     LOCAL ( temp ret_temp (Vint (Int.repr r)) )
-    SEP ( SOCKAPI st';
-            ITREE (match result with
+    SEP ( ITREE (match result with
                    | None => t
                    | Some tt => k (Z.to_nat r)
                    end 
-                  );
+                  ) st';
             data_at sh
                     (tarray tuchar (Zlength (val_of_string msg)))
                     (val_of_string msg) buf_ptr ).
@@ -595,10 +593,8 @@ Definition recv_spec (T : Type) :=
            temp 3%positive (Vint (Int.repr alloc_len));
            temp 4%positive (Vint (Int.repr 0))
           )
-    SEP ( SOCKAPI st;
-            ITREE t;
-            data_at_ sh (Tarray tuchar alloc_len noattr) buf_ptr
-        )
+    SEP (ITREE t st;
+         data_at_ sh (Tarray tuchar alloc_len noattr) buf_ptr)
   POST [ tint ]
     EX result : unit + option string,
     EX st' : SocketMap, 
@@ -623,19 +619,18 @@ Definition recv_spec (T : Type) :=
              consistent_world st'
          )
     LOCAL ( temp ret_temp (Vint (Int.repr r)) )
-    SEP ( SOCKAPI st' ;
-            ITREE (match result with
+    SEP (ITREE (match result with
                    | inl tt => t 
                    | inr msg_opt => k msg_opt
                    end
-                  );
+                  ) st';
             data_at sh (tarray tuchar alloc_len)
-                    contents buf_ptr
-        ).
+                    contents buf_ptr).
 
 Definition select_spec (T : Type) :=
   DECLARE _select
-  WITH st : SocketMap,
+  WITH t : SocketM T,
+       st : SocketMap,
        max_fd : Z,
        read_set : FD_Set,
        write_set : FD_Set,
@@ -664,7 +659,7 @@ Definition select_spec (T : Type) :=
               temp 4%positive exception_set_ptr;
               temp 5%positive timeval_ptr
           )
-    SEP ( SOCKAPI st ;
+    SEP ( ITREE t st ;
             FD_SET read_sh read_set read_set_ptr ;
             FD_SET write_sh write_set write_set_ptr ;
             FD_SET exception_sh exception_set exception_set_ptr )
@@ -689,7 +684,7 @@ Definition select_spec (T : Type) :=
              st' = st 
          )
     LOCAL ( temp ret_temp (Vint (Int.repr r)) )
-    SEP ( SOCKAPI st' ;
+    SEP ( ITREE t st' ;
             FD_SET read_sh read_set' read_set_ptr ;
             FD_SET write_sh write_set' write_set_ptr ;
             FD_SET exception_sh exception_set' exception_set_ptr ).
@@ -792,8 +787,8 @@ Ltac forward_select max_fd rs ws es timeval_ptr :=
  *)
 
 Definition socket_specs :=
-  [socket_spec;
-     bind_spec;
+  [socket_spec unit;
+     bind_spec unit;
      listen_spec unit;
      accept_spec unit;
      recv_spec unit;

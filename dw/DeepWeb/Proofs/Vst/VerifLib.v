@@ -205,7 +205,7 @@ Module Trace_Tactics.
    *)
   Ltac intro_trace_or_incl HTrace left_trace :=
     match goal with
-    | [|- context[ITREE ?t]] =>
+    | [|- context[ITREE ?t ?st]] =>
       match t with
       | (r <- ?or_trace ;; ?k) =>
         match or_trace with
@@ -225,7 +225,7 @@ Module Trace_Tactics.
   (* Introduces hypothesis that current Itree is included in itself *)
   Ltac intro_trace_refl_incl HTrace :=
     match goal with
-    | [|- context[ITREE ?t]] =>
+    | [|- context[ITREE ?t ?st]] =>
       assert (trace_incl t t) as HTrace
           by (apply trace_incl_refl)
     end.
@@ -236,41 +236,41 @@ Module Trace_Tactics.
   (* Chooses either first or second branch of "Or" *)
   Ltac take_branch1 idx := 
     match goal with
-    | [|- context[ITREE (bind (or ?branch1 ?branch2) ?k)]] =>
-      replace_SEP idx (ITREE (r <- branch1 ;; k r));
+    | [|- context[ITREE (bind (or ?branch1 ?branch2) ?k) ?st]] =>
+      replace_SEP idx (ITREE (r <- branch1 ;; k r) st);
       [go_lower; apply internal_nondet1 | ]
     end.
 
   Ltac take_branch2 idx := 
     match goal with
-    | [|- context[ITREE (bind (or ?branch1 ?branch2) ?k)]] =>
-      replace_SEP idx (ITREE (r <- branch2 ;; k r));
+    | [|- context[ITREE (bind (or ?branch1 ?branch2) ?k) ?st ]] =>
+      replace_SEP idx (ITREE (r <- branch2 ;; k r) st);
       [go_lower; apply internal_nondet2 | ]
     end.
 
   Ltac trace_bind_ret :=
     match goal with
-    | [|- context[ITREE (bind (ret ?a) ?k)]] =>
+    | [|- context[ITREE (bind (ret ?a) ?k) ?st]] =>
       rewrite (trace_bind_ret a)
-    | [|- context[ITREE (bind (Ret ?a) ?k)]] =>
+    | [|- context[ITREE (bind (Ret ?a) ?k) ?st]] =>
       rewrite (trace_bind_ret a)
     end.
 
   Ltac rem_trace_tail cont :=
   match goal with
-  | [ |- context[ITREE (bind _ ?k)]] =>
+  | [ |- context[ITREE (bind _ ?k) ?st]] =>
     remember k as cont
   end.
 
   Ltac rem_trace cont :=
     match goal with
-    | [ |- context[ITREE ?k]] =>
+    | [ |- context[ITREE ?k ?st]] =>
       remember k as cont
     end.
 
   Ltac rem_trace_or cont1 cont2 cont3 :=
     match goal with
-    | [|- context[ITREE (bind (or ?k1 ?k2) ?k3)]] =>
+    | [|- context[ITREE (bind (or ?k1 ?k2) ?k3) ?st]] =>
       remember k1 as cont1;
       remember k2 as cont2;
       remember k3 as cont3
@@ -280,9 +280,9 @@ Module Trace_Tactics.
     match goal with
     | [|- derives ?LHS ?RHS] =>
       match LHS with
-      | context[ITREE ?tr1] =>
+      | context[ITREE ?tr1 ?st] =>
         match RHS with
-        | context[ITREE ?tr2] =>
+        | context[ITREE ?tr2 ?st] =>
           replace tr1 with tr2 by reflexivity
         end
       end

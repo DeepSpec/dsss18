@@ -49,18 +49,30 @@ Instance Socket_Espec : OracleKind :=
     (SocketM unit)
     (socket_ext_spec).
 
+(*WORKS: Definition main_spec (tree : SocketM unit) :=
+  DECLARE _main
+  WITH gv : globals
+  PRE  [] (fun rho => (*globvars2pred gv (prog_vars prog) rho **)
+                      ITREE tree {| lookup_socket := fun _ : sockfd => ClosedSocket |})
+  POST [ tint ] main_post prog nil gv.*)
+
 Definition main_spec (tree : SocketM unit) :=
   DECLARE _main
   WITH gv : globals
+  PRE  [] (PROP ()
+           LOCAL (gvars gv)
+           SEP (ITREE tree {| lookup_socket := fun _ : sockfd => ClosedSocket |}))
+  POST [ tint ] main_post prog nil gv.
+
+(*LENB: modified on Aug 20/21, to closer match what we've got in charIO.
   PRE [ ]
   (PROP ( )
    LOCAL (gvars gv)
-   SEP (SOCKAPI {| lookup_socket := fun _ : sockfd => ClosedSocket |} ;
-        ITREE tree))
+   SEP (ITREE tree {| lookup_socket := fun _ : sockfd => ClosedSocket |})
   POST [ tint ]
   PROP ( False )
   LOCAL ( temp ret_temp (Vint (Int.repr 0)) )
-  SEP ( ).
+  SEP ( ).*)
 
 Definition Vprog : varspecs. mk_varspecs prog. Defined.
 
@@ -78,7 +90,7 @@ Definition specs :=
        htons_spec;
 
        zeroize_addr_spec;
-       bind_socket_spec;
+       bind_socket_spec unit;
        new_store_spec;
        init_store_spec;
        check_if_complete_spec BUFFER_SIZE;

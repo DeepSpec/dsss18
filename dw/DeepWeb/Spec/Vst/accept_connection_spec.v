@@ -30,8 +30,7 @@ Definition accept_connection_spec (T : Type) :=
     LOCAL ( temp _socket__1 (Vint (Int.repr (descriptor fd))) ;
             temp _head ptr_to_head
           )
-    SEP ( SOCKAPI st ;
-            ITREE (bind (accept_connection addr) (fun r => k r));
+    SEP ( ITREE (bind (accept_connection addr) (fun r => k r)) st;
             data_at Tsh (tptr (Tstruct _connection noattr))
                     curr_head ptr_to_head ;
             lseg LS Tsh Tsh elems curr_head nullval
@@ -60,10 +59,9 @@ Definition accept_connection_spec (T : Type) :=
            consistent_world st'
          )
     LOCAL ( temp ret_temp (Vint (Int.repr r)) )
-    SEP ( SOCKAPI st' ; 
-            match result with
+    SEP (match result with
             | Some (conn, fd, new_head) => 
-              ITREE (k (Some conn)) *
+              ITREE (k (Some conn)) st' *
               malloc_token Tsh (Tstruct _connection noattr) new_head * 
               data_at Tsh (tptr (Tstruct _connection noattr))
                        new_head ptr_to_head *
@@ -71,7 +69,7 @@ Definition accept_connection_spec (T : Type) :=
                    ( (new_head, rep_connection conn fd) :: elems )
                    new_head nullval
             | None =>
-              ITREE (k None) *
+              ITREE (k None) st' *
               data_at Tsh (tptr (Tstruct _connection noattr))
                       curr_head ptr_to_head *
               lseg LS Tsh Tsh elems curr_head nullval

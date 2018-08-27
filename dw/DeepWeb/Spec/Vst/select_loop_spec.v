@@ -24,9 +24,8 @@ Definition select_loop_spec :=
   LOCAL ( temp _server_socket (Vint (Int.repr (descriptor server_fd))) ;
           temp _last_msg_store msg_store_ptr 
         )
-  SEP ( SOCKAPI st ;
-        ITREE ( select_loop server_addr BUFFER_SIZE (true, ([], initial_msg))
-                ;; k ) ;
+  SEP ( ITREE ( select_loop server_addr BUFFER_SIZE (true, ([], initial_msg))
+                ;; k ) st;
         field_at Tsh (Tstruct _store noattr) [] (rep_store initial_msg)
                  msg_store_ptr  
       )

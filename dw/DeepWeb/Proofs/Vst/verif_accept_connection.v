@@ -29,9 +29,8 @@ Lemma body_accept_connection:
 Proof.
   start_function.
   unfold accept_connection.
-
   forward_accept fd.
-  { entailer!. }
+  { cancel. }
 
   Intro vret.
   destruct vret as
@@ -64,7 +63,8 @@ Proof.
     end.
 
     rewrite accept_res_eq.
-    take_branch2 1.
+
+    take_branch2 0. 
     forward.
 
     rewrite (trace_bind_ret (None : option connection)).
@@ -96,7 +96,7 @@ Proof.
 
   forward_if.
   {
-    take_branch2 1.
+    take_branch2 0.
     rewrite trace_bind_assoc.
     
     forward_shutdown client_fd.
@@ -111,7 +111,7 @@ Proof.
     Intros.
 
     (* close *)
-    forward_call (st_post_shutdown, client_fd).
+    forward_call ((' b <- Ret None;; k b), st_post_shutdown, client_fd).
     { apply prop_right; simpl; subst; reflexivity. }
     
     Intro vret.
@@ -166,7 +166,7 @@ Proof.
       rewrite (H2 H1)
     end.
     
-    take_branch2 2.
+    take_branch2 1.
     rewrite trace_bind_assoc.
     forward_shutdown client_fd.
     { subst accept_ret; apply prop_right; reflexivity. }
@@ -181,7 +181,7 @@ Proof.
     Intros.
 
     (* close *)
-    forward_call (st_post_shutdown, client_fd).
+    forward_call ((' b <- Ret None;; k b), st_post_shutdown, client_fd).
     { apply prop_right; simpl; subst; reflexivity. }
 
     Intro vret.
@@ -227,7 +227,7 @@ Proof.
     remember cn as conn0
   end.
 
-  take_branch1 6.
+  take_branch1 5.
   trace_bind_ret.
 
   assert_PROP (field_compatible (Tstruct _connection noattr) [] alloc_ret)

@@ -53,17 +53,14 @@ Proof.
   do 5 forward.
 
   match goal with
-  | [|- context[ITREE _]] =>
-  match goal with
-  | [|- context[SOCKAPI _]] =>
+  | [|- context[ITREE _ _]] =>
   match goal with
   | [|- context[field_at _ _ [StructField _response_buffer] _ _]] =>
-    freeze [2; 3; 4; 5; 7; 8] FR1; simpl
-  end
+    freeze [1; 2; 3; 4; 6; 7] FR1; simpl
   end
   end.
 
-  focus_SEP 3.
+  focus_SEP 2.
   rewrite field_at_data_at; simpl.
   saturate_rep_msg_bounds.
   unfold rep_msg.
@@ -126,7 +123,7 @@ Proof.
   Intros.
   thaw FR3; thaw FR2; simpl.
   rem_trace tr.
-  gather_SEP 2 3 4.
+  gather_SEP 1 2 3.
   Intros.
   subst buf_ptr.
   gather_SEP 1 0.
@@ -176,7 +173,7 @@ Proof.
     end.
 
     subst send_res.
-    take_branch2 2.
+    take_branch2 1.
     trace_bind_ret.
 
     forward.
@@ -290,9 +287,9 @@ Proof.
   rewrite complete_cond.
   trace_bind_ret.
 
-  gather_SEP 3 4 5 6 0.
+  gather_SEP 2 3 4 5 0.
   Intros.
-  gather_SEP 0 1 2 3 4 7 8.
+  gather_SEP 0 1 2 3 4 6 7.
   repeat rewrite <- sepcon_assoc.
   rewrite <- connection_list_cell_eq by assumption.
   

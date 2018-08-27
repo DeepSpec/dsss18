@@ -13,7 +13,7 @@ Import SockAPIPred.
 Import SockAddr.
 
 Lemma body_bind_socket:
-  semax_body Vprog Gprog f_bind_socket bind_socket_spec.
+  semax_body Vprog Gprog f_bind_socket (bind_socket_spec unit).
 Proof.
   start_function.
 
@@ -42,7 +42,7 @@ Proof.
 
   forward.
 
-  forward_call (st, fd, addr, v_addr, sizeof (Tstruct _sockaddr_in noattr)).
+  forward_call (t, st, fd, addr, v_addr, sizeof (Tstruct _sockaddr_in noattr)).
   { 
     unfold_data_at 1%nat.
     rewrite addr_eq.

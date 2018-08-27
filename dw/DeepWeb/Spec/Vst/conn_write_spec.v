@@ -21,8 +21,7 @@ Definition conn_write_spec (T : Type) (buffer_size : Z) :=
            conn_state conn = SENDING ;
            consistent_state buffer_size st (conn, fd) )
     LOCAL ( temp _conn conn_ptr )
-    SEP ( SOCKAPI st ;
-            ITREE (r <- conn_write conn ;; k r) ;
+    SEP (ITREE (r <- conn_write conn ;; k r) st;
             list_cell LS Tsh (rep_connection conn fd) conn_ptr
         )
   POST [ tint ]
@@ -33,6 +32,6 @@ Definition conn_write_spec (T : Type) (buffer_size : Z) :=
            send_step (conn, fd, st) (result, fd, st');
            consistent_world st' )
     LOCAL ( temp ret_temp (Vint (Int.repr r)) )
-    SEP ( SOCKAPI st' ; ITREE (k result) ;
+    SEP (ITREE (k result) st';
             list_cell LS Tsh (rep_connection result fd) conn_ptr
         ).

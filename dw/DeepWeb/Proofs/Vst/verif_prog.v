@@ -58,22 +58,43 @@ Ltac lower_to_SEP :=
     intros _; simpl
   end.
 
+Ltac my_semax_func_cons_ext PD ::=
+  eapply semax_func_cons_ext;
+    [ reflexivity | reflexivity | reflexivity | reflexivity | reflexivity
+    | semax_func_cons_ext_tc;
+        try solve [ (*THIS LINE IS NEW*) simpl; repeat (apply exp_left; intros);
+                    apply typecheck_return_value; auto]
+    | solve[ first [eapply semax_ext;
+          [ (*repeat first [reflexivity | left; reflexivity | right]*) try solve [unfold ext_link_prog; rewrite PD; apply from_elements_In; reflexivity]
+          | apply extcall_lemmas.compute_funspecs_norepeat_e; reflexivity
+          | reflexivity
+          | reflexivity ]]]
+      || fail "Try 'eapply semax_func_cons_ext.'"
+              "To solve [semax_external] judgments, do 'eapply semax_ext.'"
+              "Make sure that the Espec declared using 'Existing Instance'
+               is defined as 'add_funspecs NullExtension.Espec Gprog.'"
+    |
+    ].
 
 Lemma all_funcs_correct:
   semax_func Vprog Gprog (prog_funct prog) Gprog.
 Proof.
-  unfold Gprog at 2. 
-  unfold prog, prog_funct; simpl.
-
+  assert (PD: prog_defs prog = global_definitions) by reflexivity.
+  unfold prog_funct.
+  
+  rewrite PD.
+  
   repeat (apply semax_func_cons_ext_vacuous; [reflexivity | reflexivity | ]).
 
   semax_func_cons body_malloc.
   apply semax_func_cons_malloc_aux.
-
-  semax_func_cons_ext.
-
-  semax_func_cons_ext.
-
+ 
+  (*Time semax_func_cons_ext. (*16secs*)*)
+  Time my_semax_func_cons_ext PD. (*0.5secs*)
+  
+  (*Time semax_func_cons_ext. (*16secs*)*)
+  Time my_semax_func_cons_ext PD. (*0.5secs*)
+  
   { (* typechecking for memcpy *)
     extract_ret_val.
     subst v.
@@ -81,18 +102,17 @@ Proof.
     entailer!.
   } 
   
-  semax_func_cons_ext.
+  (*Time semax_func_cons_ext. (*16secs*)*)
+  Time my_semax_func_cons_ext PD. (*0.5secs*)
+  
   { (* typechecking for memset *)
-
     extract_ret_val.
     subst v.
     lower_to_SEP.
     entailer!.
   } 
 
-  semax_func_cons_ext.
-
-  semax_func_cons_ext.
+  (*
   semax_func_cons_ext.
   semax_func_cons_ext.
   semax_func_cons_ext.
@@ -100,7 +120,18 @@ Proof.
   semax_func_cons_ext.
   semax_func_cons_ext.
   semax_func_cons_ext.
-
+  semax_func_cons_ext.
+  semax_func_cons_ext.*)
+  
+  my_semax_func_cons_ext PD.
+  my_semax_func_cons_ext PD.
+  my_semax_func_cons_ext PD.
+  my_semax_func_cons_ext PD.
+  my_semax_func_cons_ext PD.
+  my_semax_func_cons_ext PD.
+  my_semax_func_cons_ext PD.
+  my_semax_func_cons_ext PD. 
+  my_semax_func_cons_ext PD. 
   { (* typechecking for htons *)
     extract_ret_val.
     rewrite <- Hret.
@@ -115,11 +146,14 @@ Proof.
     simpl.
     intros e.
     entailer!.
-    omega.
+    (*WAS:omega*)
+            simpl in bound. rewrite Int.unsigned_repr. omega.
+            rewrite initialize.max_unsigned_eq; omega. 
   } 
 
   (* select *)
-  semax_func_cons_ext.
+  (*semax_func_cons_ext.*) 
+  my_semax_func_cons_ext PD. 
   
   semax_func_cons body_fd_zero_macro.
   semax_func_cons body_fd_isset_macro.

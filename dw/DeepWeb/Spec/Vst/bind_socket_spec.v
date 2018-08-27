@@ -7,9 +7,12 @@ From DeepWeb.Spec
 
 Import SockAPIPred.
 
-Definition bind_socket_spec :=
+Import TracePred.
+
+Definition bind_socket_spec (T:Type):=
   DECLARE _bind_socket
-  WITH st : SocketMap,
+  WITH t: SocketM T,
+       st : SocketMap,
        fd : sockfd,
        addr : endpoint_id
   PRE [ _fd OF tint, _port OF tint ] 
@@ -17,7 +20,7 @@ Definition bind_socket_spec :=
     LOCAL ( temp _fd (Vint (Int.repr (descriptor fd)));
             temp _port (Vint (Int.repr (port_number addr)))
           )
-    SEP ( SOCKAPI st )
+    SEP ( ITREE t st )
   POST [ tint ]
     EX st' : SocketMap,
     EX r : Z, 
@@ -28,4 +31,4 @@ Definition bind_socket_spec :=
              consistent_world st'
          )
     LOCAL ( temp ret_temp (Vint (Int.repr r)) )
-    SEP ( SOCKAPI st' ).
+    SEP ( ITREE t st' ).
