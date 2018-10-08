@@ -785,7 +785,7 @@ Unset Typeclasses Debug.
     for equality between two elements of some type.  We can extend
     this to a subclass that also comes with a proof that the given
     equality tester is correct, in the sense that, whenever it returns
-    [true], the two values are actully equal in the propositional
+    [true], the two values are actually equal in the propositional
     sense (and vice versa).
 *)
 
