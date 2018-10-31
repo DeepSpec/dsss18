@@ -25,6 +25,7 @@ The easiest way to install StructTact is via [OPAM](http://opam.ocaml.org/doc/In
 
 ```
 opam repo add distributedcomponents-dev http://opam-dev.distributedcomponents.net
+opam update
 opam install StructTact
 ```
 
