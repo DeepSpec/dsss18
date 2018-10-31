@@ -65,7 +65,7 @@ Variable default: V.
  Definition empty_tree := E.
 
 (** lookup is exactly as in our (unbalanced) search-tree algorithm in
-  Extract.v, except that the [T] constructor carries a [color] component,
+  SearchTree.v, except that the [T] constructor carries a [color] component,
   which we can ignore here. *)
 
 Fixpoint lookup (x: key) (t : tree) : V :=
@@ -372,7 +372,7 @@ Qed.
 
 (** **** Exercise: 2 stars (ins_SearchTree)  *)
 (** This one is pretty easy, even without proof automation.
-  Copy-paste your proof of insert_SearchTree from Extract.v.
+  Copy-paste your proof of insert_SearchTree from SearchTree.v.
   You will need to apply [balance_SearchTree] in two places.
  *)
 Lemma ins_SearchTree: 
@@ -436,7 +436,7 @@ Qed.
 (** **** Exercise: 3 stars (lookup_relate)  *)
 Theorem lookup_relate:
   forall k t cts ,   Abs t cts -> lookup k t =  cts (int2Z k).
-Proof.  (* Copy your proof from Extract.v, and adapt it. *)
+Proof.  (* Copy your proof from SearchTree.v, and adapt it. *)
 (* FILL IN HERE *) Admitted.
 (** [] *)
 

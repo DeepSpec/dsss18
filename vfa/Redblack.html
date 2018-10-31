@@ -124,7 +124,7 @@
 
 <div class="doc">
 lookup is exactly as in our (unbalanced) search-tree algorithm in
-  Extract.v, except that the <span class="inlinecode"><span class="id" type="var">T</span></span> constructor carries a <span class="inlinecode"><span class="id" type="var">color</span></span> component,
+  SearchTree.v, except that the <span class="inlinecode"><span class="id" type="var">T</span></span> constructor carries a <span class="inlinecode"><span class="id" type="var">color</span></span> component,
   which we can ignore here. 
 </div>
 <div class="code code-tight">
@@ -537,7 +537,7 @@ Use proof automation for this case analysis.
 <div class="doc">
 <a name="lab108"></a><h4 class="section">Exercise: 2 stars (ins_SearchTree)</h4>
  This one is pretty easy, even without proof automation.
-  Copy-paste your proof of insert_SearchTree from Extract.v.
+  Copy-paste your proof of insert_SearchTree from SearchTree.v.
   You will need to apply <span class="inlinecode"><span class="id" type="var">balance_SearchTree</span></span> in two places.
  
 </div>
@@ -613,7 +613,7 @@ Use proof automation for this case analysis.
 <div class="code code-space">
 <span class="id" type="keyword">Theorem</span> <a name="lookup_relate"><span class="id" type="lemma">lookup_relate</span></a>:<br/>
 &nbsp;&nbsp;<span style='font-size:120%;'>&forall;</span> <span class="id" type="var">k</span> <span class="id" type="var">t</span> <span class="id" type="var">cts</span> ,   <a class="idref" href="Redblack.html#Abs"><span class="id" type="inductive">Abs</span></a> <a class="idref" href="Redblack.html#t"><span class="id" type="variable">t</span></a> <a class="idref" href="Redblack.html#cts"><span class="id" type="variable">cts</span></a> → <a class="idref" href="Redblack.html#lookup"><span class="id" type="definition">lookup</span></a> <a class="idref" href="Redblack.html#k"><span class="id" type="variable">k</span></a> <a class="idref" href="Redblack.html#t"><span class="id" type="variable">t</span></a> =  <a class="idref" href="Redblack.html#cts"><span class="id" type="variable">cts</span></a> (<a class="idref" href="Extract.html#int2Z"><span class="id" type="axiom">int2Z</span></a> <a class="idref" href="Redblack.html#k"><span class="id" type="variable">k</span></a>).<br/>
-<span class="id" type="keyword">Proof</span>. <span class="comment">(*&nbsp;Copy&nbsp;your&nbsp;proof&nbsp;from&nbsp;Extract.v,&nbsp;and&nbsp;adapt&nbsp;it.&nbsp;*)</span><br/>
+<span class="id" type="keyword">Proof</span>. <span class="comment">(*&nbsp;Copy&nbsp;your&nbsp;proof&nbsp;from&nbsp;SearchTree.v,&nbsp;and&nbsp;adapt&nbsp;it.&nbsp;*)</span><br/>
 <span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span> <span class="id" type="var">Admitted</span>.<br/>
 </div>
 
