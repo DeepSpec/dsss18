@@ -177,7 +177,7 @@ End EXAMPLES.
   What properties do we want searchtrees to have?  If I insert
   the binding [(k,v)] into a searchtree [t], then look up [k], I
   should get [v]. If I look up [k'] in [insert (k,v) t], where [k'<>k],
-  then I should get the same result as [lookup k t].  There are several
+  then I should get the same result as [lookup k' t].  There are several
   more properties. Fortunately, all these properties are already proved
   about [total_map] in the [Maps] module: *)
 
