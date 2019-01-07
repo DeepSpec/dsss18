@@ -120,7 +120,7 @@ Check (cons nat 2 (cons nat 1 (nil nat))).
 
 Fixpoint repeat (X : Type) (x : X) (count : nat) : list X :=
   match count with
-  | 0 => nil X
+  | O => nil X
   | S count' => cons X x (repeat X x count')
   end.
 
@@ -178,7 +178,7 @@ Definition manual_grade_for_mumble_grumble : option (prod nat string) := None.
 
 Fixpoint repeat' X x count : list X :=
   match count with
-  | 0        => nil X
+  | O        => nil X
   | S count' => cons X x (repeat' X x count')
   end.
 
@@ -194,7 +194,7 @@ Check repeat.
     [count] must be, based on how they are used.  For example, since
     [X] is used as an argument to [cons], it must be a [Type], since
     [cons] expects a [Type] as its first argument; matching [count]
-    with [0] and [S] means it must be a [nat]; and so on.
+    with [O] and [S] means it must be a [nat]; and so on.
 
     This powerful facility means we don't always have to write
     explicit type annotations everywhere, although explicit type
@@ -243,7 +243,7 @@ Check repeat.
 
 Fixpoint repeat'' X x count : list X :=
   match count with
-  | 0        => nil _
+  | O        => nil _
   | S count' => cons _ x (repeat'' _ x count')
   end.
 
@@ -289,7 +289,7 @@ Definition list123'' := cons 1 (cons 2 (cons 3 nil)).
 
 Fixpoint repeat''' {X : Type} (x : X) (count : nat) : list X :=
   match count with
-  | 0        => nil
+  | O        => nil
   | S count' => cons x (repeat''' x count')
   end.
 
@@ -333,7 +333,7 @@ Fixpoint rev {X:Type} (l:list X) : list X :=
 
 Fixpoint length {X : Type} (l : list X) : nat :=
   match l with
-  | nil => 0
+  | nil => O
   | cons _ l' => S (length l')
   end.
 
